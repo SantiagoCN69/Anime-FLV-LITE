@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AnimeFLV Lite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>AnimeFLV Lite</h1>
+
+  <div class="search-container">
+    <input type="text" id="busqueda" placeholder="Buscar anime...">
+  </div>
+
+  <div id="main"></div>
+  <footer>
+    Desarrollado por Santiago Cardona 😼
+  </footer>
+  <script>
+    // Cargar últimos capítulos al iniciar
+    fetch('https://backend-animeflv-lite.onrender.com/api/latest')
+      .then(res => res.json())
+      .then(mostrarResultados);
+
+    // Función para normalizar texto (remover tildes y convertir a minúsculas)
+    function normalizarTexto(texto) {
+      return texto
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '');
+    }
+
+    // Función de búsqueda en tiempo real
+    const busquedaInput = document.getElementById('busqueda');
+    let busquedaTimer;
+
+    busquedaInput.addEventListener('input', function() {
+      // Limpiar el timer anterior
+      clearTimeout(busquedaTimer);
+
+      // Si el input está vacío, mostrar últimos capítulos
+      if (!this.value) {
+        fetch('https://backend-animeflv-lite.onrender.com/api/latest')
+          .then(res => res.json())
+          .then(mostrarResultados);
+        return;
+      }
+
+      // Nuevo timer para búsqueda en tiempo real
+      busquedaTimer = setTimeout(() => {
+        const queryNormalizada = normalizarTexto(this.value);
+        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${this.value}`)
+          .then(res => res.json())
+          .then(res => {
+            // Filtrar resultados sin tildes
+            const resultadosFiltrados = res.data.filter(anime => 
+              normalizarTexto(anime.title).includes(queryNormalizada)
+            );
+            mostrarResultados(resultadosFiltrados);
+          });
+      }, 300); // 300ms de retraso para evitar muchas solicitudes
+    });
+
+    // Función de búsqueda manual (por si acaso)
+    function buscarAnime() {
+      const query = document.getElementById('busqueda').value;
+      if (!query) return;
+      fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${query}`)
+        .then(res => res.json())
+        .then(res => mostrarResultados(res.data));
+    }
+
+    // Mostrar resultados (últimos o búsqueda)
+    function mostrarResultados(data) {
+      const contenedor = document.getElementById('main');
+      contenedor.innerHTML = "";
+      
+      const resultados = data.data || data;
+      
+      resultados.forEach(anime => {
+        let animeId = '';
+        if (anime.url) {
+          const urlParts = anime.url.split('/');
+          const fullId = urlParts[urlParts.length - 1];
+          animeId = fullId.replace(/-\d+$/, '');
+        } else if (anime.id) {
+          animeId = anime.id.replace(/-\d+$/, '');
+        } else {
+          animeId = extraerIdDeLink(anime.link || '');
+        }
+        
+        const btnHtml = animeId
+          ? `<button onclick="ver('${animeId}')">Ver</button>`
+          : `<button disabled>No disponible</button>`;
+        
+        const div = document.createElement('div');
+        div.className = 'anime-card';
+        div.innerHTML = `
+          <img src="${anime.cover || anime.image || anime.poster || ''}" alt="${anime.title || anime.name}">
+          <strong>${anime.title || anime.name}</strong>
+          ${btnHtml}`;
+        contenedor.appendChild(div);
+      });
+    }
+
+    // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
+    function extraerIdDeLink(link) {
+      if (!link) return '';
+      const partes = link.split('/');
+      return partes[partes.length - 1] || '';
+    }
+
+    function ver(id) {
+      location.href = `anime.html?id=${id}`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Anime Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="anime-details">
+    <div class="anime-container">
+      <img id="portada" alt="Portada del Anime">
+      <p id="descripcion" class="anime-description"></p>
+    </div>
+    <div class="anime-container">
+      <h1 id="titulo" class="anime-title"></h1>
+      <ul id="capitulos" class="episodes-list"></ul>
+    </div>
+  </div>
+<footer>Desarrollado por Santiago Cardona 😼</footer>
+  <script>
+    const id = new URLSearchParams(location.search).get("id");
+
+    fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
+      .then(res => res.json())
+      .then(anime => {
+        document.getElementById("titulo").textContent = anime.title;
+        document.getElementById("portada").src = anime.cover;
+        document.getElementById("descripcion").textContent = anime.synopsis;
+
+        const capContenedor = document.getElementById("capitulos");
+        anime.episodes.forEach(ep => {
+          const li = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.className = "episode-btn";
+          btn.textContent = `Episodio ${ep.number || ep.title || 'desconocido'}`;
+          btn.onclick = () => {
+            fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(ep.url)}`)
+              .then(res => res.json())
+              .then(data => {
+                if (!data.servidores || !Array.isArray(data.servidores) || data.servidores.length === 0) {
+                  alert('No se encontraron links de video.');
+                  return;
+                }
+                const param = btoa(JSON.stringify(data.servidores));
+                window.location.href = `ver.html?embeds=${param}`;
+              })
+              .catch(err => {
+                alert('Error al obtener los links de video');
+                console.error(err);
+              });
+          };
+          li.appendChild(btn);
+          capContenedor.appendChild(li);
+        });
+      });
+  </script>
+</body>
+</html>

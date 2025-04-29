@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reproductor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="reproductor-container">
+    <div class="anime-container">
+      <div id="video"></div>
+      <div id="controles"></div>
+    </div>
+  </div>
+  <footer>Desarrollado por Santiago Cardona 😼</footer>
+  <script>
+    // Obtener links de embed directamente del parámetro de la URL (esperando que sea un JSON codificado en base64)
+    const params = new URLSearchParams(location.search);
+    let embeds = params.get('embeds');
+    if (!embeds) {
+      document.getElementById('video').innerHTML = 'No se encontraron enlaces de video.';
+      throw new Error('Faltan los enlaces de video');
+    }
+    try {
+      embeds = JSON.parse(atob(embeds));
+    } catch (e) {
+      document.getElementById('video').innerHTML = 'Enlaces de video inválidos.';
+      throw new Error('Formato de enlaces inválido');
+    }
+    if (!Array.isArray(embeds) || embeds.length === 0) {
+      document.getElementById('video').innerHTML = 'No se encontraron enlaces de video.';
+      throw new Error('Array de enlaces vacío');
+    }
+
+    // Mostrar el primer embed por defecto
+    mostrarVideo(embeds[0]);
+
+    // Mostrar botones para cambiar de servidor
+    let botones = '';
+    embeds.forEach((srv, idx) => {
+      botones += `<button onclick="mostrarVideo('${srv}')">Servidor ${idx + 1}</button> `;
+    });
+    document.getElementById('controles').innerHTML = botones;
+
+    function mostrarVideo(link) {
+      document.getElementById('video').innerHTML = '';
+      const iframe = document.createElement('iframe');
+      iframe.src = link;
+      iframe.width = '100%';
+      iframe.height = '100%';
+      iframe.frameBorder = '0';
+      iframe.allowFullscreen = true;
+      iframe.scrolling = 'no';
+      document.getElementById('video').appendChild(iframe);
+    }
+  </script>
+</body>
+</html>

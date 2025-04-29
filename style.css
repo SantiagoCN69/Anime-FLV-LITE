@@ -1,0 +1,239 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    width: clamp(0px, 90%, 900px);
+    margin: 0 auto;
+    background-color: #1c1c2b;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    color: #ffffff;
+}
+
+h1 {
+    text-align: center;
+    color: #e76f51;
+    padding: 2rem;
+}
+
+.search-container {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#busqueda {
+    width: clamp(0px, 100%, 700px);
+    padding: 10px;
+    margin: 0 auto;
+    border: 1px solid #e76f51;
+    border-radius: 8px;
+    background-color: #262637;
+    color: #e76f51;
+}
+#busqueda:focus {
+    outline: none;
+    box-shadow: 0px 0px 8px #ff5656;
+}
+#main {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    flex-grow: 1;
+    margin: 1rem auto;
+    width: clamp(0px, 100%, 1000px)
+}
+
+.anime-card {
+    background-color: #262637;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+@media screen and (hover:hover) {
+.anime-card:hover {
+    transform: scale(1.04);
+}
+.anime-card button:hover {
+    transform: scale(1.02);
+}
+}
+.anime-card img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+strong {
+    color: #fff;
+    min-height: 2.5rem;
+    max-height: 2.5rem;
+    display: block;
+    margin: .8rem;
+    overflow: hidden;
+}
+.anime-card button {
+    width: 100%;
+    border-radius: 8px;
+    background-color: #ff5656;
+    color: white;
+    border: none;
+    padding: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+}
+
+.anime-card button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Estilos específicos para anime.html */
+.anime-details {
+    display: flex;
+    align-items: start;
+    gap: 30px;
+    max-width: 1000px;
+    max-height: 700px;
+    margin: 2rem auto;
+    padding: 20px;
+    background-color: #262637;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.anime-container {
+    flex: 1;
+    display: flex;
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+    background-color: #1f1f33;
+    border-radius: 10px;
+}
+.anime-container img {
+    border-radius: 10px;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    height: auto;
+    width: 100%;
+    max-height: 140px;
+}
+.anime-description {
+    line-height: 1.6;
+    color: #ffffff;
+    margin: 15px auto;
+    text-align: justify;
+    height: 22rem;
+    overflow: scroll;
+    scrollbar-width: none;
+}
+.anime-info {
+    flex: 1;
+    background-color: #1f1f33;
+    border-radius: 10px;
+}
+
+.anime-title {
+    font-size: 2em;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    min-height: 140px;
+    max-height: 140px;
+}
+
+
+
+
+
+.episodes-list {
+    margin: 15px auto;
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    height: 22rem;
+    overflow-y: auto;
+    width: 100%;
+}
+
+
+
+
+
+.episode-btn {
+    background-color: #ff5656;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    min-width: 100PX;
+    cursor: pointer;
+    transition:transform 0.2s;
+}
+@media screen and (hover:hover) {
+.episode-btn:hover {
+    transform: scale(1.02);
+}
+}
+
+footer {
+    padding: 10px;
+    color: #555;
+    text-align: right;
+    margin-top: auto;
+    font-size: .8rem;
+}
+@media (max-width: 768px) {
+    .anime-details {
+        flex-direction: column-reverse;
+
+    }
+}
+
+#controles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 0;
+}
+#controles button {
+    background-color: #ff5656;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+@media screen and (hover:hover) {
+    #controles button:hover {
+        transform: scale(1.02);
+    }
+}
+
+.reproductor-container {
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem auto;
+}
+
+.reproductor-container {
+    width: 90%;
+    max-width: 1600px;
+}
+
+.reproductor-container #video iframe {
+    width: 70dvw;
+    height: 70vh;
+    border-radius: 10px;
+}
