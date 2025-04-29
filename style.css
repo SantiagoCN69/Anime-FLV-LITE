@@ -76,8 +76,8 @@ h1 {
 }
 strong {
     color: #fff;
-    min-height: 2.4rem;
-    max-height: 2.4rem;
+    min-height: 2.2rem;
+    max-height: 2.2rem;
     display: block;
     margin: .8rem;
     overflow: hidden;
@@ -231,18 +231,18 @@ footer {
 }
 
 .reproductor-container {
+    padding: 15px;
     flex-direction: column;
     align-items: center;
     margin: 2rem auto;
-}
-
-.reproductor-container {
     width: 90%;
     max-width: 1600px;
+    background-color: #262637;
+    border-radius: 10px;
 }
 
 .reproductor-container #video iframe {
-    width: 70dvw;
+    width: 100%;
     height: 70vh;
     border-radius: 10px;
 }
