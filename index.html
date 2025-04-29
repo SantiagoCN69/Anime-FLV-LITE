@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta name="description" content="AnimeFLV Lite: El repositorio más completo de anime en un solo lugar. Disfruta de miles de series y películas sin anuncios ni molestias.">
+    <meta name="keywords" content="anime, series anime, películas anime, streaming anime, AnimeFLV">
+    <meta name="author" content="Santiago Cardona">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="AnimeFLV Lite - Tu Repositorio de Anime">
+    <meta property="og:description" content="Disfruta de miles de series y películas de anime sin interrupciones.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AnimeFLV Lite">
+    <meta name="twitter:description" content="El mejor repositorio de anime sin anuncios.">
+    <link rel="canonical" href="https://tudominio.com/index.html">
+    <link rel="apple-touch-icon" sizes="256x256" href="icon.png">
+    <link rel="manifest" href="/manifest.json">
     <meta charset="UTF-8">
     <title>AnimeFLV Lite</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,5 +128,18 @@
       location.href = `anime.html?id=${id}`;
     }
   </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado con éxito:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Registro de Service Worker fallido:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
