@@ -52,6 +52,10 @@
       iframe.frameBorder = '0';
       iframe.allowFullscreen = true;
       iframe.scrolling = 'no';
+      
+      // Bloquear anuncios
+      iframe.sandbox = 'allow-scripts allow-same-origin allow-forms';
+      
       document.getElementById('video').appendChild(iframe);
     }
   </script>
