@@ -100,9 +100,6 @@ h1 {
     display: none;
 }
 @media screen and (max-width:600px){
-    header {
-        gap: 0rem;
-    }
 
 #btn-login {
     background-color: transparent;
@@ -129,9 +126,7 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
         max-width: 0;
         opacity: 0;
     }
-.search-active {
-    gap: 0;
-}
+
     .search-active #busqueda {
         transform: scale(1);
         width: 100%;
