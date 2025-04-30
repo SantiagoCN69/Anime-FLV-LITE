@@ -10,6 +10,7 @@
 </head>
 <body>
   <a href="" id="btn-volver-anime" class="btn-volver">&#10094;</a>
+  <button id="btn-bloquear-anuncios" class="btn-anuncios" title="AdBlock: OFF">AdBlock: OFF</button>
 
   <div class="reproductor-container">
     <div id="video"></div>
@@ -24,6 +25,22 @@
     // Configurar botón de volver
     const btnVolver = document.getElementById('btn-volver-anime');
     btnVolver.href = `anime.html?id=${animeId}`;
+
+    // Configurar botón de AdBlock
+    let bloquearAnuncios = false;
+    const btnBloquearAnuncios = document.getElementById('btn-bloquear-anuncios');
+    btnBloquearAnuncios.addEventListener('click', () => {
+      bloquearAnuncios = !bloquearAnuncios;
+      btnBloquearAnuncios.textContent = `AdBlock: ${bloquearAnuncios ? 'ON' : 'OFF'}`;
+      // Si hay un iframe actual, volver a cargarlo con la configuración actual
+      const videoDiv = document.getElementById('video');
+      const currentIframe = videoDiv.querySelector('iframe');
+      if (currentIframe) {
+        const currentSrc = currentIframe.src;
+        videoDiv.innerHTML = '';
+        mostrarVideo(currentSrc);
+      }
+    });
 
     if (!embeds) {
       document.getElementById('video').innerHTML = 'No se encontraron enlaces de video.';
@@ -40,17 +57,32 @@
       throw new Error('Array de enlaces vacío');
     }
 
-    // Mostrar el primer embed por defecto
-    mostrarVideo(embeds[0]);
-
+    // Mostrar el tercer embed por defecto (índice 2)
     // Mostrar botones para cambiar de servidor
     let botones = '';
     embeds.forEach((srv, idx) => {
-      botones += `<button onclick="mostrarVideo('${srv}')">Servidor ${idx + 1}</button> `;
+      botones += `<button onclick="mostrarVideo('${srv}', this)">Servidor ${idx + 1}</button> `;
     });
     document.getElementById('controles').innerHTML = botones;
 
-    function mostrarVideo(link) {
+    // Seleccionar y marcar el tercer botón
+    const botonesSerie = document.querySelectorAll('#controles button');
+    const tercerBoton = botonesSerie[2];
+    tercerBoton.classList.add('servidor-activo');
+
+    // Mostrar el tercer embed
+    mostrarVideo(embeds[2], tercerBoton);
+
+    function mostrarVideo(link, botonSeleccionado) {
+      // Quitar clase activa de todos los botones
+      const todosLosBotones = document.querySelectorAll('#controles button');
+      todosLosBotones.forEach(btn => btn.classList.remove('servidor-activo'));
+      
+      // Agregar clase activa al botón seleccionado
+      if (botonSeleccionado) {
+        botonSeleccionado.classList.add('servidor-activo');
+      }
+
       document.getElementById('video').innerHTML = '';
       const iframe = document.createElement('iframe');
       iframe.src = link;
@@ -60,8 +92,14 @@
       iframe.allowFullscreen = true;
       iframe.scrolling = 'no';
       
-      // Bloquear anuncios
-      iframe.sandbox = 'allow-scripts allow-same-origin allow-forms';
+      // Configurar sandbox según el estado de bloqueo de anuncios
+      if (!bloquearAnuncios) {
+        // Cuando AdBlock está OFF, eliminar todas las restricciones
+        iframe.removeAttribute('sandbox');
+      } else {
+        // Cuando AdBlock está ON, mantener restricciones
+        iframe.sandbox = 'allow-scripts allow-same-origin allow-forms';
+      }
       
       document.getElementById('video').appendChild(iframe);
     }

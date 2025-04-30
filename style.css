@@ -169,6 +169,7 @@ strong {
     height: 22rem;
     overflow: scroll;
     scrollbar-width: none;
+    scrollbar-color: transparent transparent;
 }
 .anime-info {
     flex: 1;
@@ -208,7 +209,6 @@ strong {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    justify-content: center;
     justify-items: center;
     align-items: center;
     width: 100%;
@@ -340,28 +340,64 @@ footer {
 }
 
 .btn-volver {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: rgba(255, 86, 86, 0.7);
-    color: #262637;
-    text-decoration: none;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 2rem;
-    transition: all 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    padding-right: 4px;
-    padding-bottom: 4px; /* Compensar desplazamiento visual */
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(255, 86, 86, 0.7);
+  color: #262637;
+  text-decoration: none;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 2rem;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding-right: 4px;
+  padding-bottom: 4px; /* Compensar desplazamiento visual */
 }
 
 .btn-volver:hover {
-    background-color: rgba(255, 86, 86, 1);
+  background-color: rgba(255, 86, 86, 1);
+  transform: scale(1.1);
+  box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+}
+.btn-anuncios{
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(255, 86, 86, 0.7);
+    color: #262637;
+    width: 115px;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+    border: none;
+    
+}
+
+.btn-anuncios:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+}
+
+.btn-anuncios[title]:hover::after {
+    content: "Si necesitas un servidor que no funcione debido al AdBlock, puedes desactivarlo si soportas los anuncios";
+    position: absolute;
+    top: 100%;
+    left: 25%;
+    transform: translateX(-50%);
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: wrap;
+    width: 150px;
+    z-index: 100;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    text-align: center;
 }
