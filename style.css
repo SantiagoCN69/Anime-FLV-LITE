@@ -110,6 +110,7 @@ strong {
     text-overflow: ellipsis;
     margin: .8rem;
     line-height: 1.05rem;
+    min-height: 2.1rem;
     max-height: 2.1rem;
 }
 .anime-card button {
