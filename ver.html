@@ -11,6 +11,7 @@
 <body>
   <a href="" id="btn-volver-anime" class="btn-volver">&#10094;</a>
   <button id="btn-bloquear-anuncios" class="btn-anuncios" title="AdBlock: OFF">AdBlock: OFF</button>
+  <a href="" id="btn-siguiente-capitulo" class="btn-siguiente">&#10095;</a>
 
   <div class="reproductor-container">
     <div id="video"></div>
@@ -21,14 +22,26 @@
     const params = new URLSearchParams(location.search);
     let embeds = params.get('embeds');
     const animeId = params.get('animeId') || '';
+    const episodioActual = parseInt(params.get('episodio') || '1');
+    const siguienteEpisodio = episodioActual + 1;
     
     // Configurar botón de volver
     const btnVolver = document.getElementById('btn-volver-anime');
     btnVolver.href = `anime.html?id=${animeId}`;
 
+    // Configurar botón de siguiente capítulo
+    const btnSiguienteCapitulo = document.getElementById('btn-siguiente-capitulo');
+    btnSiguienteCapitulo.href = `ver.html?id=${animeId}&episodio=${siguienteEpisodio}&embeds=${embeds}`;
+    
+    // Ocultar botón si no hay siguiente capítulo (esto se puede mejorar después)
+    if (!embeds) {
+      btnSiguienteCapitulo.style.display = 'none';
+    }
+
     // Configurar botón de AdBlock
-    let bloquearAnuncios = false;
+    let bloquearAnuncios = true;
     const btnBloquearAnuncios = document.getElementById('btn-bloquear-anuncios');
+    btnBloquearAnuncios.textContent = 'AdBlock: ON';
     btnBloquearAnuncios.addEventListener('click', () => {
       bloquearAnuncios = !bloquearAnuncios;
       btnBloquearAnuncios.textContent = `AdBlock: ${bloquearAnuncios ? 'ON' : 'OFF'}`;
@@ -37,8 +50,12 @@
       const currentIframe = videoDiv.querySelector('iframe');
       if (currentIframe) {
         const currentSrc = currentIframe.src;
+        // Encontrar el botón actualmente seleccionado
+        const botonesServidor = document.querySelectorAll('#controles button');
+        const botonActivo = Array.from(botonesServidor).find(btn => btn.classList.contains('servidor-activo'));
+        
         videoDiv.innerHTML = '';
-        mostrarVideo(currentSrc);
+        mostrarVideo(currentSrc, botonActivo);
       }
     });
 
@@ -102,6 +119,31 @@
       }
       
       document.getElementById('video').appendChild(iframe);
+      
+      // Agregar evento de doble clic para pantalla completa
+      iframe.addEventListener('dblclick', () => {
+        if (!document.fullscreenElement) {
+          if (iframe.requestFullscreen) {
+            iframe.requestFullscreen();
+          } else if (iframe.mozRequestFullScreen) { // Firefox
+            iframe.mozRequestFullScreen();
+          } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            iframe.webkitRequestFullscreen();
+          } else if (iframe.msRequestFullscreen) { // Internet Explorer/Edge
+            iframe.msRequestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { // Internet Explorer/Edge
+            document.msExitFullscreen();
+          }
+        }
+      });
     }
   </script>
 </body>
