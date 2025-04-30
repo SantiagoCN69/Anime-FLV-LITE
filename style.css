@@ -5,7 +5,7 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0 auto;
     background-color: #1c1c2b;
     display: flex;
@@ -14,35 +14,36 @@ body {
     color: #ffffff;
 }
 .aurora {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: absolute;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at 80% 30%, #220e0eb4, transparent 60%), radial-gradient(circle at 20% 70%, #142033ab, transparent 60%);
-    z-index: -1;
-    filter: blur(100px);
-    animation: aurora 8s infinite ease-in-out;
-}
-@keyframes aurora {
+    background: radial-gradient(circle at 50% 30%, rgba(0, 255, 255, 0.1), transparent 60%),
+                radial-gradient(circle at 30% 70%, rgba(255, 0, 255, 0.1), transparent 60%);
+    animation: aurora 18s infinite ease-in-out;
+    filter: blur(60px);
+  }
+  
+
+  @keyframes aurora {
     0% {
-        transform: translate(-20%, -10%) rotate(0deg);
+      transform: translate(-20%, -10%) rotate(0deg);
     }
     50% {
-        transform: translate(50%, 50%) rotate(180deg);
+      transform: translate(0%, 0%) rotate(180deg);
     }
     100% {
-        transform: translate(-20%, -10%) rotate(360deg);
+      transform: translate(-20%, -10%) rotate(360deg);
     }
-}
+  }
 header {
     display: flex;
     align-items: center;
-    padding: 2rem 0;
+    padding: 3.5rem 0;
     width: 95%;
     margin: 0 auto;
-    height: 20vh;
-    height: 20dvh;
+    height:5.5rem;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 h1 {
     flex:1;
@@ -177,11 +178,66 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
-    flex-grow: 1;
-    margin: 1rem auto;
-    width: clamp(0px, 95%, 1000px)
+    margin: 0 auto;
+    width: clamp(0px, 95%, 1000px);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
 }
+.anime-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+  
+  @media screen and (hover: hover) {
+    .anime-card:hover {
+      transform: scale(1.04);
+    }
+  }
+  .anime-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: inherit;
+    filter: blur(12px) brightness(0.3);
+    z-index: 0;
+    transform: scale(1.3);
+  }
+  
+  .anime-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    background-color: #262637;
+    transition: opacity 0.3s ease;
+  }
+  .anime-card img,
+.anime-card strong {
+  position: relative;
+  z-index: 1;
+}
+  .anime-card strong {
+    color: #fff;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 0.8rem;
+    line-height: 1.05rem;
+    height: 2.2rem;
+    display: block;
+  }
+  
 
+/* Estilos específicos para anime.html */
 .loading {
     text-align: center;
     color: #e76f51;
@@ -194,76 +250,6 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
     50% { opacity: 1; }
     100% { opacity: 0.6; }
 }
-
-.anime-cover {
-    width: 300px;
-    height: 450px;
-    object-fit: cover;
-    background-color: #262637;
-    transition: opacity 0.3s ease;
-}
-
-.anime-card {
-    background-color: #262637;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-    padding: 10px;
-    text-align: center;
-    transition: transform 0.3s;
-}
-@media screen and (hover:hover) {
-.anime-card:hover {
-    transform: scale(1.04);
-}
-.anime-card button:hover {
-    transform: scale(1.02);
-}
-}
-.anime-card img {
-    max-width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-.anime-card iframe {
-    max-width: 100%;
-    width: 100%;
-}
-strong {
-    color: #fff;
-    display: -webkit-box;
-    display: -moz-box;
-    display: box;
-    -webkit-line-clamp: 2;
-    -moz-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    -moz-box-orient: vertical;
-    box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: .8rem;
-    line-height: 1.05rem;
-    min-height: 2.1rem;
-    max-height: 2.1rem;
-}
-.anime-card button {
-    width: 100%;
-    border-radius: 8px;
-    background-color: #ff5656;
-    color: white;
-    border: none;
-    padding: 10px;
-    transition: background-color 0.3s, transform 0.2s;
-    cursor: pointer;
-}
-
-.anime-card button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-/* Estilos específicos para anime.html */
 .anime-details {
     display: flex;
     align-items: start;

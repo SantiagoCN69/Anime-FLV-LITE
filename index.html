@@ -36,76 +36,71 @@
   </footer>
   <script>
     // Cargar últimos capítulos al iniciar
-    fetch('https://backend-animeflv-lite.onrender.com/api/latest')
-      .then(res => res.json())
-      .then(mostrarResultados);
-
-    // Función para normalizar texto (remover tildes y convertir a minúsculas)
+    cargarUltimosCapitulos();
+  
+    function cargarUltimosCapitulos() {
+      fetch('https://backend-animeflv-lite.onrender.com/api/latest')
+        .then(res => res.json())
+        .then(mostrarResultados)
+        .catch(err => console.error("Error al cargar capítulos:", err));
+    }
+  
+    // Función para normalizar texto (remover tildes y pasar a minúsculas)
     function normalizarTexto(texto) {
       return texto
         .toLowerCase()
         .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '');
+        .replace(/[\u0300-\u036f]/g, '');
     }
-
+  
     // Toggle de búsqueda para móviles
-    document.getElementById('btn-search').addEventListener('click', function() {
+    document.getElementById('btn-search').addEventListener('click', function () {
       document.querySelector('header').classList.add('search-active');
       document.getElementById('busqueda').focus();
     });
-
+  
     // Cerrar búsqueda
-    document.getElementById('btn-close-search').addEventListener('click', function() {
+    document.getElementById('btn-close-search').addEventListener('click', function () {
       document.querySelector('header').classList.remove('search-active');
+      document.getElementById('busqueda').value = "";
+      cargarUltimosCapitulos();
     });
-
+  
     // Función de búsqueda en tiempo real
     const busquedaInput = document.getElementById('busqueda');
     let busquedaTimer;
-
-    busquedaInput.addEventListener('input', function() {
-      // Limpiar el timer anterior
+  
+    busquedaInput.addEventListener('input', function () {
       clearTimeout(busquedaTimer);
-
-      // Si el input está vacío, mostrar últimos capítulos
-      if (!this.value) {
-        fetch('https://backend-animeflv-lite.onrender.com/api/latest')
-          .then(res => res.json())
-          .then(mostrarResultados);
+  
+      const valor = this.value.trim();
+  
+      if (!valor) {
+        cargarUltimosCapitulos();
         return;
       }
-
-      // Nuevo timer para búsqueda en tiempo real
+  
       busquedaTimer = setTimeout(() => {
-        const queryNormalizada = normalizarTexto(this.value);
-        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${this.value}`)
+        const queryNormalizada = normalizarTexto(valor);
+        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${valor}`)
           .then(res => res.json())
           .then(res => {
-            // Filtrar resultados sin tildes
-            const resultadosFiltrados = res.data.filter(anime => 
+            const resultadosFiltrados = res.data.filter(anime =>
               normalizarTexto(anime.title).includes(queryNormalizada)
             );
             mostrarResultados(resultadosFiltrados);
-          });
-      }, 300); // 300ms de retraso para evitar muchas solicitudes
+          })
+          .catch(err => console.error("Error al buscar anime:", err));
+      }, 300);
     });
-
-    // Función de búsqueda manual (por si acaso)
-    function buscarAnime() {
-      const query = document.getElementById('busqueda').value;
-      if (!query) return;
-      fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${query}`)
-        .then(res => res.json())
-        .then(res => mostrarResultados(res.data));
-    }
-
+  
     // Mostrar resultados (últimos o búsqueda)
     function mostrarResultados(data) {
       const contenedor = document.getElementById('main');
       contenedor.innerHTML = "";
-      
+  
       const resultados = data.data || data;
-      
+  
       resultados.forEach(anime => {
         let animeId = '';
         if (anime.url) {
@@ -117,28 +112,27 @@
         } else {
           animeId = extraerIdDeLink(anime.link || '');
         }
-        
-        const btnHtml = animeId
-          ? `<button onclick="ver('${animeId}')">Ver</button>`
-          : `<button disabled>No disponible</button>`;
-        
+  
         const div = document.createElement('div');
         div.className = 'anime-card';
+        div.style.backgroundImage = `url(${anime.cover || anime.image || anime.poster || ''})`;
         div.innerHTML = `
           <img src="${anime.cover || anime.image || anime.poster || ''}" alt="${anime.title || anime.name}">
           <strong>${anime.title || anime.name}</strong>
-          ${btnHtml}`;
+        `;
+        div.addEventListener('click', () => ver(animeId));
         contenedor.appendChild(div);
       });
     }
-
+  
     // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
     function extraerIdDeLink(link) {
       if (!link) return '';
       const partes = link.split('/');
       return partes[partes.length - 1] || '';
     }
-
+  
+    // Redirige a la página de anime
     function ver(id) {
       location.href = `anime.html?id=${id}`;
     }
