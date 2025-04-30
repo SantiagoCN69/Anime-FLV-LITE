@@ -335,7 +335,7 @@ footer {
     position: relative;
 }
 
-.reproductor-container::before {
+.reproductor-container.censure::before {
     content: '';
     position: absolute;
     top: 0;
@@ -367,7 +367,8 @@ footer {
 
 .btn-volver,
 .btn-siguiente,
-.btn-anuncios {
+.btn-anuncios,
+.btn-censura {
   position: fixed;
   background-color: rgba(255, 86, 86, 0.7);
   color: #262637;
@@ -376,13 +377,14 @@ footer {
   justify-content: center;
   text-decoration: none;
   border: none;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
   cursor: pointer;
 }
 
 .btn-volver:hover,
 .btn-siguiente:hover,
-.btn-anuncios:hover {
+.btn-anuncios:hover,
+.btn-censura:hover {
   background-color: rgba(255, 86, 86, 1);
   transform: scale(1.08);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
@@ -412,22 +414,30 @@ footer {
   height: 50px;
   border-radius: 10px;
 }
+.btn-censura {
+  top: 90px;
+  right: 20px;
+  width: 115px;
+  height: 50px;
+  border-radius: 10px;
+}
 
 
-.btn-anuncios[title]:hover::after {
+/* .btn-anuncios[title]:hover::after {
     content: "Si necesitas un servidor que no funcione debido al AdBlock, puedes desactivarlo si soportas los anuncios";
     position: absolute;
-    top: 100%;
-    left: 25%;
+    top: -10px;
+    left: -50%;
     transform: translateX(-50%);
-    background-color: rgba(0,0,0,0.8);
+    background-color: #000000f6;
     color: white;
     padding: 5px 10px;
     border-radius: 4px;
     white-space: wrap;
     width: 150px;
-    z-index: 100;
+    z-index: 1000;
     margin-top: 10px;
+    opacity: 1;
     font-size: 0.8rem;
     text-align: center;
-}
+} */
