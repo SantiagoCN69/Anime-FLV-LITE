@@ -21,11 +21,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>AnimeFLV Lite</h1>
-
-  <div class="search-container">
+  <div class="aurora"></div>
+  <header>
+    <h1>AnimeFLV Lite</h1>
     <input type="text" id="busqueda" placeholder="Buscar anime...">
-  </div>
+    <button id="btn-search" title="Buscar anime"></button>
+    <button id="btn-login" title="Iniciar sesión"></button>
+    <button id="btn-close-search" title="Cerrar búsqueda"></button>
+  </header>
 
   <div id="main"></div>
   <footer>
@@ -44,6 +47,17 @@
         .normalize('NFD')
         .replace(/[̀-ͯ]/g, '');
     }
+
+    // Toggle de búsqueda para móviles
+    document.getElementById('btn-search').addEventListener('click', function() {
+      document.querySelector('header').classList.add('search-active');
+      document.getElementById('busqueda').focus();
+    });
+
+    // Cerrar búsqueda
+    document.getElementById('btn-close-search').addEventListener('click', function() {
+      document.querySelector('header').classList.remove('search-active');
+    });
 
     // Función de búsqueda en tiempo real
     const busquedaInput = document.getElementById('busqueda');

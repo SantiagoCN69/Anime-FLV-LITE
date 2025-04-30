@@ -6,7 +6,6 @@
 
 body {
     font-family: Arial, sans-serif;
-    width: clamp(0px, 90%, 900px);
     margin: 0 auto;
     background-color: #1c1c2b;
     display: flex;
@@ -14,38 +13,178 @@ body {
     min-height: 100dvh;
     color: #ffffff;
 }
-
-h1 {
-    text-align: center;
-    color: #e76f51;
-    padding: 2rem;
+.aurora {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 80% 30%, #220e0eb4, transparent 60%), radial-gradient(circle at 20% 70%, #142033ab, transparent 60%);
+    z-index: -1;
+    filter: blur(100px);
+    animation: aurora 8s infinite ease-in-out;
 }
-
-.search-container {
+@keyframes aurora {
+    0% {
+        transform: translate(-20%, -10%) rotate(0deg);
+    }
+    50% {
+        transform: translate(50%, 50%) rotate(180deg);
+    }
+    100% {
+        transform: translate(-20%, -10%) rotate(360deg);
+    }
+}
+header {
     display: flex;
-    margin-bottom: 20px;
+    align-items: center;
+    padding: 2rem 0;
+    width: 95%;
+    margin: 0 auto;
+    height: 20vh;
+    height: 20dvh;
 }
+h1 {
+    flex:1;
+    color: #e76f51;
+    text-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+}
+
+
 
 #busqueda {
-    width: clamp(0px, 100%, 700px);
-    padding: 10px;
-    margin: 0 auto;
+    padding: 12px;
     border: 1px solid #e76f51;
     border-radius: 8px;
     background-color: #262637;
-    color: #e76f51;
+    color: #ffffff;
+    font-size: 1.1rem;
 }
 #busqueda:focus {
     outline: none;
     box-shadow: 0px 0px 8px #ff5656;
 }
+#btn-login {
+    margin-left: 15px;
+    padding: 8px 15px;
+    background-color: #e76f51;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media screen and (hover:hover) {
+#btn-login:hover {
+    transform: scale(1.02);
+}
+}
+
+#btn-login::before {
+    content: url('icons/circle-user-regular.svg');
+    width: 30px;
+    height: 30px;
+    filter: invert(100%);
+}
+#btn-login::after {
+    content: "Login";
+    margin-left: 10px;
+}
+#btn-search, #btn-close-search {
+    display: none;
+}
+@media screen and (max-width:600px){
+    header {
+        gap: 0rem;
+    }
+
+#btn-login {
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+}
+#btn-login::before {
+    margin-left: 20px;
+}
+#btn-login::after {
+    content: "";
+    margin: 0;
+}
+
+h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
+    transition: transform .2s, max-width .2s, opacity .1s;
+}
+    .search-active h1,
+    .search-active #btn-login,
+    .search-active #btn-search,
+    #busqueda ,
+    #btn-close-search {
+        transform: scale(0);
+        max-width: 0;
+        opacity: 0;
+    }
+.search-active {
+    gap: 0;
+}
+    .search-active #busqueda {
+        transform: scale(1);
+        width: 100%;
+        max-width: 100%;
+        opacity: 1;
+    }
+
+    #btn-close-search {
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        margin-left: 15px;
+    }
+
+    .search-active #btn-close-search {
+        transform: scale(1);
+        max-width: 100%;
+        opacity: 1;
+    }
+
+    #btn-close-search::before {
+        content: '✕';
+        color: #e76f51;
+        font-size: 2rem;
+        padding-bottom: 4px;
+    }
+
+    #btn-search {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    #btn-search::before {
+        content: url('icons/magnifying-glass-solid.svg');
+        width: 24px;
+        height: 24px;
+        filter: invert(70%);
+    }
+}
+
+      
 #main {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
     flex-grow: 1;
     margin: 1rem auto;
-    width: clamp(0px, 100%, 1000px)
+    width: clamp(0px, 95%, 1000px)
 }
 
 .loading {
@@ -366,60 +505,105 @@ footer {
 
 
 .btn-volver,
+.btn-cap,
 .btn-siguiente,
+.btn-anterior,
 .btn-anuncios,
 .btn-censura {
   position: fixed;
-  background-color: rgba(255, 86, 86, 0.7);
-  color: #262637;
+  background-color: rgba(30, 30, 30, 0.8);
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   border: none;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease, background-color 0.3s ease;
   cursor: pointer;
+  backdrop-filter: blur(4px);
 }
 
 .btn-volver:hover,
+.btn-cap:hover,
 .btn-siguiente:hover,
+.btn-anterior:hover,
 .btn-anuncios:hover,
 .btn-censura:hover {
-  background-color: rgba(255, 86, 86, 1);
-  transform: scale(1.08);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  background-color: rgba(50, 50, 50, 1);
+  transform: scale(1.05);
 }
-.btn-volver, .btn-siguiente {
+
+.btn-siguiente.desactivado,
+.btn-anterior.desactivado {
+  background-color: rgba(100, 100, 100, 0.3);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-volver {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   font-size: 1.5rem;
-}
-.btn-volver {
   top: 20px;
   left: 20px;
-  padding: 0 3px 3px 0;
+}
+
+.btn-cap {
+  top: 20px;
+  left: 90px;
+  width: auto;
+  height: 50px;
+  padding: 0 15px;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+.btn-siguiente,
+.btn-anterior {
+  width: 140px;
+  height: 50px;
+  border-radius: 12px;
+  font-size: 1rem;
 }
 
 .btn-siguiente {
   bottom: 20px;
-  right: 20px;
-  padding: 3px 0 3px 0;
+  right: 130px;
+}
+
+.btn-anterior {
+  bottom: 20px;
+  left: 130px;
+}
+
+.btn-anuncios,
+.btn-censura {
+  width: 115px;
+  height: 50px;
+  border-radius: 10px;
+  font-size: 0.9rem;
 }
 
 .btn-anuncios {
   top: 20px;
   right: 20px;
-  width: 115px;
-  height: 50px;
-  border-radius: 10px;
 }
+
 .btn-censura {
   top: 90px;
   right: 20px;
-  width: 115px;
-  height: 50px;
-  border-radius: 10px;
+}
+
+.btn-anuncios.activo,
+.btn-censura.activo {
+  background-color: #27cf6d !important;
+  color: #fff !important;
 }
 
 
