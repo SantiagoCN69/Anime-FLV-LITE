@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <a href="" id="btn-volver-anime" class="btn-volver">&#10094;</a>
+
   <div class="reproductor-container">
     <div id="video"></div>
     <div id="controles"></div>
@@ -18,6 +20,12 @@
     // Obtener links de embed directamente del parámetro de la URL (esperando que sea un JSON codificado en base64)
     const params = new URLSearchParams(location.search);
     let embeds = params.get('embeds');
+    const animeId = params.get('animeId') || '';
+    
+    // Configurar botón de volver
+    const btnVolver = document.getElementById('btn-volver-anime');
+    btnVolver.href = `anime.html?id=${animeId}`;
+
     if (!embeds) {
       document.getElementById('video').innerHTML = 'No se encontraron enlaces de video.';
       throw new Error('Faltan los enlaces de video');

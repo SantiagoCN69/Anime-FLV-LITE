@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="anime-details">
+  <a href="index.html" class="btn-volver">&#10094;</a>
+
+<div class="anime-details">
     <div class="anime-container">
       <img id="portada" alt="Portada del Anime" src="placeholder.png" class="anime-cover">
       <p id="descripcion" class="anime-description">Cargando información del anime...</p>
@@ -96,7 +98,7 @@
                   return;
                 }
                 const param = btoa(JSON.stringify(data.servidores));
-                window.location.href = `ver.html?embeds=${param}`;
+                window.location.href = `ver.html?embeds=${param}&animeId=${id}`;
               })
               .catch(err => {
                 alert('Error al obtener los links de video');
