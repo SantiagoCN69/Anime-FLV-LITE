@@ -31,12 +31,22 @@
 
     // Configurar botón de siguiente capítulo
     const btnSiguienteCapitulo = document.getElementById('btn-siguiente-capitulo');
-    btnSiguienteCapitulo.href = `ver.html?id=${animeId}&episodio=${siguienteEpisodio}&embeds=${embeds}`;
-    
-    // Ocultar botón si no hay siguiente capítulo (esto se puede mejorar después)
-    if (!embeds) {
-      btnSiguienteCapitulo.style.display = 'none';
-    }
+
+    // Buscar siguiente capítulo desde el backend
+    fetch(`http://localhost:3000/next-episode?animeId=${animeId}&currentEpisode=${episodioActual}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.nextEpisode) {
+          btnSiguienteCapitulo.href = `ver.html?id=${animeId}&episodio=${data.nextEpisode.id}&embeds=${btoa(JSON.stringify([data.nextEpisode.url]))}`;
+          btnSiguienteCapitulo.style.display = 'flex';
+        } else {
+          btnSiguienteCapitulo.style.display = 'none';
+        }
+      })
+      .catch(error => {
+        console.error('Error buscando siguiente capítulo:', error);
+        btnSiguienteCapitulo.style.display = 'none';
+      });
 
     // Configurar botón de AdBlock
     let bloquearAnuncios = true;
