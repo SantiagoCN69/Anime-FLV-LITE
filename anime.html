@@ -4,22 +4,27 @@
     <meta charset="UTF-8">
     <title>Anime Details</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" sizes="256x256" href="icon.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="anime-details">
     <div class="anime-container">
-      <img id="portada" alt="Portada del Anime">
-      <p id="descripcion" class="anime-description"></p>
+      <img id="portada" alt="Portada del Anime" src="placeholder.png" class="anime-cover">
+      <p id="descripcion" class="anime-description">Cargando información del anime...</p>
     </div>
     <div class="anime-container">
       <h1 id="titulo" class="anime-title"></h1>
+      <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo...">
       <ul id="capitulos" class="episodes-list"></ul>
     </div>
   </div>
-<footer>Desarrollado por Santiago Cardona 😼</footer>
   <script>
     const id = new URLSearchParams(location.search).get("id");
+
+    // Mostrar estado de carga
+    document.getElementById('descripcion').innerHTML = '<div class="loading">Cargando información...</div>';
 
     fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       .then(res => res.json())
@@ -29,6 +34,54 @@
         document.getElementById("descripcion").textContent = anime.synopsis;
 
         const capContenedor = document.getElementById("capitulos");
+        const filtroCapitulo = document.getElementById("filtro-capitulo");
+
+        // Desplazamiento entre columnas
+        capContenedor.addEventListener('wheel', function(e) {
+          e.preventDefault(); // Prevenir scroll vertical
+          
+          // Calcular el ancho de una columna
+          const columnas = this.querySelectorAll('li');
+          if (columnas.length === 0) return;
+          
+          const anchoColumna = columnas[0].offsetWidth;
+          const direccion = e.deltaY > 0 ? 1 : -1;
+          
+          // Encontrar la columna actual
+          const scrollActual = this.scrollLeft;
+          const columnaActual = Math.floor(scrollActual / anchoColumna);
+          
+          // Calcular nuevo scroll
+          const nuevoScroll = (columnaActual + direccion) * anchoColumna;
+          
+          // Asegurar que no se salga de los límites
+          const scrollMaximo = (columnas.length - 1) * anchoColumna;
+          this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
+        }, { passive: false });
+
+        filtroCapitulo.addEventListener('input', function() {
+          const filtro = this.value.toLowerCase();
+          const botones = capContenedor.querySelectorAll('.episode-btn');
+          let primerCoincidencia = null;
+
+          botones.forEach((btn, index) => {
+            const texto = btn.textContent.toLowerCase();
+            const coincide = texto.includes(filtro);
+
+            if (coincide && !primerCoincidencia) {
+              primerCoincidencia = index;
+            }
+          });
+
+          if (primerCoincidencia !== null) {
+            const elementoCoincidencia = botones[primerCoincidencia].parentElement;
+            elementoCoincidencia.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
+        });
+
         anime.episodes.forEach(ep => {
           const li = document.createElement("li");
           const btn = document.createElement("button");

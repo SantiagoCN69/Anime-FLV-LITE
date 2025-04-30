@@ -48,6 +48,27 @@ h1 {
     width: clamp(0px, 100%, 1000px)
 }
 
+.loading {
+    text-align: center;
+    color: #e76f51;
+    padding: 1rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.anime-cover {
+    width: 300px;
+    height: 450px;
+    object-fit: cover;
+    background-color: #262637;
+    transition: opacity 0.3s ease;
+}
+
 .anime-card {
     background-color: #262637;
     border-radius: 8px;
@@ -76,11 +97,20 @@ h1 {
 }
 strong {
     color: #fff;
-    min-height: 2.2rem;
-    max-height: 2.2rem;
-    display: block;
-    margin: .8rem;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-line-clamp: 2;
+    -moz-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    margin: .8rem;
+    line-height: 1.05rem;
+    max-height: 2.1rem;
 }
 .anime-card button {
     width: 100%;
@@ -103,10 +133,10 @@ strong {
     display: flex;
     align-items: start;
     gap: 30px;
-    max-width: 1000px;
-    max-height: 700px;
-    margin: 2rem auto;
+    width: 1000px;
+    margin: 1rem auto;
     padding: 20px;
+    height: calc(100dvh - 2rem);
     background-color: #262637;
     border-radius: 10px;
     overflow: hidden;
@@ -120,6 +150,8 @@ strong {
     align-items: center;
     background-color: #1f1f33;
     border-radius: 10px;
+    height: 100%;
+    overflow: hidden;
 }
 .anime-container img {
     border-radius: 10px;
@@ -127,7 +159,7 @@ strong {
     object-fit: cover;
     height: auto;
     width: 100%;
-    max-height: 140px;
+    max-height: 220px;
 }
 .anime-description {
     line-height: 1.6;
@@ -155,35 +187,72 @@ strong {
 
 
 
-
-
+#filtro-capitulo {
+    width: 100%;
+    padding: 7px;
+    margin: 0 auto 2rem;
+    border: 2px solid #fa7171;
+    border-radius: 8px;
+    background-color: #262637;
+    color: #ffffff;
+    font-size: 1.2rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+#filtro-capitulo:focus {
+    outline: none;
+    box-shadow: 0px 0px 8px #ff5656;
+}
 .episodes-list {
     margin: 15px auto;
     list-style-type: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
     justify-items: center;
     align-items: center;
-    gap: 15px;
-    height: 22rem;
-    overflow-y: auto;
     width: 100%;
+    max-height: 350px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
 }
 
+/* Para navegadores WebKit (Chrome, Safari) */
+.episodes-list::-webkit-scrollbar {
+    width: 10px;
+    height: 8px;
+}
+
+.episodes-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.episodes-list::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 86, 86, 0.5);
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.episodes-list li {
+    width: 100%;
+}
 .episode-btn {
-    background-color: #ff5656;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
-    min-width: 100PX;
-    cursor: pointer;
-    transition:transform 0.2s;
+  background-color: transparent;
+  border:none;
+  border-top: 1px solid #fa7171;
+  color: #ffffff;
+  font-size: 1.2rem;
+  padding: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+  width: 100%;
+  
 }
 @media screen and (hover:hover) {
 .episode-btn:hover {
-    transform: scale(1.02);
+    color: #ff5656;
 }
 }
 
