@@ -7,6 +7,14 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
   .then(anime => {
     document.getElementById("titulo").textContent = anime.title;
     document.getElementById("portada").src = anime.cover;
+    
+    // Agregar banner si está disponible
+    const banner = document.querySelector('.anime-details');
+    if (anime.banner) {
+      banner.style.backgroundImage = `url(${anime.banner})`;
+      banner.style.backgroundSize = 'cover';
+      banner.style.backgroundPosition = 'center';
+    }
     document.getElementById("descripcion").textContent = anime.synopsis;
 
     const capContenedor = document.getElementById("capitulos");
