@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anime-flv-lite-v9';
+const CACHE_NAME = 'anime-flv-lite-v11';
 const urlsToCache = [
     '/',
     '/index.html',

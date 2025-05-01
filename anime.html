@@ -4,102 +4,45 @@
   <meta charset="UTF-8" />
   <title>Anime Details</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="icon.png" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="style_anime.css" />
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <link rel="stylesheet" href="styles/style.css" />
+  <link rel="stylesheet" href="styles/style_anime.css" />
+  <script src="scripts/header.js" defer></script>
 </head>
 <body>
   <div class="aurora"></div>
-  <a href="index.html" class="btn-volver">&#10094;</a>
+  <header>
+    <a href="index.html" class="title"><h1>AnimeFLV Lite</h1></a>
+    <input type="text" id="busqueda" placeholder="Buscar anime...">
+    <button id="btn-search" title="Buscar anime"></button>
+    <button id="btn-login" title="Iniciar sesión"></button>
+    <button id="btn-close-search" title="Cerrar búsqueda"></button>
+  </header>
 
-  <div class="anime-details">
+  <div id="main"></div>
+
+  <main class="anime-details">
     <div class="anime-container1">
-      <img id="portada" alt="Portada del Anime" src="placeholder.png" class="anime-cover" />
-    
-    <button id="btn-estado">Estado</button>
-    <div class="botones2">
-    <button id="btn-fav">FAV</button>
-    <button id="btn-x">X</button>
+      <img id="portada" alt="Portada del Anime" class="anime-cover" />
+      <button id="btn-estado">Estado</button>
+      <div class="botones2">
+        <button id="btn-fav">FAV</button>
+        <button id="btn-x">X</button>
+      </div>
     </div>
-  </div>
 
-<div class="anime-details2">
     <div class="anime-container2">
-      
         <h1 id="titulo" class="anime-title"></h1>
         <p id="descripcion" class="anime-description">Cargando información del anime...</p>
     </div>
-    
+
     <div class="anime-container3">
-      <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo..." />
-      <ul id="capitulos" class="episodes-list"></ul>
+        <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo..." />
+        <ul id="capitulos" class="episodes-list"></ul>
     </div>
-    </div>
-  </div>
-    
- 
 
-  <script>
-    const id = new URLSearchParams(location.search).get("id");
+  </main>
 
-    document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
-
-    fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
-      .then(res => res.json())
-      .then(anime => {
-        document.getElementById("titulo").textContent = anime.title;
-        document.getElementById("portada").src = anime.cover;
-        document.getElementById("descripcion").textContent = anime.synopsis;
-
-        const capContenedor = document.getElementById("capitulos");
-        const filtroCapitulo = document.getElementById("filtro-capitulo");
-
-        capContenedor.addEventListener("wheel", function (e) {
-          e.preventDefault();
-          const columnas = this.querySelectorAll("li");
-          if (columnas.length === 0) return;
-          const anchoColumna = columnas[0].offsetWidth;
-          const direccion = e.deltaY > 0 ? 1 : -1;
-          const scrollActual = this.scrollLeft;
-          const columnaActual = Math.floor(scrollActual / anchoColumna);
-          const nuevoScroll = (columnaActual + direccion) * anchoColumna;
-          const scrollMaximo = (columnas.length - 1) * anchoColumna;
-          this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
-        }, { passive: false });
-
-        filtroCapitulo.addEventListener("input", function () {
-          const filtro = this.value.toLowerCase();
-          const botones = capContenedor.querySelectorAll(".episode-btn");
-          let primerCoincidencia = null;
-
-          botones.forEach((btn, index) => {
-            const texto = btn.textContent.toLowerCase();
-            const coincide = texto.includes(filtro);
-            if (coincide && primerCoincidencia === null) primerCoincidencia = index;
-          });
-
-          if (primerCoincidencia !== null) {
-            const elemento = botones[primerCoincidencia].parentElement;
-            elemento.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        });
-
-        anime.episodes.forEach(ep => {
-          const li = document.createElement("li");
-          const btn = document.createElement("button");
-          btn.className = "episode-btn";
-          btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
-          btn.onclick = () => {
-            window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
-          };
-          li.appendChild(btn);
-          capContenedor.appendChild(li);
-        });
-      })
-      .catch(err => {
-        console.error("Error al cargar datos del anime:", err);
-        document.getElementById("descripcion").textContent = "Error al cargar el anime.";
-      });
-  </script>
+  <script src="scripts/anime.js" defer></script>
 </body>
 </html>

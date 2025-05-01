@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <title>AnimeFLV Lite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="AnimeFLV Lite: El repositorio más completo de anime en un solo lugar. Disfruta de miles de series y películas sin anuncios ni molestias.">
     <meta name="keywords" content="anime, series anime, películas anime, streaming anime, AnimeFLV">
     <meta name="author" content="Santiago Cardona">
@@ -12,140 +15,38 @@
     <meta name="twitter:title" content="AnimeFLV Lite">
     <meta name="twitter:description" content="El mejor repositorio de anime sin anuncios.">
     <link rel="canonical" href="https://tudominio.com/index.html">
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="apple-touch-icon" sizes="256x256" href="icon.png">
+    <link rel="icon" type="image/png" href="icons/icon.png">
+    <link rel="apple-touch-icon" sizes="256x256" href="icons/icon.png">
     <link rel="manifest" href="/manifest.json">
-    <meta charset="UTF-8">
-    <title>AnimeFLV Lite</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="scripts/header.js" defer></script>
 </head>
 <body>
-  <div class="aurora"></div>
-  <header>
-    <h1 class="title">AnimeFLV Lite</h1>
-    <input type="text" id="busqueda" placeholder="Buscar anime...">
-    <button id="btn-search" title="Buscar anime"></button>
-    <button id="btn-login" title="Iniciar sesión"></button>
-    <button id="btn-close-search" title="Cerrar búsqueda"></button>
-  </header>
+    <div class="aurora"></div>
 
-  <div id="main"></div>
-  <footer>
-    Desarrollado por Santiago Cardona 😼
-  </footer>
-  <script>
-    // Cargar últimos capítulos al iniciar
-    cargarUltimosCapitulos();
-  
-    function cargarUltimosCapitulos() {
-      fetch('https://backend-animeflv-lite.onrender.com/api/latest')
-        .then(res => res.json())
-        .then(mostrarResultados)
-        .catch(err => console.error("Error al cargar capítulos:", err));
-    }
-  
-    // Función para normalizar texto (remover tildes y pasar a minúsculas)
-    function normalizarTexto(texto) {
-      return texto
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-    }
-  
-    // Toggle de búsqueda para móviles
-    document.getElementById('btn-search').addEventListener('click', function () {
-      document.querySelector('header').classList.add('search-active');
-      document.getElementById('busqueda').focus();
-    });
-  
-    // Cerrar búsqueda
-    document.getElementById('btn-close-search').addEventListener('click', function () {
-      document.querySelector('header').classList.remove('search-active');
-      document.getElementById('busqueda').value = "";
-      cargarUltimosCapitulos();
-    });
-  
-    // Función de búsqueda en tiempo real
-    const busquedaInput = document.getElementById('busqueda');
-    let busquedaTimer;
-  
-    busquedaInput.addEventListener('input', function () {
-      clearTimeout(busquedaTimer);
-  
-      const valor = this.value.trim();
-  
-      if (!valor) {
-        cargarUltimosCapitulos();
-        return;
-      }
-  
-      busquedaTimer = setTimeout(() => {
-        const queryNormalizada = normalizarTexto(valor);
-        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${valor}`)
-          .then(res => res.json())
-          .then(res => {
-            const resultadosFiltrados = res.data.filter(anime =>
-              normalizarTexto(anime.title).includes(queryNormalizada)
-            );
-            mostrarResultados(resultadosFiltrados);
-          })
-          .catch(err => console.error("Error al buscar anime:", err));
-      }, 300);
-    });
-  
-    // Mostrar resultados (últimos o búsqueda)
-    function mostrarResultados(data) {
-      const contenedor = document.getElementById('main');
-      contenedor.innerHTML = "";
-  
-      const resultados = data.data || data;
-  
-      resultados.forEach(anime => {
-        let animeId = '';
-        if (anime.url) {
-          const urlParts = anime.url.split('/');
-          const fullId = urlParts[urlParts.length - 1];
-          animeId = fullId.replace(/-\d+$/, '');
-        } else if (anime.id) {
-          animeId = anime.id.replace(/-\d+$/, '');
-        } else {
-          animeId = extraerIdDeLink(anime.link || '');
-        }
-  
-        const div = document.createElement('div');
-        div.className = 'anime-card';
-        div.style.backgroundImage = `url(${anime.cover || anime.image || anime.poster || ''})`;
-        div.innerHTML = `
-          <img src="${anime.cover || anime.image || anime.poster || ''}" alt="${anime.title || anime.name}">
-          <strong>${anime.title || anime.name}</strong>
-        `;
-        div.addEventListener('click', () => ver(animeId));
-        contenedor.appendChild(div);
-      });
-    }
-  
-    // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
-    function extraerIdDeLink(link) {
-      if (!link) return '';
-      const partes = link.split('/');
-      return partes[partes.length - 1] || '';
-    }
-  
-    // Redirige a la página de anime
-    function ver(id) {
-      location.href = `anime.html?id=${id}`;
-    }
-  </script>
+    <header>
+        <a href="index.html" class="title"><h1>AnimeFLV Lite</h1></a>
+        <input type="text" id="busqueda" placeholder="Buscar anime...">
+        <button id="btn-search" title="Buscar anime"></button>
+        <button id="btn-login" title="Iniciar sesión"></button>
+        <button id="btn-close-search" title="Cerrar búsqueda"></button>
+    </header>
+
+    <div id="main"></div>
+
+    <footer>
+        Desarrollado por Santiago Cardona 😼
+    </footer>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registrado con éxito:', registration.scope);
+                    .then(reg => {
+                        console.log('Service Worker registrado:', reg.scope);
                     })
-                    .catch(error => {
-                        console.error('Registro de Service Worker fallido:', error);
+                    .catch(err => {
+                        console.error('Fallo al registrar Service Worker:', err);
                     });
             });
         }
