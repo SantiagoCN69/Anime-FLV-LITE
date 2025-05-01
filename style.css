@@ -316,7 +316,6 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
 
   .anime-title {
     white-space: nowrap;
-    margin-bottom: 15px;
     color:#e76f51;
     width: 100%;
     min-height: fit-content;
@@ -328,7 +327,7 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
 #filtro-capitulo {
     width: 100%;
     padding: 7px;
-    margin: 0 auto;
+    margin: 15px auto;
     border: 2px solid #fa7171;
     border-radius: 8px;
     background-color: #262637;
@@ -341,7 +340,7 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
     box-shadow: 0px 0px 8px #ff5656;
 }
 .episodes-list {
-    margin: 15px auto;
+    margin:auto;
     list-style-type: none;
     display: flex;
     flex-wrap: wrap;
@@ -352,6 +351,7 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
     max-height: 350px;
     overflow-x: auto;
     scroll-behavior: smooth;
+
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
@@ -380,8 +380,7 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
   border-top: 1px solid #fa7171;
   color: #ffffff;
   font-size: 1.2rem;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 18px;
   cursor: pointer;
   transition: transform 0.2s;
   width: 100%;
