@@ -6,17 +6,19 @@
     "container1 container2"
     "container1 container3";
     gap: 30px;
-    margin: 1rem auto;
-    padding: 20px;
-    width: 95%;
-    height: calc(100dvh - 2rem);
+    margin: 0 auto;
+    padding: 20px 60px;
+    width: 100%;
+    height: calc(100dvh - 112px);
+    background-color: #fff;
   }
   
   .anime-container1 {
+    margin-inline: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #29293f;
+    background-color: #0c0c1d6e;
     border-radius: 10px;
     padding: 1.5rem;
     height: 100%;
@@ -31,11 +33,24 @@
   .anime-container3 {
     grid-area: container3;
   }
-  
-  .botones2 {
-    display: flex;
+  .botones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: 
+    "estado estado"
+    " fav x";
     gap: 10px;
-    margin-top: 10px;
+    width: 100%;
+  }
+  #btn-x {
+    grid-area: x;
+  }
+  #btn-fav {
+    grid-area: fav;
+  }
+  #btn-estado {
+    grid-area: estado;
   }
   
   .anime-details2 {
@@ -46,7 +61,7 @@
   }
   
   .anime-container2, .anime-container3 {
-    background-color: #1f1f33;
+    background-color: #0c0c1d6e;
     border-radius: 10px;
     padding: 1.5rem;
     display: flex;
