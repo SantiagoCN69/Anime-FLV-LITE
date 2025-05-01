@@ -8,13 +8,14 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
     document.getElementById("titulo").textContent = anime.title;
     document.getElementById("portada").src = anime.cover;
     
-    // Agregar banner si está disponible
+    // Usar la misma carátula como fondo
     const banner = document.querySelector('.anime-details');
-    if (anime.banner) {
-      banner.style.backgroundImage = `url(${anime.banner})`;
-      banner.style.backgroundSize = 'cover';
-      banner.style.backgroundPosition = 'center';
-    }
+    banner.style.backgroundImage = `url(${anime.cover})`;
+    banner.style.backgroundSize = 'cover';
+    banner.style.backgroundPosition = 'center';
+    banner.style.backgroundBlendMode = 'overlay';
+    banner.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    
     document.getElementById("descripcion").textContent = anime.synopsis;
 
     const capContenedor = document.getElementById("capitulos");
