@@ -87,7 +87,6 @@ function mostrarResultados(data) {
     const div = document.createElement('div');
     div.className = 'anime-card';
     div.style.backgroundImage = `url(${anime.cover || anime.image || anime.poster || ''})`;
-    div.style.filter = 'blur(12px) brightness(0.3)';
     div.innerHTML = `
       <img src="${anime.cover || anime.image || anime.poster || ''}" alt="${anime.title || anime.name}">
       <strong>${anime.title || anime.name}</strong>
