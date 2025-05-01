@@ -12,18 +12,31 @@
   <a href="index.html" class="btn-volver">&#10094;</a>
 
   <div class="anime-details">
-    <div class="anime-container">
+    <div class="anime-container1">
       <img id="portada" alt="Portada del Anime" src="placeholder.png" class="anime-cover" />
-      <p id="descripcion" class="anime-description">Cargando información del anime...</p>
+    
+    <button id="btn-estado">Estado</button>
+    <div class="botones2">
+    <button id="btn-fav">FAV</button>
+    <button id="btn-x">X</button>
     </div>
-    <div class="anime-container">
+  </div>
+
+<div class="anime-details2">
+    <div class="anime-container2">
       
         <h1 id="titulo" class="anime-title"></h1>
-      
+        <p id="descripcion" class="anime-description">Cargando información del anime...</p>
+    </div>
+    
+    <div class="anime-container3">
       <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo..." />
       <ul id="capitulos" class="episodes-list"></ul>
     </div>
+    </div>
   </div>
+    
+ 
 
   <script>
     const id = new URLSearchParams(location.search).get("id");

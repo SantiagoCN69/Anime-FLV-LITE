@@ -265,8 +265,6 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
     padding: 20px;
     width: 95%;
     height: calc(100dvh - 2rem);
-    background-color: #262637;
-    border-radius: 10px;
     overflow: hidden;
 }
 @media (max-width: 600px) {
@@ -283,7 +281,24 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
 
 
 }
-.anime-container {
+.anime-container1 {
+    flex: 1;
+    display: flex;
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+    background-color: #29293f;
+    border-radius: 10px;
+    margin-top: auto;
+    height: 90%;
+    max-width: 35%;
+    position: relative;
+}
+.botones2 {
+    display: flex;
+}
+
+.anime-container2 {
     flex: 1;
     display: flex;
     padding: 1.5rem;
@@ -291,22 +306,30 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
     align-items: center;
     background-color: #1f1f33;
     border-radius: 10px;
-    height: 100%;
+    height: 20%;
+    margin-top: auto;
+    overflow: hidden;
+    margin: 10px;
+}
+.anime-container3 {
+    flex: 1;
+    display: flex;
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+    background-color: #1f1f33;
+    border-radius: 10px;
+    height: 20%;
+    margin-top: auto;
     overflow: hidden;
 }
-.anime-container img {
-    border-radius: 10px;
-    object-fit: cover;
-    height: auto;
-    width: 100%;
-    max-height: 50%;
-}
+
 .anime-description {
     line-height: 1.6;
     color: #ffffff;
     margin: 15px auto;
     text-align: justify;
-    height: 22rem;
+    height: 22%;
     overflow: scroll;
     scrollbar-width: none;
     scrollbar-color: transparent transparent;
@@ -348,7 +371,7 @@ h1, #btn-login, #btn-search, #btn-close-search, #busqueda {
     justify-items: center;
     align-items: center;
     width: 100%;
-    max-height: 350px;
+    max-height: 50%;
     overflow-x: auto;
     scroll-behavior: smooth;
 
