@@ -11,6 +11,26 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .aurora {
@@ -80,10 +100,10 @@ header {
 
 
 #busqueda {
-    padding: 12px;
-    border: 1px solid #e76f51;
+    padding: 10px;
+    border: 2px solid #e76f51;
     border-radius: 8px;
-    background-color: #262637;
+    background-color: #0006;
     color: #ffffff;
     font-size: 1.1rem;
 }

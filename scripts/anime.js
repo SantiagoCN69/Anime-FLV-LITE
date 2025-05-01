@@ -7,15 +7,7 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
   .then(anime => {
     document.getElementById("titulo").textContent = anime.title;
     document.getElementById("portada").src = anime.cover;
-    
-    // Usar la misma carátula como fondo
-    const banner = document.querySelector('.anime-details');
-    banner.style.backgroundImage = `url(${anime.cover})`;
-    banner.style.backgroundSize = 'cover';
-    banner.style.backgroundPosition = 'center';
-    banner.style.backgroundBlendMode = 'overlay';
-    banner.style.backgroundColor = 'rgba(0,0,0,0.7)';
-    
+    document.body.style.backgroundImage = `url(${anime.cover})`;
     document.getElementById("descripcion").textContent = anime.synopsis;
 
     const capContenedor = document.getElementById("capitulos");

@@ -10,7 +10,6 @@
   <script src="scripts/header.js" defer></script>
 </head>
 <body>
-  <div class="aurora"></div>
   <header>
     <a href="index.html" class="title"><h1>AnimeFLV Lite</h1></a>
     <input type="text" id="busqueda" placeholder="Buscar anime...">
@@ -21,11 +20,11 @@
 
   <div id="main"></div>
 
-  <main class="anime-details grid">
+  <main class="anime-details">
     <section class="anime-container1">
       <img id="portada" alt="Portada del Anime" class="anime-cover" />
       <div class="botones">
-        <button id="btn-estado">Estado</button>
+        <button id="btn-estado">ESTADO</button>
         <button id="btn-fav">FAV</button>
         <button id="btn-x">X</button>
       </div>
@@ -37,6 +36,8 @@
     </section>
 
     <section class="anime-container3">
+        <span> Lista de episodios</span>
+        <button>Mayor a menor</button>
         <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo..." />
         <ul id="capitulos" class="episodes-list"></ul>
     </section>
