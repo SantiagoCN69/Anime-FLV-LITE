@@ -110,6 +110,7 @@
   transition: transform 0.2s ease, background-color 0.3s ease;
   cursor: pointer;
   backdrop-filter: blur(4px);
+  z-index: 100;
 }
 
 .btn-volver:hover,

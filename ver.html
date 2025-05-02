@@ -45,9 +45,8 @@
       bloquearAnuncios = !bloquearAnuncios;
       btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
       btnBloquear.classList.toggle("activo", bloquearAnuncios);
-      const iframe = document.querySelector("#video iframe");
       const servidorActivo = document.querySelector("#controles .servidor-activo");
-      if (iframe) mostrarVideo(iframe.src, servidorActivo);
+      if (embeds.length && servidorActivo) mostrarVideo(embeds[embeds.indexOf(servidorActivo.dataset.link)], servidorActivo);
     });
 
     btnCensura.addEventListener("click", () => {
@@ -85,7 +84,6 @@
       embeds = data.servidores;
       episodioActualIndex = index;
 
-      // Actualizar botón de capítulo
       const btnCap = document.getElementById("btn-cap");
       btnCap.textContent = `Capítulo ${ep.number || ep.title || "desconocido"}`;
 
@@ -96,6 +94,7 @@
       embeds.forEach((srv, i) => {
         const btn = document.createElement("button");
         btn.textContent = `Servidor ${i + 1}`;
+        btn.dataset.link = srv;
         btn.onclick = () => mostrarVideo(srv, btn);
         controles.appendChild(btn);
       });
@@ -111,29 +110,39 @@
 
       const videoDiv = document.getElementById("video");
       videoDiv.innerHTML = "";
-      const iframe = document.createElement("iframe");
-      iframe.src = link;
-      iframe.width = "100%";
-      iframe.height = "100%";
-      iframe.frameBorder = "0";
-      iframe.allowFullscreen = true;
-      iframe.scrolling = "no";
 
-      if (!bloquearAnuncios) {
-        iframe.removeAttribute("sandbox");
+      if (link.endsWith(".mp4") || link.endsWith(".m3u8") || link.includes(".mp4?") || link.includes(".m3u8?")) {
+        const video = document.createElement("video");
+        video.src = link;
+        video.controls = true;
+        video.autoplay = true;
+        video.width = "100%";
+        video.height = "100%";
+        video.style.maxHeight = "80vh";
+        videoDiv.appendChild(video);
       } else {
-        iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
-      }
+        const iframe = document.createElement("iframe");
+        iframe.src = link;
+        iframe.width = "100%";
+        iframe.height = "100%";
+        iframe.frameBorder = "0";
+        iframe.allowFullscreen = true;
+        iframe.scrolling = "no";
 
-      videoDiv.appendChild(iframe);
+        if (!bloquearAnuncios) {
+          iframe.removeAttribute("sandbox");
+        } else {
+          iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
+        }
+
+        videoDiv.appendChild(iframe);
+      }
     }
 
     function actualizarEstadoBotones() {
-      // Deshabilitar botón anterior si es el primer episodio
       btnAnterior.disabled = episodioActualIndex <= 0;
       btnAnterior.classList.toggle('desactivado', episodioActualIndex <= 0);
 
-      // Deshabilitar botón siguiente si es el último episodio
       btnSiguiente.disabled = episodioActualIndex >= episodios.length - 1;
       btnSiguiente.classList.toggle('desactivado', episodioActualIndex >= episodios.length - 1);
     }

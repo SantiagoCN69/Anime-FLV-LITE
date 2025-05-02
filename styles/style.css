@@ -98,7 +98,7 @@ header {
 #busqueda {
     padding: 10px;
     border: 2px solid #e76f51;
-    border-radius: 8px;
+    border-radius: 20px;
     background-color: rgba(0, 0, 0, 0.534);
     color: #ffffff;
     font-size: 1rem;
@@ -113,7 +113,7 @@ header {
     background-color: #e76f51;
     color: #ffffff;
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
     transition: transform 0.2s;
     display: flex;
