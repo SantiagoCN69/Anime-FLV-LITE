@@ -51,7 +51,7 @@ h2 {
     "container1 container3";
     gap: 20px;
     margin: 0 auto;
-    padding: 10px 60px 40px 60px;
+    padding: 0 50px 40px 50px;
     width: 100%;
     height: calc(100dvh - 112px);
   }
@@ -65,27 +65,32 @@ h2 {
     border-radius: 8px;
     padding: 1rem;
     height: 100%;
-    max-height: 600px;
+    max-height: fit-content;
     justify-content: space-between;
     grid-area: container1;
     position: relative;
   }
-.anime-container1 img {
+  
+  .anime-container1 img {
     border-radius: 5px;
     width: 100%;
-    height: 82%;
-}
+    height: auto;
+    max-height: 70%;
+    object-fit: contain;
+  }
+  
   .botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: auto auto;
     grid-template-areas: 
-    "estado estado"
-    " fav x";
+      "estado estado"
+      "fav x";
     gap: 10px;
+    margin-top: 10px;
     width: 100%;
-    padding-top: 10px;
   }
+  
   .botones button {
     cursor: pointer;
     padding: 5%;
@@ -139,37 +144,30 @@ h2 {
     
   .anime-container3 {
     grid-area: container3;
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: 1fr 9fr;
-    grid-template-areas: 
-    "span filtro-capitulo"
-    "episodios episodios";
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     border-radius: 8px;
     padding: 1rem;
     gap: 1rem;
     background-color: #202031;
   }
-
-  .anime-container3 span {
+  .header-caps {
     display: flex;
     align-items: center;
-    grid-area: span;
+    justify-content: space-between;
+    min-height: fit-content;
+  }
+  .anime-container3 span {
     color: #e76f51;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
     color:#e76f51;
-    min-height: fit-content;
   }
 
-
-
-
-  
 #filtro-capitulo {
     grid-area: filtro-capitulo;
     width: 100%;
@@ -178,7 +176,7 @@ h2 {
     border-radius: 8px;
     background-color: #262637;
     color: #ffffff;
-    font-size: 1rem;
+    font-size: .8rem;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 #filtro-capitulo:focus {
@@ -198,7 +196,7 @@ h2 {
     max-height: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
-
+    background: #ac3030;
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
@@ -220,18 +218,20 @@ h2 {
 
 .episodes-list li {
     width: 100%;
+    background: #000;
+    display: flex;
+    flex:1;
+    min-height: 50px;
 }
 .episode-btn {
   background-color: transparent;
   border:none;
   border-top: 1px solid #fa7171;
   color: #ffffff;
-  font-size: 1.2rem;
-  padding: 18px;
+  font-size: 1rem;
   cursor: pointer;
   transition: transform 0.2s;
   width: 100%;
-  
 }
 @media screen and (hover:hover) {
 .episode-btn:hover {
@@ -281,89 +281,97 @@ h2 {
         width: 100%;
         height: 500px;
     }
-    /*filtro capitulo */
-    .anime-container3 {
-        grid-template-columns: 2fr 2fr 1fr 1fr;
-        grid-template-rows: 1fr 9fr;
-        grid-template-areas: 
-        "span filtro-capitulo btn-search-capitulo btn-close-search-capitulo"
-        "episodios episodios episodios episodios";
-        overflow-y: auto;
-        border-radius: 8px;
-        padding: 1rem;
-        gap: 1rem;
-        background-color: #202031;
-      }
-      #btn-search-capitulo {
-        grid-area: btn-search-capitulo;
-      }
-      #btn-close-search-capitulo {
-        grid-area: btn-close-search-capitulo;
-      }
-      
-    .anime-container3 span {
-        transition: transform .2s, max-width .2s, opacity .1s;
-    }
+   }
+/* Ocultar botones por defecto */
+#btn-search-capitulo,
+#btn-close-search-capitulo {
+  display: none;
+}
 
-    .search-active-capitulo .anime-container3 span {
-        transform: scale(0);
-        max-width: 0;
-        opacity: 0;
-    }
+@media screen and (max-width: 600px) {
+  /* Mostrar botones en móvil */
+  #btn-search-capitulo,
+  #btn-close-search-capitulo {
+    display: block;
+  }
 
-    #filtro-capitulo {
-        display: none;
-        transition: transform .2s, width .2s, opacity .1s;
-    }
+  .header-caps {
+    position: relative;
+    overflow: hidden;
+  }
 
-    .search-active-capitulo #filtro-capitulo {
-        display: block;
-        transform: scale(1);
-        width: 100%;
-        max-width: 100%;
-        opacity: 1;
-    }
+  /* Elementos normales */
+  .header-caps span,
+  #btn-search-capitulo {
+    transition: transform 0.2s;
+    transform: translateY(0);
+  }
 
-    #btn-search-capitulo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
+  /* Cuando se activa búsqueda */
+  .header-caps.search-active span,
+  .header-caps.search-active #btn-search-capitulo {
+    transform: translateY(-100px);
+  }
 
-    #btn-search-capitulo::before {
-        content: url('../icons/magnifying-glass-solid.svg');
-        width: 24px;
-        height: 24px;
-        filter: invert(100%);
-    }
+  /* Caja de búsqueda */
+  .header-caps .search {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
 
-    .search-active-capitulo #btn-search-capitulo {
-        transform: scale(0);
-        max-width: 0;
-        opacity: 0;
-    }
+  .header-caps.search-active .search {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 
-    #btn-close-search-capitulo {
-        background: none;
-        border: none;
-        cursor: pointer;
-        display: none;
-    }
+  /* Estilo botón cerrar */
+  #btn-close-search-capitulo {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    margin-left: 10px;
+  }
 
-    .search-active-capitulo #btn-close-search-capitulo {
-        display: flex;
-        transform: scale(1);
-        max-width: 100%;
-        opacity: 1;
-    }
+  #btn-close-search-capitulo::before {
+    content: '✕';
+    color: #e76f51;
+    font-size: 1.8rem;
+    padding-bottom: 4px;
+  }
 
-    #btn-close-search-capitulo::before {
-        content: '✕';
-        color: #e76f51;
-        font-size: 2rem;
-        padding-bottom: 4px;
-    }
+  /* Input */
+  #filtro-capitulo {
+    flex: 1;
+  }
+
+  /* Botón lupa */
+  #btn-search-capitulo {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #btn-search-capitulo::before {
+    content: url('../icons/magnifying-glass-solid.svg');
+    width: 24px;
+    height: 24px;
+    filter: invert(100%);
+  }
+}
+
 }

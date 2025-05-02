@@ -60,20 +60,14 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
     document.getElementById("descripcion").textContent = "Error al cargar el anime.";
   });
 
-// Abrir búsqueda de capítulos
+// Toggle búsqueda de capítulos
 document.getElementById('btn-search-capitulo').addEventListener('click', function () {
-  const body = document.body;
-  const filtroCapitulo = document.getElementById('filtro-capitulo');
-  
-  body.classList.add('search-active-capitulo');
-  filtroCapitulo.focus();
+  document.querySelector('.header-caps').classList.add('search-active');
+  document.getElementById('filtro-capitulo').focus();
 });
 
 // Cerrar búsqueda de capítulos
 document.getElementById('btn-close-search-capitulo').addEventListener('click', function () {
-  const body = document.body;
-  const filtroCapitulo = document.getElementById('filtro-capitulo');
-  
-  body.classList.remove('search-active-capitulo');
-  filtroCapitulo.value = "";
+  document.querySelector('.header-caps').classList.remove('search-active');
+  document.getElementById('filtro-capitulo').value = "";
 });
