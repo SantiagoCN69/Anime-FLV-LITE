@@ -55,7 +55,11 @@ h2 {
     width: 100%;
     height: calc(100dvh - 112px);
   }
-
+@media screen and (max-height:600px){
+  .anime-details {
+    height: 100vh;
+  }
+}
   .anime-container1 {
     margin-inline: auto;
     display: flex;
@@ -196,7 +200,6 @@ h2 {
     max-height: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
-    background: #ac3030;
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
@@ -218,7 +221,6 @@ h2 {
 
 .episodes-list li {
     width: 100%;
-    background: #000;
     display: flex;
     flex:1;
     min-height: 50px;
