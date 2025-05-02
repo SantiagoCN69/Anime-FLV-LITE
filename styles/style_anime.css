@@ -42,9 +42,9 @@ body::after {
     grid-template-areas: 
     "container1 container2"
     "container1 container3";
-    gap: 30px;
+    gap: 20px;
     margin: 0 auto;
-    padding: 20px 60px;
+    padding: 10px 60px 40px 60px;
     width: 100%;
     height: calc(100dvh - 112px);
   }
@@ -102,22 +102,14 @@ body::after {
   }
  
   
-
-
-
- 
-  
-  .anime-container2, .anime-container3 {
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-    padding-inline: 1rem;
-  }
-  
   .anime-container2 {
     justify-content: start;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    
+    align-items: center;
+    padding-inline: 1rem;
   }
 
   
@@ -141,40 +133,69 @@ body::after {
 }
     
   .anime-container3 {
-    justify-content: start;
-    overflow-y: auto;
     grid-area: container3;
-    
+    display: grid;
+    grid-template-columns: 4fr 1fr 2fr;
+    grid-template-rows: 1fr 9fr;
+    grid-template-areas: 
+    "span btn-filtro-capitulos filtro-capitulo"
+    "episodios episodios episodios";
+    overflow-y: auto;
+    border-radius: 8px;
     padding: 1rem;
+    gap: 1rem;
     background-color: #202031;
   }
 
-  @media (max-width: 600px) {
-    .anime-details {
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .anime-container1,
-    .anime-container2,
-    .anime-container3 {
-      width: 100%;
-      max-width: 100%;
-    }
+  .anime-container3 span {
+    grid-area: span;
+    color: #e76f51;
+    font-size: 1.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    color:#e76f51;
+    min-height: fit-content;
   }
-  
+
+.btn-filtro-capitulos {
+    grid-area: btn-filtro-capitulos;
+    cursor: pointer;
+    padding: 5%;
+    border-radius: 5px;
+    font-size: 1rem;
+    max-width: fit-content;
+    border: none;
+    color: #fff;
+    background-color: #e76f51;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-filtro-capitulos::before {
+    content: url(/icons/arrow-down-wide-short-solid.svg);
+    display: inline-block;
+    width: 30%;    
+    margin: 2px;
+    filter: invert(100%);
+  }
+.btn-filtro-capitulos:hover {
+    background-color: #fa7171;
+}
+
 
 
   
 #filtro-capitulo {
+    grid-area: filtro-capitulo;
     width: 100%;
-    padding: 7px;
-    margin: 15px auto;
+    padding: 5%;
     border: 2px solid #fa7171;
     border-radius: 8px;
     background-color: #262637;
     color: #ffffff;
-    font-size: 1.2rem;
+    font-size: 1rem;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 #filtro-capitulo:focus {
@@ -182,6 +203,7 @@ body::after {
     box-shadow: 0px 0px 8px #ff5656;
 }
 .episodes-list {
+    grid-area: episodios;
     margin:auto;
     list-style-type: none;
     display: flex;
@@ -190,7 +212,7 @@ body::after {
     justify-items: center;
     align-items: center;
     width: 100%;
-    max-height: 50%;
+    max-height: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
 
@@ -233,3 +255,17 @@ body::after {
     color: #ff5656;
 }
 }
+@media (max-width: 600px) {
+    .anime-details {
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .anime-container1,
+    .anime-container2,
+    .anime-container3 {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+  
