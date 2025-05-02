@@ -21,10 +21,8 @@ document.getElementById('btn-search').addEventListener('click', function () {
 document.getElementById('btn-close-search').addEventListener('click', function () {
   document.querySelector('header').classList.remove('search-active');
   document.getElementById('busqueda').value = "";
-  if (animeDetails) animeDetails.style.display = 'grid';
-  if (mainContainer) mainContainer.innerHTML = "";
-  if (isIndexPage) cargarUltimosCapitulos();
 });
+
 
 // Función de búsqueda en tiempo real
 const busquedaInput = document.getElementById('busqueda');
