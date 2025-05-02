@@ -10,6 +10,9 @@ h2 {
 main {
   display: flex;
   height: calc(100dvh - 112px);
+  gap: 20px;
+  margin: 0 auto;
+  padding: 0 50px 40px 50px;
 }
 @media screen and (max-height:600px){
   main {
@@ -26,8 +29,23 @@ main section:nth-child(1) {
   flex: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+}
+.btn-volver, .btn-anterior, .btn-siguiente {
+  text-decoration: none;
+}
+.btn-volver {
+  color: #9c4d4d;
+}
+.btn-volver::before {
+  content: url(/icons/house-solid.svg);
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  margin: 5px;
+  filter: invert(100%);
+}
+.btn-cap {
+  align-self: start;
 }
 
 

@@ -61,7 +61,7 @@ h2 {
     width: 100%;
     height: calc(100dvh - 112px);
   }
-@media screen and (max-height:600px){
+@media screen and (max-height:600px) and (min-width:600px){
   .anime-details {
     height: 100vh;
   }
@@ -254,11 +254,13 @@ h2 {
       box-shadow: 0 0 0 transparent;
   }
     .anime-details {
-        padding: 10px 15px 40px 15px;
+        padding: 10px 15px 15px 15px;
         grid-template-columns:1fr 2fr;
+        grid-template-rows: fit-content(100%) fit-content(100%);
         grid-template-areas: 
         "container1 container2"
         "container3 container3";
+        height: fit-content;
     }
     .anime-container1 {
         padding: 0;

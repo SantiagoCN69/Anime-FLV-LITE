@@ -77,7 +77,7 @@ async function cargarVideoDesdeEpisodio(index) {
   episodioActualIndex = index;
 
   const btnCap = document.getElementById("btn-cap");
-  btnCap.textContent = `Capítulo ${ep.number || ep.title || "desconocido"}`;
+  btnCap.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
 
   history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${encodeURIComponent(ep.url)}`);
 
