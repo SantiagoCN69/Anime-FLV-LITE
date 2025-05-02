@@ -7,7 +7,7 @@ function normalizarTexto(texto) {
 }
 
 const isAnimePage = location.pathname.includes('anime.html');
-const isIndexPage = location.pathname.includes('index.html');
+const isIndexPage = location.pathname === '/' || location.pathname.endsWith('index.html');
 const animeDetails = document.querySelector('.anime-details');
 const mainContainer = document.getElementById('main');
 
