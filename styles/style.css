@@ -87,7 +87,7 @@ header {
 }
 .title {
     flex:1;
-    color: #e76f51;
+    color: #ffffff;
     text-decoration: none;
     white-space: nowrap;
     overflow: hidden;
@@ -96,7 +96,7 @@ header {
 
 
 #busqueda {
-    padding: 8px;
+    padding: 10px;
     border: 2px solid #e76f51;
     border-radius: 8px;
     background-color: #0006;

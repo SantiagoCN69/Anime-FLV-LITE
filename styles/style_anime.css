@@ -67,7 +67,7 @@ h2 {
     align-items: center;
     background-color: #1c1c2b;
     border-radius: 8px;
-    padding: 1rem;
+    padding: .6rem;
     height: 100%;
     max-height: fit-content;
     justify-content: space-between;
@@ -314,21 +314,20 @@ h2 {
   .header-caps.search-active #btn-search-capitulo {
     transform: translateY(-100px);
   }
-
+.header-caps {
+  overflow: visible;
+}
   /* Caja de búsqueda */
   .header-caps .search {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 10px;
+    width: 100%;
+    height: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
     opacity: 0;
     transform: translateY(-20px);
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
+    will-change: transform;
   }
 
   .header-caps.search-active .search {
@@ -350,12 +349,12 @@ h2 {
     content: '✕';
     color: #e76f51;
     font-size: 1.8rem;
-    padding-bottom: 4px;
   }
 
   /* Input */
   #filtro-capitulo {
     flex: 1;
+    padding: 8px;
   }
 
   /* Botón lupa */
@@ -372,8 +371,6 @@ h2 {
     content: url('../icons/magnifying-glass-solid.svg');
     width: 24px;
     height: 24px;
-    filter: invert(100%);
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(240deg) brightness(1) contrast(1);
   }
-}
-
 }
