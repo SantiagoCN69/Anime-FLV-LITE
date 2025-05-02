@@ -124,12 +124,9 @@ header {
     align-items: center;
     justify-content: center;
 }
-@media screen and (hover:hover) {
-#btn-login:hover {
-    transform: scale(1.02);
+button:hover {
+    opacity: .8;
 }
-}
-
 #btn-login::before {
     content: url('../icons/circle-user-regular.svg');
     width: 30px;
