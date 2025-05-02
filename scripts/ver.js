@@ -2,7 +2,23 @@ const params = new URLSearchParams(location.search);
 const animeId = params.get("animeId");
 const episodioUrl = decodeURIComponent(params.get("url") || "");
 const btnVolver = document.getElementById("btn-volver-anime");
+const tituloAnime = document.getElementById("titulo-anime");
 btnVolver.href = `anime.html?id=${animeId}`;
+
+// Obtener título del anime
+async function obtenerTituloAnime() {
+    try {
+        const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${animeId}`);
+        const data = await res.json();
+        tituloAnime.textContent = data.title || "Anime";
+        btnVolver.textContent = `Volver a ${data.title || "Anime"}`;
+    } catch (error) {
+        console.error("Error al obtener título del anime:", error);
+        tituloAnime.textContent = "Anime";
+        btnVolver.textContent = "Volver a Anime";
+    }
+}
+obtenerTituloAnime();
 
 const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
 const btnAnterior = document.getElementById("btn-anterior-capitulo");
