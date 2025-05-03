@@ -100,7 +100,7 @@ header {
 
 #busqueda {
     padding: 12px;
-    border: 1px solid #e76f51;
+    border: 2px solid #e76f51;
     border-radius: 8px;
     background-color: #00000000;
     color: #ffffff;
@@ -112,7 +112,7 @@ header {
 }
 #btn-login {
     margin-left: 15px;
-    padding: 7px 12px;
+    padding: 8px 12px;
     background-color: #e76f51;
     color: #ffffff;
     border: none;
