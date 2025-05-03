@@ -76,14 +76,16 @@ body {
 header {
     display: flex;
     align-items: center;
-    padding: 3.5rem 0;
-    width: 95%;
+    padding: 3rem 3rem 4rem 3rem;
+    width: 100%;
     margin: 0 auto;
+    margin-bottom: 1rem;
     height:5.5rem;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
     position: relative;
+    background: linear-gradient(to bottom, #1c1c2b 90%, transparent);
 }
 .title {
     flex: 1;
@@ -97,10 +99,10 @@ header {
 
 
 #busqueda {
-    padding: 10px;
-    border: 2px solid #e76f51;
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.534);
+    padding: 12px;
+    border: 1px solid #e76f51;
+    border-radius: 8px;
+    background-color: #00000000;
     color: #ffffff;
     font-size: 1rem;
 }
@@ -110,7 +112,7 @@ header {
 }
 #btn-login {
     margin-left: 15px;
-    padding: 6px 12px;
+    padding: 7px 12px;
     background-color: #e76f51;
     color: #ffffff;
     border: none;
