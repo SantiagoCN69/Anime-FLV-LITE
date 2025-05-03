@@ -287,7 +287,6 @@ h2 {
     .anime-container2 {
         width: 100%;
         padding: 0;
-        background: #000;
         max-height: var(--altura-container-1);
     }
     .anime-title {
