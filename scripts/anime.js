@@ -189,7 +189,7 @@ function actualizarEstadoFavorito() {
     .then(favoritos => {
       const esFavorito = favoritos.some(f => f.id === id);
       btnFav.classList.toggle("favorito", esFavorito);
-      btnFav.textContent = esFavorito ? "FAVORITO" : "FAV";
+      btnFav.textContent = esFavorito ? "FAVORITO" : "AGREGAR A FAVORITOS";
     });
 }
 

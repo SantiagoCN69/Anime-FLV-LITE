@@ -111,7 +111,24 @@ h2 {
 
   #btn-fav {
     grid-area: fav;
-    background: #fb3447;
+    background: #fb344881;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  #btn-fav.favorito {
+
+    background: #fb3447; /* Rojo más intenso para estado de favorito */
+  }
+  #btn-fav.favorito::before {
+    content: url('../icons/star-solid.svg');
+    width: 20px;
+    height: 20px;
+    display: block;
+    
   }
   #btn-estado {
     grid-area: estado;
