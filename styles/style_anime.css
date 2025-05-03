@@ -34,7 +34,7 @@ body::after {
     z-index: -2;
   }
 header {
-  background-color: #0000;
+  background: linear-gradient(to bottom, transparent 0%, transparent);
 }
 #busqueda {
     background-color: #00000077;
