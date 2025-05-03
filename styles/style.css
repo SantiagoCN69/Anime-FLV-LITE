@@ -246,7 +246,7 @@ header.search-active .search {
     padding: 10px;
     text-align: center;
     transition: transform 0.3s;
-    
+
   }
   
   @media screen and (hover: hover) {
