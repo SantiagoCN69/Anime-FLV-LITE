@@ -77,6 +77,43 @@ document.head.appendChild(scriptApp);
     }
   
     // Función de logout
+    function showLogoutModal() {
+      // Crear la modal
+      const modal = document.createElement('div');
+      modal.id = 'logout-modal';
+      modal.innerHTML = `
+        <div class='modal-content'>
+          <h2>Cerrar Sesión</h2>
+          <p>¿Estás seguro de que deseas cerrar sesión?</p>
+          <div class='modal-buttons'>
+            <button id='confirm-logout'>Sí, cerrar sesión</button>
+            <button id='cancel-logout'>Cancelar</button>
+          </div>
+        </div>
+      `;
+      modal.classList.add('modal');
+      document.body.appendChild(modal);
+
+      // Mostrar modal
+      document.body.classList.add('modal-open');
+      setTimeout(() => modal.classList.add('show'), 10);
+
+      // Eventos de botones
+      document.getElementById('confirm-logout').addEventListener('click', () => {
+        logoutConGoogle();
+        document.body.classList.remove('modal-open');
+        modal.remove();
+        style.remove();
+      });
+
+      document.getElementById('cancel-logout').addEventListener('click', () => {
+        document.body.classList.remove('modal-open');
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+        style.remove();
+      });
+    }
+
     function logoutConGoogle() {
       firebase.auth().signOut()
         .then(() => {
@@ -100,8 +137,8 @@ document.head.appendChild(scriptApp);
       btnLogin.addEventListener('click', () => {
         const user = firebase.auth().currentUser;
         if (user) {
-          // Si ya hay un usuario, cerrar sesión
-          logoutConGoogle();
+          // Si ya hay un usuario, mostrar modal de confirmación
+          showLogoutModal();
         } else {
           // Si no hay usuario, iniciar sesión
           loginConGoogle();

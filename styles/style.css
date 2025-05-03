@@ -321,3 +321,70 @@ footer {
     margin-bottom: 5px;
     font-size: .8rem;
 }
+
+/* style modal */
+body.modal-open {
+  overflow: hidden;
+  margin-right: 10px;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+}
+.modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.modal-content {
+  background: #0009;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  color: #ddd;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.modal-content h2 {
+  margin-bottom: 15px;
+  color: #fff;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+.modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#confirm-logout {
+  background-color: #ff4d4d;
+  color: white;
+}
+#confirm-logout:hover {
+  background-color: #ff3333;
+}
+#cancel-logout {
+  background-color: #0009;
+  color: #fff;
+}
+#cancel-logout:hover {
+  background-color: #000e;
+}
