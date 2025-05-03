@@ -173,12 +173,13 @@ h2 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 100%;
+    width: fit-content;
     color:#e76f51;
   }
-
+.search {
+    width: 30%;
+}
 #filtro-capitulo {
-    grid-area: filtro-capitulo;
     width: 100%;
     padding: 5%;
     border: 2px solid #fa7171;
