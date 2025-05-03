@@ -333,10 +333,9 @@ h2 {
 }
   /* Caja de búsqueda */
   .header-caps .search-caps {
-    
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: 130%;
     display: flex;
     opacity: 0;
     transform: translateY(-20px);
@@ -357,6 +356,7 @@ h2 {
     border: none;
     cursor: pointer;
     display: flex;
+    align-items: center;
     margin-left: 10px;
   }
 
@@ -364,12 +364,13 @@ h2 {
     content: '✕';
     color: #e76f51;
     font-size: 1.8rem;
+    font-weight: bold;
   }
 
   /* Input */
   #filtro-capitulo {
     flex: 1;
-    padding: 8px;
+    padding: 13px;
   }
 
   /* Botón lupa */
@@ -387,6 +388,6 @@ h2 {
     width: 24px;
     height: 24px;
     padding-left: 3px;
-    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(240deg) brightness(1) contrast(1);
+    filter: invert(50%) sepia(71%) saturate(653%) hue-rotate(326deg) brightness(97%) contrast(90%);
   }
 }
