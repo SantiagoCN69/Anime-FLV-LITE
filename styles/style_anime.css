@@ -37,8 +37,9 @@ header {
   background: linear-gradient(to bottom, transparent 0%, transparent);
 }
 #busqueda {
-    background-color: #00000077;
+    background-color: #00000011;
 }
+
 h2 {
     font-size: 2rem;
     overflow: hidden;
@@ -47,12 +48,7 @@ h2 {
     min-height: fit-content;
     text-shadow: 2px 2px 10px #000a;
 }
-#busqueda {
-    box-shadow: 2px 2px 20px #000a;
-}
-#btn-login {
-    box-shadow: 2px 2px 20px #000a;
-}
+
   .anime-details {
     display: grid;
     grid-template-columns: 28% 1fr;
@@ -180,6 +176,7 @@ h2 {
     white-space: nowrap;
     width: fit-content;
     color:#e76f51;
+    font-weight: bold;
   }
 .search-caps {
     width: 30%;

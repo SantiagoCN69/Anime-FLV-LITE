@@ -99,8 +99,8 @@ header {
 
 
 #busqueda {
-    padding: 12px;
-    border: 2px solid #e76f51;
+    padding: 13px;
+    border: 1px solid #fff8;
     border-radius: 8px;
     background-color: #00000000;
     color: #ffffff;
@@ -108,7 +108,9 @@ header {
 }
 #busqueda:focus {
     outline: none;
-    box-shadow: 0px 0px 8px #ff5656;
+}
+#busqueda::placeholder {
+  color: #fff8
 }
 #btn-login {
     margin-left: 15px;
@@ -116,7 +118,7 @@ header {
     background-color: #e76f51;
     color: #ffffff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: transform 0.2s;
     display: flex;
@@ -189,7 +191,9 @@ header.search-active #btn-login {
 
 .search {
   position: absolute;
-  width: 100%;
+  width: 95%;
+  margin: 0 auto;
+  inset: 0;
   height: 100%;
   z-index: 10;
   display: flex;
