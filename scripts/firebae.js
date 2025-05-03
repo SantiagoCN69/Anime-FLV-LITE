@@ -81,6 +81,7 @@ document.head.appendChild(scriptApp);
       // Crear la modal
       const modal = document.createElement('div');
       modal.id = 'logout-modal';
+      modal.classList.add('modal');
       modal.innerHTML = `
         <div class='modal-content'>
           <h2>Cerrar Sesión</h2>
@@ -91,27 +92,28 @@ document.head.appendChild(scriptApp);
           </div>
         </div>
       `;
-      modal.classList.add('modal');
       document.body.appendChild(modal);
 
       // Mostrar modal
       document.body.classList.add('modal-open');
-      setTimeout(() => modal.classList.add('show'), 10);
+      requestAnimationFrame(() => modal.classList.add('show'));
 
       // Eventos de botones
-      document.getElementById('confirm-logout').addEventListener('click', () => {
-        logoutConGoogle();
-        document.body.classList.remove('modal-open');
-        modal.remove();
-        style.remove();
-      });
+      const confirmBtn = document.getElementById('confirm-logout');
+      const cancelBtn = document.getElementById('cancel-logout');
 
-      document.getElementById('cancel-logout').addEventListener('click', () => {
+      const closeModal = () => {
         document.body.classList.remove('modal-open');
         modal.classList.remove('show');
         setTimeout(() => modal.remove(), 300);
-        style.remove();
+      };
+
+      confirmBtn.addEventListener('click', () => {
+        logoutConGoogle();
+        closeModal();
       });
+
+      cancelBtn.addEventListener('click', closeModal);
     }
 
     function logoutConGoogle() {
@@ -146,13 +148,3 @@ document.head.appendChild(scriptApp);
       });
     }
   }
-  
-  // Esperar a que los scripts de Firebase estén cargados
-  document.addEventListener('DOMContentLoaded', () => {
-    // Verificar que los objetos globales de Firebase estén disponibles
-    if (window.firebase && window.firebase.initializeApp) {
-      initFirebase();
-    } else {
-      console.error('Firebase scripts no cargados correctamente');
-    }
-  });

@@ -151,6 +151,9 @@ button:hover {
 }
 
 @media screen and (max-width: 600px) {
+  #btn-login::after {
+    display: none;
+  }
   #btn-search, #btn-close-search {
     display: block;
   }
@@ -165,6 +168,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-inline: 15px;
 }
 
 #btn-search::before {
@@ -182,7 +186,6 @@ button:hover {
 }
 
 #btn-login::before {
-  margin-left: 20px;
 }
 
 #btn-login::after {
