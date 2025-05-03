@@ -127,20 +127,12 @@ button:hover {
     display: flex;
     align-items: center;
 }
-#btn-login {
-  --user-photo: url('../icons/user-solid.svg');
-}
-
 #btn-login::before {
-  content: var(--user-photo);
+  content: url('../icons/user-solid.svg');
   width: 20px;
   height: 20px;
   padding-bottom: 4px;
-  border-radius: 50%;
-  background-size: cover;
-  background-position: center;
 }
-
 #btn-login.logged-in::after {
   content: attr(data-username);
   margin-left: 10px;

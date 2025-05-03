@@ -32,8 +32,6 @@ document.head.appendChild(scriptApp);
       const btnLogin = document.getElementById('btn-login');
       if (btnLogin) {
         if (user) {
-          // Usuario autenticado
-          btnLogin.style.setProperty('--user-photo', `url('${user.photoURL}')`);
           btnLogin.setAttribute('data-username', user.displayName);
           btnLogin.classList.add('logged-in');
         } else {
