@@ -3,3 +3,4 @@ node_modules/
 *.log
 .env
 /google2d6cb3683403b733.html
+/scripts/firebaseconfig.js

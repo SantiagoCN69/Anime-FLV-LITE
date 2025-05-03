@@ -1,13 +1,5 @@
-// Configuración de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyC6gYLFFvZfO5Bo2T9CP-byW-wEcFNvYoQ",
-    authDomain: "animeflvlite.firebaseapp.com",
-    projectId: "animeflvlite",
-    storageBucket: "animeflvlite.firebasestorage.app",
-    messagingSenderId: "35003787237",
-    appId: "1:35003787237:web:c660a794c481fd8d31b10c",
-    measurementId: "G-J9EYPEY5Q8"
-};
+import { firebaseConfig } from './firebaseconfig.js';
+
 
 // Cargar scripts de Firebase
 const scriptApp = document.createElement('script');
