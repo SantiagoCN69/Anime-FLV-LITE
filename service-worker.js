@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mi-cache-v1'; // Cambia la versión para forzar limpieza
+const CACHE_NAME = 'mi-cache-v2'; // Cambia la versión para forzar limpieza
 const ARCHIVOS_CACHE = [
   '/', // agrega aquí tus rutas y archivos
   '/index.html',

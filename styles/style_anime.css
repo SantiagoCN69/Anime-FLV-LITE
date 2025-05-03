@@ -94,8 +94,8 @@ h2 {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
     grid-template-areas: 
-      "estado estado"
-      "fav x";
+      "fav fav"
+      "estado visto";
     gap: 10px;
     margin-top: 10px;
     width: 100%;
@@ -108,17 +108,19 @@ h2 {
     border: none;
     color: #fff;
   }
-  #btn-estado {
-    grid-area: estado;
-    background: #00c853;
-  }
-  #btn-x {
-    grid-area: x;
-    background: #0005;
-  }
+
   #btn-fav {
     grid-area: fav;
     background: #fb3447;
+  }
+  #btn-estado {
+    grid-area: estado;
+    background: #00c8be;
+    display: block;
+  }
+  #btn-progreso {
+    grid-area: visto;
+    background: #00c853;
   }
 
   .anime-container2 {
@@ -134,7 +136,6 @@ h2 {
   .anime-title {
     color: #e76f51;
     font-size: 1.8rem;
-    text-align: center;
     margin-bottom: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -181,7 +182,7 @@ h2 {
 #filtro-capitulo {
     width: 100%;
     padding: 5%;
-    border: 2px solid #fa7171;
+    border: 1px solid #fa7171;
     border-radius: 10px;
     background-color: #262637;
     color: #ffffff;
