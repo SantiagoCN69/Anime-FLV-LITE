@@ -64,16 +64,17 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       // Ícono de visto/no visto
       const icon = document.createElement("img");
 icon.className = "icon-eye";
-icon.src = vistos[ep.number] ? "/icons/eye-slash-solid.svg" : "/icons/eye-solid.svg";
+icon.src = vistos[ep.number] ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
 icon.alt = "visto";
 
 icon.onclick = (e) => {
   e.stopPropagation();
   const esVisto = btn.classList.toggle("ep-visto");
   btn.classList.toggle("ep-no-visto");
-  icon.src = esVisto ? "/icons/eye-slash-solid.svg" : "/icons/eye-solid.svg";
+  icon.src = esVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
   guardarEstado(ep.number, esVisto);
 };
+
 
 
       btn.appendChild(icon);
