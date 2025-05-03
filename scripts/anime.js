@@ -71,3 +71,22 @@ document.getElementById('btn-close-search-capitulo').addEventListener('click', f
   document.querySelector('.header-caps').classList.remove('search-active');
   document.getElementById('filtro-capitulo').value = "";
 });
+
+
+//altura del container 1
+document.addEventListener('DOMContentLoaded', () => {
+  // Función para establecer la altura del container 1 como variable CSS
+  function setContainerHeight() {
+      const container1 = document.querySelector('.anime-container1');
+      if (container1) {
+          const height = container1.offsetHeight;
+          document.documentElement.style.setProperty('--altura-container-1', `${height}px`);
+      }
+  }
+
+  // Llamar a la función inicialmente
+  setContainerHeight();
+
+  // Volver a calcular la altura si cambia el tamaño de la ventana
+  window.addEventListener('resize', setContainerHeight);
+});

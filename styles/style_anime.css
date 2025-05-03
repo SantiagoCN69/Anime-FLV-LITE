@@ -52,7 +52,7 @@ h2 {
   .anime-details {
     display: grid;
     grid-template-columns: 28% 1fr;
-    grid-template-rows: 1fr 3fr;
+    grid-template-rows: auto 1fr;
     grid-template-areas: 
     "container1 container2"
     "container1 container3";
@@ -147,9 +147,10 @@ h2 {
   }
   .anime-description {
     color: #fff;
-    text-align: justify;
     overflow-y: auto;
     scrollbar-width: none;
+    
+
 }
     
   .anime-container3 {
@@ -259,7 +260,7 @@ h2 {
     .anime-details {
         padding: 10px 15px 15px 15px;
         grid-template-columns:1fr 2fr;
-        grid-template-rows: fit-content(100%) fit-content(100%);
+        grid-template-rows: 1fr auto;
         grid-template-areas: 
         "container1 container2"
         "container3 container3";
@@ -285,13 +286,14 @@ h2 {
     }
     .anime-container2 {
         width: 100%;
-        max-height: fit-content;
         padding: 0;
+        background: #000;
+        max-height: var(--altura-container-1);
     }
-    .anime-description{
-    overflow: auto;
-    max-height: 100%;
+    .anime-title {
+      font-size: 1.5rem;
     }
+
     .anime-container3 {
         width: 100%;
         height: 500px;
@@ -385,6 +387,7 @@ h2 {
     content: url('../icons/magnifying-glass-solid.svg');
     width: 24px;
     height: 24px;
+    padding-left: 3px;
     filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(240deg) brightness(1) contrast(1);
   }
 }
