@@ -326,10 +326,7 @@ footer {
 }
 
 /* style modal */
-body.modal-open {
-  overflow: hidden;
-  margin-right: 10px;
-}
+
 .modal {
   position: fixed;
   top: 0;

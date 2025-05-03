@@ -96,45 +96,45 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
     // Cargar vistos desde localStorage
     const vistos = cargarEstado();
 
-    // Crear botones de episodios
+    // Crear botones de episodios con fragmento para mejor rendimiento
+    const fragmentEpisodios = document.createDocumentFragment();
     anime.episodes.forEach(ep => {
       const li = document.createElement("li");
       const btn = document.createElement("button");
-      btn.className = "episode-btn ep-no-visto";
+      btn.className = `episode-btn ${vistos[ep.number] ? 'ep-visto' : 'ep-no-visto'}`;
       btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
 
-      // Verifica si ya fue marcado como visto
-      if (vistos[ep.number]) {
-        btn.classList.remove("ep-no-visto");
-        btn.classList.add("ep-visto");
-      }
-
-      // Ícono de visto/no visto
+      // Ícono de visto/no visto con mejor manejo de eventos
       const icon = document.createElement("img");
-icon.className = "icon-eye";
-icon.src = vistos[ep.number] ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
-icon.alt = "visto";
+      icon.className = "icon-eye";
+      icon.src = vistos[ep.number] ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
+      icon.alt = "visto";
 
-icon.onclick = (e) => {
-  e.stopPropagation();
-  const esVisto = btn.classList.toggle("ep-visto");
-  btn.classList.toggle("ep-no-visto");
-  icon.src = esVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
-  guardarEstado(ep.number, esVisto);
-};
+      const toggleEpisodeState = () => {
+        const esVisto = btn.classList.toggle("ep-visto");
+        btn.classList.toggle("ep-no-visto");
+        icon.src = esVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
+        guardarEstado(ep.number, esVisto);
+      };
 
-
+      icon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleEpisodeState();
+      });
 
       btn.appendChild(icon);
 
       // Al hacer clic en el botón, redirigir al episodio
-      btn.onclick = () => {
+      btn.addEventListener('click', () => {
         window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
-      };
+      });
 
       li.appendChild(btn);
-      capContenedor.appendChild(li);
+      fragmentEpisodios.appendChild(li);
     });
+
+    // Añadir todos los episodios de una vez para mejor rendimiento
+    capContenedor.appendChild(fragmentEpisodios);
   })
   .catch(err => {
     console.error("Error al cargar datos del anime:", err);
