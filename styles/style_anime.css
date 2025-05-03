@@ -229,7 +229,7 @@ h2 {
     width: 100%;
     display: flex;
     flex:1;
-    min-height: 50px;
+    min-height: 60px;
 }
 .episode-btn {
   background-color: transparent;
