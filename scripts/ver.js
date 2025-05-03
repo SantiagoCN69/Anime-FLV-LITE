@@ -85,7 +85,7 @@ async function cargarVideoDesdeEpisodio(index) {
   controles.innerHTML = "";
   embeds.forEach((srv, i) => {
     const btn = document.createElement("button");
-    btn.textContent = `Servidor ${i + 1}`;
+    btn.textContent = `${i + 1}`;
     btn.dataset.link = srv;
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
