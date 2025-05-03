@@ -52,7 +52,7 @@ h2 {
   .anime-details {
     display: grid;
     grid-template-columns: 28% 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 1fr 3fr;
     grid-template-areas: 
     "container1 container2"
     "container1 container3";
@@ -121,7 +121,6 @@ h2 {
     background: #fb3447;
   }
 
-  
   .anime-container2 {
     justify-content: start;
     display: flex;
@@ -132,7 +131,6 @@ h2 {
     padding-inline: 1rem;
   }
 
-  
   .anime-title {
     color: #e76f51;
     font-size: 1.8rem;
@@ -149,8 +147,6 @@ h2 {
     color: #fff;
     overflow-y: auto;
     scrollbar-width: none;
-    
-
 }
     
   .anime-container3 {
