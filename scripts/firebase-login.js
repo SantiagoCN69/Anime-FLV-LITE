@@ -56,7 +56,6 @@ document.head.appendChild(scriptApp);
               refUsuario.set({
                 nombre: user.displayName,
                 email: user.email,
-                foto: user.photoURL,
                 creado: firebase.firestore.FieldValue.serverTimestamp()
               });
             }
