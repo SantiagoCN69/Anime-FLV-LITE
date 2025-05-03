@@ -329,7 +329,7 @@ h2 {
   overflow: visible;
 }
   /* Caja de búsqueda */
-  .header-caps .search {
+  .header-caps .search-caps {
     
     position: absolute;
     width: 100%;
@@ -342,7 +342,7 @@ h2 {
     will-change: transform;
   }
 
-  .header-caps.search-active .search {
+  .header-caps.search-active .search-caps {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
