@@ -22,7 +22,11 @@ main {
     height: 100vh;
   }
 }
-
+@media screen and (max-width:600px){
+  main {
+    flex-direction: column;
+  }
+}
 main section:nth-child(1) {
   flex: 2;
   display: flex;
