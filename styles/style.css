@@ -112,9 +112,12 @@ header {
 #busqueda::placeholder {
   color: #fff8
 }
+button:hover {
+  opacity: .8;
+}
 #btn-login {
     margin-left: 15px;
-    padding: 8px 12px;
+    padding: 12px 16px;
     background-color: #e76f51;
     color: #ffffff;
     border: none;
@@ -123,20 +126,19 @@ header {
     transition: transform 0.2s;
     display: flex;
     align-items: center;
-    justify-content: center;
-}
-button:hover {
-    opacity: .8;
 }
 #btn-login::before {
-    content: url('../icons/circle-user-regular.svg');
-    width: 30px;
-    height: 30px;
+    content: url('../icons/user-solid.svg');
+    width: 20px;
+    height: 20px;
+    padding-bottom: 4px;
     filter: invert(100%);
 }
 #btn-login::after {
     content: "Login";
     margin-left: 10px;
+    font-size: 1rem;
+    font-weight: bold;
 }
 #btn-search, #btn-close-search {
   display: none;
