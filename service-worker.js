@@ -1,43 +1,41 @@
-const CACHE_NAME = 'anime-flv-lite-v56';
-const urlsToCache = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/anime.html',
-    '/ver.html'
+const CACHE_NAME = 'mi-cache-v1'; // Cambia la versión para forzar limpieza
+const ARCHIVOS_CACHE = [
+  '/', // agrega aquí tus rutas y archivos
+  '/index.html',
+  '/styles.css',
+  '/script.js',
+  '/logo.png',
 ];
 
-self.addEventListener('install', (event) => {
-    // Forzar la activación inmediata del nuevo service worker
-    self.skipWaiting();
-
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(urlsToCache))
-    );
+// Instala y guarda archivos
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(ARCHIVOS_CACHE);
+    })
+  );
 });
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    // Eliminar cachés que no sean la versión actual
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+// Activa y elimina caches antiguos
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
         })
-    );
+      );
+    })
+  );
 });
 
-self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // Devolver respuesta en caché o hacer fetch
-                return response || fetch(event.request);
-            })
-    );
+// Intercepta peticiones
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(res => {
+      return res || fetch(e.request);
+    })
+  );
 });

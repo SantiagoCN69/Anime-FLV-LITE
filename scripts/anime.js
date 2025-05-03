@@ -13,6 +13,7 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
     const capContenedor = document.getElementById("capitulos");
     const filtroCapitulo = document.getElementById("filtro-capitulo");
 
+    // Scroll horizontal con la rueda del mouse
     capContenedor.addEventListener("wheel", function (e) {
       e.preventDefault();
       const columnas = this.querySelectorAll("li");
@@ -26,6 +27,7 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
     }, { passive: false });
 
+    // Filtro de capítulos
     filtroCapitulo.addEventListener("input", function () {
       const filtro = this.value.toLowerCase();
       const botones = capContenedor.querySelectorAll(".episode-btn");
@@ -43,14 +45,44 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       }
     });
 
+    // Cargar vistos desde localStorage
+    const vistos = cargarEstado();
+
+    // Crear botones de episodios
     anime.episodes.forEach(ep => {
       const li = document.createElement("li");
       const btn = document.createElement("button");
-      btn.className = "episode-btn";
+      btn.className = "episode-btn ep-no-visto";
       btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
+
+      // Verifica si ya fue marcado como visto
+      if (vistos[ep.number]) {
+        btn.classList.remove("ep-no-visto");
+        btn.classList.add("ep-visto");
+      }
+
+      // Ícono de visto/no visto
+      const icon = document.createElement("img");
+icon.className = "icon-eye";
+icon.src = vistos[ep.number] ? "/icons/eye-slash-solid.svg" : "/icons/eye-solid.svg";
+icon.alt = "visto";
+
+icon.onclick = (e) => {
+  e.stopPropagation();
+  const esVisto = btn.classList.toggle("ep-visto");
+  btn.classList.toggle("ep-no-visto");
+  icon.src = esVisto ? "/icons/eye-slash-solid.svg" : "/icons/eye-solid.svg";
+  guardarEstado(ep.number, esVisto);
+};
+
+
+      btn.appendChild(icon);
+
+      // Al hacer clic en el botón, redirigir al episodio
       btn.onclick = () => {
         window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
       };
+
       li.appendChild(btn);
       capContenedor.appendChild(li);
     });
@@ -72,21 +104,29 @@ document.getElementById('btn-close-search-capitulo').addEventListener('click', f
   document.getElementById('filtro-capitulo').value = "";
 });
 
-
-//altura del container 1
+// Altura del container 1
 document.addEventListener('DOMContentLoaded', () => {
-  // Función para establecer la altura del container 1 como variable CSS
   function setContainerHeight() {
-      const container1 = document.querySelector('.anime-container1');
-      if (container1) {
-          const height = container1.offsetHeight;
-          document.documentElement.style.setProperty('--altura-container-1', `${height}px`);
-      }
+    const container1 = document.querySelector('.anime-container1');
+    if (container1) {
+      const height = container1.offsetHeight;
+      document.documentElement.style.setProperty('--altura-container-1', `${height}px`);
+    }
   }
 
-  // Llamar a la función inicialmente
   setContainerHeight();
-
-  // Volver a calcular la altura si cambia el tamaño de la ventana
   window.addEventListener('resize', setContainerHeight);
 });
+
+// Funciones para localStorage
+function guardarEstado(epNum, visto) {
+  const clave = `anime-${id}`;
+  const data = JSON.parse(localStorage.getItem(clave)) || {};
+  data[epNum] = visto;
+  localStorage.setItem(clave, JSON.stringify(data));
+}
+
+function cargarEstado() {
+  const clave = `anime-${id}`;
+  return JSON.parse(localStorage.getItem(clave)) || {};
+}
