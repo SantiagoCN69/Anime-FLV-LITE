@@ -1,5 +1,53 @@
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { firebaseConfig } from "./firebaseconfig.js";
+
+// Inicializar Firebase
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 const id = new URLSearchParams(location.search).get("id");
 
+// Función para alternar favoritos
+async function toggleFavoritoAnime(animeId, titulo) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.log("Usuario no autenticado");
+    throw "Usuario no autenticado";
+  }
+
+  const ref = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), animeId);
+  const docSnap = await getDoc(ref);
+
+  if (docSnap.exists()) {
+    await deleteDoc(ref);
+    return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
+  } else {
+    await setDoc(ref, { titulo, fechaAgregado: serverTimestamp() });
+    return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
+  }
+}
+
+// Obtener lista de favoritos
+async function obtenerFavoritosAnime() {
+  const user = auth.currentUser;
+  if (!user) return [];
+
+  const ref = collection(doc(db, "usuarios", user.uid), "favoritos");
+  const snap = await getDocs(ref);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+// Detectar cambios de sesión
+onAuthStateChanged(auth, user => {
+  if (user) {
+    actualizarEstadoFavorito();
+  }
+});
+
+// Cargar información del anime
 document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
 
 fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
@@ -131,3 +179,34 @@ function cargarEstado() {
   const clave = `anime-${id}`;
   return JSON.parse(localStorage.getItem(clave)) || {};
 }
+
+// Botón de favoritos
+const btnFav = document.getElementById('btn-fav');
+
+// Función para actualizar botón de favorito
+function actualizarEstadoFavorito() {
+  obtenerFavoritosAnime()
+    .then(favoritos => {
+      const esFavorito = favoritos.some(f => f.id === id);
+      btnFav.classList.toggle("favorito", esFavorito);
+      btnFav.textContent = esFavorito ? "FAVORITO" : "FAV";
+    });
+}
+
+btnFav.addEventListener("click", () => {
+  const titulo = document.getElementById("titulo").textContent;
+
+  btnFav.disabled = true; // 🔴 Desactiva el botón
+
+  toggleFavoritoAnime(id, titulo)
+    .then(res => {
+      console.log(res.mensaje);
+      actualizarEstadoFavorito();
+    })
+    .catch(err => {
+      console.error("Error al cambiar favorito:", err);
+    })
+    .finally(() => {
+      btnFav.disabled = false; // ✅ Vuelve a activarlo
+    });
+});
