@@ -244,6 +244,9 @@ h2 {
   align-items: center;
   position: relative;
   padding-inline: 15px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .icon-eye {
@@ -255,9 +258,17 @@ h2 {
   height: 25px;
   cursor: pointer;
 }
+
+.ep-visto .icon-eye {
+  filter: invert(50%) sepia(71%) saturate(653%) hue-rotate(326deg) brightness(97%) contrast(90%);
+}
+.ep-no-visto .icon-eye {
+  filter: invert(60%)
+}
 @media screen and (hover:hover) {
 .episode-btn:hover {
-    color: #ff5656;
+    color: #fa7171;
+    opacity: .8;
 }
 }
 #btn-search-capitulo, #btn-close-search-capitulo {
