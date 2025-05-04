@@ -116,10 +116,10 @@ button:hover {
   opacity: .8;
 }
 #btn-login {
-    padding: 7px 16px;
-    background-color: #e76f51;
+    padding: 6px 16px;
+    background-color: transparent;
     color: #ffffff;
-    border: none;
+    border: 1px solid #fff8;
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -133,7 +133,7 @@ button:hover {
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  padding: 3px 0 7px 0 ;
+  padding: 2px 0 6px 0 ;
 }
 
 #btn-login.logged-in::before {
@@ -141,7 +141,7 @@ button:hover {
   background-image: var(--user-photo, url('../icons/user-solid.svg'));
   width: 32px;
   height: 32px;
-  padding: 0 1px;
+  padding: 0 0;
 }
 #btn-login.logged-in::after {
   content: attr(data-username);
@@ -161,9 +161,52 @@ button:hover {
   display: none;
 }
 
+/* Esconde el botón de menú en PC */
+#menu-toggle {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-bottom:4px;
+}
+
+#menu-toggle::before {
+  content: url('../icons/bars-solid.svg');
+  width: 25px;
+  height: 25px;
+  display: block;
+}
+/* Sidebar oculto por defecto en móvil */
+.sidebar {
+  transition: transform 0.3s ease;
+}
+
 @media screen and (max-width: 600px) {
   header {
     padding: 3.5rem 1rem 4rem 1rem;
+  }
+  #menu-toggle {
+    display: inline-block;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 120px;
+    left: 0;
+    width: 70%;
+    height: calc(100dvh - 120px);
+    background: #1c1c2b;
+    padding: 1rem;
+    transform: translateX(-120%);
+    z-index: 1000;
+    overflow-y: auto;
+
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
   }
   #btn-login::after {
     display: none;
@@ -171,7 +214,7 @@ button:hover {
   #btn-search, #btn-close-search {
     display: block;
   }
-.title,#btn-login,#btn-search {
+.title,#btn-login,#btn-search,#menu-toggle {
   transition: transform .2s;
   transform: translateY(0);
 }
@@ -187,8 +230,8 @@ button:hover {
 
 #btn-search::before {
   content: url('../icons/magnifying-glass-solid.svg');
-  width: 24px;
-  height: 24px;
+  width: 25px;
+  height: 25px;
   filter: invert(100%);
 }
 
@@ -197,6 +240,7 @@ button:hover {
   background-color: transparent;
   margin: 0;
   padding: 0;
+  border: none;
 }
 
 
@@ -208,7 +252,8 @@ button:hover {
 /* Al hacer clic en el search */
 header.search-active .title,
 header.search-active #btn-search,
-header.search-active #btn-login {
+header.search-active #btn-login,
+header.search-active #menu-toggle {
   transform: translateY(-100px);
 }
 
@@ -257,13 +302,97 @@ header.search-active .search {
 }
 }
 
-      
+      /* Estructura principal */
+main {
+  display: flex;
+  min-height: calc(100vh - 120px);
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar (barra lateral izquierda) */
+.sidebar {
+  width: 220px;
+  padding: 1rem;
+  min-height: 100%;
+  box-shadow: 2px 5px 5px #00000080;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar li {
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.sidebar li:hover {
+  background: #777a;
+}
+
+/* Contenido principal */
+.content-section {
+  flex-grow: 1;
+  padding: 1rem;
+  display: block;
+}
+
+/* Ocultar secciones */
+.hidden {
+  display: none;
+}
+
+/* Títulos */
+.content-section h2 {
+  margin: 1rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #444;
+  padding-bottom: 0.5rem;
+}
+/* Estilos para el bloque "Continuar viendo" */
+.sidebar h3 {
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+  color: #aaa;
+}
+
+#ultimos-caps-viendo {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#ultimos-caps-viendo .cap-item {
+  background: #2a2a2a;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#ultimos-caps-viendo .cap-item:hover {
+  background: #3a3a3a;
+}
 #main {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
     margin: 0 auto;
-    width: clamp(0px, 95%, 1000px);
+    width: clamp(0px, 100%, 1000px);
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;

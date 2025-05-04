@@ -31,15 +31,57 @@
             <input type="text" id="busqueda" placeholder="Buscar anime...">
             <button id="btn-close-search" title="Cerrar búsqueda"></button>
         </div>
-        <button id="btn-login" title="Iniciar sesión"></button>
-        <button id="btn-search" title="Buscar anime"></button>
+        <button type="button" id="btn-login" title="Iniciar sesión"></button>
+        <button type="button" id="btn-search" title="Buscar anime"></button>
+        <button type="button" id="menu-toggle" title="Menú"></button>
+
     </header>
 
-    <div id="main"></div>
+    <main>
+        <section class="sidebar">
+          <ul>
+            <li data-target="main-container">Últimos Episodios</li>
+            <li data-target="favs-container">Mis Favoritos</li>
+            <li data-target="viendo-container">Viendo</li>
+            <li data-target="pendientes-container">Pendientes</li>
+            <li data-target="completados-container">Completados</li>
+          </ul>
+          <div>
+            <h3>Continuar viendo</h3>
+            <div id="ultimos-caps-viendo">
+                <!-- se agregan los ultimos caps viendo -->
+            </div>
+          </div>
+        </section>
+      
+        <section id="main-container" class="content-section">
+          <h2>Últimos Episodios</h2>
+          <div id="main"></div>
+        </section>
+      
+        <section id="favs-container" class="content-section hidden">
+          <h2>Mis Favoritos</h2>
+          <div id="favs"></div>
+        </section>
+      
+        <section id="viendo-container" class="content-section hidden">
+          <h2>Viendo</h2>
+          <div id="viendo"></div>
+        </section>
+      
+        <section id="pendientes-container" class="content-section hidden">
+          <h2>Pendientes</h2>
+          <div id="pendientes"></div>
+        </section>
+      
+        <section id="completados-container" class="content-section hidden">
+          <h2>Completados</h2>
+          <div id="completados"></div>
+        </section>
+      </main>
+      
 
-    <footer>
-        Desarrollado por Santiago Cardona 😼
-    </footer>
+
 
     <!-- <script>
         if ('serviceWorker' in navigator) {

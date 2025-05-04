@@ -119,3 +119,54 @@ function extraerIdDeLink(link) {
 function ver(id) {
   location.href = `anime.html?id=${id}`;
 }
+
+
+// Toggle del menú
+document.addEventListener("DOMContentLoaded", () => {
+  const menuBtn = document.getElementById("menu-toggle");
+  const sidebar = document.querySelector(".sidebar");
+
+  menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+  });
+
+  // Opcional: ocultar sidebar al hacer clic en una opción
+  document.querySelectorAll(".sidebar li").forEach(item => {
+    item.addEventListener("click", () => {
+      if (window.innerWidth <= 600) {
+        sidebar.classList.remove("active");
+      }
+    });
+  });
+
+  // Ocultar sidebar al hacer scroll en dispositivos móviles
+  window.addEventListener("scroll", () => {
+    if (window.innerWidth <= 600 && sidebar.classList.contains("active")) {
+      sidebar.classList.remove("active");
+    }
+  });
+
+  // Cerrar sidebar al hacer clic fuera de él
+  document.addEventListener("click", (event) => {
+    if (!sidebar.contains(event.target) && !menuBtn.contains(event.target) && sidebar.classList.contains("active")) {
+      sidebar.classList.remove("active");
+    }
+  });
+});
+
+//sidebar
+const menuItems = document.querySelectorAll(".sidebar li");
+const sections = document.querySelectorAll(".content-section");
+
+menuItems.forEach(item => {
+  item.addEventListener("click", () => {
+    const targetId = item.getAttribute("data-target");
+
+    sections.forEach(sec => {
+      sec.classList.add("hidden");
+    });
+
+    document.getElementById(targetId).classList.remove("hidden");
+  });
+});
+
