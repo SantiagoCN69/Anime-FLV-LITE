@@ -20,6 +20,11 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
   .then(async anime => {
     // Guardar datos del anime en Firestore
     try {
+      if (!id) {
+        console.error('ID de anime no válido');
+        return;
+      }
+
       const datosAnime = {
         titulo: anime.title || '',
         portada: anime.cover || '',
@@ -33,11 +38,14 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         tipo: anime.type || '',
         estado: anime.status || '',
         fechaEstreno: anime.premiered || '',
-        calificacion: anime.score || null
+        calificacion: anime.score || null,
+        fechaGuardado: serverTimestamp(), // Añade timestamp de guardado
+        fuenteDatos: 'AnimeFlv' // Opcional: añade la fuente de los datos
       };
 
       const animeDatosRef = doc(db, 'datos-animes', id);
       await setDoc(animeDatosRef, datosAnime, { merge: true });
+      console.log(`Datos del anime ${anime.title} guardados exitosamente`);
     } catch (error) {
       console.error('Error al guardar datos del anime en Firestore:', error);
     }

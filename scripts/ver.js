@@ -215,6 +215,41 @@ async function cargarVideoDesdeEpisodio(index) {
     return;
   }
 
+  // Guardar servidores en el objeto del episodio
+  ep.servidores = data.servidores.map((servidor, index) => ({
+    nombre: `Servidor ${index + 1}`,
+    url: servidor
+  }));
+
+  // Actualizar episodios en Firestore
+  try {
+    const animeDatosRef = doc(db, 'datos-animes', animeId);
+    const animeDatosSnap = await getDoc(animeDatosRef);
+    const animeDatos = animeDatosSnap.data() || {};
+
+    // Actualizar el episodio específico en el array de episodios
+    if (!animeDatos.episodios) animeDatos.episodios = [];
+    const episodioIndex = animeDatos.episodios.findIndex(e => e.url === ep.url);
+    
+    if (episodioIndex !== -1) {
+      animeDatos.episodios[episodioIndex] = {
+        ...animeDatos.episodios[episodioIndex],
+        servidores: ep.servidores
+      };
+    } else {
+      animeDatos.episodios.push({
+        ...ep,
+        servidores: ep.servidores
+      });
+    }
+
+    // Guardar los datos actualizados
+    await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
+    console.log(`Servidores del episodio ${ep.number} guardados en Firestore`);
+  } catch (error) {
+    console.error('Error al guardar servidores en Firestore:', error);
+  }
+
   embeds = data.servidores;
   episodioActualIndex = index;
 
