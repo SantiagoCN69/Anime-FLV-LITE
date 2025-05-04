@@ -59,33 +59,35 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
     const filtroCapitulo = document.getElementById("filtro-capitulo");
 
     // Scroll horizontal con la rueda del mouse
-    capContenedor.addEventListener("wheel", function (e) {
-      e.preventDefault();
-      const columnas = this.querySelectorAll("li");
-      if (columnas.length === 0) return;
-      const anchoColumna = columnas[0].offsetWidth;
-      const direccion = e.deltaY > 0 ? 1 : -1;
-      const scrollActual = this.scrollLeft;
-      const columnaActual = Math.floor(scrollActual / anchoColumna);
-      const nuevoScroll = (columnaActual + direccion) * anchoColumna;
-      const scrollMaximo = (columnas.length - 1) * anchoColumna;
-      this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
-    }, { passive: false });
+capContenedor.addEventListener("wheel", function (e) {
+  e.preventDefault();
+  const columnas = this.querySelectorAll("li");
+  if (columnas.length === 0) return;
+  const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
+  const direccion = e.deltaY > 0 ? 1 : -1;
+  const scrollActual = this.scrollLeft;
+  const columnaActual = Math.floor(scrollActual / anchoColumna);
+  const nuevoScroll = (columnaActual + direccion) * anchoColumna;
+  const scrollMaximo = (columnas.length - 1) * anchoColumna;
+  this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
+}, { passive: false });
 
-    // Ajustar scroll a columna completa al terminar
-    capContenedor.addEventListener('scrollend', function() {
-      const columnas = this.querySelectorAll("li");
-      if (columnas.length === 0) return;
-      const anchoColumna = columnas[0].offsetWidth;
-      const scrollActual = this.scrollLeft;
-      const columnaActual = Math.round(scrollActual / anchoColumna);
-      const nuevoScroll = columnaActual * anchoColumna;
-      
-      this.scrollTo({
-        left: nuevoScroll,
-        behavior: 'smooth'
-      });
-    });
+// Ajustar scroll a columna completa al terminar
+capContenedor.addEventListener('scrollend', function() {
+  const columnas = this.querySelectorAll("li");
+  if (columnas.length === 0) return;
+  const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
+  const scrollActual = this.scrollLeft;
+  const columnaActual = Math.round(scrollActual / anchoColumna);
+  const nuevoScroll = columnaActual * anchoColumna;
+
+  // Añadir un pequeño margen de corrección para evitar desvíos
+  this.scrollTo({
+    left: nuevoScroll + 0.1,  // Ajuste ligero para evitar desvíos
+    behavior: 'smooth'
+  });
+});
+
 
     // Filtro de capítulos
     filtroCapitulo.addEventListener("input", function () {
