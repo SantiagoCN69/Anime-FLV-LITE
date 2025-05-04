@@ -142,6 +142,10 @@ function actualizarEstadoFavorito() {
 }
 
 btnFav.addEventListener("click", () => {
+  if (!auth.currentUser) {
+    alert("Debes iniciar sesión para agregar a favoritos.");
+    return;
+  }
   const titulo = document.getElementById("titulo").textContent;
 
   btnFav.disabled = true;
