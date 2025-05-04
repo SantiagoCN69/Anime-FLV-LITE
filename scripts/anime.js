@@ -40,6 +40,21 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
     }, { passive: false });
 
+    // Ajustar scroll a columna completa al terminar
+    capContenedor.addEventListener('scrollend', function() {
+      const columnas = this.querySelectorAll("li");
+      if (columnas.length === 0) return;
+      const anchoColumna = columnas[0].offsetWidth;
+      const scrollActual = this.scrollLeft;
+      const columnaActual = Math.round(scrollActual / anchoColumna);
+      const nuevoScroll = columnaActual * anchoColumna;
+      
+      this.scrollTo({
+        left: nuevoScroll,
+        behavior: 'smooth'
+      });
+    });
+
     // Filtro de capítulos
     filtroCapitulo.addEventListener("input", function () {
       const filtro = this.value.toLowerCase();
