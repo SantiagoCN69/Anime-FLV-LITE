@@ -306,17 +306,44 @@ function actualizarEstadoBotones() {
   btnSiguiente.classList.toggle('desactivado', episodioActualIndex >= episodios.length - 1);
 }
 
-btnSiguiente.addEventListener("click", e => {
+// Configurar navegación de botones
+btnSiguiente.addEventListener("click", async (e) => {
   e.preventDefault();
   if (episodioActualIndex < episodios.length - 1) {
-    cargarVideoDesdeEpisodio(episodioActualIndex + 1).then(actualizarEstadoBotones);
+    // Marcar como visto con el botón de siguiente
+    const titulo = tituloAnime.textContent;
+    const episodioActual = episodios[episodioActualIndex];
+    const episodioId = String(episodioActual.number || episodioActual.title);
+
+    try {
+      await toggleCapituloVisto(animeId, titulo, episodioId, true);
+      await actualizarEstadoCapitulo();
+    } catch (error) {
+      console.error("Error al marcar capítulo", error);
+    }
+
+    await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
+    actualizarEstadoBotones();
   }
 });
 
-btnAnterior.addEventListener("click", e => {
+btnAnterior.addEventListener("click", async (e) => {
   e.preventDefault();
   if (episodioActualIndex > 0) {
-    cargarVideoDesdeEpisodio(episodioActualIndex - 1).then(actualizarEstadoBotones);
+    // Desmarcar el capítulo actual
+    const titulo = tituloAnime.textContent;
+    const episodioActual = episodios[episodioActualIndex];
+    const episodioId = String(episodioActual.number || episodioActual.title);
+
+    try {
+      await toggleCapituloVisto(animeId, titulo, episodioId, false);
+      await actualizarEstadoCapitulo();
+    } catch (error) {
+      console.error("Error al desmarcar capítulo", error);
+    }
+
+    await cargarVideoDesdeEpisodio(episodioActualIndex - 1);
+    actualizarEstadoBotones();
   }
 });
 
