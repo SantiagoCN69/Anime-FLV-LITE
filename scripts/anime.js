@@ -10,42 +10,7 @@ const db = getFirestore(app);
 
 const id = new URLSearchParams(location.search).get("id");
 
-// Función para alternar favoritos
-async function toggleFavoritoAnime(animeId, titulo) {
-  const user = auth.currentUser;
-  if (!user) {
-    console.log("Usuario no autenticado");
-    throw "Usuario no autenticado";
-  }
 
-  const ref = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), animeId);
-  const docSnap = await getDoc(ref);
-
-  if (docSnap.exists()) {
-    await deleteDoc(ref);
-    return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
-  } else {
-    await setDoc(ref, { titulo, fechaAgregado: serverTimestamp() });
-    return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
-  }
-}
-
-// Obtener lista de favoritos
-async function obtenerFavoritosAnime() {
-  const user = auth.currentUser;
-  if (!user) return [];
-
-  const ref = collection(doc(db, "usuarios", user.uid), "favoritos");
-  const snap = await getDocs(ref);
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-}
-
-// Detectar cambios de sesión
-onAuthStateChanged(auth, user => {
-  if (user) {
-    actualizarEstadoFavorito();
-  }
-});
 
 // Cargar información del anime
 document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
@@ -93,28 +58,24 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       }
     });
 
-    // Cargar vistos desde localStorage
-    const vistos = cargarEstado();
-
     // Crear botones de episodios con fragmento para mejor rendimiento
     const fragmentEpisodios = document.createDocumentFragment();
     anime.episodes.forEach(ep => {
       const li = document.createElement("li");
       const btn = document.createElement("button");
-      btn.className = `episode-btn ${vistos[ep.number] ? 'ep-visto' : 'ep-no-visto'}`;
+      btn.className = `episode-btn ep-no-visto`;
       btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
 
       // Ícono de visto/no visto con mejor manejo de eventos
       const icon = document.createElement("img");
       icon.className = "icon-eye";
-      icon.src = vistos[ep.number] ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
+      icon.src = "/icons/eye-slash-solid.svg";
       icon.alt = "visto";
 
       const toggleEpisodeState = () => {
         const esVisto = btn.classList.toggle("ep-visto");
         btn.classList.toggle("ep-no-visto");
         icon.src = esVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
-        guardarEstado(ep.number, esVisto);
       };
 
       icon.addEventListener('click', (e) => {
@@ -167,19 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', setContainerHeight);
 });
 
-// Funciones para localStorage
-function guardarEstado(epNum, visto) {
-  const clave = `anime-${id}`;
-  const data = JSON.parse(localStorage.getItem(clave)) || {};
-  data[epNum] = visto;
-  localStorage.setItem(clave, JSON.stringify(data));
-}
-
-function cargarEstado() {
-  const clave = `anime-${id}`;
-  return JSON.parse(localStorage.getItem(clave)) || {};
-}
-
 // Botón de favoritos
 const btnFav = document.getElementById('btn-fav');
 
@@ -210,7 +158,42 @@ btnFav.addEventListener("click", () => {
       btnFav.disabled = false;
     });
 });
+// Función para alternar favoritos
+async function toggleFavoritoAnime(animeId, titulo) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.log("Usuario no autenticado");
+    throw "Usuario no autenticado";
+  }
 
+  const ref = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), animeId);
+  const docSnap = await getDoc(ref);
+
+  if (docSnap.exists()) {
+    await deleteDoc(ref);
+    return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
+  } else {
+    await setDoc(ref, { titulo, fechaAgregado: serverTimestamp() });
+    return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
+  }
+}
+
+// Obtener lista de favoritos
+async function obtenerFavoritosAnime() {
+  const user = auth.currentUser;
+  if (!user) return [];
+
+  const ref = collection(doc(db, "usuarios", user.uid), "favoritos");
+  const snap = await getDocs(ref);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+// Detectar cambios de sesión
+onAuthStateChanged(auth, user => {
+  if (user) {
+    actualizarEstadoFavorito();
+  }
+});
 
 // Estados de visualización del anime
 const btnEstado = document.getElementById('btn-estado');
@@ -248,12 +231,11 @@ async function limpiarEstadosPrevios() {
   }
 }
 
-// Función para actualizar el botón visual
-async function actualizarBotonEstado() {
-  const estadoActual = await obtenerEstadoActual();
-  btnEstado.textContent = estadoActual;
+// Función para actualizar el botón visual inmediatamente
+async function actualizarBotonEstado(estado) {
+  btnEstado.textContent = estado;
   btnEstado.className = "";
-  btnEstado.classList.add(CLASES_ESTADOS[estadoActual] || "estado-default");
+  btnEstado.classList.add(CLASES_ESTADOS[estado] || "estado-default");
 }
 
 // Evento para cambiar de estado cíclicamente
@@ -268,6 +250,9 @@ btnEstado.addEventListener("click", async () => {
   const indiceActual = ESTADOS_ANIME.indexOf(estadoActual);
   const siguienteEstado = ESTADOS_ANIME[(indiceActual + 1) % ESTADOS_ANIME.length];
 
+  // Actualizar visualmente antes de guardar en Firestore
+  actualizarBotonEstado(siguienteEstado);
+
   await limpiarEstadosPrevios();
 
   if (["VIENDO", "PENDIENTE", "VISTO"].includes(siguienteEstado)) {
@@ -277,11 +262,14 @@ btnEstado.addEventListener("click", async () => {
       fechaAgregado: serverTimestamp()
     });
   }
-
-  actualizarBotonEstado();
 });
 
-// Cargar estado al iniciar sesión
-onAuthStateChanged(auth, (user) => {
-  if (user) actualizarBotonEstado();
+// Cargar estado al iniciar sesión 
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const estado = await obtenerEstadoActual();
+    actualizarBotonEstado(estado);
+  }
 });
+
+//capitulos vistos

@@ -107,6 +107,10 @@ h2 {
     border-radius: 5px;
     border: none;
     color: #fff;
+    transition: background 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   #btn-fav {
@@ -121,7 +125,7 @@ h2 {
 
   #btn-fav.favorito {
 
-    background: #fb3447; /* Rojo más intenso para estado de favorito */
+    background: #fb3447; 
   }
   #btn-fav.favorito::before {
     content: url('../icons/star-solid.svg');
@@ -132,35 +136,73 @@ h2 {
   }
   #btn-estado {
     grid-area: estado;
-    display: block;
     transition: background 0.3s ease;
     background: #6c757d;
-  }
-
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:5px
+    }
+#btn-estado:hover {
+    opacity: 1;
+    }
   /* Estados del botón */
   #btn-estado.estado-default {
-    background: #6c757d; /* Gris neutro */
+    background: #6c757d; 
   }
 
   #btn-estado.estado-viendo {
-    background: #17a2b8; /* Azul claro */
-    box-shadow: 0 0 10px rgba(23, 162, 184, 0.5);
+    background: #22cee9;
+  }
+  #btn-estado.estado-viendo::after {
+    content: url('../icons/eye-solid.svg');
+    width: 17px;
+    height: 17px;
+    display: block;
+    filter: invert(100%);
   }
 
   #btn-estado.estado-pendiente {
-    background: #ffc107; /* Amarillo */
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    background: #ffc107;
+  }
+  #btn-estado.estado-pendiente::after {
+    content: url('../icons/clock-solid.svg');
+    width: 17px;
+    height: 17px;
+    display: block;
+    filter: invert(100%);
   }
 
   #btn-estado.estado-completado {
-    background: #28a745; /* Verde */
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
-  }
-  #btn-progreso {
-    grid-area: progreso;
     background: #00c853;
   }
 
+  #btn-estado.estado-completado::after {
+    content: url('../icons/circle-check-solid.svg');
+    width: 17px;
+    height: 17px;
+    display: block;
+    
+  }
+  #btn-progreso {
+    grid-area: progreso;
+    background: #6c757d;
+    position: relative;
+    --progreso-text: "0%";
+    --progreso: 0;
+  }
+#progreso {
+    position: absolute;
+    inset: 0;
+    width: calc(var(--progreso) * 1%);
+    height: 100%;
+    background-color: #59b2ff;
+    border-radius: 5px;
+    overflow: hidden;
+}
   .anime-container2 {
     justify-content: start;
     display: flex;
