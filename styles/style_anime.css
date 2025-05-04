@@ -191,7 +191,7 @@ h2 {
     grid-area: progreso;
     background: #6c757d;
     position: relative;
-    --progreso-text: "10%";
+    --progreso-text: "0%";
     --progreso: 0;
   }
 #progreso {
