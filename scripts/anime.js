@@ -101,6 +101,17 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
     obtenerCapitulosVistos(id)
       .then(episodiosVistos => {
         actualizarProgresoCapitulos(anime.episodes.length, episodiosVistos);
+        
+        // Desplazar al primer episodio no visto
+        const botones = capContenedor.querySelectorAll('.episode-btn');
+        const primerEpisodioNoVisto = Array.from(botones).find(btn => !btn.classList.contains('ep-visto'));
+        
+        if (primerEpisodioNoVisto) {
+          primerEpisodioNoVisto.parentElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
       });
   })
   .catch(err => {
