@@ -27,6 +27,7 @@ function updateUIForUser(user) {
 
   if (user) {
     btnLogin.setAttribute('data-username', user.displayName);
+    btnLogin.style.setProperty('--user-photo', `url('${user.photoURL || '../icons/user-solid.svg'}')`);
     btnLogin.classList.add('logged-in');
   } else {
     btnLogin.style.setProperty('--user-photo', `url('../icons/user-solid.svg')`);

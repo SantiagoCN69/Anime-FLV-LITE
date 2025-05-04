@@ -79,7 +79,6 @@ header {
     padding: 3.5rem 2.5rem 4rem 2.5rem;
     width: 100%;
     margin: 0 auto;
-    margin-bottom: 1rem;
     height:5.5rem;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
@@ -128,10 +127,16 @@ button:hover {
     align-items: center;
 }
 #btn-login::before {
-  content: url('../icons/user-solid.svg');
-  width: 20px;
-  height: 20px;
-  padding-bottom: 4px;
+  content: '';
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+}
+
+#btn-login.logged-in::before {
+  background-image: var(--user-photo, url('../icons/user-solid.svg'));
 }
 #btn-login.logged-in::after {
   content: attr(data-username);
@@ -185,8 +190,6 @@ button:hover {
   padding: 0;
 }
 
-#btn-login::before {
-}
 
 #btn-login::after {
   content: "";
