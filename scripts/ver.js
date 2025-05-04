@@ -48,6 +48,148 @@ btnCensura.addEventListener("click", () => {
   reproductorContainer.classList.toggle("censure", censuraActiva);
 });
 
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { firebaseConfig } from "./firebaseconfig.js";
+
+// Inicialización de Firebase optimizada
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Función optimizada para alternar capítulos vistos
+async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Debes iniciar sesión para marcar capítulos.");
+    return false;
+  }
+
+  const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
+
+  try {
+    const docSnap = await getDoc(animeRef);
+    const datosActuales = docSnap.exists() ? docSnap.data() : {};
+    const episodiosActuales = new Set(datosActuales.episodiosVistos || []);
+
+    esVisto ? episodiosActuales.add(episodio.toString()) : episodiosActuales.delete(episodio.toString());
+
+    await setDoc(animeRef, { 
+      titulo, 
+      fechaAgregado: serverTimestamp(),
+      episodiosVistos: Array.from(episodiosActuales)
+    });
+
+    return esVisto;
+  } catch (error) {
+    console.error("Error al cambiar estado del capítulo:", error);
+    alert("Hubo un error al cambiar el estado del capítulo.");
+    return false;
+  }
+}
+
+// Función optimizada para obtener capítulos vistos
+async function obtenerCapitulosVistos(animeId) {
+  const user = auth.currentUser;
+  if (!user) return [];
+
+  try {
+    const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
+    const docSnap = await getDoc(animeRef);
+    return docSnap.exists() ? (docSnap.data().episodiosVistos || []) : [];
+  } catch (error) {
+    console.error("Error al obtener capítulos vistos:", error);
+    return [];
+  }
+}
+
+// Función para actualizar el estado del capítulo
+async function actualizarEstadoCapitulo() {
+  const user = auth.currentUser;
+  if (!user || !animeId || !episodios || episodios.length === 0) return;
+
+  try {
+    const capitulosVistos = await obtenerCapitulosVistos(animeId);
+    const episodioActual = episodios[episodioActualIndex];
+    const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
+    const textoEstado = document.getElementById("texto-estado-capitulo");
+
+    // Verificar que todos los elementos existan
+    if (!btnEstadoCapitulo || !textoEstado) {
+      console.warn("Elementos de estado no encontrados");
+      return;
+    }
+
+    // Crear ícono si no existe
+    let iconoVisto = document.getElementById("icon-estado-capitulo");
+    if (!iconoVisto) {
+      iconoVisto = document.createElement("img");
+      iconoVisto.id = "icon-estado-capitulo";
+      iconoVisto.src = "/icons/eye-slash-solid.svg";
+      btnEstadoCapitulo.appendChild(iconoVisto);
+    }
+
+    const episodioId = String(episodioActual.number || episodioActual.title);
+
+    console.log("Capítulos vistos:", capitulosVistos);
+    console.log("Episodio actual ID:", episodioId);
+
+    // Modificar para que siempre se actualice desde la base de datos
+    const estaVisto = capitulosVistos.includes(episodioId);
+    btnEstadoCapitulo.classList.toggle("visto", estaVisto);
+    
+    textoEstado.textContent = estaVisto ? "Visto" : "No visto";
+    textoEstado.classList.toggle("visto", estaVisto);
+    
+    // Actualizar ícono
+    iconoVisto.classList.toggle("visto", estaVisto);
+    iconoVisto.src = estaVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
+  } catch (error) {
+    console.error("Error al actualizar estado del capítulo:", error);
+  }
+}
+
+// Verificación de capítulos vistos al cargar
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await actualizarEstadoCapitulo();
+  }
+});
+
+// Función para esperar a que se carguen los episodios
+function esperarCargaEpisodios() {
+  return new Promise((resolve) => {
+    const checkEpisodios = () => {
+      if (episodios && episodios.length > 0) {
+        resolve();
+      } else {
+        setTimeout(checkEpisodios, 100);
+      }
+    };
+    checkEpisodios();
+  });
+}
+
+// Llamar a la función de actualización cuando se carga el contenido
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await esperarCargaEpisodios();
+    if (auth.currentUser) {
+      await actualizarEstadoCapitulo();
+    } else {
+      // Esperar autenticación
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          await actualizarEstadoCapitulo();
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error en la carga inicial:", error);
+  }
+});
+
 async function cargarEpisodios() {
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episodes?id=${animeId}`);
@@ -79,6 +221,31 @@ async function cargarVideoDesdeEpisodio(index) {
   const btnCap = document.getElementById("btn-cap");
   btnCap.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
 
+  // Configurar evento para cambiar estado de capítulo
+  const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
+  const textoEstado = document.getElementById("texto-estado-capitulo");
+  const iconoVisto = document.getElementById("icon-estado-capitulo");
+
+  if (!iconoVisto) {
+    const nuevoIconoVisto = document.createElement("img");
+    nuevoIconoVisto.id = "icon-estado-capitulo";
+    nuevoIconoVisto.src = "/icons/eye-slash-solid.svg";
+    btnEstadoCapitulo.appendChild(nuevoIconoVisto);
+  }
+
+  btnEstadoCapitulo.addEventListener("click", async () => {
+    const titulo = tituloAnime.textContent;
+    const esVisto = !iconoVisto.classList.contains("visto");
+    
+    try {
+      await toggleCapituloVisto(animeId, titulo, ep.number || ep.title, esVisto);
+      await actualizarEstadoCapitulo();
+    } catch (error) {
+      console.error("Error al cambiar estado del capítulo", error);
+    }
+  });
+
+  await actualizarEstadoCapitulo();
   history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${encodeURIComponent(ep.url)}`);
 
   const controles = document.getElementById("controles");
