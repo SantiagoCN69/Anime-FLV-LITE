@@ -90,6 +90,10 @@ function showLogoutModal() {
     setTimeout(() => modal.remove(), 300);
   };
 
+  // Cerrar modal al hacer scroll
+  const handleScroll = () => closeModal();
+  window.addEventListener('scroll', handleScroll, { once: true });
+
   document.getElementById('confirm-logout').addEventListener('click', async () => {
     await logoutConGoogle();
     closeModal();
