@@ -84,7 +84,7 @@ header {
     user-select: none;
     -webkit-user-select: none;
     position: relative;
-    background: linear-gradient(to bottom, #00000034 88%, transparent);
+    background-color: #1c1c2b;
 }
 .title {
     flex: 1;
