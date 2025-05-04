@@ -249,7 +249,7 @@ async function actualizarBotonEstado(estado) {
 }
 
 // Función para actualizar el progreso de capítulos vistos
-function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
+async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
   const progreso = (episodiosVistos.length / totalEpisodios) * 100;
   
   // Actualizar variables CSS para el progreso
@@ -259,7 +259,7 @@ function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
     progresoBtn.style.setProperty('--progreso-text', `"${progreso.toFixed(0)}%"`);
   }
   
-  // Opcional: Actualizar elemento de progreso visualmente
+  // Actualizar elemento de progreso visualmente
   const progresoElement = document.getElementById('progreso');
   if (progresoElement) {
     progresoElement.style.width = `${progreso}%`;
