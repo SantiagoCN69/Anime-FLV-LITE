@@ -408,7 +408,7 @@ h2 {
 
     .anime-container3 {
         width: 100%;
-        height: 500px;
+        max-height: 500px;
     }
    }
 /* Ocultar botones por defecto */

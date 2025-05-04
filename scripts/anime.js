@@ -277,18 +277,42 @@ async function actualizarBotonEstado(estado) {
 // Función para actualizar el progreso de capítulos vistos
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
   const progreso = (episodiosVistos.length / totalEpisodios) * 100;
-  
-  // Actualizar variables CSS para el progreso
+
+  // Actualizar variables CSS
   const progresoBtn = document.getElementById('btn-progreso');
   if (progresoBtn) {
     progresoBtn.style.setProperty('--progreso', progreso.toFixed(0));
     progresoBtn.style.setProperty('--progreso-text', `"${progreso.toFixed(0)}%"`);
   }
-  
-  // Actualizar elemento de progreso visualmente
+
+  // Actualizar visual del progreso
   const progresoElement = document.getElementById('progreso');
   if (progresoElement) {
     progresoElement.style.width = `${progreso}%`;
+  }
+
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const estadoActual = await obtenerEstadoActual();
+
+  if (progreso === 100 && estadoActual !== "VISTO") {
+    await limpiarEstadosPrevios();
+    const ref = doc(collection(doc(db, "usuarios", user.uid), "visto"), id);
+    await setDoc(ref, {
+      titulo: document.getElementById("titulo").textContent,
+      fechaAgregado: serverTimestamp()
+    });
+    actualizarBotonEstado("VISTO");
+
+  } else if (progreso < 100 && estadoActual !== "VIENDO") {
+    await limpiarEstadosPrevios();
+    const ref = doc(collection(doc(db, "usuarios", user.uid), "viendo"), id);
+    await setDoc(ref, {
+      titulo: document.getElementById("titulo").textContent,
+      fechaAgregado: serverTimestamp()
+    });
+    actualizarBotonEstado("VIENDO");
   }
 }
 
@@ -336,7 +360,7 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
   }
 
   // Referencia al documento de anime-vistos del usuario
-  const animeRef = doc(db, "usuarios", user.uid, "animes-vistos", animeId);
+  const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
 
   try {
     const docSnap = await getDoc(animeRef);
@@ -389,8 +413,8 @@ async function obtenerCapitulosVistos(animeId) {
   if (!user) return [];
 
   try {
-    // Obtener el documento del anime en la colección animes-vistos
-    const animeRef = doc(db, "usuarios", user.uid, "animes-vistos", animeId);
+    // Obtener el documento del anime en la colección caps-vistos
+    const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
     
     // Obtener los datos del documento
     const docSnap = await getDoc(animeRef);

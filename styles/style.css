@@ -128,8 +128,8 @@ button:hover {
 }
 #btn-login::before {
   content: '';
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
