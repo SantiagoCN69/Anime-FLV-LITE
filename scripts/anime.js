@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 // Inicializar Firebase
@@ -95,7 +95,7 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
     });
 
     // Añadir todos los episodios de una vez para mejor rendimiento
-    capContenedor.appendChild(fragmentEpisodios);
+    crearBotonesEpisodios(anime, capContenedor);
   })
   .catch(err => {
     console.error("Error al cargar datos del anime:", err);
@@ -276,4 +276,186 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-//capitulos vistos
+
+// Función para alternar capítulos vistos
+async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Debes iniciar sesión para marcar capítulos.");
+    throw "Usuario no autenticado";
+  }
+
+  // Referencia al documento de anime-vistos del usuario
+  const animeRef = doc(db, "usuarios", user.uid, "animes-vistos", animeId);
+
+  try {
+    const docSnap = await getDoc(animeRef);
+    const datosActuales = docSnap.exists() ? docSnap.data() : {};
+
+    if (esVisto) {
+      // Marcar como visto
+      const episodiosActuales = datosActuales.episodiosVistos || [];
+      const episodiosUnicos = new Set([...episodiosActuales, episodio.toString()]);
+
+      await setDoc(animeRef, { 
+        titulo, 
+        fechaAgregado: Date.now(),
+        episodiosVistos: Array.from(episodiosUnicos)
+      });
+
+      return { mensaje: `Episodio ${episodio} marcado como visto` };
+    } else {
+      // Desmarcar como visto
+      const episodiosActuales = datosActuales.episodiosVistos || [];
+      const episodiosFiltrados = episodiosActuales.filter(ep => ep !== episodio.toString());
+
+      await setDoc(animeRef, { 
+        ...datosActuales,
+        episodiosVistos: episodiosFiltrados
+      });
+
+      return { mensaje: `Episodio ${episodio} desmarcado como visto` };
+    }
+  } catch (error) {
+    console.error("Error al cambiar estado del capítulo:", error);
+    alert("Hubo un error al cambiar el estado del capítulo.");
+    throw error;
+  }
+}
+
+
+// Función para obtener capítulos vistos de un anime
+async function obtenerCapitulosVistos(animeId) {
+  const user = auth.currentUser;
+  if (!user) return [];
+
+  try {
+    // Obtener el documento del anime en la colección animes-vistos
+    const animeRef = doc(db, "usuarios", user.uid, "animes-vistos", animeId);
+    
+    // Obtener los datos del documento
+    const docSnap = await getDoc(animeRef);
+
+    // Si el documento existe y tiene la propiedad episodiosVistos, devolverla
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return data.episodiosVistos || [];
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error al obtener capítulos vistos:", error);
+    return [];
+  }
+}
+
+
+function crearBotonesEpisodios(anime, capContenedor) {
+  const fragmentEpisodios = document.createDocumentFragment();
+  
+  // Obtener capítulos vistos antes de crear los botones
+  obtenerCapitulosVistos(id).then(capitulosVistos => {
+    anime.episodes.forEach(ep => {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      
+      // Marcar como visto si ya está en la lista de capítulos vistos
+      const estaVisto = capitulosVistos.includes(ep.number.toString());
+      btn.className = `episode-btn ${estaVisto ? 'ep-visto' : 'ep-no-visto'}`;
+      btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
+
+      // Ícono de visto/no visto con mejor manejo de eventos
+      const icon = document.createElement("img");
+      icon.className = "icon-eye";
+      icon.src = estaVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
+      icon.alt = "visto";
+
+      const toggleEpisodeState = async () => {
+        const esVisto = btn.classList.toggle("ep-visto");
+        btn.classList.toggle("ep-no-visto");
+        icon.src = esVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
+        
+        // Guardar o eliminar de capítulos vistos
+        try {
+          const titulo = document.getElementById("titulo").textContent;
+          await toggleCapituloVisto(id, titulo, ep.number, esVisto);
+        } catch (error) {
+          console.error("Error al cambiar estado del capítulo:", error);
+          // Revertir cambios visuales si hay un error
+          btn.classList.toggle("ep-visto");
+          btn.classList.toggle("ep-no-visto");
+          icon.src = esVisto ? "/icons/eye-slash-solid.svg" : "/icons/eye-solid.svg";
+        }
+      };
+
+      icon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleEpisodeState();
+      });
+
+      btn.appendChild(icon);
+
+      // Al hacer clic en el botón, redirigir al episodio
+      btn.addEventListener('click', () => {
+        window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
+      });
+
+      li.appendChild(btn);
+      fragmentEpisodios.appendChild(li);
+    });
+
+    // Añadir todos los episodios de una vez para mejor rendimiento
+    capContenedor.appendChild(fragmentEpisodios);
+  }).catch(error => {
+    console.error("Error al obtener capítulos vistos:", error);
+    // En caso de error, crear botones sin estado de visto
+    anime.episodes.forEach(ep => {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.className = `episode-btn ep-no-visto`;
+      btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
+
+      // Ícono de visto/no visto con mejor manejo de eventos
+      const icon = document.createElement("img");
+      icon.className = "icon-eye";
+      icon.src = "/icons/eye-slash-solid.svg";
+      icon.alt = "visto";
+
+      const toggleEpisodeState = async () => {
+        const esVisto = btn.classList.toggle("ep-visto");
+        btn.classList.toggle("ep-no-visto");
+        icon.src = esVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
+        
+        // Guardar o eliminar de capítulos vistos
+        try {
+          const titulo = document.getElementById("titulo").textContent;
+          await toggleCapituloVisto(id, titulo, ep.number, esVisto);
+        } catch (error) {
+          console.error("Error al cambiar estado del capítulo:", error);
+          // Revertir cambios visuales si hay un error
+          btn.classList.toggle("ep-visto");
+          btn.classList.toggle("ep-no-visto");
+          icon.src = esVisto ? "/icons/eye-slash-solid.svg" : "/icons/eye-solid.svg";
+        }
+      };
+
+      icon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleEpisodeState();
+      });
+
+      btn.appendChild(icon);
+
+      // Al hacer clic en el botón, redirigir al episodio
+      btn.addEventListener('click', () => {
+        window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
+      });
+
+      li.appendChild(btn);
+      fragmentEpisodios.appendChild(li);
+    });
+
+    // Añadir todos los episodios de una vez para mejor rendimiento
+    capContenedor.appendChild(fragmentEpisodios);
+  });
+}
