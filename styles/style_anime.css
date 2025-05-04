@@ -109,8 +109,8 @@ h2 {
     color: #fff;
     transition: background 0.3s ease;
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
   }
 
   #btn-fav {
@@ -139,8 +139,8 @@ h2 {
     transition: background 0.3s ease;
     background: #6c757d;
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -336,8 +336,8 @@ h2 {
   position: relative;
   padding-inline: 15px;
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
 }
 
 .icon-eye {

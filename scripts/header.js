@@ -152,6 +152,21 @@ document.addEventListener("DOMContentLoaded", () => {
       sidebar.classList.remove("active");
     }
   });
+
+  // Marcar el primer elemento del menú como activo al cargar
+  const menuItems = document.querySelectorAll(".sidebar li");
+  const sections = document.querySelectorAll(".content-section");
+  const firstMenuItem = menuItems[0];
+  const firstSectionId = firstMenuItem.getAttribute("data-target");
+
+  // Marcar primer elemento como activo
+  firstMenuItem.classList.add("active-menu-item");
+
+  // Mostrar primera sección
+  sections.forEach(sec => {
+    sec.classList.add("hidden");
+  });
+  document.getElementById(firstSectionId).classList.remove("hidden");
 });
 
 //sidebar
@@ -162,10 +177,20 @@ menuItems.forEach(item => {
   item.addEventListener("click", () => {
     const targetId = item.getAttribute("data-target");
 
+    // Quitar clase active de todos los elementos del menú
+    menuItems.forEach(menuItem => {
+      menuItem.classList.remove("active-menu-item");
+    });
+
+    // Agregar clase active al elemento clickeado
+    item.classList.add("active-menu-item");
+
+    // Ocultar todas las secciones
     sections.forEach(sec => {
       sec.classList.add("hidden");
     });
 
+    // Mostrar sección seleccionada
     document.getElementById(targetId).classList.remove("hidden");
   });
 });

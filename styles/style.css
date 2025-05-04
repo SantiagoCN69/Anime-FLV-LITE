@@ -81,8 +81,8 @@ header {
     margin: 0 auto;
     height:5.5rem;
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
     position: relative;
     background-color: #1c1c2b;
 }
@@ -322,8 +322,8 @@ main {
   list-style: none;
   padding: 0;
   margin: 0;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -332,11 +332,17 @@ main {
   margin-bottom: 8px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background-color 0.3s;
 }
 
 .sidebar li:hover {
-  background: #777a;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar li.active-menu-item {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+  color: #ffffff;
 }
 
 /* Contenido principal */
@@ -394,8 +400,8 @@ main {
     margin: 0 auto;
     width: clamp(0px, 100%, 1000px);
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
 }
 .anime-card {
     position: relative;
@@ -488,8 +494,8 @@ footer {
 }
 .modal-content {
   background: #0009;
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   padding: 30px;
   border-radius: 10px;
   text-align: center;
