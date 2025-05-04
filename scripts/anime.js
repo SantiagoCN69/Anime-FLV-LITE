@@ -454,8 +454,28 @@ function crearBotonesEpisodios(anime, capContenedor) {
 
       btn.appendChild(icon);
 
-      // Al hacer clic en el botón, redirigir al episodio
-      btn.addEventListener('click', () => {
+      // Al hacer clic en el botón, marcar como visto y redirigir al episodio
+      btn.addEventListener('click', async () => {
+        // Si no está marcado como visto, marcarlo
+        if (!btn.classList.contains('ep-visto')) {
+          btn.classList.toggle('ep-visto');
+          btn.classList.toggle('ep-no-visto');
+          icon.src = '/icons/eye-solid.svg';
+          
+          // Guardar el estado de visto
+          try {
+            const titulo = document.getElementById('titulo').textContent;
+            await toggleCapituloVisto(id, titulo, ep.number, true);
+          } catch (err) {
+            console.error('Error al marcar capítulo como visto:', err);
+            // Revertir cambios visuales
+            btn.classList.toggle('ep-visto');
+            btn.classList.toggle('ep-no-visto');
+            icon.src = '/icons/eye-slash-solid.svg';
+          }
+        }
+        
+        // Redirigir al episodio
         window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
       });
 
