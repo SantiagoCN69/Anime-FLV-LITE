@@ -17,7 +17,31 @@ document.getElementById("descripcion").innerHTML = '<div class="loading">Cargand
 
 fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
   .then(res => res.json())
-  .then(anime => {
+  .then(async anime => {
+    // Guardar datos del anime en Firestore
+    try {
+      const datosAnime = {
+        titulo: anime.title || '',
+        portada: anime.cover || '',
+        descripcion: anime.synopsis || '',
+        episodios: (anime.episodes || []).map(ep => ({
+          numero: ep.number || '',
+          titulo: ep.title || '',
+          url: ep.url || ''
+        })),
+        generos: anime.genres || [],
+        tipo: anime.type || '',
+        estado: anime.status || '',
+        fechaEstreno: anime.premiered || '',
+        calificacion: anime.score || null
+      };
+
+      const animeDatosRef = doc(db, 'datos-animes', id);
+      await setDoc(animeDatosRef, datosAnime, { merge: true });
+    } catch (error) {
+      console.error('Error al guardar datos del anime en Firestore:', error);
+    }
+
     document.getElementById("titulo").textContent = anime.title;
     document.getElementById("portada").src = anime.cover;
     document.body.style.backgroundImage = `url(${anime.cover})`;
