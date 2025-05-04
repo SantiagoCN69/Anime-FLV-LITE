@@ -102,6 +102,8 @@ async function logoutConGoogle() {
     await signOut(auth);
     updateUIForUser(null);
     console.log('Sesión cerrada');
+    // Recargar la página actual
+    window.location.reload();
   } catch (error) {
     console.error('Error al cerrar sesión:', error);
   }
