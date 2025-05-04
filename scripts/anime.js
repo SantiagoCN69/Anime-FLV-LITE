@@ -189,14 +189,14 @@ function actualizarEstadoFavorito() {
     .then(favoritos => {
       const esFavorito = favoritos.some(f => f.id === id);
       btnFav.classList.toggle("favorito", esFavorito);
-      btnFav.textContent = esFavorito ? "FAVORITO" : "AGREGAR A FAVORITOS";
+      btnFav.textContent = esFavorito ? "FAVORITO" : "FAV";
     });
 }
 
 btnFav.addEventListener("click", () => {
   const titulo = document.getElementById("titulo").textContent;
 
-  btnFav.disabled = true; // 🔴 Desactiva el botón
+  btnFav.disabled = true;
 
   toggleFavoritoAnime(id, titulo)
     .then(res => {
@@ -207,6 +207,81 @@ btnFav.addEventListener("click", () => {
       console.error("Error al cambiar favorito:", err);
     })
     .finally(() => {
-      btnFav.disabled = false; // ✅ Vuelve a activarlo
+      btnFav.disabled = false;
     });
+});
+
+
+// Estados de visualización del anime
+const btnEstado = document.getElementById('btn-estado');
+const ESTADOS_ANIME = ['ESTADO', 'VIENDO', 'PENDIENTE', 'VISTO'];
+const CLASES_ESTADOS = {
+  'ESTADO': 'estado-default',
+  'VIENDO': 'estado-viendo',
+  'PENDIENTE': 'estado-pendiente',
+  'VISTO': 'estado-completado'
+};
+
+// Función para obtener en qué colección está este anime
+async function obtenerEstadoActual() {
+  const user = auth.currentUser;
+  if (!user) return "ESTADO";
+
+  for (const estado of ['viendo', 'pendiente', 'visto']) {
+    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
+    const snap = await getDoc(ref);
+    if (snap.exists()) return estado.toUpperCase();
+  }
+
+  return "ESTADO";
+}
+
+// Función para eliminar el anime de todas las colecciones de estado
+async function limpiarEstadosPrevios() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  for (const estado of ['viendo', 'pendiente', 'visto']) {
+    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
+    const snap = await getDoc(ref);
+    if (snap.exists()) await deleteDoc(ref);
+  }
+}
+
+// Función para actualizar el botón visual
+async function actualizarBotonEstado() {
+  const estadoActual = await obtenerEstadoActual();
+  btnEstado.textContent = estadoActual;
+  btnEstado.className = "";
+  btnEstado.classList.add(CLASES_ESTADOS[estadoActual] || "estado-default");
+}
+
+// Evento para cambiar de estado cíclicamente
+btnEstado.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Debes iniciar sesión para cambiar el estado.");
+    return;
+  }
+
+  const estadoActual = await obtenerEstadoActual();
+  const indiceActual = ESTADOS_ANIME.indexOf(estadoActual);
+  const siguienteEstado = ESTADOS_ANIME[(indiceActual + 1) % ESTADOS_ANIME.length];
+
+  await limpiarEstadosPrevios();
+
+  if (["VIENDO", "PENDIENTE", "VISTO"].includes(siguienteEstado)) {
+    const ref = doc(collection(doc(db, "usuarios", user.uid), siguienteEstado.toLowerCase()), id);
+    await setDoc(ref, {
+      titulo: document.getElementById("titulo").textContent,
+      fechaAgregado: serverTimestamp()
+    });
+  }
+
+  actualizarBotonEstado();
+});
+
+// Cargar estado al iniciar sesión
+onAuthStateChanged(auth, (user) => {
+  if (user) actualizarBotonEstado();
 });
