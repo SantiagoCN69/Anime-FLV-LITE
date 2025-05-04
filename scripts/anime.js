@@ -96,6 +96,12 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
 
     // Añadir todos los episodios de una vez para mejor rendimiento
     crearBotonesEpisodios(anime, capContenedor);
+
+    // Obtener y actualizar progreso de capítulos vistos
+    obtenerCapitulosVistos(id)
+      .then(episodiosVistos => {
+        actualizarProgresoCapitulos(anime.episodes.length, episodiosVistos);
+      });
   })
   .catch(err => {
     console.error("Error al cargar datos del anime:", err);
@@ -242,6 +248,24 @@ async function actualizarBotonEstado(estado) {
   btnEstado.classList.add(CLASES_ESTADOS[estado] || "estado-default");
 }
 
+// Función para actualizar el progreso de capítulos vistos
+function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
+  const progreso = (episodiosVistos.length / totalEpisodios) * 100;
+  
+  // Actualizar variables CSS para el progreso
+  const progresoBtn = document.getElementById('btn-progreso');
+  if (progresoBtn) {
+    progresoBtn.style.setProperty('--progreso', progreso.toFixed(0));
+    progresoBtn.style.setProperty('--progreso-text', `"${progreso.toFixed(0)}%"`);
+  }
+  
+  // Opcional: Actualizar elemento de progreso visualmente
+  const progresoElement = document.getElementById('progreso');
+  if (progresoElement) {
+    progresoElement.style.width = `${progreso}%`;
+  }
+}
+
 // Evento para cambiar de estado cíclicamente
 btnEstado.addEventListener("click", async () => {
   const user = auth.currentUser;
@@ -292,10 +316,11 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
     const docSnap = await getDoc(animeRef);
     const datosActuales = docSnap.exists() ? docSnap.data() : {};
 
+    let episodiosActuales, episodiosUnicos;
     if (esVisto) {
       // Marcar como visto
-      const episodiosActuales = datosActuales.episodiosVistos || [];
-      const episodiosUnicos = new Set([...episodiosActuales, episodio.toString()]);
+      episodiosActuales = datosActuales.episodiosVistos || [];
+      episodiosUnicos = new Set([...episodiosActuales, episodio.toString()]);
 
       await setDoc(animeRef, { 
         titulo, 
@@ -303,16 +328,24 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
         episodiosVistos: Array.from(episodiosUnicos)
       });
 
+      // Actualizar progreso
+      const totalEpisodios = document.querySelectorAll('.episode-btn').length;
+      actualizarProgresoCapitulos(totalEpisodios, Array.from(episodiosUnicos));
+
       return { mensaje: `Episodio ${episodio} marcado como visto` };
     } else {
       // Desmarcar como visto
-      const episodiosActuales = datosActuales.episodiosVistos || [];
-      const episodiosFiltrados = episodiosActuales.filter(ep => ep !== episodio.toString());
+      episodiosActuales = datosActuales.episodiosVistos || [];
+      episodiosUnicos = episodiosActuales.filter(ep => ep !== episodio.toString());
 
       await setDoc(animeRef, { 
         ...datosActuales,
-        episodiosVistos: episodiosFiltrados
+        episodiosVistos: episodiosUnicos
       });
+
+      // Actualizar progreso
+      const totalEpisodios = document.querySelectorAll('.episode-btn').length;
+      actualizarProgresoCapitulos(totalEpisodios, episodiosUnicos);
 
       return { mensaje: `Episodio ${episodio} desmarcado como visto` };
     }

@@ -14,10 +14,10 @@
     <a href="index.html" class="title"><h2>AnimeFLV Lite</h2></a>
     <div class="search">
         <input type="text" id="busqueda" placeholder="Buscar anime...">
-        <button id="btn-close-search" title="Cerrar búsqueda"></button>
+        <button type="button" id="btn-close-search" title="Cerrar búsqueda"></button>
     </div>
-    <button id="btn-search" title="Buscar anime"></button>
-    <button id="btn-login" title="Iniciar sesión"></button>
+    <button type="button" id="btn-search" title="Buscar anime"></button>
+    <button type="button" id="btn-login" title="Iniciar sesión"></button>
 </header>
 
   <div id="main"></div>
@@ -26,9 +26,9 @@
     <section class="anime-container1">
       <img src="img/loading.png" id="portada" alt="Portada del Anime" class="anime-cover" />
       <div class="botones">
-        <button id="btn-fav">FAV</button>
-        <button id="btn-estado">ESTADO</button>
-        <button id="btn-progreso"><span id="progreso-text">10%</span>
+        <button type="button" id="btn-fav">FAV</button>
+        <button type="button" id="btn-estado">ESTADO</button>
+        <button type="button" id="btn-progreso" title="Progreso de capítulos vistos"><span id="progreso-text"></span>
           <div id="progreso"></div>
         </button>
       </div>
@@ -42,7 +42,7 @@
     <section class="anime-container3">
         <div class="header-caps">
           <span> Lista de episodios</span>
-          <button id="btn-search-capitulo" title="Buscar capítulo"></button>
+          <button type="button" id="btn-search-capitulo" title="Buscar capítulo"></button>
           <div class="search-caps">
             <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo..." />
             <button id="btn-close-search-capitulo" title="Cerrar búsqueda"></button>
