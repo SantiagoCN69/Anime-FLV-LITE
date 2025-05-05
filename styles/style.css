@@ -390,7 +390,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 
@@ -483,6 +483,7 @@ main {
   
   .anime-card img {
     width: 100%;
+    max-height: 130px;
     object-fit: cover;
     border-radius: 4px;
     background-color: #262637;
