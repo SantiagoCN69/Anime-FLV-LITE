@@ -20,8 +20,11 @@ document.getElementById('btn-search').addEventListener('click', function () {
 // Cerrar búsqueda
 document.getElementById('btn-close-search').addEventListener('click', function () {
   document.querySelector('header').classList.remove('search-active');
-  document.getElementById('busqueda').value = "";
+  const input = document.getElementById('busqueda');
+  input.value = "";
+  input.dispatchEvent(new Event('input')); // fuerza que se limpie todo
 });
+
 
 
 // Función de búsqueda en tiempo real
@@ -34,10 +37,22 @@ busquedaInput.addEventListener('input', function () {
   const valor = this.value.trim();
 
   if (!valor) {
-    if (animeDetails) animeDetails.style.display = 'grid';
-    if (mainContainer) mainContainer.innerHTML = "";
+    if (isIndexPage) {
+      const seccionResultados = document.getElementById('Busqueda-Resultados');
+      const resultadosContainer = document.getElementById('resultados-busqueda');
+  
+      seccionResultados.classList.add('hidden');
+      resultadosContainer.innerHTML = '';
+  
+      // Restaurar la sección correspondiente al hash actual
+      handleHashChange();
+    } else {
+      if (animeDetails) animeDetails.style.display = 'grid';
+      if (mainContainer) mainContainer.innerHTML = "";
+    }
     return;
   }
+  
 
   busquedaTimer = setTimeout(() => {
     const queryNormalizada = normalizarTexto(valor);
@@ -56,11 +71,59 @@ busquedaInput.addEventListener('input', function () {
 // Mostrar resultados (últimos o búsqueda)
 
 function mostrarResultados(data) {
+  const resultados = data.data || data;
+
+  if (isIndexPage) {
+    const secciones = document.querySelectorAll('.content-section');
+    const resultadosContainer = document.getElementById('resultados-busqueda');
+    const seccionResultados = document.getElementById('Busqueda-Resultados');
+
+    // Oculta todas las secciones visibles excepto la de resultados
+    secciones.forEach(sec => {
+      if (!sec.classList.contains('hidden')) {
+        sec.classList.add('hidden');
+      }
+    });
+
+    // Limpia resultados previos
+    resultadosContainer.innerHTML = '';
+
+    if (resultados.length > 0) {
+      seccionResultados.classList.remove('hidden');
+
+      resultados.forEach(anime => {
+        let animeId = '';
+        if (anime.url) {
+          const urlParts = anime.url.split('/');
+          const fullId = urlParts[urlParts.length - 1];
+          animeId = fullId.replace(/-\d+$/, '');
+        } else if (anime.id) {
+          animeId = anime.id.replace(/-\d+$/, '');
+        } else {
+          animeId = extraerIdDeLink(anime.link || '');
+        }
+
+        const div = document.createElement('div');
+        div.className = 'anime-card';
+        div.style.backgroundImage = `url(${anime.cover})`;
+        div.innerHTML = `
+          <img src="${anime.cover}" alt="${anime.title || anime.name}">
+          <strong>${anime.title || anime.name}</strong>
+        `;
+        div.addEventListener('click', () => ver(animeId));
+        resultadosContainer.appendChild(div);
+      });
+    } else {
+      seccionResultados.classList.add('hidden');
+      handleHashChange();
+    }
+
+    return; // no renderizamos en mainContainer si es index
+  }
+
+  // Para otras páginas (como anime.html)
   if (!mainContainer) return;
   mainContainer.innerHTML = '';
-
-
-  const resultados = data.data || data;
 
   if (isAnimePage) {
     if (resultados.length > 0) {
@@ -93,8 +156,8 @@ function mostrarResultados(data) {
     div.addEventListener('click', () => ver(animeId));
     mainContainer.appendChild(div);
   });
-  
 }
+
 
 
 // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'

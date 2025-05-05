@@ -243,7 +243,7 @@ button:hover {
     transform: translateX(-120%);
     z-index: 1000;
     overflow-y: auto;
-
+    will-change: transform;
   }
 
   .sidebar.active {
@@ -468,7 +468,7 @@ main {
   
   @media screen and (hover: hover) {
     .anime-card:hover {
-      transform: scale(1.04);
+      transform: scale(1.03);
     }
   }
   .anime-card::before {
