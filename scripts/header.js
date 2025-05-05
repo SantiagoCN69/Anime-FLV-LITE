@@ -1,3 +1,12 @@
+import { db, auth } from './firebase-login.js';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+
 // Función para normalizar texto (remover tildes y pasar a minúsculas)
 function normalizarTexto(texto) {
   return texto
@@ -84,9 +93,9 @@ function mostrarResultados(data) {
 
     const div = document.createElement('div');
     div.className = 'anime-card';
-    div.style.backgroundImage = `url(${anime.cover || anime.image || anime.poster || ''})`;
+    div.style.backgroundImage = `url(${anime.cover})`;
     div.innerHTML = `
-      <img src="${anime.cover || anime.image || anime.poster || ''}" alt="${anime.title || anime.name}">
+      <img src="${anime.cover}" alt="${anime.title || anime.name}">
       <strong>${anime.title || anime.name}</strong>
     `;
     div.addEventListener('click', () => ver(animeId));
@@ -98,6 +107,7 @@ function mostrarResultados(data) {
 if (isIndexPage) {
   document.addEventListener('DOMContentLoaded', () => {
     cargarUltimosCapitulos();
+    cargarFavoritos();
   });
 
   function cargarUltimosCapitulos() {
@@ -105,6 +115,62 @@ if (isIndexPage) {
       .then(res => res.json())
       .then(mostrarResultados)
       .catch(err => console.error("Error al cargar capítulos:", err));
+  }
+
+  // Cargar animes favoritos
+  async function cargarFavoritos() {
+    const favsContainer = document.getElementById('favs');
+    if (!favsContainer) return;
+
+    // Esperar a que se complete la autenticación
+    await new Promise(resolve => {
+      onAuthStateChanged(auth, (user) => {
+        resolve(user);
+      });
+    });
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
+        return;
+      }
+
+      const ref = collection(doc(db, "usuarios", user.uid), "favoritos");
+      const snap = await getDocs(ref);
+      
+      if (snap.empty) {
+        favsContainer.innerHTML = '<p>No tienes animes favoritos</p>';
+        return;
+      }
+
+      favsContainer.innerHTML = ''; // Limpiar contenedor
+      
+      for (const docSnap of snap.docs) {
+        const anime = { id: docSnap.id, ...docSnap.data() };
+        
+        // Buscar detalles completos del anime
+        try {
+          const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${anime.id}`);
+          const animeData = await res.json();
+
+          const div = document.createElement('div');
+          div.className = 'anime-card';
+          div.style.backgroundImage = `url(${animeData.cover})`;
+          div.innerHTML = `
+            <img src="${animeData.cover}" alt="${animeData.title}">
+            <strong>${animeData.title}</strong>
+          `;
+          div.addEventListener('click', () => ver(anime.id));
+          favsContainer.appendChild(div);
+        } catch (error) {
+          console.error(`Error al cargar detalles de anime ${anime.id}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar favoritos:', error);
+      favsContainer.innerHTML = '<p>Error al cargar favoritos</p>';
+    }
   }
 }
 
@@ -194,4 +260,3 @@ menuItems.forEach(item => {
     document.getElementById(targetId).classList.remove("hidden");
   });
 });
-

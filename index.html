@@ -19,7 +19,7 @@
     <link rel="apple-touch-icon" sizes="256x256" href="/icons/icon.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="styles/style.css">
-    <script src="scripts/header.js" defer></script>
+    <script type="module" src="scripts/header.js" defer></script>
     <script type="module" src="scripts/firebase-login.js" defer></script>
 </head>
 <body>
@@ -61,22 +61,22 @@
       
         <section id="favs-container" class="content-section hidden">
           <h2>Mis Favoritos</h2>
-          <div id="favs"></div>
+          <div id="favs" class="grid-animes"></div>
         </section>
       
         <section id="viendo-container" class="content-section hidden">
           <h2>Viendo</h2>
-          <div id="viendo"></div>
+          <div id="viendo" class="grid-animes"></div>
         </section>
       
         <section id="pendientes-container" class="content-section hidden">
           <h2>Pendientes</h2>
-          <div id="pendientes"></div>
+          <div id="pendientes" class="grid-animes"></div>
         </section>
       
         <section id="completados-container" class="content-section hidden">
           <h2>Completados</h2>
-          <div id="completados"></div>
+          <div id="completados" class="grid-animes"></div>
         </section>
       </main>
       
