@@ -6,6 +6,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
+function extraerIdDeLink(link) {
+  if (!link) return '';
+  const partes = link.split('/');
+  let id = partes[partes.length - 1] || '';
+  // Eliminar números al final del ID
+  return id.replace(/(-\d+)$/, '');
+}
+
 // Función para redirigir a la página de un anime
 function ver(id) {
   window.location.href = `anime.html?id=${id}`;
@@ -19,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarViendo(),
     cargarPendientes(),
     cargarCompletados(),
-    cargarUltimosCapsVistos()
+    cargarUltimosCapsVistos(),
+    cargarUltimosCapitulos()
   ])
   // Eventos de redimensionamiento y cambio de sección
   window.addEventListener('resize', actualizarAlturaMain);
@@ -191,7 +200,108 @@ async function cargarUltimosCapsVistos() {
     actualizarAlturaMain();
   }
 }
+  //cargar ultimos cpaitulos recientes
+  // Función para extraer propiedades de anime de forma segura
+  function extractAnimeProp(anime, props, defaultValue = '') {
+    for (const prop of props) {
+      if (anime && anime[prop]) return anime[prop];
+    }
+    return defaultValue;
+  }
 
+  // Función para crear tarjeta de anime
+  function createAnimeCard(anime) {
+    const cover = anime.cover || anime.image || anime.poster || 'URL_POR_DEFECTO';
+    const title = anime.title || anime.name || anime.nombre || 'Anime sin nombre';
+    const link = anime.link || anime.url || '';
+    const animeId = anime.id || anime.anime_id || '';
+
+    const div = document.createElement('div');
+    div.className = 'anime-card';
+    div.style.backgroundImage = `url(${cover})`;
+    div.innerHTML = `
+      <img src="${cover}" alt="${title}">
+      <strong>${title}</strong>
+    `;
+    
+    div.addEventListener('click', () => {
+      console.log('Datos del anime clickeado:', {
+        title,
+        link,
+        animeId
+      });
+
+      // Intentar múltiples formas de obtener el ID
+      if (animeId) {
+        console.log('Navegando con ID directo:', animeId);
+        ver(animeId);
+      } else {
+        const extractedId = extraerIdDeLink(link);
+        console.log('ID extraído del enlace:', extractedId);
+        
+        if (extractedId) {
+          ver(extractedId);
+        } else {
+          console.error('No se pudo extraer ID para:', title, 'Link:', link);
+          alert(`No se pudo encontrar el ID para: ${title}`);
+        }
+      }
+    });
+
+    return div;
+  }
+
+  // Función principal para cargar últimos capítulos
+  async function cargarUltimosCapitulos() {
+    const mainContainer = document.getElementById('ultimos-episodios');
+    if (!mainContainer) return;
+
+    try {
+      const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`Error de red: ${res.status}`);
+      }
+      
+      const data = await res.json();
+
+      // Encontrar array de animes de forma dinámica
+      const animesArray = Array.isArray(data) ? data :
+        Array.isArray(data.data) ? data.data :
+        Array.isArray(data.results) ? data.results :
+        (data.animes && Array.isArray(data.animes)) ? data.animes : [];
+
+      // Limpiar contenedor
+      mainContainer.innerHTML = '';
+
+      // Filtrar y renderizar animes válidos
+      const validAnimes = animesArray.filter(anime => anime);
+      
+      if (validAnimes.length === 0) {
+        mainContainer.innerHTML = '<p>No hay episodios recientes</p>';
+        return;
+      }
+
+      // Crear fragmento para mejor rendimiento
+      const fragment = document.createDocumentFragment();
+      validAnimes.forEach(anime => {
+        const animeCard = createAnimeCard(anime);
+        fragment.appendChild(animeCard);
+      });
+
+      mainContainer.appendChild(fragment);
+
+    } catch (err) {
+      console.error('Error al cargar últimos episodios:', err);
+      mainContainer.innerHTML = `<p>Error: ${err.message}</p>`;
+    }
+  }
+  
   // Cargar animes favoritos
   async function cargarFavoritos() {
     const favsContainer = document.getElementById('favs');
