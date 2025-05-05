@@ -2,7 +2,8 @@ import { db, auth } from './firebase-login.js';
 import {
   collection,
   doc,
-  getDocs
+  getDocs,
+  getDoc // <-- Añadir getDoc aquí
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
@@ -23,7 +24,7 @@ function mostrarSeccionDesdeHash() {
   const hash = window.location.hash;
   if (!hash) return;
 
-  const id = decodeURIComponent(hash.substring(1)); // Ej: "#Pendientes" => "Pendientes"
+  const id = decodeURIComponent(hash.substring(1));
   const seccion = document.getElementById(id);
   if (!seccion) return;
 
@@ -155,6 +156,43 @@ function actualizarAlturaMain() {
   });
 }
 
+// Función auxiliar para crear el elemento DOM del botón "Siguiente Capítulo"
+function crearElementoSiguienteCapitulo(animeDetails, capVistoData, siguienteCapitulo, siguienteEpisodio) {
+  const btn = document.createElement('div');
+  btn.className = 'btn-siguiente-capitulo';
+  
+  const portada = document.createElement('img');
+  portada.src = animeDetails.portada;
+  portada.alt = animeDetails.titulo;
+  portada.className = 'portada-anime';
+  portada.onerror = () => {
+    console.warn(`No se pudo cargar la portada para ${animeDetails.titulo} (${capVistoData.animeId}) desde ${animeDetails.portada}`);
+  };
+  
+  const contenedorTexto = document.createElement('div');
+  contenedorTexto.className = 'contenedor-texto-capitulo';
+
+  const spanTitulo = document.createElement('span'); 
+  spanTitulo.classList.add('texto-2-lineas');
+  spanTitulo.textContent = animeDetails.titulo;
+
+  const spanEpisodio = document.createElement('span');
+  spanEpisodio.className = 'texto-episodio';
+  spanEpisodio.textContent = `Ep. ${siguienteCapitulo}`;
+
+  contenedorTexto.appendChild(spanTitulo);
+  contenedorTexto.appendChild(spanEpisodio);
+  
+  btn.appendChild(portada);
+  btn.appendChild(contenedorTexto);
+  
+  btn.addEventListener('click', () => {
+    window.location.href = `ver.html?animeId=${capVistoData.animeId}&url=${encodeURIComponent(siguienteEpisodio.url)}`;
+  });
+
+  return btn;
+}
+
 // Cargar últimos capítulos vistos
 async function cargarUltimosCapsVistos() {
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
@@ -184,58 +222,59 @@ async function cargarUltimosCapsVistos() {
     ultimosCapsContainer.innerHTML = '';
     
     const ultimosCaps = await Promise.all(snap.docs.map(async (docSnap) => {
-      const animeData = { id: docSnap.id, ...docSnap.data() };
+      // Datos del usuario sobre este anime (qué episodios vio)
+      const capVistoData = { animeId: docSnap.id, ...docSnap.data() };
       
       try {
-        const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${animeData.id}`);
-        const anime = await res.json();
+        // 1. Obtener detalles del anime desde la colección 'datos-anime'
+        const animeDocRef = doc(db, "datos-animes", capVistoData.animeId); // <-- Corregido a plural
+        const animeDocSnap = await getDoc(animeDocRef); // Necesitarás importar getDoc
 
-        const ultimoCapVisto = Math.max(...animeData.episodiosVistos.map(Number));
+        if (!animeDocSnap.exists()) {
+          console.warn(`No se encontraron datos en Firestore para el anime ID: ${capVistoData.animeId}`);
+          return undefined; // Omitir si no hay datos del anime
+        }
+
+        const animeDetails = animeDocSnap.data();
+
+        // Verificar si tenemos la información necesaria en animeDetails
+        if (!animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) {
+            console.warn(`Datos incompletos para anime ${capVistoData.animeId} en 'datos-anime'. Omitiendo.`);
+            return undefined; // Omitir este anime si faltan datos clave
+        }
+
+        // 2. Calcular el siguiente episodio basado en lo que el usuario vio
+        const ultimoCapVisto = Math.max(...capVistoData.episodiosVistos.map(Number));
         const siguienteCapitulo = ultimoCapVisto + 1;
-        const siguienteEpisodio = anime.episodes.find(ep => ep.number === siguienteCapitulo);
+        
+        // 3. Buscar el siguiente episodio en los valores del mapa 'episodios'
+        const todosLosEpisodiosMapas = Object.values(animeDetails.episodios || {}); // Obtener los mapas internos
+        const siguienteEpisodio = todosLosEpisodiosMapas.find(epMap => epMap.numero === siguienteCapitulo); // Buscar por epMap.numero
 
-        if (siguienteEpisodio) {
-          const btn = document.createElement('div');
-          btn.className = 'btn-siguiente-capitulo';
-          
-          const portada = document.createElement('img');
-          portada.src = anime.cover;
-          portada.alt = anime.title;
-          portada.className = 'portada-anime';
-          
-          const contenedorTexto = document.createElement('div');
-          contenedorTexto.className = 'contenedor-texto-capitulo';
-
-          const spanId = document.createElement('span');
-          spanId.classList.add('texto-2-lineas');
-          spanId.textContent = animeData.id;
-
-          const spanEpisodio = document.createElement('span');
-          spanEpisodio.className = 'texto-episodio';
-          spanEpisodio.textContent = `Ep. ${siguienteCapitulo}`;
-
-          contenedorTexto.appendChild(spanId);
-          contenedorTexto.appendChild(spanEpisodio);
-          
-          btn.appendChild(portada);
-          btn.appendChild(contenedorTexto);
-          
-          btn.addEventListener('click', () => {
-            window.location.href = `ver.html?animeId=${animeData.id}&url=${encodeURIComponent(siguienteEpisodio.url)}`;
-          });
-
-          return btn;
+        // 4. Crear el botón si se encuentra el siguiente episodio
+        if (siguienteEpisodio && siguienteEpisodio.url) { 
+          // Llamar a la función auxiliar para crear el botón
+          return crearElementoSiguienteCapitulo(animeDetails, capVistoData, siguienteCapitulo, siguienteEpisodio);
+        } else {
+            console.log(`No se encontró siguiente episodio (${siguienteCapitulo}) o URL para ${animeDetails.titulo} (${capVistoData.animeId})`);
+            return undefined; 
         }
       } catch (error) {
-        console.error(`Error al cargar detalles de anime ${animeData.id}:`, error);
+        // Capturar errores al obtener/procesar datos de Firestore para este anime específico
+        console.error(`Error al procesar anime visto ${capVistoData.animeId}:`, error);
+        return undefined; // Omitir en caso de error
       }
     }));
 
-    // Filtrar elementos no nulos
+    // Filtrar elementos no nulos (botones creados)
     const ultimosCapsValidos = ultimosCaps.filter(cap => cap !== undefined);
     
-    // Agregar solo los elementos válidos
-    ultimosCapsValidos.forEach(cap => ultimosCapsContainer.appendChild(cap));
+    // Usar DocumentFragment para añadir los botones de forma eficiente
+    const fragment = document.createDocumentFragment(); 
+    ultimosCapsValidos.forEach(cap => fragment.appendChild(cap)); 
+
+    // Añadir el fragmento completo al contenedor una sola vez
+    ultimosCapsContainer.appendChild(fragment); 
 
     // Actualizar altura inmediatamente después de cargar los capítulos
     actualizarAlturaMain();
@@ -247,14 +286,6 @@ async function cargarUltimosCapsVistos() {
     actualizarAlturaMain();
   }
 }
-  //cargar ultimos cpaitulos recientes
-  // Función para extraer propiedades de anime de forma segura
-  function extractAnimeProp(anime, props, defaultValue = '') {
-    for (const prop of props) {
-      if (anime && anime[prop]) return anime[prop];
-    }
-    return defaultValue;
-  }
 
   // Función para crear tarjeta de anime
   function createAnimeCard(anime) {
