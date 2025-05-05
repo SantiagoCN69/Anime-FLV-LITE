@@ -55,13 +55,7 @@ function actualizarAlturaMain() {
   // Usar requestAnimationFrame para optimizar el rendimiento
   requestAnimationFrame(() => {
     // Calcular altura total incluyendo padding y margin
-    const style = window.getComputedStyle(contentSection);
-    const marginTop = parseInt(style.marginTop, 10);
-    const marginBottom = parseInt(style.marginBottom, 10);
-    const paddingTop = parseInt(style.paddingTop, 10);
-    const paddingBottom = parseInt(style.paddingBottom, 10);
-
-    const alturaFinal = contentSection.offsetHeight + marginTop + marginBottom + paddingTop + paddingBottom;
+    const alturaFinal = contentSection.offsetHeight;
     
     // Establecer la variable CSS
     document.documentElement.style.setProperty('--altura-main', `${alturaFinal}px`);
