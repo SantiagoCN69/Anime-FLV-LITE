@@ -4,9 +4,9 @@
 
 - 📺 Miles de series y películas de anime
 - 🚫 Sin anuncios molestos
-- 💨 Carga ultrarrápida
 - 📱 Completamente responsivo
 - 🌐 Accesible desde cualquier dispositivo
+- 📱 Almacena datos de usuarios
 
 ## 🔧 Instalación Rápida
 
@@ -33,14 +33,16 @@
 - **Caché Inteligente**: Carga instantánea de contenido
 - **Diseño Minimalista**: Interfaz limpia y sin distracciones
 - **Multiplataforma**: Funciona en móviles, tablets y computadoras
+- **Firebase**: Almacena datos de usuarios
 
 ## 🛠 Tecnologías
 
 - HTML5
 - CSS3
-- Vanilla JavaScript
+- JavaScript
 - Service Workers
 - Progressive Web App (PWA)
+- Firebase
 
 ## 📋 Requisitos
 
@@ -49,16 +51,16 @@
 
 ## 🌐 Origen de los Contenidos
 
-Los animes de esta plataforma son originalmente recopilados del sitio web [AnimeFlV.net](https://animeflv.net), uno de los repositorios más completos y reconocidos de anime en español. 
+Los animes de esta plataforma son originalmente recopilados del sitio web [AnimeFlV.net](https://animeflv.net), uno de los repositorios más completos y reconocidos de anime en español.
 
-**Nota Importante**: 
-- Este proyecto no aloja contenido directamente
+**Nota Importante**:
+
 - Todos los derechos de los animes pertenecen a sus respectivos creadores y estudios
 - La plataforma sirve como un índice y herramienta de descubrimiento
 
 ## 🤝 Contribuciones
 
-¡Las contribuciones son bienvenidas! Por favor, lee nuestras [guías de contribución](CONTRIBUTING.md).
+¡Las contribuciones son bienvenidas!
 
 ---
 
