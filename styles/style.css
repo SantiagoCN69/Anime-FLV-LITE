@@ -84,7 +84,6 @@ header {
     -webkit-user-select: none;
     user-select: none;
     position: relative;
-    background-color: #1c1c2b;
 }
 .title {
     flex: 1;
@@ -344,7 +343,6 @@ main {
 
 .sidebar li.active-menu-item {
   background-color: #ffffff33;
-  font-weight: bold;
   color: #ffffff;
 }
 
@@ -362,9 +360,8 @@ main {
 /* Títulos */
 .content-section h2 {
   margin: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.1rem;
   font-size: 1.5rem;
-  border-bottom: 2px solid #444;
   padding-bottom: 0.5rem;
 }
 /* Estilos para el bloque "Continuar viendo" */
@@ -388,7 +385,7 @@ main {
 
 
 .btn-siguiente-capitulo:hover {
-  background: #3a3a3a;
+  background: #ffffff1a;
 }
 
 .btn-siguiente-capitulo {
