@@ -157,16 +157,18 @@ function actualizarAlturaMain() {
 }
 
 // Función auxiliar para crear el elemento DOM del botón "Siguiente Capítulo"
-function crearElementoSiguienteCapitulo(animeDetails, capVistoData, siguienteCapitulo, siguienteEpisodio) {
+// Acepta un objeto con los datos necesarios.
+function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('div');
   btn.className = 'btn-siguiente-capitulo';
   
   const portada = document.createElement('img');
-  portada.src = animeDetails.portada;
-  portada.alt = animeDetails.titulo;
+  portada.src = itemData.portada;
+  portada.alt = itemData.titulo;
   portada.className = 'portada-anime';
   portada.onerror = () => {
-    console.warn(`No se pudo cargar la portada para ${animeDetails.titulo} (${capVistoData.animeId}) desde ${animeDetails.portada}`);
+    // Opcional: establecer una imagen por defecto si la portada no carga
+    // portada.src = 'path/to/default/image.png'; 
   };
   
   const contenedorTexto = document.createElement('div');
@@ -174,11 +176,11 @@ function crearElementoSiguienteCapitulo(animeDetails, capVistoData, siguienteCap
 
   const spanTitulo = document.createElement('span'); 
   spanTitulo.classList.add('texto-2-lineas');
-  spanTitulo.textContent = animeDetails.titulo;
+  spanTitulo.textContent = itemData.titulo;
 
   const spanEpisodio = document.createElement('span');
   spanEpisodio.className = 'texto-episodio';
-  spanEpisodio.textContent = `Ep. ${siguienteCapitulo}`;
+  spanEpisodio.textContent = `Ep. ${itemData.siguienteCapitulo}`;
 
   contenedorTexto.appendChild(spanTitulo);
   contenedorTexto.appendChild(spanEpisodio);
@@ -187,7 +189,7 @@ function crearElementoSiguienteCapitulo(animeDetails, capVistoData, siguienteCap
   btn.appendChild(contenedorTexto);
   
   btn.addEventListener('click', () => {
-    window.location.href = `ver.html?animeId=${capVistoData.animeId}&url=${encodeURIComponent(siguienteEpisodio.url)}`;
+    window.location.href = `ver.html?animeId=${itemData.animeId}&url=${encodeURIComponent(itemData.siguienteEpisodioUrl)}`;
   });
 
   return btn;
@@ -197,6 +199,24 @@ function crearElementoSiguienteCapitulo(animeDetails, capVistoData, siguienteCap
 async function cargarUltimosCapsVistos() {
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
   if (!ultimosCapsContainer) return;
+
+  // Función auxiliar para renderizar botones desde una lista de datos
+  const renderizarBotones = (datos) => {
+    ultimosCapsContainer.innerHTML = ''; // Limpiar antes de renderizar
+    if (!datos || datos.length === 0) {
+        ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    datos.forEach(itemData => {
+      const btn = crearElementoSiguienteCapitulo(itemData);
+      if (btn) {
+        fragment.appendChild(btn);
+      }
+    });
+    ultimosCapsContainer.appendChild(fragment);
+    actualizarAlturaMain(); // Actualizar altura después de renderizar
+  };
 
   // Esperar a que se complete la autenticación
   const user = await new Promise(resolve => {
@@ -210,80 +230,106 @@ async function cargarUltimosCapsVistos() {
     return;
   }
 
+  const cacheKey = `ultimosCapsVistosCache_${user.uid}`;
+  let cachedData = null;
+
+  // 1. Intentar cargar y mostrar desde localStorage
+  try {
+    const cachedDataString = localStorage.getItem(cacheKey);
+    if (cachedDataString) {
+      cachedData = JSON.parse(cachedDataString);
+      if (Array.isArray(cachedData)) {
+        console.log("Mostrando datos desde caché...");
+        renderizarBotones(cachedData);
+      } else {
+        cachedData = null; // Datos inválidos en caché
+        localStorage.removeItem(cacheKey);
+      }
+    }
+  } catch (error) {
+    console.error("Error al leer o parsear caché:", error);
+    cachedData = null; // Asegurar que no se use caché corrupta
+    localStorage.removeItem(cacheKey); // Limpiar caché corrupta
+  }
+
+  // 2. Cargar datos frescos desde Firestore
   try {
     const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
     const snap = await getDocs(ref);
     
-    if (snap.empty) {
-      ultimosCapsContainer.innerHTML = '<p>No tienes capítulos vistos</p>';
-      return;
+    let freshData = []; // Aquí guardaremos los datos frescos formateados
+
+    if (!snap.empty) {
+      freshData = (await Promise.all(snap.docs.map(async (docSnap) => {
+        const capVistoData = { animeId: docSnap.id, ...docSnap.data() };
+        
+        try {
+          const animeDocRef = doc(db, "datos-animes", capVistoData.animeId);
+          const animeDocSnap = await getDoc(animeDocRef);
+
+          if (!animeDocSnap.exists()) return null; // Omitir si no hay datos
+          
+          const animeDetails = animeDocSnap.data();
+
+          if (!animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) return null; // Omitir si faltan datos
+
+          const ultimoCapVisto = Math.max(...(capVistoData.episodiosVistos || []).map(Number), 0);
+          const siguienteCapitulo = ultimoCapVisto + 1;
+          
+          const todosLosEpisodiosMapas = Object.values(animeDetails.episodios || {});
+          const siguienteEpisodio = todosLosEpisodiosMapas.find(epMap => epMap.numero === siguienteCapitulo);
+
+          if (siguienteEpisodio && siguienteEpisodio.url) { 
+            // Devolver el objeto con los datos necesarios para el botón y caché
+            return {
+              animeId: capVistoData.animeId,
+              portada: animeDetails.portada,
+              titulo: animeDetails.titulo,
+              siguienteCapitulo: siguienteCapitulo,
+              siguienteEpisodioUrl: siguienteEpisodio.url
+            };
+          } else {
+            return null; // No hay siguiente episodio válido
+          }
+        } catch (error) {
+          console.error(`Error al procesar anime visto ${capVistoData.animeId}:`, error);
+          return null; // Omitir en caso de error
+        }
+      }))).filter(item => item !== null); // Filtrar los resultados nulos
     }
 
-    ultimosCapsContainer.innerHTML = '';
-    
-    const ultimosCaps = await Promise.all(snap.docs.map(async (docSnap) => {
-      // Datos del usuario sobre este anime (qué episodios vio)
-      const capVistoData = { animeId: docSnap.id, ...docSnap.data() };
-      
-      try {
-        // 1. Obtener detalles del anime desde la colección 'datos-anime'
-        const animeDocRef = doc(db, "datos-animes", capVistoData.animeId); // <-- Corregido a plural
-        const animeDocSnap = await getDoc(animeDocRef); // Necesitarás importar getDoc
+    // 3. Comparar datos frescos con caché y actualizar si es necesario
+    const freshDataString = JSON.stringify(freshData);
+    const cachedDataString = JSON.stringify(cachedData); // Usar el stringify de la caché cargada antes
 
-        if (!animeDocSnap.exists()) {
-          console.warn(`No se encontraron datos en Firestore para el anime ID: ${capVistoData.animeId}`);
-          return undefined; // Omitir si no hay datos del anime
-        }
-
-        const animeDetails = animeDocSnap.data();
-
-        // Verificar si tenemos la información necesaria en animeDetails
-        if (!animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) {
-            console.warn(`Datos incompletos para anime ${capVistoData.animeId} en 'datos-anime'. Omitiendo.`);
-            return undefined; // Omitir este anime si faltan datos clave
-        }
-
-        // 2. Calcular el siguiente episodio basado en lo que el usuario vio
-        const ultimoCapVisto = Math.max(...capVistoData.episodiosVistos.map(Number));
-        const siguienteCapitulo = ultimoCapVisto + 1;
-        
-        // 3. Buscar el siguiente episodio en los valores del mapa 'episodios'
-        const todosLosEpisodiosMapas = Object.values(animeDetails.episodios || {}); // Obtener los mapas internos
-        const siguienteEpisodio = todosLosEpisodiosMapas.find(epMap => epMap.numero === siguienteCapitulo); // Buscar por epMap.numero
-
-        // 4. Crear el botón si se encuentra el siguiente episodio
-        if (siguienteEpisodio && siguienteEpisodio.url) { 
-          // Llamar a la función auxiliar para crear el botón
-          return crearElementoSiguienteCapitulo(animeDetails, capVistoData, siguienteCapitulo, siguienteEpisodio);
+    if (freshDataString !== cachedDataString) {
+      console.log("Datos de Firestore diferentes a la caché. Actualizando UI y caché...");
+      renderizarBotones(freshData); // Renderizar con los datos frescos
+      localStorage.setItem(cacheKey, freshDataString); // Actualizar caché
+    } else {
+        if (cachedData === null && freshData.length === 0) {
+            // Si no había caché y no hay datos frescos, mostrar mensaje adecuado
+            ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
+            actualizarAlturaMain();
+        } else if (cachedData === null && freshData.length > 0) {
+            // Si no había caché pero sí hay datos frescos (primera carga, por ejemplo)
+            console.log("Mostrando datos frescos (sin caché previa).");
+            renderizarBotones(freshData);
+            localStorage.setItem(cacheKey, freshDataString); // Guardar en caché por primera vez
         } else {
-            console.log(`No se encontró siguiente episodio (${siguienteCapitulo}) o URL para ${animeDetails.titulo} (${capVistoData.animeId})`);
-            return undefined; 
+            console.log("Datos de Firestore coinciden con la caché. No se requiere actualización.");
         }
-      } catch (error) {
-        // Capturar errores al obtener/procesar datos de Firestore para este anime específico
-        console.error(`Error al procesar anime visto ${capVistoData.animeId}:`, error);
-        return undefined; // Omitir en caso de error
-      }
-    }));
-
-    // Filtrar elementos no nulos (botones creados)
-    const ultimosCapsValidos = ultimosCaps.filter(cap => cap !== undefined);
-    
-    // Usar DocumentFragment para añadir los botones de forma eficiente
-    const fragment = document.createDocumentFragment(); 
-    ultimosCapsValidos.forEach(cap => fragment.appendChild(cap)); 
-
-    // Añadir el fragmento completo al contenedor una sola vez
-    ultimosCapsContainer.appendChild(fragment); 
-
-    // Actualizar altura inmediatamente después de cargar los capítulos
-    actualizarAlturaMain();
+    }
 
   } catch (error) {
-    console.error('Error al cargar últimos capítulos vistos:', error);
-    ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
-    // Actualizar altura en caso de error
-    actualizarAlturaMain();
+    console.error('Error general al cargar últimos capítulos vistos desde Firestore:', error);
+    // No se modifica el contenedor aquí si la caché ya mostró algo
+    // Si la caché falló y Firestore también, podría quedar vacío o con el error de caché.
+    // Se podría añadir un mensaje de error genérico si cachedData es null aquí.
+    if (cachedData === null) { // Solo mostrar error si no se pudo mostrar nada desde caché
+        ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
+        actualizarAlturaMain();
+    }
   }
 }
 
