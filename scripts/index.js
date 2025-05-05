@@ -48,6 +48,26 @@ window.handleHashChange = function () {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Función de temporizador de cuenta regresiva
+  function iniciarTemporizador() {
+    const temporizador = document.querySelector('.temporizador');
+    if (!temporizador) return;
+
+    let tiempoRestante = 17;
+    const intervalId = setInterval(() => {
+      temporizador.textContent = `(${tiempoRestante}s)`;
+      tiempoRestante--;
+
+      if (tiempoRestante < 0) {
+        clearInterval(intervalId);
+        temporizador.textContent = '';
+      }
+    }, 1000);
+  }
+
+  // Iniciar temporizador al cargar la página
+  iniciarTemporizador();
+
   // Cargar contenidos
   Promise.all([
     cargarFavoritos(),
@@ -281,6 +301,12 @@ async function cargarUltimosCapsVistos() {
         mainContainer.innerHTML = '<p>No hay episodios recientes</p>';
         return;
       }
+
+      // Ocultar elementos de cargando servidores
+      const cargandoServidores = document.querySelectorAll('.cargando-servidores');
+      cargandoServidores.forEach(elemento => {
+        elemento.style.display = 'none';
+      });
 
       // Crear fragmento para mejor rendimiento
       const fragment = document.createDocumentFragment();
