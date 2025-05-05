@@ -6,13 +6,160 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
+// Función para redirigir a la página de un anime
+function ver(id) {
+  window.location.href = `anime.html?id=${id}`;
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
-  cargarFavoritos();
-  cargarViendo();
-  cargarPendientes();
-  cargarCompletados();
+  // Cargar contenidos
+  Promise.all([
+    cargarFavoritos(),
+    cargarViendo(),
+    cargarPendientes(),
+    cargarCompletados(),
+    cargarUltimosCapsVistos()
+  ]).then(() => {
+    // Asegurar que la primera sección esté visible
+    const primeraSeccion = document.querySelector('.content-section');
+    if (primeraSeccion) {
+      primeraSeccion.classList.remove('hidden');
+    }
+    
+    // Actualizar altura
+    actualizarAlturaMain();
+  });
+
+  // Eventos de redimensionamiento y cambio de sección
+  window.addEventListener('resize', actualizarAlturaMain);
+
+  // Agregar eventos para actualizar altura al cambiar secciones
+  const sidebarItems = document.querySelectorAll('.sidebar li');
+  sidebarItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+      
+      // Mostrar la sección correspondiente
+      const targetId = e.target.getAttribute('data-target');
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+      
+      // Actualizar altura
+      actualizarAlturaMain();
+    });
+  });
 });
+
+// Actualizar altura de la variable CSS --altura-main
+function actualizarAlturaMain() {
+  const contentSection = document.querySelector('.content-section:not(.hidden)');
+
+  if (contentSection) {
+    const alturaScrollHeight = contentSection.scrollHeight;
+    const alturaClientHeight = contentSection.clientHeight;
+    const alturaOffsetHeight = contentSection.offsetHeight;
+
+    const alturaFinal = Math.max(alturaScrollHeight, alturaClientHeight, alturaOffsetHeight);
+    
+    document.documentElement.style.setProperty('--altura-main', `${alturaFinal}px`);
+  }
+}
+
+// Cargar últimos capítulos vistos
+async function cargarUltimosCapsVistos() {
+  const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
+  if (!ultimosCapsContainer) return;
+
+  // Esperar a que se complete la autenticación
+  await new Promise(resolve => {
+    onAuthStateChanged(auth, (user) => {
+      resolve(user);
+    });
+  });
+
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tus últimos capítulos</p>';
+      return;
+    }
+
+    const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
+    const snap = await getDocs(ref);
+    
+    if (snap.empty) {
+      ultimosCapsContainer.innerHTML = '<p>No tienes capítulos vistos</p>';
+      return;
+    }
+
+    ultimosCapsContainer.innerHTML = ''; // Limpiar contenedor
+    
+    for (const docSnap of snap.docs) {
+      const animeData = { id: docSnap.id, ...docSnap.data() };
+      
+      // Buscar detalles completos del anime
+      try {
+        const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${animeData.id}`);
+        const anime = await res.json();
+
+        // Encontrar el último capítulo visto
+        const ultimoCapVisto = Math.max(...animeData.episodiosVistos.map(Number));
+        const siguienteCapitulo = ultimoCapVisto + 1;
+
+        // Verificar si hay un siguiente capítulo
+        const siguienteEpisodio = anime.episodes.find(ep => ep.number === siguienteCapitulo);
+
+        if (siguienteEpisodio) {
+          const btn = document.createElement('div');
+          btn.className = 'btn-siguiente-capitulo';
+          
+          // Crear imagen de portada
+          const portada = document.createElement('img');
+          portada.src = anime.cover;
+          portada.alt = anime.title;
+          portada.className = 'portada-anime';
+          
+          // Crear contenedor de texto
+          const contenedorTexto = document.createElement('div');
+          contenedorTexto.className = 'contenedor-texto-capitulo';
+
+          // Crear span para el ID
+          const spanId = document.createElement('span');
+          spanId.classList.add('texto-2-lineas');
+          spanId.textContent = animeData.id;
+
+          // Crear span para el episodio
+          const spanEpisodio = document.createElement('span');
+          spanEpisodio.className = 'texto-episodio';
+          spanEpisodio.textContent = `Ep. ${siguienteCapitulo}`;
+
+          // Agregar spans al contenedor
+          contenedorTexto.appendChild(spanId);
+          contenedorTexto.appendChild(spanEpisodio);
+          
+          // Agregar portada y texto
+          btn.appendChild(portada);
+          btn.appendChild(contenedorTexto);
+          
+          btn.addEventListener('click', () => {
+            window.location.href = `ver.html?animeId=${animeData.id}&url=${encodeURIComponent(siguienteEpisodio.url)}`;
+          });
+
+          ultimosCapsContainer.appendChild(btn);
+        }
+      } catch (error) {
+        console.error(`Error al cargar detalles de anime ${animeData.id}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error al cargar últimos capítulos vistos:', error);
+    ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
+  }
+}
 
   // Cargar animes favoritos
   async function cargarFavoritos() {
@@ -313,11 +460,3 @@ menuItems.forEach(item => {
     document.getElementById(targetId).classList.remove("hidden");
   });
 });
-
-// Redirige a la página de anime
-function ver(id) {
-  location.href = `anime.html?id=${id}`;
-}
-
-// Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
-
