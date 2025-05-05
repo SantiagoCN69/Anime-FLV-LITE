@@ -18,6 +18,38 @@ function extraerIdDeLink(link) {
 function ver(id) {
   window.location.href = `anime.html?id=${id}`;
 }
+// Mostrar la sección correspondiente al hash en la URL
+function mostrarSeccionDesdeHash() {
+  const hash = window.location.hash;
+  if (!hash) return;
+
+  const id = decodeURIComponent(hash.substring(1)); // Ej: "#Pendientes" => "Pendientes"
+  const seccion = document.getElementById(id);
+  if (!seccion) return;
+
+  // Ocultar y mostrar secciones
+  document.querySelectorAll(".content-section").forEach(sec => 
+    sec.classList.toggle("hidden", sec.id !== id)
+  );
+
+  // Actualizar menú activo
+  document.querySelectorAll('.sidebar li').forEach(item => 
+    item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
+  );
+
+  // Actualizar altura
+  actualizarAlturaMain();
+}
+
+// Ejecutar al cargar la página
+window.addEventListener("DOMContentLoaded", () => {
+  mostrarSeccionDesdeHash();
+});
+
+// Ejecutar cuando cambia el hash (por navegación interna)
+window.addEventListener("hashchange", () => {
+  mostrarSeccionDesdeHash();
+});
 
 window.handleHashChange = function () {
   let hash = window.location.hash.substring(1);
