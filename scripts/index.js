@@ -20,17 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarPendientes(),
     cargarCompletados(),
     cargarUltimosCapsVistos()
-  ]).then(() => {
-    // Asegurar que la primera sección esté visible
-    const primeraSeccion = document.querySelector('.content-section');
-    if (primeraSeccion) {
-      primeraSeccion.classList.remove('hidden');
-    }
-    
-    // Actualizar altura
-    actualizarAlturaMain();
-  });
-
+  ])
   // Eventos de redimensionamiento y cambio de sección
   window.addEventListener('resize', actualizarAlturaMain);
 
@@ -56,17 +46,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Actualizar altura de la variable CSS --altura-main
 function actualizarAlturaMain() {
-  const contentSection = document.querySelector('.content-section:not(.hidden)');
+  // Priorizar la sección de contenido visible
+  const contentSection = document.querySelector('.content-section:not(.hidden)') || 
+                         document.querySelector('.content-section');
 
-  if (contentSection) {
-    const alturaScrollHeight = contentSection.scrollHeight;
-    const alturaClientHeight = contentSection.clientHeight;
-    const alturaOffsetHeight = contentSection.offsetHeight;
+  if (!contentSection) return;
 
-    const alturaFinal = Math.max(alturaScrollHeight, alturaClientHeight, alturaOffsetHeight);
+  // Usar requestAnimationFrame para optimizar el rendimiento
+  requestAnimationFrame(() => {
+    // Calcular altura total incluyendo padding y margin
+    const style = window.getComputedStyle(contentSection);
+    const marginTop = parseInt(style.marginTop, 10);
+    const marginBottom = parseInt(style.marginBottom, 10);
+    const paddingTop = parseInt(style.paddingTop, 10);
+    const paddingBottom = parseInt(style.paddingBottom, 10);
+
+    const alturaFinal = contentSection.offsetHeight + marginTop + marginBottom + paddingTop + paddingBottom;
     
+    // Establecer la variable CSS
     document.documentElement.style.setProperty('--altura-main', `${alturaFinal}px`);
-  }
+    
+    // Log para depuración
+    console.log(`Altura actualizada: ${alturaFinal}px`);
+  });
 }
 
 // Cargar últimos capítulos vistos
@@ -75,19 +77,18 @@ async function cargarUltimosCapsVistos() {
   if (!ultimosCapsContainer) return;
 
   // Esperar a que se complete la autenticación
-  await new Promise(resolve => {
+  const user = await new Promise(resolve => {
     onAuthStateChanged(auth, (user) => {
       resolve(user);
     });
   });
 
-  try {
-    const user = auth.currentUser;
-    if (!user) {
-      ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tus últimos capítulos</p>';
-      return;
-    }
+  if (!user) {
+    ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tus últimos capítulos</p>';
+    return;
+  }
 
+  try {
     const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
     const snap = await getDocs(ref);
     
@@ -98,50 +99,40 @@ async function cargarUltimosCapsVistos() {
 
     ultimosCapsContainer.innerHTML = '';
     
-    for (const docSnap of snap.docs) {
+    const ultimosCaps = await Promise.all(snap.docs.map(async (docSnap) => {
       const animeData = { id: docSnap.id, ...docSnap.data() };
       
-      // Buscar detalles completos del anime
       try {
         const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${animeData.id}`);
         const anime = await res.json();
 
-        // Encontrar el último capítulo visto
         const ultimoCapVisto = Math.max(...animeData.episodiosVistos.map(Number));
         const siguienteCapitulo = ultimoCapVisto + 1;
-
-        // Verificar si hay un siguiente capítulo
         const siguienteEpisodio = anime.episodes.find(ep => ep.number === siguienteCapitulo);
 
         if (siguienteEpisodio) {
           const btn = document.createElement('div');
           btn.className = 'btn-siguiente-capitulo';
           
-          // Crear imagen de portada
           const portada = document.createElement('img');
           portada.src = anime.cover;
           portada.alt = anime.title;
           portada.className = 'portada-anime';
           
-          // Crear contenedor de texto
           const contenedorTexto = document.createElement('div');
           contenedorTexto.className = 'contenedor-texto-capitulo';
 
-          // Crear span para el ID
           const spanId = document.createElement('span');
           spanId.classList.add('texto-2-lineas');
           spanId.textContent = animeData.id;
 
-          // Crear span para el episodio
           const spanEpisodio = document.createElement('span');
           spanEpisodio.className = 'texto-episodio';
           spanEpisodio.textContent = `Ep. ${siguienteCapitulo}`;
 
-          // Agregar spans al contenedor
           contenedorTexto.appendChild(spanId);
           contenedorTexto.appendChild(spanEpisodio);
           
-          // Agregar portada y texto
           btn.appendChild(portada);
           btn.appendChild(contenedorTexto);
           
@@ -149,12 +140,19 @@ async function cargarUltimosCapsVistos() {
             window.location.href = `ver.html?animeId=${animeData.id}&url=${encodeURIComponent(siguienteEpisodio.url)}`;
           });
 
-          ultimosCapsContainer.appendChild(btn);
+          return btn;
         }
       } catch (error) {
         console.error(`Error al cargar detalles de anime ${animeData.id}:`, error);
       }
-    }
+    }));
+
+    // Filtrar elementos no nulos
+    const ultimosCapsValidos = ultimosCaps.filter(cap => cap !== undefined);
+    
+    // Agregar solo los elementos válidos
+    ultimosCapsValidos.forEach(cap => ultimosCapsContainer.appendChild(cap));
+
   } catch (error) {
     console.error('Error al cargar últimos capítulos vistos:', error);
     ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
