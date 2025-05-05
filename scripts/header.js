@@ -11,6 +11,17 @@ const isIndexPage = location.pathname === '/' || location.pathname.endsWith('ind
 const animeDetails = document.querySelector('.anime-details');
 const mainContainer = document.getElementById('main');
 
+// Toggle de búsqueda para móviles
+document.getElementById('btn-search').addEventListener('click', function () {
+  document.querySelector('header').classList.add('search-active');
+  document.getElementById('busqueda').focus();
+});
+
+// Cerrar búsqueda
+document.getElementById('btn-close-search').addEventListener('click', function () {
+  document.querySelector('header').classList.remove('search-active');
+  document.getElementById('busqueda').value = "";
+});
 
 
 // Función de búsqueda en tiempo real
@@ -28,6 +39,14 @@ busquedaInput.addEventListener('input', function () {
     if (isIndexPage) cargarUltimosCapitulos();
     return;
   }
+
+// Cargar últimos capítulos solo en index
+function cargarUltimosCapitulos() {
+  fetch('https://backend-animeflv-lite.onrender.com/api/latest')
+    .then(res => res.json())
+    .then(mostrarResultados)
+    .catch(err => console.error("Error al cargar capítulos:", err));
+}
 
   busquedaTimer = setTimeout(() => {
     const queryNormalizada = normalizarTexto(valor);

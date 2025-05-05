@@ -6,17 +6,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
-// Toggle de búsqueda para móviles
-document.getElementById('btn-search').addEventListener('click', function () {
-  document.querySelector('header').classList.add('search-active');
-  document.getElementById('busqueda').focus();
-});
-
-// Cerrar búsqueda
-document.getElementById('btn-close-search').addEventListener('click', function () {
-  document.querySelector('header').classList.remove('search-active');
-  document.getElementById('busqueda').value = "";
-});
 
 document.addEventListener('DOMContentLoaded', () => {
   cargarFavoritos();
@@ -324,3 +313,11 @@ menuItems.forEach(item => {
     document.getElementById(targetId).classList.remove("hidden");
   });
 });
+
+// Redirige a la página de anime
+function ver(id) {
+  location.href = `anime.html?id=${id}`;
+}
+
+// Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
+
