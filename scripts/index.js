@@ -493,91 +493,166 @@ async function cargarUltimosCapitulos() {
 }
 
   // Cargar animes favoritos
-  async function cargarFavoritos() {
-    const favsContainer = document.getElementById('favs');
-    if (!favsContainer) return;
+async function cargarFavoritos() {
+  const favsContainer = document.getElementById('favs');
+  if (!favsContainer) return;
 
-    // Esperar a que se complete la autenticación
-    await new Promise(resolve => {
-      onAuthStateChanged(auth, (user) => {
-        resolve(user);
-      });
+  // Función auxiliar para renderizar favoritos
+  const renderizarFavoritos = (datos) => {
+    favsContainer.innerHTML = ''; // Limpiar antes de renderizar
+    if (!datos || datos.length === 0) {
+        favsContainer.innerHTML = '<p>No tienes animes favoritos.</p>';
+        actualizarAlturaMain();
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    datos.forEach(anime => {
+      // Usar los datos del objeto anime (id, titulo, portada)
+      const div = document.createElement('div');
+      div.className = 'anime-card';
+      div.style.backgroundImage = `url(${anime.portada || 'img/background.webp'})`; // Usar portada o default
+      div.innerHTML = `
+        <img src="${anime.portada || 'img/background.webp'}" alt="${anime.titulo || 'Título no encontrado'}">
+        <strong>${anime.titulo || 'Título no encontrado'}</strong>
+      `;
+      div.addEventListener('click', () => ver(anime.id));
+      fragment.appendChild(div);
     });
+    favsContainer.appendChild(fragment);
+    actualizarAlturaMain();
+  };
 
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
-        return;
+  // Esperar a que se complete la autenticación
+  const user = await new Promise(resolve => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe(); // Dejar de escuchar después de obtener el estado inicial
+      resolve(user);
+    });
+  });
+
+  if (!user) {
+    favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
+    actualizarAlturaMain(); // Asegurar altura
+    return;
+  }
+
+  const userId = user.uid;
+  const cacheKey = `favoritosCache_${userId}`;
+  let cachedData = null;
+
+  // 1. Intentar cargar y mostrar desde localStorage
+  try {
+    const cachedDataString = localStorage.getItem(cacheKey);
+    if (cachedDataString) {
+      cachedData = JSON.parse(cachedDataString);
+      if (Array.isArray(cachedData)) {
+        console.log("Mostrando favoritos desde caché...");
+        renderizarFavoritos(cachedData);
+      } else {
+        cachedData = null;
+        localStorage.removeItem(cacheKey);
       }
+    }
+  } catch (error) {
+    console.error("Error al leer o parsear caché de favoritos:", error);
+    cachedData = null;
+    localStorage.removeItem(cacheKey);
+  }
 
-      const ref = collection(doc(db, "usuarios", user.uid), "favoritos");
-      const snap = await getDocs(ref);
-      
-      if (snap.empty) {
-        favsContainer.innerHTML = '<p>No tienes animes favoritos</p>';
-        return;
-      }
+  // 2. Cargar datos frescos desde Firestore
+  try {
+    const ref = collection(doc(db, "usuarios", userId), "favoritos");
+    const snap = await getDocs(ref);
+    
+    let freshData = []; // Array para guardar los datos frescos procesados
 
-      favsContainer.innerHTML = ''; // Limpiar contenedor
-      const fragment = document.createDocumentFragment();
-      
-      // Array para almacenar promesas de búsqueda de detalles
+    if (!snap.empty) {
       const promises = [];
-
       for (const docSnap of snap.docs) {
-        const animeId = docSnap.id; // El ID del documento es el ID del anime
-
-        // Crear una promesa para buscar los detalles en 'datos-animes'
+        const animeId = docSnap.id;
         const detallePromise = getDoc(doc(db, "datos-animes", animeId))
           .then(animeDetalleSnap => {
             if (animeDetalleSnap.exists()) {
               const animeData = animeDetalleSnap.data();
-              const title = animeData.titulo || 'Título no encontrado'; 
-              const cover = animeData.portada || 'img/background.webp'; 
-
-              const div = document.createElement('div');
-              div.className = 'anime-card';
-              div.style.backgroundImage = `url(${cover})`;
-              div.innerHTML = `
-                <img src="${cover}" alt="${title}">
-                <strong>${title}</strong>
-              `;
-              div.addEventListener('click', () => ver(animeId)); // Usar animeId directamente
-              return div; // Devolver el elemento creado
+              // Devolver solo los datos necesarios para la caché y renderizado
+              return {
+                id: animeId,
+                titulo: animeData.titulo || 'Título no encontrado',
+                portada: animeData.portada || 'img/background.webp'
+              };
             } else {
               console.warn(`No se encontraron detalles para el anime favorito con ID: ${animeId}`);
-              return null; // Devolver null si no se encuentran detalles
+              return null;
             }
           })
           .catch(error => {
             console.error(`Error al buscar detalles del anime favorito ${animeId}:`, error);
-            return null; // Devolver null en caso de error
+            return null;
           });
-        
         promises.push(detallePromise);
       }
-
-      // Esperar a que todas las promesas de búsqueda de detalles se resuelvan
+      
       const resultados = await Promise.all(promises);
-
-      // Filtrar resultados nulos (errores o no encontrados) y añadir al fragmento
-      resultados.forEach(div => {
-        if (div) {
-          fragment.appendChild(div);
-        }
-      });
-
-      // Añadir todo el fragmento al DOM
-      favsContainer.appendChild(fragment);
-      actualizarAlturaMain();
-    } catch (error) {
-      console.error('Error al cargar favoritos:', error);
-      favsContainer.innerHTML = '<p>Error al cargar favoritos</p>';
+      freshData = resultados.filter(item => item !== null); // Filtrar nulos
     }
-  }
+    // Si snap estaba vacío, freshData permanecerá vacío, lo cual es correcto.
 
-  // Cargar animes en curso
+    // 3. Comparar datos frescos con caché y actualizar si es necesario
+    const freshDataString = JSON.stringify(freshData);
+    const cachedDataString = JSON.stringify(cachedData);
+
+    if (freshDataString !== cachedDataString) {
+      // Solo renderizar si los datos son diferentes O si no había caché
+      if (cachedData === null || freshData.length !== (cachedData || []).length || freshDataString !== cachedDataString) {
+        console.log("Datos de Firestore diferentes a la caché de favoritos o sin caché previa. Actualizando UI y caché...");
+        renderizarFavoritos(freshData);
+      }
+      // Guardar o limpiar caché según los datos frescos
+      if (freshData && freshData.length > 0) {
+          localStorage.setItem(cacheKey, freshDataString);
+      } else {
+          localStorage.removeItem(cacheKey);
+          // Si no había caché y tampoco hay datos frescos, asegurar mostrar mensaje.
+          // Si snap estaba vacío, renderizar ya mostró el mensaje. Si no, lo mostramos ahora.
+          if (cachedData === null && !snap.empty) {
+              renderizarFavoritos([]); 
+          }
+      }
+    } else {
+      // Si son iguales y había caché, no es necesario re-renderizar ni actualizar caché.
+      if (cachedData !== null) {
+         console.log("Datos de Firestore coinciden con la caché de favoritos. No se requiere actualización.");
+      } 
+      // Si son iguales pero no había caché (primera carga) y hay datos frescos, 
+      // ya se renderizó desde la caché (que estaba vacía) o se renderizará ahora.
+      // Nos aseguramos de que esté renderizado y guardamos la caché.
+      else if (cachedData === null && freshData && freshData.length > 0) {
+          console.log("Mostrando datos frescos de Firestore (sin caché previa de favoritos).");
+          // Puede que ya se haya renderizado si la caché estaba vacía, pero aseguramos.
+          renderizarFavoritos(freshData); 
+          localStorage.setItem(cacheKey, freshDataString);
+      }
+      // Si son iguales (vacíos) y no había caché, el mensaje de "no tienes favoritos" 
+      // ya se mostró o se mostrará por renderizar un array vacío.
+      else if (cachedData === null && (!freshData || freshData.length === 0)) {
+          console.log("No hay favoritos en Firestore ni en caché.");
+          // Asegurar que se muestra el mensaje correcto si no se hizo antes
+          renderizarFavoritos([]); 
+      }
+    }
+
+  } catch (error) {
+    console.error('Error al cargar favoritos desde Firestore:', error);
+    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
+    if (cachedData === null) { 
+      favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
+      actualizarAlturaMain();
+    }
+    // Si ya se mostró desde caché, dejamos la UI como está.
+  }
+}
+
+// Cargar animes en curso
   async function cargarViendo() {
     const viendoContainer = document.getElementById('viendo');
     if (!viendoContainer) return;
