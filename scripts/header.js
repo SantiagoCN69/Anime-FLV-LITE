@@ -76,35 +76,25 @@ function cargarCapitulosRecientes() {
 }
 
 function mostrarResultados(data) {
-  // Verificar si estamos en la página de índice
-  if (!isIndexPage) return;
+  if (!mainContainer) return;
+  mainContainer.innerHTML = '';
 
-  // Ocultar todas las secciones
-  document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
-  
-  // Obtener o crear la sección de resultados
-  let resultadosSection = document.getElementById('Resultados-Busqueda');
-  if (!resultadosSection) {
-    const newSection = document.createElement('section');
-    newSection.id = 'Resultados-Busqueda';
-    newSection.className = 'content-section';
-    newSection.innerHTML = '<h2>Resultados de Búsqueda</h2><div id="resultados-busqueda" class="grid-animes"></div>';
-    document.querySelector('main').appendChild(newSection);
-    resultadosSection = newSection;
-  }
-  resultadosSection.classList.remove('hidden');
-
-  const resultadosContainer = document.getElementById('resultados-busqueda');
-  if (!resultadosContainer) return;
-  resultadosContainer.innerHTML = '';
 
   const resultados = data.data || data;
 
-  if (resultados.length === 0) {
-    resultadosContainer.innerHTML = '<p>No se encontraron resultados</p>';
+  if (isAnimePage) {
+    if (resultados.length > 0) {
+      if (animeDetails) animeDetails.style.display = 'none';
+    } else {
+      if (animeDetails) animeDetails.style.display = 'grid';
+      return;
+    }
+  }
+   // Si no hay resultados y estamos en index, cargar capítulos recientes
+   if (resultados.length === 0 && isIndexPage) {
+    cargarCapitulosRecientes();
     return;
   }
-
   resultados.forEach(anime => {
     let animeId = '';
     if (anime.url) {
@@ -125,15 +115,9 @@ function mostrarResultados(data) {
       <strong>${anime.title || anime.name}</strong>
     `;
     div.addEventListener('click', () => ver(animeId));
-    resultadosContainer.appendChild(div);
+    mainContainer.appendChild(div);
   });
 
-  // Actualizar URL
-  history.pushState(null, '', '#Resultados-Busqueda');
-
-  // Actualizar sidebar
-  const menuItems = document.querySelectorAll('.sidebar li');
-  menuItems.forEach(item => item.classList.remove('active'));
 }
 
 // Cargar últimos capítulos solo en index
