@@ -183,8 +183,8 @@ async function cargarUltimosCapsVistos() {
   const renderizarBotones = (datos) => {
     ultimosCapsContainer.innerHTML = ''; // Limpiar antes de renderizar
     if (!datos || datos.length === 0) {
-        ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
-        return;
+      ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
+      return;
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(itemData => {
@@ -221,93 +221,98 @@ async function cargarUltimosCapsVistos() {
         console.log("Mostrando datos desde caché...");
         renderizarBotones(cachedData);
       } else {
-        cachedData = null; // Datos inválidos en caché
+        cachedData = null;
         localStorage.removeItem(cacheKey);
       }
     }
   } catch (error) {
     console.error("Error al leer o parsear caché:", error);
-    cachedData = null; // Asegurar que no se use caché corrupta
-    localStorage.removeItem(cacheKey); // Limpiar caché corrupta
+    cachedData = null;
+    localStorage.removeItem(cacheKey);
   }
 
-  // 2. Cargar datos frescos desde Firestore
+  // 2. Cargar datos frescos desde Firestore sin N+1
   try {
     const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
     const snap = await getDocs(ref);
-    
-    let freshData = []; // Aquí guardaremos los datos frescos formateados
+
+    let freshData = [];
 
     if (!snap.empty) {
-      freshData = (await Promise.all(snap.docs.map(async (docSnap) => {
-        const capVistoData = { animeId: docSnap.id, ...docSnap.data() };
-        
-        try {
-          const animeDocRef = doc(db, "datos-animes", capVistoData.animeId);
-          const animeDocSnap = await getDoc(animeDocRef);
+      const capVistos = snap.docs
+  .map(docSnap => ({
+    animeId: docSnap.id,
+    ...docSnap.data()
+  }))
+  .sort((a, b) => {
+    const fechaA = new Date(a.fechaAgregado?.toDate?.() || a.fechaAgregado || 0);
+    const fechaB = new Date(b.fechaAgregado?.toDate?.() || b.fechaAgregado || 0);
+    return fechaB - fechaA; 
+  })
+  .slice(0, 10); 
 
-          if (!animeDocSnap.exists()) return null; // Omitir si no hay datos
-          
-          const animeDetails = animeDocSnap.data();
 
-          if (!animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) return null; // Omitir si faltan datos
 
-          const ultimoCapVisto = Math.max(...(capVistoData.episodiosVistos || []).map(Number), 0);
-          const siguienteCapitulo = ultimoCapVisto + 1;
-          
-          const todosLosEpisodiosMapas = Object.values(animeDetails.episodios || {});
-          const siguienteEpisodio = todosLosEpisodiosMapas.find(epMap => epMap.numero === siguienteCapitulo);
+      const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
+      const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
 
-          if (siguienteEpisodio && siguienteEpisodio.url) { 
-            // Devolver el objeto con los datos necesarios para el botón y caché
-            return {
-              animeId: capVistoData.animeId,
-              portada: animeDetails.portada,
-              titulo: animeDetails.titulo,
-              siguienteCapitulo: siguienteCapitulo,
-              siguienteEpisodioUrl: siguienteEpisodio.url
-            };
-          } else {
-            return null; // No hay siguiente episodio válido
-          }
-        } catch (error) {
-          console.error(`Error al procesar anime visto ${capVistoData.animeId}:`, error);
-          return null; // Omitir en caso de error
+      const animeDataMap = {};
+      animeDocsSnap.forEach((docSnap, i) => {
+        if (docSnap.exists()) {
+          animeDataMap[capVistos[i].animeId] = docSnap.data();
         }
-      }))).filter(item => item !== null); // Filtrar los resultados nulos
+      });
+
+      freshData = capVistos.map(cap => {
+        const animeDetails = animeDataMap[cap.animeId];
+        if (!animeDetails || !animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) return null;
+
+        const ultimoCapVisto = Math.max(...(cap.episodiosVistos || []).map(Number), 0);
+        const siguienteCapitulo = ultimoCapVisto + 1;
+
+        const siguienteEpisodio = Object.values(animeDetails.episodios || {})
+          .find(ep => ep.numero === siguienteCapitulo);
+
+        if (siguienteEpisodio?.url) {
+          return {
+            animeId: cap.animeId,
+            portada: animeDetails.portada,
+            titulo: animeDetails.titulo,
+            siguienteCapitulo,
+            siguienteEpisodioUrl: siguienteEpisodio.url
+          };
+        }
+
+        return null;
+      }).filter(Boolean);
     }
 
     // 3. Comparar datos frescos con caché y actualizar si es necesario
     const freshDataString = JSON.stringify(freshData);
-    const cachedDataString = JSON.stringify(cachedData); // Usar el stringify de la caché cargada antes
+    const cachedDataString = JSON.stringify(cachedData);
 
     if (freshDataString !== cachedDataString) {
       console.log("Datos de Firestore diferentes a la caché. Actualizando UI y caché...");
-      renderizarBotones(freshData); // Renderizar con los datos frescos
-      localStorage.setItem(cacheKey, freshDataString); // Actualizar caché
+      renderizarBotones(freshData);
+      localStorage.setItem(cacheKey, freshDataString);
     } else {
-        if (cachedData === null && freshData.length === 0) {
-            // Si no había caché y no hay datos frescos, mostrar mensaje adecuado
-            ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
-            actualizarAlturaMain();
-        } else if (cachedData === null && freshData.length > 0) {
-            // Si no había caché pero sí hay datos frescos (primera carga, por ejemplo)
-            console.log("Mostrando datos frescos (sin caché previa).");
-            renderizarBotones(freshData);
-            localStorage.setItem(cacheKey, freshDataString); // Guardar en caché por primera vez
-        } else {
-            console.log("Datos de Firestore coinciden con la caché. No se requiere actualización.");
-        }
+      if (cachedData === null && freshData.length === 0) {
+        ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
+        actualizarAlturaMain();
+      } else if (cachedData === null && freshData.length > 0) {
+        console.log("Mostrando datos frescos (sin caché previa).");
+        renderizarBotones(freshData);
+        localStorage.setItem(cacheKey, freshDataString);
+      } else {
+        console.log("Datos de Firestore coinciden con la caché. No se requiere actualización.");
+      }
     }
 
   } catch (error) {
     console.error('Error general al cargar últimos capítulos vistos desde Firestore:', error);
-    // No se modifica el contenedor aquí si la caché ya mostró algo
-    // Si la caché falló y Firestore también, podría quedar vacío o con el error de caché.
-    // Se podría añadir un mensaje de error genérico si cachedData es null aquí.
-    if (cachedData === null) { // Solo mostrar error si no se pudo mostrar nada desde caché
-        ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
-        actualizarAlturaMain();
+    if (cachedData === null) {
+      ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
+      actualizarAlturaMain();
     }
   }
 }
