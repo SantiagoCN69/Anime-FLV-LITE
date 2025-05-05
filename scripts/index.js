@@ -809,6 +809,30 @@ async function cargarPendientes() {
   const pendientesContainer = document.getElementById('pendientes');
   if (!pendientesContainer) return;
 
+  // Función auxiliar para renderizar animes pendientes
+  const renderizarPendientes = (datos) => {
+    pendientesContainer.innerHTML = ''; // Limpiar antes de renderizar
+    if (!datos || datos.length === 0) {
+      pendientesContainer.innerHTML = '<p>No tienes animes pendientes.</p>';
+      actualizarAlturaMain();
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    datos.forEach(anime => {
+      const div = document.createElement('div');
+      div.className = 'anime-card';
+      div.style.backgroundImage = `url(${anime.portada || 'img/background.webp'})`;
+      div.innerHTML = `
+        <img src="${anime.portada || 'img/background.webp'}" alt="${anime.titulo || 'Título no encontrado'}">
+        <strong>${anime.titulo || 'Título no encontrado'}</strong>
+      `;
+      div.addEventListener('click', () => ver(anime.id));
+      fragment.appendChild(div);
+    });
+    pendientesContainer.appendChild(fragment);
+    actualizarAlturaMain();
+  };
+
   // Esperar a que se complete la autenticación
   const user = await new Promise(resolve => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -823,71 +847,111 @@ async function cargarPendientes() {
     return;
   }
 
+  const userId = user.uid;
+  const cacheKey = `pendientesCache_${userId}`;
+  let cachedData = null;
+
+  // 1. Intentar cargar y mostrar desde localStorage
   try {
-    const ref = collection(doc(db, "usuarios", user.uid), "pendiente");
+    const cachedDataString = localStorage.getItem(cacheKey);
+    if (cachedDataString) {
+      cachedData = JSON.parse(cachedDataString);
+      if (Array.isArray(cachedData)) {
+        console.log("Mostrando 'Pendientes' desde caché...");
+        renderizarPendientes(cachedData);
+      } else {
+        cachedData = null;
+        localStorage.removeItem(cacheKey);
+      }
+    }
+  } catch (error) {
+    console.error("Error al leer o parsear caché de 'Pendientes':", error);
+    cachedData = null;
+    localStorage.removeItem(cacheKey);
+  }
+
+  // 2. Cargar datos frescos desde Firestore
+  try {
+    const ref = collection(doc(db, "usuarios", userId), "pendiente");
     const snap = await getDocs(ref);
     
-    if (snap.empty) {
-      pendientesContainer.innerHTML = '<p>No tienes animes pendientes</p>';
-      actualizarAlturaMain();
-      return;
-    }
+    let freshData = []; // Array para guardar los datos frescos procesados
 
-    pendientesContainer.innerHTML = ''; // Limpiar contenedor
-    const fragment = document.createDocumentFragment();
-    const promises = [];
-
-    for (const docSnap of snap.docs) {
-      const animeId = docSnap.id; // El ID del documento es el ID del anime
-
-      // Crear una promesa para buscar los detalles en 'datos-animes'
-      const detallePromise = getDoc(doc(db, "datos-animes", animeId))
-        .then(animeDetalleSnap => {
-          if (animeDetalleSnap.exists()) {
-            const animeData = animeDetalleSnap.data();
-            const title = animeData.titulo || 'Título no encontrado';
-            const cover = animeData.portada || 'img/background.webp';
-
-            const div = document.createElement('div');
-            div.className = 'anime-card';
-            div.style.backgroundImage = `url(${cover})`;
-            div.innerHTML = `
-              <img src="${cover}" alt="${title}">
-              <strong>${title}</strong>
-            `;
-            div.addEventListener('click', () => ver(animeId));
-            return div; // Devolver el elemento creado
-          } else {
-            console.warn(`No se encontraron detalles para el anime pendiente con ID: ${animeId}`);
-            return null; // Devolver null si no se encuentran detalles
-          }
-        })
-        .catch(error => {
-          console.error(`Error al buscar detalles del anime pendiente ${animeId}:`, error);
-          return null; // Devolver null en caso de error
-        });
-      
-      promises.push(detallePromise);
-    }
-
-    // Esperar a que todas las promesas de búsqueda se resuelvan
-    const resultados = await Promise.all(promises);
-
-    // Filtrar resultados nulos y añadir al fragmento
-    resultados.forEach(div => {
-      if (div) {
-        fragment.appendChild(div);
+    if (!snap.empty) {
+      const promises = [];
+      for (const docSnap of snap.docs) {
+        const animeId = docSnap.id;
+        // Crear una promesa para buscar los detalles en 'datos-animes'
+        const detallePromise = getDoc(doc(db, "datos-animes", animeId))
+          .then(animeDetalleSnap => {
+            if (animeDetalleSnap.exists()) {
+              const animeData = animeDetalleSnap.data();
+              return {
+                id: animeId,
+                titulo: animeData.titulo || 'Título no encontrado',
+                portada: animeData.portada || 'img/background.webp'
+              };
+            } else {
+              console.warn(`No se encontraron detalles para el anime pendiente con ID: ${animeId}`);
+              return null;
+            }
+          })
+          .catch(error => {
+            console.error(`Error al buscar detalles del anime pendiente ${animeId}:`, error);
+            return null;
+          });
+        promises.push(detallePromise);
       }
-    });
+      
+      const resultados = await Promise.all(promises);
+      freshData = resultados.filter(item => item !== null); // Filtrar nulos
+    }
 
-    // Añadir todo el fragmento al DOM
-    pendientesContainer.appendChild(fragment);
-    actualizarAlturaMain();
+    // 3. Comparar datos frescos con caché y actualizar si es necesario
+    const freshDataString = JSON.stringify(freshData);
+    const cachedDataString = JSON.stringify(cachedData);
+
+    if (freshDataString !== cachedDataString) {
+      // Solo renderizar si los datos son diferentes O si no había caché
+      if (cachedData === null || freshData.length !== (cachedData || []).length || freshDataString !== cachedDataString) {
+        console.log("Datos de Firestore diferentes a la caché de 'Pendientes' o sin caché previa. Actualizando UI y caché...");
+        renderizarPendientes(freshData);
+      }
+      // Guardar o limpiar caché según los datos frescos
+      if (freshData && freshData.length > 0) {
+          localStorage.setItem(cacheKey, freshDataString);
+      } else {
+          localStorage.removeItem(cacheKey);
+          // Si no había caché y tampoco hay datos frescos, asegurar mostrar mensaje.
+          if (cachedData === null && !snap.empty) {
+              renderizarPendientes([]); 
+          }
+      }
+    } else {
+      // Si son iguales y había caché, no es necesario re-renderizar ni actualizar caché.
+      if (cachedData !== null) {
+         console.log("Datos de Firestore coinciden con la caché de 'Pendientes'. No se requiere actualización.");
+      } 
+      // Manejar caso donde no había caché pero los datos frescos sí existen (primera carga)
+      else if (cachedData === null && freshData && freshData.length > 0) {
+          console.log("Mostrando datos frescos de Firestore (sin caché previa de 'Pendientes').");
+          renderizarPendientes(freshData); 
+          localStorage.setItem(cacheKey, freshDataString);
+      }
+      // Manejar caso donde no hay datos ni en caché ni en Firestore
+      else if (cachedData === null && (!freshData || freshData.length === 0)) {
+          console.log("No hay animes 'Pendientes' en Firestore ni en caché.");
+          renderizarPendientes([]); // Asegurar mensaje de "no tienes..."
+      }
+    }
 
   } catch (error) {
-    console.error('Error al cargar animes pendientes:', error);
-    pendientesContainer.innerHTML = '<p>Error al cargar animes pendientes</p>';
-    actualizarAlturaMain();
+    console.error('Error al cargar animes pendientes desde Firestore:', error);
+    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
+    if (cachedData === null) { 
+      pendientesContainer.innerHTML = '<p>Error al cargar animes pendientes.</p>';
+      actualizarAlturaMain();
+    }
   }
 }
 
