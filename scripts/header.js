@@ -63,9 +63,21 @@ function cargarUltimosCapitulos() {
 });
 
 // Mostrar resultados (últimos o búsqueda)
+// Función para cargar capítulos recientes
+function cargarCapitulosRecientes() {
+  fetch('https://backend-animeflv-lite.onrender.com/api/latest')
+    .then(res => res.json())
+    .then(data => {
+      if (!mainContainer) return;
+      mainContainer.innerHTML = '';
+      mostrarResultados(data);
+    })
+    .catch(err => console.error('Error al cargar capítulos recientes:', err));
+}
+
 function mostrarResultados(data) {
   if (!mainContainer) return;
-  mainContainer.innerHTML = "";
+  mainContainer.innerHTML = '';
 
   const resultados = data.data || data;
 
@@ -76,6 +88,12 @@ function mostrarResultados(data) {
       if (animeDetails) animeDetails.style.display = 'grid';
       return;
     }
+  }
+
+  // Si no hay resultados y estamos en index, cargar capítulos recientes
+  if (resultados.length === 0 && isIndexPage) {
+    cargarCapitulosRecientes();
+    return;
   }
 
   resultados.forEach(anime => {
@@ -105,15 +123,8 @@ function mostrarResultados(data) {
 // Cargar últimos capítulos solo en index
 if (isIndexPage) {
   document.addEventListener('DOMContentLoaded', () => {
-    cargarUltimosCapitulos();
+    cargarCapitulosRecientes();
   });
-
-  function cargarUltimosCapitulos() {
-    fetch('https://backend-animeflv-lite.onrender.com/api/latest')
-      .then(res => res.json())
-      .then(mostrarResultados)
-      .catch(err => console.error("Error al cargar capítulos:", err));
-  }
 }
 
 // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
