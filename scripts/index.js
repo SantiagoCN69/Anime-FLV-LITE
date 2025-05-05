@@ -956,60 +956,155 @@ async function cargarPendientes() {
 }
 
   // Cargar animes completados
-  async function cargarCompletados() {
-    const completadosContainer = document.getElementById('completados');
-    if (!completadosContainer) return;
+async function cargarCompletados() {
+  const completadosContainer = document.getElementById('completados');
+  if (!completadosContainer) return;
 
-    // Esperar a que se complete la autenticación
-    await new Promise(resolve => {
-      onAuthStateChanged(auth, (user) => {
-        resolve(user);
-      });
+  // Función auxiliar para renderizar animes completados
+  const renderizarCompletados = (datos) => {
+    completadosContainer.innerHTML = ''; // Limpiar antes de renderizar
+    if (!datos || datos.length === 0) {
+      completadosContainer.innerHTML = '<p>No tienes animes completados.</p>';
+      actualizarAlturaMain();
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    datos.forEach(anime => {
+      const div = document.createElement('div');
+      div.className = 'anime-card';
+      div.style.backgroundImage = `url(${anime.portada || 'img/background.webp'})`;
+      div.innerHTML = `
+        <img src="${anime.portada || 'img/background.webp'}" alt="${anime.titulo || 'Título no encontrado'}">
+        <strong>${anime.titulo || 'Título no encontrado'}</strong>
+      `;
+      div.addEventListener('click', () => ver(anime.id));
+      fragment.appendChild(div);
     });
+    completadosContainer.appendChild(fragment);
+    actualizarAlturaMain();
+  };
 
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        completadosContainer.innerHTML = '<p>Inicia sesión para ver tus animes completados</p>';
-        return;
+  // Esperar a que se complete la autenticación
+  const user = await new Promise(resolve => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe(); // Dejar de escuchar después de obtener el estado inicial
+      resolve(user);
+    });
+  });
+
+  if (!user) {
+    completadosContainer.innerHTML = '<p>Inicia sesión para ver tus animes completados</p>';
+    actualizarAlturaMain();
+    return;
+  }
+
+  const userId = user.uid;
+  const cacheKey = `completadosCache_${userId}`;
+  let cachedData = null;
+
+  // 1. Intentar cargar y mostrar desde localStorage
+  try {
+    const cachedDataString = localStorage.getItem(cacheKey);
+    if (cachedDataString) {
+      cachedData = JSON.parse(cachedDataString);
+      if (Array.isArray(cachedData)) {
+        console.log("Mostrando 'Completados' desde caché...");
+        renderizarCompletados(cachedData);
+      } else {
+        cachedData = null;
+        localStorage.removeItem(cacheKey);
       }
+    }
+  } catch (error) {
+    console.error("Error al leer o parsear caché de 'Completados':", error);
+    cachedData = null;
+    localStorage.removeItem(cacheKey);
+  }
 
-      const ref = collection(doc(db, "usuarios", user.uid), "visto");
-      const snap = await getDocs(ref);
-      
-      if (snap.empty) {
-        completadosContainer.innerHTML = '<p>No tienes animes completados</p>';
-        return;
-      }
+  // 2. Cargar datos frescos desde Firestore
+  try {
+    const ref = collection(doc(db, "usuarios", userId), "visto"); // Colección 'visto'
+    const snap = await getDocs(ref);
+    
+    let freshData = []; // Array para guardar los datos frescos procesados
 
-      completadosContainer.innerHTML = ''; 
-      
+    if (!snap.empty) {
+      const promises = [];
       for (const docSnap of snap.docs) {
-        const anime = { id: docSnap.id, ...docSnap.data() };
-        
-        // Buscar detalles completos del anime
-        try {
-          const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${anime.id}`);
-          const animeData = await res.json();
-
-          const div = document.createElement('div');
-          div.className = 'anime-card';
-          div.style.backgroundImage = `url(${animeData.cover})`;
-          div.innerHTML = `
-            <img src="${animeData.cover}" alt="${animeData.title}">
-            <strong>${animeData.title}</strong>
-          `;
-          div.addEventListener('click', () => ver(anime.id));
-          completadosContainer.appendChild(div);
-        } catch (error) {
-          console.error(`Error al cargar detalles de anime ${anime.id}:`, error);
-        }
+        const animeId = docSnap.id;
+        // Crear una promesa para buscar los detalles en 'datos-animes'
+        const detallePromise = getDoc(doc(db, "datos-animes", animeId))
+          .then(animeDetalleSnap => {
+            if (animeDetalleSnap.exists()) {
+              const animeData = animeDetalleSnap.data();
+              return {
+                id: animeId,
+                titulo: animeData.titulo || 'Título no encontrado',
+                portada: animeData.portada || 'img/background.webp'
+              };
+            } else {
+              console.warn(`No se encontraron detalles para el anime completado con ID: ${animeId}`);
+              return null;
+            }
+          })
+          .catch(error => {
+            console.error(`Error al buscar detalles del anime completado ${animeId}:`, error);
+            return null;
+          });
+        promises.push(detallePromise);
       }
-    } catch (error) {
-      console.error('Error al cargar animes completados:', error);
-      completadosContainer.innerHTML = '<p>Error al cargar animes completados</p>';
+      
+      const resultados = await Promise.all(promises);
+      freshData = resultados.filter(item => item !== null); // Filtrar nulos
+    }
+
+    // 3. Comparar datos frescos con caché y actualizar si es necesario
+    const freshDataString = JSON.stringify(freshData);
+    const cachedDataString = JSON.stringify(cachedData);
+
+    if (freshDataString !== cachedDataString) {
+      // Solo renderizar si los datos son diferentes O si no había caché
+      if (cachedData === null || freshData.length !== (cachedData || []).length || freshDataString !== cachedDataString) {
+        console.log("Datos de Firestore diferentes a la caché de 'Completados' o sin caché previa. Actualizando UI y caché...");
+        renderizarCompletados(freshData);
+      }
+      // Guardar o limpiar caché según los datos frescos
+      if (freshData && freshData.length > 0) {
+          localStorage.setItem(cacheKey, freshDataString);
+      } else {
+          localStorage.removeItem(cacheKey);
+          // Si no había caché y tampoco hay datos frescos, asegurar mostrar mensaje.
+          if (cachedData === null && !snap.empty) {
+              renderizarCompletados([]); 
+          }
+      }
+    } else {
+       // Si son iguales y había caché, no es necesario re-renderizar ni actualizar caché.
+       if (cachedData !== null) {
+          console.log("Datos de Firestore coinciden con la caché de 'Completados'. No se requiere actualización.");
+       } 
+       // Manejar caso donde no había caché pero los datos frescos sí existen (primera carga)
+       else if (cachedData === null && freshData && freshData.length > 0) {
+           console.log("Mostrando datos frescos de Firestore (sin caché previa de 'Completados').");
+           renderizarCompletados(freshData); 
+           localStorage.setItem(cacheKey, freshDataString);
+       }
+       // Manejar caso donde no hay datos ni en caché ni en Firestore
+       else if (cachedData === null && (!freshData || freshData.length === 0)) {
+           console.log("No hay animes 'Completados' en Firestore ni en caché.");
+           renderizarCompletados([]); // Asegurar mensaje de "no tienes..."
+       }
+    }
+
+  } catch (error) {
+    console.error('Error al cargar animes completados desde Firestore:', error);
+    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
+    if (cachedData === null) { 
+      completadosContainer.innerHTML = '<p>Error al cargar animes completados.</p>';
+      actualizarAlturaMain();
     }
   }
+}
 
   
 // Toggle del menú
