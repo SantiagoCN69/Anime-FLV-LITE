@@ -313,6 +313,7 @@ main {
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
   width: 220px;
+  min-width: 220px;
   padding: 1rem;
   min-height: 100%;
   box-shadow: 2px 5px 5px #00000080;
