@@ -446,7 +446,7 @@ main {
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
     user-select: none;
-    padding: 1rem;
+    padding-inline: 1rem;
 }
 .anime-card {
     position: relative;
