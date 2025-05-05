@@ -94,9 +94,6 @@ main section:nth-child(1) {
   border-radius: 8px;
   overflow: hidden;
 }
-.reproductor-container.censure {
-  filter: blur(20px);
-}
 #controles {
   display: flex;
 }
@@ -110,9 +107,9 @@ main section:nth-child(1) {
   cursor: pointer;
 }
 @media screen and (min-width:1047px){
-#controles button::before {
-  content: "Servidor "
-}
+  #controles button::before {
+    content: "Servidor "
+  }
 }
 #controles .servidor-activo {
   color: #fff;
@@ -124,6 +121,9 @@ main section:nth-child(1) {
 }
 #video {
   flex: 1;
+}
+#video.censure {
+  filter: blur(20px);
 }
 
 .botones-reproductor {

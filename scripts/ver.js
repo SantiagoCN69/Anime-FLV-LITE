@@ -31,7 +31,6 @@ let censuraActiva = false;
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 const btnCensura = document.getElementById("btn-censura");
-const reproductorContainer = document.querySelector(".reproductor-container");
 
 btnBloquear.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
@@ -45,7 +44,7 @@ btnCensura.addEventListener("click", () => {
   censuraActiva = !censuraActiva;
   btnCensura.textContent = `Censura: ${censuraActiva ? "ON" : "OFF"}`;
   btnCensura.classList.toggle("activo", censuraActiva);
-  reproductorContainer.classList.toggle("censure", censuraActiva);
+  document.getElementById("video").classList.toggle("censure", censuraActiva);
 });
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
@@ -106,18 +105,48 @@ async function obtenerCapitulosVistos(animeId) {
 
 // Función para actualizar el estado del capítulo
 async function actualizarEstadoCapitulo() {
+  console.log('Iniciando actualizarEstadoCapitulo');
+  console.log('Estado actual:', {
+    user: !!auth.currentUser,
+    animeId,
+    episodios: episodios.length,
+    episodioActualIndex
+  });
+
   const user = auth.currentUser;
-  if (!user || !animeId || !episodios || episodios.length === 0) return;
+  if (!user) {
+    console.warn('No hay usuario autenticado');
+    return;
+  }
+  if (!animeId) {
+    console.warn('No hay animeId');
+    return;
+  }
+  if (!episodios || episodios.length === 0) {
+    console.warn('No hay episodios');
+    return;
+  }
+  if (episodioActualIndex === -1) {
+    console.warn('Índice de episodio no válido');
+    return;
+  }
 
   try {
     const capitulosVistos = await obtenerCapitulosVistos(animeId);
     const episodioActual = episodios[episodioActualIndex];
+
+    console.log('Episodio actual:', episodioActual);
+
     const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
     const textoEstado = document.getElementById("texto-estado-capitulo");
 
     // Verificar que todos los elementos existan
-    if (!btnEstadoCapitulo || !textoEstado) {
-      console.warn("Elementos de estado no encontrados");
+    if (!btnEstadoCapitulo) {
+      console.warn("Botón de estado de capítulo no encontrado");
+      return;
+    }
+    if (!textoEstado) {
+      console.warn("Texto de estado no encontrado");
       return;
     }
 
