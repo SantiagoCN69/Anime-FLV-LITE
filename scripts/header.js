@@ -108,6 +108,9 @@ if (isIndexPage) {
   document.addEventListener('DOMContentLoaded', () => {
     cargarUltimosCapitulos();
     cargarFavoritos();
+    cargarViendo();
+    cargarPendientes();
+    cargarCompletados();
   });
 
   function cargarUltimosCapitulos() {
@@ -172,7 +175,175 @@ if (isIndexPage) {
       favsContainer.innerHTML = '<p>Error al cargar favoritos</p>';
     }
   }
+
+  // Cargar animes en curso
+  async function cargarViendo() {
+    const viendoContainer = document.getElementById('viendo');
+    if (!viendoContainer) return;
+
+    // Esperar a que se complete la autenticación
+    await new Promise(resolve => {
+      onAuthStateChanged(auth, (user) => {
+        resolve(user);
+      });
+    });
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        viendoContainer.innerHTML = '<p>Inicia sesión para ver tus animes en curso</p>';
+        return;
+      }
+
+      const ref = collection(doc(db, "usuarios", user.uid), "viendo");
+      const snap = await getDocs(ref);
+      
+      if (snap.empty) {
+        viendoContainer.innerHTML = '<p>No tienes animes en curso</p>';
+        return;
+      }
+
+      viendoContainer.innerHTML = ''; // Limpiar contenedor
+      
+      for (const docSnap of snap.docs) {
+        const anime = { id: docSnap.id, ...docSnap.data() };
+        
+        // Buscar detalles completos del anime
+        try {
+          const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${anime.id}`);
+          const animeData = await res.json();
+
+          const div = document.createElement('div');
+          div.className = 'anime-card';
+          div.style.backgroundImage = `url(${animeData.cover})`;
+          div.innerHTML = `
+            <img src="${animeData.cover}" alt="${animeData.title}">
+            <strong>${animeData.title}</strong>
+          `;
+          div.addEventListener('click', () => ver(anime.id));
+          viendoContainer.appendChild(div);
+        } catch (error) {
+          console.error(`Error al cargar detalles de anime ${anime.id}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar animes en curso:', error);
+      viendoContainer.innerHTML = '<p>Error al cargar animes en curso</p>';
+    }
+  }
 }
+
+  // Cargar animes pendientes
+  async function cargarPendientes() {
+    const pendientesContainer = document.getElementById('pendientes');
+    if (!pendientesContainer) return;
+
+    // Esperar a que se complete la autenticación
+    await new Promise(resolve => {
+      onAuthStateChanged(auth, (user) => {
+        resolve(user);
+      });
+    });
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        pendientesContainer.innerHTML = '<p>Inicia sesión para ver tus animes pendientes</p>';
+        return;
+      }
+
+      const ref = collection(doc(db, "usuarios", user.uid), "pendiente");
+      const snap = await getDocs(ref);
+      
+      if (snap.empty) {
+        pendientesContainer.innerHTML = '<p>No tienes animes pendientes</p>';
+        return;
+      }
+
+      pendientesContainer.innerHTML = ''; // Limpiar contenedor
+      
+      for (const docSnap of snap.docs) {
+        const anime = { id: docSnap.id, ...docSnap.data() };
+        
+        // Buscar detalles completos del anime
+        try {
+          const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${anime.id}`);
+          const animeData = await res.json();
+
+          const div = document.createElement('div');
+          div.className = 'anime-card';
+          div.style.backgroundImage = `url(${animeData.cover})`;
+          div.innerHTML = `
+            <img src="${animeData.cover}" alt="${animeData.title}">
+            <strong>${animeData.title}</strong>
+          `;
+          div.addEventListener('click', () => ver(anime.id));
+          pendientesContainer.appendChild(div);
+        } catch (error) {
+          console.error(`Error al cargar detalles de anime ${anime.id}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar animes pendientes:', error);
+      pendientesContainer.innerHTML = '<p>Error al cargar animes pendientes</p>';
+    }
+  }
+
+  // Cargar animes completados
+  async function cargarCompletados() {
+    const completadosContainer = document.getElementById('completados');
+    if (!completadosContainer) return;
+
+    // Esperar a que se complete la autenticación
+    await new Promise(resolve => {
+      onAuthStateChanged(auth, (user) => {
+        resolve(user);
+      });
+    });
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        completadosContainer.innerHTML = '<p>Inicia sesión para ver tus animes completados</p>';
+        return;
+      }
+
+      const ref = collection(doc(db, "usuarios", user.uid), "visto");
+      const snap = await getDocs(ref);
+      
+      if (snap.empty) {
+        completadosContainer.innerHTML = '<p>No tienes animes completados</p>';
+        return;
+      }
+
+      completadosContainer.innerHTML = ''; // Limpiar contenedor
+      
+      for (const docSnap of snap.docs) {
+        const anime = { id: docSnap.id, ...docSnap.data() };
+        
+        // Buscar detalles completos del anime
+        try {
+          const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${anime.id}`);
+          const animeData = await res.json();
+
+          const div = document.createElement('div');
+          div.className = 'anime-card';
+          div.style.backgroundImage = `url(${animeData.cover})`;
+          div.innerHTML = `
+            <img src="${animeData.cover}" alt="${animeData.title}">
+            <strong>${animeData.title}</strong>
+          `;
+          div.addEventListener('click', () => ver(anime.id));
+          completadosContainer.appendChild(div);
+        } catch (error) {
+          console.error(`Error al cargar detalles de anime ${anime.id}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar animes completados:', error);
+      completadosContainer.innerHTML = '<p>Error al cargar animes completados</p>';
+    }
+  }
 
 // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
 function extraerIdDeLink(link) {
