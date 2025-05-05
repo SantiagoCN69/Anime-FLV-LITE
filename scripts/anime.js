@@ -539,7 +539,7 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
 
       await setDoc(animeRef, { 
         titulo, 
-        fechaAgregado: Date.now(),
+        fechaAgregado: serverTimestamp(),
         episodiosVistos: Array.from(episodiosUnicos)
       });
 
