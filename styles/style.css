@@ -178,6 +178,45 @@ button:hover {
   height: 25px;
   display: block;
 }
+
+/* Sidebar (barra lateral izquierda) */
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  padding: 1rem;
+  max-height: var(--altura-main);
+  overflow-y: auto;
+  border-right: 1px solid #444;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sidebar li:hover {
+  background-color: #ffffff1a;
+}
+
+.sidebar li.active-menu-item {
+  background-color: #ffffff33;
+  color: #ffffff;
+}
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
   transition: transform 0.3s ease;
@@ -196,7 +235,7 @@ button:hover {
     top: 120px;
     left: 0;
     padding: 1rem;
-    width: 70%;;
+    width: 60%;
     background: #000a;
     height: calc(100dvh - 120px);
     -webkit-backdrop-filter: blur(10px);
@@ -312,44 +351,6 @@ main {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Sidebar (barra lateral izquierda) */
-.sidebar {
-  width: 220px;
-  min-width: 220px;
-  padding: 1rem;
-  max-height: var(--altura-main);
-  overflow-y: auto;
-  border-right: 1px solid #444;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar li {
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.sidebar li:hover {
-  background-color: #ffffff1a;
-}
-
-.sidebar li.active-menu-item {
-  background-color: #ffffff33;
-  color: #ffffff;
-}
 
 /* Contenido principal */
 .content-section {
@@ -482,7 +483,6 @@ main {
   
   .anime-card img {
     width: 100%;
-    height: 200px;
     object-fit: cover;
     border-radius: 4px;
     background-color: #262637;
