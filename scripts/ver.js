@@ -32,6 +32,14 @@ let censuraActiva = false;
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 const btnCensura = document.getElementById("btn-censura");
 
+// Inicializar estado del botón de AdBlock de manera segura
+document.addEventListener('DOMContentLoaded', () => {
+    if (btnBloquear) {
+        btnBloquear.classList.add("activo");
+        btnBloquear.textContent = "AdBlock: ON";
+    }
+});
+
 btnBloquear.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
   btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
