@@ -55,6 +55,9 @@ async function loginConGoogle() {
 
     updateUIForUser(user);
     console.log('Usuario autenticado:', user.displayName);
+    
+    // Recargar la página actual
+    window.location.reload();
   } catch (error) {
     if (error.code === 'auth/popup-closed-by-user') {
       console.log('Inicio de sesión cancelado por el usuario');
