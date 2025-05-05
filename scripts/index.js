@@ -36,12 +36,46 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetSection = document.getElementById(targetId);
       if (targetSection) {
         targetSection.classList.remove('hidden');
+        
+        // Actualizar la URL sin recargar la página
+        history.pushState(null, '', `#${targetId}`);
       }
       
       // Actualizar altura
       actualizarAlturaMain();
     });
   });
+
+  // Manejar la navegación inicial y el cambio de hash
+  function handleHashChange() {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+      
+      // Mostrar la sección correspondiente al hash
+      const targetSection = document.getElementById(hash);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+        
+        // Actualizar altura
+        actualizarAlturaMain();
+        
+        // Actualizar el elemento activo del sidebar
+        const activeMenuItem = document.querySelector(`.sidebar li[data-target="${hash}"]`);
+        if (activeMenuItem) {
+          document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+          activeMenuItem.classList.add('active');
+        }
+      }
+    }
+  }
+
+  // Escuchar cambios en el hash
+  window.addEventListener('hashchange', handleHashChange);
+  
+  // Manejar el hash inicial al cargar la página
+  handleHashChange();
 });
 
 // Actualizar altura de la variable CSS --altura-main
