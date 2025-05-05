@@ -444,14 +444,6 @@ main {
   font-size: 0.8rem;
 }
 
-.cargando-servidores {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size:1.5rem;
-    color: #aaa;
-    min-height: calc(100dvh - 228px);
-}
 
 #main, .grid-animes {
     display: grid;

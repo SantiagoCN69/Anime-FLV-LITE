@@ -81,27 +81,6 @@ window.handleHashChange = function () {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Función de temporizador de cuenta regresiva
-  function iniciarTemporizador() {
-    const temporizador = document.querySelector('.temporizador');
-    if (!temporizador) return;
-
-    let tiempoRestante = 17;
-    const intervalId = setInterval(() => {
-      temporizador.textContent = `(${tiempoRestante}s)`;
-      tiempoRestante--;
-
-      if (tiempoRestante < 0) {
-        clearInterval(intervalId);
-        temporizador.textContent = '';
-      }
-    }, 1000);
-  }
-
-  // Iniciar temporizador al cargar la página
-  iniciarTemporizador();
-
-  // Cargar contenidos
   Promise.all([
     cargarFavoritos(),
     cargarViendo(),
@@ -375,63 +354,144 @@ async function cargarUltimosCapsVistos() {
     return div;
   }
 
-  // Función principal para cargar últimos capítulos
-  async function cargarUltimosCapitulos() {
-    const mainContainer = document.getElementById('ultimos-episodios');
-    if (!mainContainer) return;
+// Función principal para cargar últimos capítulos generales desde la API
+async function cargarUltimosCapitulos() {
+  const mainContainer = document.getElementById('ultimos-episodios');
+  if (!mainContainer) return;
 
-    try {
-      const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      
-      if (!res.ok) {
-        throw new Error(`Error de red: ${res.status}`);
-      }
-      
-      const data = await res.json();
-
-      // Encontrar array de animes de forma dinámica
-      const animesArray = Array.isArray(data) ? data :
-        Array.isArray(data.data) ? data.data :
-        Array.isArray(data.results) ? data.results :
-        (data.animes && Array.isArray(data.animes)) ? data.animes : [];
-
-      // Limpiar contenedor
-      mainContainer.innerHTML = '';
-
-      // Filtrar y renderizar animes válidos
-      const validAnimes = animesArray.filter(anime => anime);
-      
-      if (validAnimes.length === 0) {
-        mainContainer.innerHTML = '<p>No hay episodios recientes</p>';
+  // Función auxiliar para renderizar tarjetas de anime
+  const renderizarUltimosEpisodios = (datos) => {
+    mainContainer.innerHTML = ''; // Limpiar antes de renderizar
+    if (!datos || datos.length === 0) {
+        mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';
+        actualizarAlturaMain(); // Asegurar altura correcta incluso sin episodios
         return;
-      }
-
-      // Ocultar elementos de cargando servidores
-      const cargandoServidores = document.querySelectorAll('.cargando-servidores');
-      cargandoServidores.forEach(elemento => {
-        elemento.style.display = 'none';
-      });
-
-      // Crear fragmento para mejor rendimiento
-      const fragment = document.createDocumentFragment();
-      validAnimes.forEach(anime => {
-        const animeCard = createAnimeCard(anime);
-        fragment.appendChild(animeCard);
-      });
-
-      mainContainer.appendChild(fragment);
-
-    } catch (err) {
-      console.error('Error al cargar últimos episodios:', err);
-      mainContainer.innerHTML = `<p>Error: ${err.message}</p>`;
     }
+    const fragment = document.createDocumentFragment();
+    datos.forEach(anime => {
+      // Asegurarse de pasar un objeto válido a createAnimeCard
+      const card = createAnimeCard(anime || {}); 
+      if (card) {
+        fragment.appendChild(card);
+      }
+    });
+    mainContainer.appendChild(fragment);
+    actualizarAlturaMain(); // Actualizar altura después de renderizar
+  };
+
+  const cacheKey = 'ultimosEpisodiosGeneralesCache';
+  let cachedData = null;
+
+  // 1. Intentar cargar y mostrar desde localStorage
+  try {
+    const cachedDataString = localStorage.getItem(cacheKey);
+    if (cachedDataString) {
+      cachedData = JSON.parse(cachedDataString);
+      if (Array.isArray(cachedData)) {
+        console.log("Mostrando últimos episodios desde caché...");
+        renderizarUltimosEpisodios(cachedData);
+      } else {
+        cachedData = null;
+        localStorage.removeItem(cacheKey);
+      }
+    }
+  } catch (error) {
+    console.error("Error al leer o parsear caché de últimos episodios:", error);
+    cachedData = null;
+    localStorage.removeItem(cacheKey);
   }
-  
+
+  // 2. Cargar datos frescos desde la API
+  try {
+    const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (!res.ok) {
+      throw new Error(`Error de red: ${res.status}`);
+    }
+    
+    const data = await res.json();
+
+    // Encontrar array de animes de forma dinámica
+    let freshDataRaw = [];
+    const possibleKeys = ['latestEpisodes', 'animesEnEmision', 'ultimosAnimes', 'data', 'results', 'animes'];
+    for (const key of possibleKeys) {
+        if (Array.isArray(data[key])) {
+            freshDataRaw = data[key];
+            break;
+        }
+    }
+    // Si no se encuentra en las claves esperadas, intentar buscar cualquier array en el primer nivel
+    if (freshDataRaw.length === 0) {
+        for (const key in data) {
+            if (Array.isArray(data[key])) {
+                freshDataRaw = data[key];
+                break;
+            }
+        }
+    }
+     // Si data es directamente el array
+     if (freshDataRaw.length === 0 && Array.isArray(data)) {
+        freshDataRaw = data;
+     }
+
+
+    // Mapear/limpiar los datos frescos para asegurar formato consistente
+    const freshData = freshDataRaw.map(item => ({ 
+        // Intentar extraer ID de varias formas, incluyendo desde el link si es necesario
+        id: item.id || item.anime_id || (item.link ? item.link.split('/').pop() : 'id_desconocido_' + Math.random().toString(16).slice(2)),
+        title: item.title || item.name || item.nombre || 'Anime sin título',
+        cover: item.cover || item.image || item.poster || 'img/background.webp', // URL por defecto más genérica
+        link: item.link || item.url || '' // Guardar el link original
+    })).filter(item => item.title !== 'Anime sin título'); // Filtrar items sin título válido
+
+
+    // 3. Comparar datos frescos con caché y actualizar si es necesario
+    const freshDataString = JSON.stringify(freshData);
+    const cachedDataString = JSON.stringify(cachedData);
+
+    if (freshDataString !== cachedDataString) {
+      console.log("Datos de API diferentes a la caché. Actualizando UI y caché...");
+      renderizarUltimosEpisodios(freshData);
+      // Solo guardar en caché si hay datos válidos
+      if (freshData && freshData.length > 0) { 
+          localStorage.setItem(cacheKey, freshDataString);
+      } else {
+          // Si los datos frescos están vacíos, limpiar la caché también
+          localStorage.removeItem(cacheKey);
+      }
+    } else {
+      // Si son iguales, pero no había caché (primera carga) y hay datos frescos
+      if (cachedData === null && freshData && freshData.length > 0) {
+          console.log("Mostrando datos frescos de API (sin caché previa).");
+          renderizarUltimosEpisodios(freshData);
+          localStorage.setItem(cacheKey, freshDataString); // Guardar caché por primera vez
+      } 
+      // Si no había caché y tampoco hay datos frescos
+      else if (cachedData === null && (!freshData || freshData.length === 0)) {
+           renderizarUltimosEpisodios([]); // Asegura mostrar mensaje "No se encontraron..."
+      } 
+      // Si son iguales y había caché, simplemente log
+      else {
+          console.log("Datos de API coinciden con la caché. No se requiere actualización.");
+      }
+    }
+
+  } catch (error) {
+    console.error('Error al cargar últimos capítulos desde API:', error);
+    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
+    if (cachedData === null) { 
+      mainContainer.innerHTML = '<p>Error al cargar últimos episodios.</p>';
+      actualizarAlturaMain();
+    }
+    // Si ya se mostró desde caché, dejamos la UI como está para no perder información
+  }
+}
+
   // Cargar animes favoritos
   async function cargarFavoritos() {
     const favsContainer = document.getElementById('favs');
@@ -460,28 +520,57 @@ async function cargarUltimosCapsVistos() {
       }
 
       favsContainer.innerHTML = ''; // Limpiar contenedor
+      const fragment = document.createDocumentFragment();
       
-      for (const docSnap of snap.docs) {
-        const anime = { id: docSnap.id, ...docSnap.data() };
-        
-        // Buscar detalles completos del anime
-        try {
-          const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${anime.id}`);
-          const animeData = await res.json();
+      // Array para almacenar promesas de búsqueda de detalles
+      const promises = [];
 
-          const div = document.createElement('div');
-          div.className = 'anime-card';
-          div.style.backgroundImage = `url(${animeData.cover})`;
-          div.innerHTML = `
-            <img src="${animeData.cover}" alt="${animeData.title}">
-            <strong>${animeData.title}</strong>
-          `;
-          div.addEventListener('click', () => ver(anime.id));
-          favsContainer.appendChild(div);
-        } catch (error) {
-          console.error(`Error al cargar detalles de anime ${anime.id}:`, error);
-        }
+      for (const docSnap of snap.docs) {
+        const animeId = docSnap.id; // El ID del documento es el ID del anime
+
+        // Crear una promesa para buscar los detalles en 'datos-animes'
+        const detallePromise = getDoc(doc(db, "datos-animes", animeId))
+          .then(animeDetalleSnap => {
+            if (animeDetalleSnap.exists()) {
+              const animeData = animeDetalleSnap.data();
+              const title = animeData.titulo || 'Título no encontrado'; 
+              const cover = animeData.portada || 'img/background.webp'; 
+
+              const div = document.createElement('div');
+              div.className = 'anime-card';
+              div.style.backgroundImage = `url(${cover})`;
+              div.innerHTML = `
+                <img src="${cover}" alt="${title}">
+                <strong>${title}</strong>
+              `;
+              div.addEventListener('click', () => ver(animeId)); // Usar animeId directamente
+              return div; // Devolver el elemento creado
+            } else {
+              console.warn(`No se encontraron detalles para el anime favorito con ID: ${animeId}`);
+              return null; // Devolver null si no se encuentran detalles
+            }
+          })
+          .catch(error => {
+            console.error(`Error al buscar detalles del anime favorito ${animeId}:`, error);
+            return null; // Devolver null en caso de error
+          });
+        
+        promises.push(detallePromise);
       }
+
+      // Esperar a que todas las promesas de búsqueda de detalles se resuelvan
+      const resultados = await Promise.all(promises);
+
+      // Filtrar resultados nulos (errores o no encontrados) y añadir al fragmento
+      resultados.forEach(div => {
+        if (div) {
+          fragment.appendChild(div);
+        }
+      });
+
+      // Añadir todo el fragmento al DOM
+      favsContainer.appendChild(fragment);
+      actualizarAlturaMain();
     } catch (error) {
       console.error('Error al cargar favoritos:', error);
       favsContainer.innerHTML = '<p>Error al cargar favoritos</p>';
