@@ -314,8 +314,8 @@ async function cargarUltimosCapsVistos() {
 
   // Función para crear tarjeta de anime
   function createAnimeCard(anime) {
-    const cover = anime.cover || anime.image || anime.poster || 'URL_POR_DEFECTO';
-    const title = anime.title || anime.name || anime.nombre || 'Anime sin nombre';
+    const cover = anime.cover || anime.image || anime.poster || anime.portada || 'img/background.webp'; // Añadido anime.portada y mejorado default
+    const title = anime.title || anime.name || anime.nombre || anime.titulo || 'Título no disponible'; // Añadido anime.titulo y mejorado default
     const link = anime.link || anime.url || '';
     const animeId = anime.id || anime.anime_id || '';
 
@@ -509,16 +509,11 @@ async function cargarFavoritos() {
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      // Usar los datos del objeto anime (id, titulo, portada)
-      const div = document.createElement('div');
-      div.className = 'anime-card';
-      div.style.backgroundImage = `url(${anime.portada || 'img/background.webp'})`; // Usar portada o default
-      div.innerHTML = `
-        <img src="${anime.portada || 'img/background.webp'}" alt="${anime.titulo || 'Título no encontrado'}">
-        <strong>${anime.titulo || 'Título no encontrado'}</strong>
-      `;
-      div.addEventListener('click', () => ver(anime.id));
-      fragment.appendChild(div);
+      // Usar la función reutilizable createAnimeCard
+      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
+      if (card) { // Verificar si la tarjeta se creó correctamente
+        fragment.appendChild(card);
+      }
     });
     favsContainer.appendChild(fragment);
     actualizarAlturaMain();
@@ -669,15 +664,11 @@ async function cargarViendo() {
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      const div = document.createElement('div');
-      div.className = 'anime-card';
-      div.style.backgroundImage = `url(${anime.portada || 'img/background.webp'})`;
-      div.innerHTML = `
-        <img src="${anime.portada || 'img/background.webp'}" alt="${anime.titulo || 'Título no encontrado'}">
-        <strong>${anime.titulo || 'Título no encontrado'}</strong>
-      `;
-      div.addEventListener('click', () => ver(anime.id));
-      fragment.appendChild(div);
+      // Usar la función reutilizable createAnimeCard
+      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
+      if (card) { // Verificar si la tarjeta se creó correctamente
+        fragment.appendChild(card);
+      }
     });
     viendoContainer.appendChild(fragment);
     actualizarAlturaMain();
@@ -821,15 +812,11 @@ async function cargarPendientes() {
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      const div = document.createElement('div');
-      div.className = 'anime-card';
-      div.style.backgroundImage = `url(${anime.portada || 'img/background.webp'})`;
-      div.innerHTML = `
-        <img src="${anime.portada || 'img/background.webp'}" alt="${anime.titulo || 'Título no encontrado'}">
-        <strong>${anime.titulo || 'Título no encontrado'}</strong>
-      `;
-      div.addEventListener('click', () => ver(anime.id));
-      fragment.appendChild(div);
+      // Usar la función reutilizable createAnimeCard
+      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
+      if (card) { // Verificar si la tarjeta se creó correctamente
+        fragment.appendChild(card);
+      }
     });
     pendientesContainer.appendChild(fragment);
     actualizarAlturaMain();
@@ -972,15 +959,11 @@ async function cargarCompletados() {
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      const div = document.createElement('div');
-      div.className = 'anime-card';
-      div.style.backgroundImage = `url(${anime.portada || 'img/background.webp'})`;
-      div.innerHTML = `
-        <img src="${anime.portada || 'img/background.webp'}" alt="${anime.titulo || 'Título no encontrado'}">
-        <strong>${anime.titulo || 'Título no encontrado'}</strong>
-      `;
-      div.addEventListener('click', () => ver(anime.id));
-      fragment.appendChild(div);
+      // Usar la función reutilizable createAnimeCard
+      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
+      if (card) { // Verificar si la tarjeta se creó correctamente
+        fragment.appendChild(card);
+      }
     });
     completadosContainer.appendChild(fragment);
     actualizarAlturaMain();
