@@ -84,6 +84,7 @@ header {
     -webkit-user-select: none;
     user-select: none;
     position: relative;
+    background: #0002;
 }
 .title {
     flex: 1;
@@ -317,7 +318,7 @@ main {
   min-height: 100%;
   max-height: var(--altura-main);
   overflow-y: auto;
-  box-shadow: 2px 5px 5px #00000080;
+  box-shadow: 2px 4px 5px #ffffff20;
 }
 
 .sidebar ul {
@@ -350,6 +351,8 @@ main {
 .content-section {
   flex-grow: 1;
   display: block;
+  border-radius: 3px;
+  padding-bottom: 1rem;
 }
 
 /* Ocultar secciones */

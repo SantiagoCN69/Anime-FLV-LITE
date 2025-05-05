@@ -96,7 +96,7 @@ async function cargarUltimosCapsVistos() {
       return;
     }
 
-    ultimosCapsContainer.innerHTML = ''; // Limpiar contenedor
+    ultimosCapsContainer.innerHTML = '';
     
     for (const docSnap of snap.docs) {
       const animeData = { id: docSnap.id, ...docSnap.data() };
@@ -244,7 +244,7 @@ async function cargarUltimosCapsVistos() {
         return;
       }
 
-      viendoContainer.innerHTML = ''; // Limpiar contenedor
+      viendoContainer.innerHTML = ''; 
       
       for (const docSnap of snap.docs) {
         const anime = { id: docSnap.id, ...docSnap.data() };
@@ -301,7 +301,7 @@ async function cargarUltimosCapsVistos() {
         return;
       }
 
-      pendientesContainer.innerHTML = ''; // Limpiar contenedor
+      pendientesContainer.innerHTML = ''; 
       
       for (const docSnap of snap.docs) {
         const anime = { id: docSnap.id, ...docSnap.data() };
@@ -357,7 +357,7 @@ async function cargarUltimosCapsVistos() {
         return;
       }
 
-      completadosContainer.innerHTML = ''; // Limpiar contenedor
+      completadosContainer.innerHTML = ''; 
       
       for (const docSnap of snap.docs) {
         const anime = { id: docSnap.id, ...docSnap.data() };
@@ -394,6 +394,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   menuBtn.addEventListener("click", () => {
     sidebar.classList.toggle("active");
+    
+    // Si el sidebar se abre y no está en la parte superior, hacer scroll
+    if (sidebar.classList.contains("active") && window.scrollY > 0) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   });
 
   // Opcional: ocultar sidebar al hacer clic en una opción
