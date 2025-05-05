@@ -443,10 +443,12 @@ async function cargarUltimosCapitulos() {
     // Mapear/limpiar los datos frescos para asegurar formato consistente
     const freshData = freshDataRaw.map(item => ({ 
         // Intentar extraer ID de varias formas, incluyendo desde el link si es necesario
-        id: item.id || item.anime_id || (item.link ? item.link.split('/').pop() : 'id_desconocido_' + Math.random().toString(16).slice(2)),
+        id: item.id 
+        || item.anime_id 
+        || (item.url ? item.url.split('/').pop().replace(/-\d+$/, '') : 'id_desconocido_' + Math.random().toString(16).slice(2)),
         title: item.title || item.name || item.nombre || 'Anime sin título',
         cover: item.cover || item.image || item.poster || 'img/background.webp', // URL por defecto más genérica
-        link: item.link || item.url || '' // Guardar el link original
+        link: item.url || '' // Guardar el link original
     })).filter(item => item.title !== 'Anime sin título'); // Filtrar items sin título válido
 
 
