@@ -192,13 +192,15 @@ button:hover {
   }
 
   .sidebar {
-    position: fixed;
+    position: absolute;
     top: 120px;
     left: 0;
-    width: 70%;
-    height: calc(100dvh - 120px);
-    background: #1c1c2b;
     padding: 1rem;
+    width: 70%;;
+    background: #000a;
+    height: calc(100dvh - 120px);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     transform: translateX(-120%);
     z-index: 1000;
     overflow-y: auto;
@@ -315,19 +317,21 @@ main {
   width: 220px;
   min-width: 220px;
   padding: 1rem;
-  min-height: 100%;
   max-height: var(--altura-main);
   overflow-y: auto;
-  box-shadow: 2px 4px 5px #ffffff20;
+  border-right: 1px solid #444;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
   margin: 0;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .sidebar li {
@@ -353,6 +357,8 @@ main {
   display: block;
   border-radius: 3px;
   padding-bottom: 1rem;
+  min-height: calc(100vh - 120px);
+  height: fit-content;
 }
 
 /* Ocultar secciones */

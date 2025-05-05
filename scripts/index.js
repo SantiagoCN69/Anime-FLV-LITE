@@ -54,7 +54,7 @@ function actualizarAlturaMain() {
 
   // Usar requestAnimationFrame para optimizar el rendimiento
   requestAnimationFrame(() => {
-    // Calcular altura total incluyendo padding y margin
+    // Usar offsetHeight como medida más precisa y eficiente
     const alturaFinal = contentSection.offsetHeight;
     
     // Establecer la variable CSS
@@ -147,9 +147,14 @@ async function cargarUltimosCapsVistos() {
     // Agregar solo los elementos válidos
     ultimosCapsValidos.forEach(cap => ultimosCapsContainer.appendChild(cap));
 
+    // Actualizar altura inmediatamente después de cargar los capítulos
+    actualizarAlturaMain();
+
   } catch (error) {
     console.error('Error al cargar últimos capítulos vistos:', error);
     ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
+    // Actualizar altura en caso de error
+    actualizarAlturaMain();
   }
 }
 
@@ -418,6 +423,30 @@ document.addEventListener("DOMContentLoaded", () => {
       sidebar.classList.remove("active");
     }
   });
+
+  // Soporte para cerrar sidebar con gesto de deslizamiento
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  sidebar.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, false);
+
+  sidebar.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, false);
+
+  function handleSwipe() {
+    // Si el sidebar está activo y el deslizamiento es hacia la izquierda
+    if (sidebar.classList.contains('active') && touchEndX < touchStartX) {
+      const swipeDistance = touchStartX - touchEndX;
+      // Si el deslizamiento es significativo (más de 50 píxeles)
+      if (swipeDistance > 50) {
+        sidebar.classList.remove('active');
+      }
+    }
+  }
 
   // Marcar el primer elemento del menú como activo al cargar
   const menuItems = document.querySelectorAll(".sidebar li");
