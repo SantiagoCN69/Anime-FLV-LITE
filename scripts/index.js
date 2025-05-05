@@ -22,9 +22,10 @@ function ver(id) {
 window.handleHashChange = function () {
   let hash = window.location.hash.substring(1);
 
+  // Si no hay hash, establecer Ultimos-Episodios por defecto
   if (!hash) {
     hash = 'Ultimos-Episodios';
-    window.location.hash = '#' + hash;
+    history.replaceState(null, '', '#' + hash);
   }
 
   // Ocultar todas las secciones
