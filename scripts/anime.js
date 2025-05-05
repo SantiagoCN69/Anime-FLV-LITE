@@ -107,43 +107,6 @@ capContenedor.addEventListener('scrollend', function() {
       }
     });
 
-    // Crear botones de episodios con fragmento para mejor rendimiento
-    const fragmentEpisodios = document.createDocumentFragment();
-    anime.episodes.forEach(ep => {
-      const li = document.createElement("li");
-      const btn = document.createElement("button");
-      btn.className = `episode-btn ep-no-visto`;
-      btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
-
-      // Ícono de visto/no visto con mejor manejo de eventos
-      const icon = document.createElement("img");
-      icon.className = "icon-eye";
-      icon.src = "/icons/eye-slash-solid.svg";
-      icon.alt = "visto";
-
-      const toggleEpisodeState = () => {
-        const esVisto = btn.classList.toggle("ep-visto");
-        btn.classList.toggle("ep-no-visto");
-        icon.src = esVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
-      };
-
-      icon.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleEpisodeState();
-      });
-
-      btn.appendChild(icon);
-
-      // Al hacer clic en el botón, redirigir al episodio
-      btn.addEventListener('click', () => {
-        window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
-      });
-
-      li.appendChild(btn);
-      fragmentEpisodios.appendChild(li);
-    });
-
-    // Añadir todos los episodios de una vez para mejor rendimiento
     crearBotonesEpisodios(anime, capContenedor);
 
     // Obtener y actualizar progreso de capítulos vistos
