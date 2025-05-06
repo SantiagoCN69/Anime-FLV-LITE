@@ -219,23 +219,20 @@ async function cargarUltimosCapsVistos() {
   try {
     const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
     const snap = await getDocs(ref);
-
     let freshData = [];
 
     if (!snap.empty) {
       const capVistos = snap.docs
-  .map(docSnap => ({
-    animeId: docSnap.id,
-    ...docSnap.data()
-  }))
-  .sort((a, b) => {
-    const fechaA = new Date(a.fechaAgregado?.toDate?.() || a.fechaAgregado || 0);
-    const fechaB = new Date(b.fechaAgregado?.toDate?.() || b.fechaAgregado || 0);
-    return fechaB - fechaA; 
-  })
-  .slice(0, 10); 
-
-
+        .map(docSnap => ({
+          animeId: docSnap.id,
+          ...docSnap.data()
+        }))
+        .sort((a, b) => {
+          const fechaA = new Date(a.fechaAgregado?.toDate?.() || a.fechaAgregado || 0);
+          const fechaB = new Date(b.fechaAgregado?.toDate?.() || b.fechaAgregado || 0);
+          return fechaB - fechaA; 
+        })
+        .slice(0, 10); 
 
       const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
       const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
@@ -249,13 +246,17 @@ async function cargarUltimosCapsVistos() {
 
       freshData = capVistos.map(cap => {
         const animeDetails = animeDataMap[cap.animeId];
-        if (!animeDetails || !animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) return null;
+
+        if (!animeDetails || !animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) {
+          return null;
+        }
 
         const ultimoCapVisto = Math.max(...(cap.episodiosVistos || []).map(Number), 0);
         const siguienteCapitulo = ultimoCapVisto + 1;
-
-        const siguienteEpisodio = Object.values(animeDetails.episodios || {})
-          .find(ep => ep.numero === siguienteCapitulo);
+        
+        const episodiosDelAnime = typeof animeDetails.episodios === 'object' && animeDetails.episodios !== null ? animeDetails.episodios : {};
+        const siguienteEpisodio = Object.values(episodiosDelAnime)
+          .find(ep => ep.number === siguienteCapitulo);
 
         if (siguienteEpisodio?.url) {
           return {
@@ -266,28 +267,21 @@ async function cargarUltimosCapsVistos() {
             siguienteEpisodioUrl: siguienteEpisodio.url
           };
         }
-
         return null;
       }).filter(Boolean);
     }
-
     const freshDataString = JSON.stringify(freshData);
     const cachedDataString = JSON.stringify(cachedData);
 
     if (freshDataString !== cachedDataString) {
-      console.log("Datos de Firestore diferentes a la caché. Actualizando UI y caché...");
       renderizarBotones(freshData);
       localStorage.setItem(cacheKey, freshDataString);
     } else {
       if (cachedData === null && freshData.length === 0) {
-        ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
-        actualizarAlturaMain();
       } else if (cachedData === null && freshData.length > 0) {
-        console.log("Mostrando datos frescos (sin caché previa).");
         renderizarBotones(freshData);
         localStorage.setItem(cacheKey, freshDataString);
       } else {
-        console.log("Datos de Firestore coinciden con la caché. No se requiere actualización.");
       }
     }
 
