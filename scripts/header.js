@@ -68,8 +68,33 @@ busquedaInput.addEventListener('input', function () {
   }, 300);
 });
 
-// Mostrar resultados (últimos o búsqueda)
+// Función para crear una tarjeta de anime
+function crearAnimeCard(anime) {
+  let animeId = '';
+  if (anime.url) {
+    const urlParts = anime.url.split('/');
+    const fullId = urlParts[urlParts.length - 1];
+    animeId = fullId.replace(/-\d+$/, '');
+  } else if (anime.id) {
+    animeId = anime.id.replace(/-\d+$/, '');
+  } else {
+    animeId = extraerIdDeLink(anime.link || '');
+  }
 
+  const div = document.createElement('div');
+  div.className = 'anime-card';
+  div.style.setProperty('--cover', `url(${anime.cover})`);
+  div.innerHTML = `
+    <div class="container-img">
+      <img src="${anime.cover}" alt="${anime.title || anime.name}">
+    </div>
+    <strong>${anime.title || anime.name}</strong>
+  `;
+  div.addEventListener('click', () => ver(animeId));
+  return div;
+}
+
+// Mostrar resultados (últimos o búsqueda)
 function mostrarResultados(data) {
   const resultados = data.data || data;
 
@@ -90,74 +115,33 @@ function mostrarResultados(data) {
 
     if (resultados.length > 0) {
       seccionResultados.classList.remove('hidden');
-
       resultados.forEach(anime => {
-        let animeId = '';
-        if (anime.url) {
-          const urlParts = anime.url.split('/');
-          const fullId = urlParts[urlParts.length - 1];
-          animeId = fullId.replace(/-\d+$/, '');
-        } else if (anime.id) {
-          animeId = anime.id.replace(/-\d+$/, '');
-        } else {
-          animeId = extraerIdDeLink(anime.link || '');
-        }
-
-        const div = document.createElement('div');
-        div.className = 'anime-card';
-        div.style.setProperty('--cover', `url(${anime.cover})`);
-  
-    div.innerHTML = `
-      <div class="container-img">
-        <img src="${anime.cover}" alt="${anime.title || anime.name}">
-      </div>
-          <strong>${anime.title || anime.name}</strong>
-        `;
-        div.addEventListener('click', () => ver(animeId));
-        resultadosContainer.appendChild(div);
+        const animeCard = crearAnimeCard(anime);
+        resultadosContainer.appendChild(animeCard);
       });
     } else {
       seccionResultados.classList.add('hidden');
-      handleHashChange();
+      handleHashChange(); // Restaura la sección si no hay resultados
     }
-
     return; // no renderizamos en mainContainer si es index
   }
 
   // Para otras páginas (como anime.html)
   if (!mainContainer) return;
-  mainContainer.innerHTML = '';
+  mainContainer.innerHTML = ''; // Limpia el contenedor principal
 
   if (isAnimePage) {
     if (resultados.length > 0) {
-      if (animeDetails) animeDetails.style.display = 'none';
+      if (animeDetails) animeDetails.style.display = 'none'; // Oculta detalles si hay resultados
     } else {
-      if (animeDetails) animeDetails.style.display = 'grid';
-      return;
+      if (animeDetails) animeDetails.style.display = 'grid'; // Muestra detalles si no hay resultados
+      return; // No renderizar nada más si no hay resultados en anime.html
     }
   }
 
   resultados.forEach(anime => {
-    let animeId = '';
-    if (anime.url) {
-      const urlParts = anime.url.split('/');
-      const fullId = urlParts[urlParts.length - 1];
-      animeId = fullId.replace(/-\d+$/, '');
-    } else if (anime.id) {
-      animeId = anime.id.replace(/-\d+$/, '');
-    } else {
-      animeId = extraerIdDeLink(anime.link || '');
-    }
-
-    const div = document.createElement('div');
-    div.className = 'anime-card';
-    div.style.setProperty('--cover', `url(${anime.cover})`);
-    div.innerHTML = `
-      <img src="${anime.cover}" alt="${anime.title || anime.name}">
-      <strong>${anime.title || anime.name}</strong>
-    `;
-    div.addEventListener('click', () => ver(animeId));
-    mainContainer.appendChild(div);
+    const animeCard = crearAnimeCard(anime);
+    mainContainer.appendChild(animeCard);
   });
 }
 
