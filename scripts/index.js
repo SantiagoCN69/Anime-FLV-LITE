@@ -342,10 +342,12 @@ async function cargarUltimosCapsVistos() {
   
     const div = document.createElement('div');
     div.className = 'anime-card';
-    div.style.setProperty('--cover', `url(${cover})`); // para usarlo en CSS
+    div.style.setProperty('--cover', `url(${cover})`);
   
     div.innerHTML = `
-      <img src="${cover}" alt="${title}">
+      <div class="container-img">
+        <img src="${cover}" alt="${title}">
+      </div>
       <strong>${title}</strong>
     `;
     

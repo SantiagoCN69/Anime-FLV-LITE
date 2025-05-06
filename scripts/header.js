@@ -105,9 +105,12 @@ function mostrarResultados(data) {
 
         const div = document.createElement('div');
         div.className = 'anime-card';
-        div.style.backgroundImage = `url(${anime.cover})`;
-        div.innerHTML = `
-          <img src="${anime.cover}" alt="${anime.title || anime.name}">
+        div.style.setProperty('--cover', `url(${anime.cover})`);
+  
+    div.innerHTML = `
+      <div class="container-img">
+        <img src="${anime.cover}" alt="${anime.title || anime.name}">
+      </div>
           <strong>${anime.title || anime.name}</strong>
         `;
         div.addEventListener('click', () => ver(animeId));
@@ -148,7 +151,7 @@ function mostrarResultados(data) {
 
     const div = document.createElement('div');
     div.className = 'anime-card';
-    div.style.backgroundImage = `url(${anime.cover})`;
+    div.style.setProperty('--cover', `url(${anime.cover})`);
     div.innerHTML = `
       <img src="${anime.cover}" alt="${anime.title || anime.name}">
       <strong>${anime.title || anime.name}</strong>

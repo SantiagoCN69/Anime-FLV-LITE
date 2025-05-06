@@ -457,7 +457,7 @@ main {
 
 #main, .grid-animes {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, auto));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
     margin: 0 auto;
     width: clamp(0px, 100%, 1000px);
@@ -474,13 +474,9 @@ main {
     padding: 10px;
     text-align: center;
     transition: transform 0.3s;
-
   }
-  
-  @media screen and (hover: hover) {
-    .anime-card:hover {
-      transform: scale(1.03);
-    }
+  .anime-card:active {
+    transform: scale(0.95);
   }
   .anime-card::before {
     content: "";
@@ -491,18 +487,22 @@ main {
     z-index: 0;
     transform: scale(1.4);
   }
-  
+  .container-img {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 4px;
+  }
   .anime-card img {
     width: 100%;
-    aspect-ratio: 3/2;
+    max-height: 194px;
     object-fit: cover;
     border-radius: 4px;
     background-color: #262637;
-    transition: opacity 0.3s ease;
+    transition: transform 0.3s ease;
   }
   @media screen and (hover: hover) {
     .anime-card:hover img {
-      opacity: .5;
+      transform: scale(1.1);
     }
   }
 

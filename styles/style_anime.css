@@ -240,15 +240,19 @@ h2 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 100%;
+    width: fit-content;
     color:#e76f51;
     min-height: fit-content;
+    z-index: 1;
   }
   .genero {
     display: flex;
     width: 50%;
     gap: 5px;
     justify-content: end;
+    flex-wrap: wrap;
+    overflow: hidden;
+    max-height: 25px;
   }
   .genero button {
     background-color: #1c1c2bb6;
@@ -262,7 +266,7 @@ h2 {
     user-select: none;
   }
 
-  @media screen and (max-width:600px){
+  @media screen and (max-width:800px){
     .info1 {
       flex-direction: column;
       gap: 5px;
@@ -270,11 +274,14 @@ h2 {
     .genero {
       width: 100%;
       flex-wrap: wrap;
-      gap: 2px;
+      gap: 5px;
       margin-bottom: 5px;
+      justify-content: start;
+       max-height: fit-content;
     }
     .anime-title {
       margin-bottom: 0;
+      width: 100%;
     }
   }
   #estado::before {
