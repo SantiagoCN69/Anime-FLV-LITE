@@ -486,7 +486,7 @@ main {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: inherit;
+    background-image: var(--cover);
     filter: blur(12px) brightness(0.3);
     z-index: 0;
     transform: scale(1.4);
