@@ -7,6 +7,23 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
+document.addEventListener('DOMContentLoaded', () => {
+  const contadores = document.querySelectorAll('span.contador');
+  contadores.forEach(contadorSpan => {
+    let tiempoRestante = 17;
+    contadorSpan.textContent = tiempoRestante + 's';
+    const intervalo = setInterval(() => {
+      tiempoRestante--;
+      if (tiempoRestante >= 0) {
+        contadorSpan.textContent = tiempoRestante + 's';
+      } else {
+        clearInterval(intervalo);
+        contadorSpan.textContent = ''; // Opcional: ocultar o limpiar
+      }
+    }, 1000);
+  });
+});
+
 function extraerIdDeLink(link) {
   if (!link) return '';
   const partes = link.split('/');
