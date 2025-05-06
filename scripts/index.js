@@ -339,27 +339,28 @@ async function cargarUltimosCapsVistos() {
     const title = anime.title || anime.name || anime.nombre || anime.titulo || 'Título no disponible';
     const link = anime.link || anime.url || '';
     const animeId = anime.id || anime.anime_id || '';
+    const chapter = anime.chapter || '';
   
     const div = document.createElement('div');
     div.className = 'anime-card';
     div.style.setProperty('--cover', `url(${cover})`);
-  
+    let chapterHtml = ''; 
+    if (chapter) {
+      chapterHtml = `<span>Episodio ${chapter}</span>`;
+    }
     div.innerHTML = `
       <div class="container-img">
         <img src="${cover}" alt="${title}">
+        ${chapterHtml}
       </div>
       <strong>${title}</strong>
     `;
     
     div.addEventListener('click', () => {
-      console.log('Datos del anime clickeado:', { title, link, animeId });
-  
       if (animeId) {
-        console.log('Navegando con ID directo:', animeId);
         ver(animeId);
       } else {
         const extractedId = extraerIdDeLink(link);
-        console.log('ID extraído del enlace:', extractedId);
         
         if (extractedId) {
           ver(extractedId);
@@ -468,7 +469,8 @@ async function cargarUltimosCapitulos() {
         || (item.url ? item.url.split('/').pop().replace(/-\d+$/, '') : 'id_desconocido_' + Math.random().toString(16).slice(2)),
         title: item.title || item.name || item.nombre || 'Anime sin título',
         cover: item.cover || item.image || item.poster || 'img/background.webp', // URL por defecto más genérica
-        link: item.url || '' // Guardar el link original
+        link: item.url || '', // Guardar el link original
+        chapter: item.chapter || '',
     })).filter(item => item.title !== 'Anime sin título'); // Filtrar items sin título válido
 
 

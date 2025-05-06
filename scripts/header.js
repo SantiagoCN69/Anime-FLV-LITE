@@ -145,8 +145,6 @@ function mostrarResultados(data) {
   });
 }
 
-
-
 // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
 function extraerIdDeLink(link) {
   if (!link) return '';
