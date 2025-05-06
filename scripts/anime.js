@@ -197,11 +197,13 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
   
     // Obtener capítulos vistos antes de crear los botones
     obtenerCapitulosVistos(id).then(capitulosVistos => {
-      anime.episodes.forEach(ep => {
+      const episodios = Array.isArray(anime?.episodes) ? anime.episodes : [];
+      const vistos = Array.isArray(capitulosVistos) ? capitulosVistos : [];
+      episodios.forEach(ep => {
         const li = document.createElement("li");
         const btn = document.createElement("button");
   
-        const estaVisto = capitulosVistos.includes(ep.number.toString());
+        const estaVisto = vistos.includes(ep.number.toString());
         const icon = crearIconoEstado(estaVisto);
   
         btn.className = `episode-btn ${estaVisto ? 'ep-visto' : 'ep-no-visto'}`;
@@ -225,9 +227,10 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
   
       capContenedor.appendChild(fragmentEpisodios);
     }).catch(error => {
+      const episodios = Array.isArray(anime?.episodes) ? anime.episodes : [];
       console.error("Error al obtener capítulos vistos:", error);
       // Crear botones sin estado de visto si hay error
-      anime.episodes.forEach(ep => {
+      episodios.forEach(ep => {
         const li = document.createElement("li");
         const btn = document.createElement("button");
         btn.className = `episode-btn ep-no-visto`;
