@@ -224,6 +224,15 @@ h2 {
     padding-inline: 1rem;
   }
 
+  .info1 {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    position: relative;
+    gap: 10px;
+  }
+
   .anime-title {
     color: #e76f51;
     font-size: 1.8rem;
@@ -234,6 +243,79 @@ h2 {
     width: 100%;
     color:#e76f51;
     min-height: fit-content;
+  }
+  .genero {
+    display: flex;
+    width: 50%;
+    gap: 5px;
+  }
+  .genero button {
+    background-color: #1c1c2bb6;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: .8rem;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #estado {
+   position: absolute;
+   right: 5%;
+   top: 2%;
+   font-weight: bold;
+   text-shadow: 0 0 5px 10px #000;
+   font-size: 1rem;
+   cursor: pointer;
+   -webkit-tap-highlight-color: transparent;
+   -webkit-user-select: none;
+   user-select: none;
+   z-index: 1;
+  }
+  @media screen and (max-width:600px){
+    #estado {
+      right: 2%;
+      top: 0;
+      font-size: .8rem;
+    }
+    .info1 {
+      flex-direction: column;
+      gap: 5px;
+    }
+    .genero {
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 2px;
+      margin-bottom: 5px;
+    }
+    .anime-title {
+      margin-bottom: 0;
+    }
+  }
+  #estado::before {
+    content: "";
+    background-color: #0006;
+    filter: blur(5px);
+    box-shadow: 0 0 30px 1px #0006;
+    width: 140%;
+    height: 140%;
+    top: 0;
+    right:-5%;
+    border-radius: 4px;
+    position: absolute;
+    z-index: -1;
+  }
+  #estado.status-emision {
+    color: #74ff92;
+  }
+
+  #estado.status-finalizado {
+    color: #ff0000;
+  }
+
+  #estado.status-otro {
+      color: gray;
   }
   .anime-description {
     color: #fff;

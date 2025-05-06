@@ -37,6 +37,34 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       document.body.style.backgroundImage = `url(${cachedAnime.portada})`;
       document.getElementById("descripcion").textContent = cachedAnime.descripcion;
       crearBotonesEpisodios(cachedAnime, document.getElementById("capitulos"));
+
+      // Actualizar estado desde cache
+      const estadoDivCache = document.getElementById("estado");
+      const statusTextCache = cachedAnime.estado || 'Estado no disponible';
+      estadoDivCache.textContent = statusTextCache;
+      estadoDivCache.classList.remove('status-emision', 'status-finalizado', 'status-otro'); // Limpiar clases previas
+      if (statusTextCache.toLowerCase().includes('emisión') || statusTextCache.toLowerCase().includes('en emision')) {
+        estadoDivCache.classList.add('status-emision');
+      } else if (statusTextCache.toLowerCase().includes('finalizado')) {
+        estadoDivCache.classList.add('status-finalizado');
+      } else if (statusTextCache !== 'Estado no disponible'){
+        estadoDivCache.classList.add('status-otro'); // Clase para otros estados si es necesario
+      }
+
+      // Actualizar géneros desde cache
+      const generoContainerCache = document.querySelector(".genero");
+      generoContainerCache.innerHTML = ''; // Limpiar géneros anteriores
+      if (cachedAnime.generos && cachedAnime.generos.length > 0) {
+        cachedAnime.generos.slice(0, 5).forEach(genre => { // Limitar a 5 géneros
+          const btn = document.createElement("button");
+          btn.textContent = genre;
+          btn.className = 'genre-btn';
+          generoContainerCache.appendChild(btn);
+        });
+      } else {
+        generoContainerCache.textContent = 'Géneros no disponibles.';
+      }
+
       console.log('Datos cargados desde cache');
     }
 
@@ -84,9 +112,39 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
 
       // Actualizar UI con los datos más recientes
       document.getElementById("titulo").textContent = anime.title;
+
+      // Mostrar estado y añadir clase CSS
+      const estadoDiv = document.getElementById("estado");
+      const statusText = anime.status || 'Estado no disponible';
+      estadoDiv.textContent = statusText;
+      estadoDiv.classList.remove('status-emision', 'status-finalizado', 'status-otro'); // Limpiar clases previas
+      if (statusText.toLowerCase().includes('emisión') || statusText.toLowerCase().includes('en emision')) {
+        estadoDiv.classList.add('status-emision');
+      } else if (statusText.toLowerCase().includes('finalizado')) {
+        estadoDiv.classList.add('status-finalizado');
+      } else if (statusText !== 'Estado no disponible'){
+        estadoDiv.classList.add('status-otro'); // Clase para otros estados si es necesario
+      }
+
       document.getElementById("portada").src = anime.cover;
       document.body.style.backgroundImage = `url(${anime.cover})`;
       document.getElementById("descripcion").textContent = anime.synopsis;
+
+      // Crear botones de género
+      const generoContainer = document.querySelector(".genero");
+      generoContainer.innerHTML = ''; // Limpiar géneros anteriores por si acaso
+      if (anime.genres && anime.genres.length > 0) {
+        anime.genres.slice(0, 5).forEach(genre => { // Limitar a 5 géneros
+          const btn = document.createElement("button");
+          btn.textContent = genre;
+          btn.className = 'genre-btn'; // Puedes añadir una clase para estilos
+          // Opcional: Añadir evento de clic si quieres que los botones hagan algo
+          // btn.addEventListener('click', () => { /* acción al hacer clic */ });
+          generoContainer.appendChild(btn);
+        });
+      } else {
+        generoContainer.textContent = 'Géneros no disponibles.';
+      }
       crearBotonesEpisodios(anime, document.getElementById("capitulos"));
     } catch (error) {
       console.error('Error al guardar datos del anime en Firestore:', error);
