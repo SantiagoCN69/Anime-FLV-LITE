@@ -236,7 +236,7 @@ button:hover {
     left: 0;
     padding: 1rem;
     width: 60%;
-    background: #000a;
+    background: #1c1c2b;
     height: calc(100dvh - 120px);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
