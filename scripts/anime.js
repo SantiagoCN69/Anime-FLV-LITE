@@ -15,336 +15,198 @@ const id = new URLSearchParams(location.search).get("id");
 // Cargar información del anime
 document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
 
-const cargarDatosDesdeCache = (id) => {
-  const cacheKey = `anime_${id}`;
-  const cachedData = localStorage.getItem(cacheKey);
-  return cachedData ? JSON.parse(cachedData) : null;
+const getCacheKey = id => `anime_${id}`;
+
+const cargarDatosDesdeCache = id => {
+  try {
+    const data = localStorage.getItem(getCacheKey(id));
+    if (!data) return null;
+    const parsed = JSON.parse(data);
+    if (parsed._cachedAt && Date.now() - parsed._cachedAt > 24 * 60 * 60 * 1000) {
+      localStorage.removeItem(getCacheKey(id));
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
 };
 
 const actualizarCache = (id, anime) => {
-  const cacheKey = `anime_${id}`;
-  localStorage.setItem(cacheKey, JSON.stringify(anime));
+  const toCache = { ...anime, _cachedAt: Date.now() };
+  localStorage.setItem(getCacheKey(id), JSON.stringify(toCache));
 };
 
-fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
-  .then(res => res.json())
-  .then(async anime => {
-    // Intentar cargar desde cache primero
-    const cachedAnime = cargarDatosDesdeCache(id);
-    if (cachedAnime) {
-      document.getElementById("titulo").textContent = cachedAnime.titulo;
-      document.getElementById("portada").src = cachedAnime.portada;
-      document.body.style.backgroundImage = `url(${cachedAnime.portada})`;
-      document.getElementById("descripcion").textContent = cachedAnime.descripcion;
-      crearBotonesEpisodios(cachedAnime, document.getElementById("capitulos"));
+// DOM references
+const tituloEl = document.getElementById("titulo");
+const portadaEl = document.getElementById("portada");
+const descripcionEl = document.getElementById("descripcion");
+const generoContainer = document.querySelector(".genero");
+const capContenedor = document.getElementById("capitulos");
+const filtroCapitulo = document.getElementById("filtro-capitulo");
 
-
-      // Actualizar géneros desde cache
-      const generoContainerCache = document.querySelector(".genero");
-      generoContainerCache.innerHTML = ''; // Limpiar géneros anteriores
-      if (cachedAnime.generos && cachedAnime.generos.length > 0) {
-        cachedAnime.generos.slice(0, 5).forEach(genre => { // Limitar a 5 géneros
-          const btn = document.createElement("button");
-          btn.textContent = genre;
-          btn.className = 'genre-btn';
-          generoContainerCache.appendChild(btn);
-        });
-      } else {
-        generoContainerCache.textContent = 'Géneros no disponibles.';
-      }
-    }
-
-    // Luego, actualizar con los datos más recientes de Firestore
-    try {
-      if (!id) {
-        console.error('ID de anime no válido');
-        return;
-      }
-
-      const datosAnime = {
-        titulo: anime.title || '',
-        portada: anime.cover || '',
-        descripcion: anime.synopsis || '',
-        episodios: (anime.episodes || []).map(ep => ({
-          numero: ep.number || '',
-          url: ep.url || ''
-        })),
-        generos: anime.genres || [],
-        estado: anime.status || '',
-        calificacion: anime.score || null,
-        fechaGuardado: serverTimestamp(),
-        rating: anime.rating || null,
-      };
-
-      const animeDatosRef = doc(db, 'datos-animes', id);
-      await setDoc(animeDatosRef, datosAnime, { merge: true });
-
-      // Actualizar cache con los datos frescos
-      actualizarCache(id, {
-        titulo: anime.title,
-        portada: anime.cover,
-        descripcion: anime.synopsis,
-        episodios: anime.episodes || [],
-        generos: anime.genres,
-        estado: anime.status,
-        calificacion: anime.score,
-        rating: anime.rating
-      });
-
-      // Actualizar UI con los datos más recientes
-      document.getElementById("titulo").textContent = anime.title;
-      document.getElementById("portada").src = anime.cover;
-      document.body.style.backgroundImage = `url(${anime.cover})`;
-      document.getElementById("descripcion").textContent = anime.synopsis;
-
-      // Crear botones de género
-      const generoContainer = document.querySelector(".genero");
-      generoContainer.innerHTML = ''; // Limpiar géneros anteriores por si acaso
-      if (anime.genres && anime.genres.length > 0) {
-        anime.genres.slice(0, 5).forEach(genre => { // Limitar a 5 géneros
-          const btn = document.createElement("button");
-          btn.textContent = genre;
-          btn.className = 'genre-btn';
-          generoContainer.appendChild(btn);
-        });
-      } else {
-        generoContainer.textContent = 'Géneros no disponibles.';
-      }
-      crearBotonesEpisodios(anime, document.getElementById("capitulos"));
-    } catch (error) {
-      console.error('Error al guardar datos del anime en Firestore:', error);
-    }
-
-    const capContenedor = document.getElementById("capitulos");
-    const filtroCapitulo = document.getElementById("filtro-capitulo");
-
-    // Scroll horizontal con la rueda del mouse
-    capContenedor.addEventListener("wheel", function (e) {
-      e.preventDefault();
-      const columnas = this.querySelectorAll("li");
-      if (columnas.length === 0) return;
-      const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
-      const direccion = e.deltaY > 0 ? 1 : -1;
-      const scrollActual = this.scrollLeft;
-      const columnaActual = Math.floor(scrollActual / anchoColumna);
-      const nuevoScroll = (columnaActual + direccion) * anchoColumna;
-      const scrollMaximo = (columnas.length - 1) * anchoColumna;
-      this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
-    }, { passive: false });
-
-    // Ajustar scroll a columna completa al terminar
-    capContenedor.addEventListener('scrollend', function() {
-      const columnas = this.querySelectorAll("li");
-      if (columnas.length === 0) return;
-      const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
-      const scrollActual = this.scrollLeft;
-      const columnaActual = Math.round(scrollActual / anchoColumna);
-      const nuevoScroll = columnaActual * anchoColumna;
-
-      // Añadir un pequeño margen de corrección para evitar desvíos
-      this.scrollTo({
-        left: nuevoScroll + 0.1,  // Ajuste ligero para evitar desvíos
-        behavior: 'smooth'
-      });
+const renderGeneros = (container, generos) => {
+  container.innerHTML = '';
+  if (generos && generos.length) {
+    generos.slice(0, 5).forEach(g => {
+      const btn = document.createElement('button');
+      btn.textContent = g;
+      btn.className = 'genre-btn';
+      container.appendChild(btn);
     });
+  } else {
+    container.textContent = 'Géneros no disponibles.';
+  }
+};
 
-    // Filtro de capítulos
-    filtroCapitulo.addEventListener("input", function () {
-      const filtro = this.value.toLowerCase();
-      const botones = capContenedor.querySelectorAll(".episode-btn");
-      let primerCoincidencia = null;
+const renderAnime = anime => {
+  tituloEl.textContent = anime.titulo;
+  portadaEl.src = anime.portada;
+  document.body.style.backgroundImage = `url(${anime.portada})`;
+  descripcionEl.textContent = anime.descripcion;
+  renderGeneros(generoContainer, anime.generos);
+  crearBotonesEpisodios(anime);
+};
 
-      botones.forEach((btn, index) => {
-        const texto = btn.textContent.toLowerCase();
-        const coincide = texto.includes(filtro);
-        if (coincide && primerCoincidencia === null) primerCoincidencia = index;
-      });
+const getAnchoColumna = () => {
+  const li = capContenedor.querySelector('li');
+  return li ? li.getBoundingClientRect().width : 0;
+};
 
-      if (primerCoincidencia !== null) {
-        const elemento = botones[primerCoincidencia].parentElement;
-        elemento.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    });
+const debounce = (fn, delay = 200) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+};
 
-    // Obtener y actualizar progreso de capítulos vistos
-    obtenerCapitulosVistos(id)
-      .then(episodiosVistos => {
-        actualizarProgresoCapitulos(anime.episodes.length, episodiosVistos);
-        
-        // Desplazar al primer episodio no visto
-        const botones = capContenedor.querySelectorAll('.episode-btn');
-        const primerEpisodioNoVisto = Array.from(botones).find(btn => !btn.classList.contains('ep-visto'));
-        
-        if (primerEpisodioNoVisto) {
-          primerEpisodioNoVisto.parentElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        }
-      });
-  })
-  .catch(err => {
-    console.error("Error al cargar datos del anime:", err);
-    document.getElementById("descripcion").textContent = "Error al cargar el anime.";
+const createEpisodeButton = (ep, vistos = []) => {
+  const li = document.createElement('li');
+  const btn = document.createElement('button');
+  const visto = vistos.includes(ep.number.toString());
+  btn.className = `episode-btn ${visto ? 'ep-visto' : 'ep-no-visto'}`;
+  btn.textContent = `Episodio ${ep.number || ep.title || 'desconocido'}`;
+
+  const icon = document.createElement('img');
+  icon.className = 'icon-eye';
+  icon.src = visto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
+  icon.alt = 'visto';
+
+  btn.appendChild(icon);
+  li.appendChild(btn);
+
+  btn.addEventListener('click', async () => {
+    await manejarEstadoEpisodio(btn, icon, ep);
+    window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
   });
 
-    
-  function crearBotonesEpisodios(anime, capContenedor) {
-    // Limpiar el contenido previo del contenedor
-    capContenedor.innerHTML = '';
-  
-    const fragmentEpisodios = document.createDocumentFragment();
-  
-    // Obtener capítulos vistos antes de crear los botones
-    obtenerCapitulosVistos(id).then(capitulosVistos => {
-      const episodios = Array.isArray(anime?.episodes) ? anime.episodes : [];
-      const vistos = Array.isArray(capitulosVistos) ? capitulosVistos : [];
-      episodios.forEach(ep => {
-        const li = document.createElement("li");
-        const btn = document.createElement("button");
-  
-        const estaVisto = vistos.includes(ep.number.toString());
-        const icon = crearIconoEstado(estaVisto);
-  
-        btn.className = `episode-btn ${estaVisto ? 'ep-visto' : 'ep-no-visto'}`;
-        btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
-  
-        // Asignar eventos para cambiar el estado de visto
-        btn.addEventListener('click', async () => {
-          await manejarEstadoEpisodio(btn, icon, ep, estaVisto);
-          window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
-        });
-  
-        icon.addEventListener('click', (e) => {
-          e.stopPropagation();
-          manejarEstadoEpisodio(btn, icon, ep, estaVisto);
-        });
-  
-        btn.appendChild(icon);
-        li.appendChild(btn);
-        fragmentEpisodios.appendChild(li);
-      });
-  
-      capContenedor.appendChild(fragmentEpisodios);
-    }).catch(error => {
-      const episodios = Array.isArray(anime?.episodes) ? anime.episodes : [];
-      console.error("Error al obtener capítulos vistos:", error);
-      // Crear botones sin estado de visto si hay error
-      episodios.forEach(ep => {
-        const li = document.createElement("li");
-        const btn = document.createElement("button");
-        btn.className = `episode-btn ep-no-visto`;
-        btn.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
-  
-        const icon = crearIconoEstado(false);
-  
-        btn.addEventListener('click', () => {
-          window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
-        });
-  
-        icon.addEventListener('click', (e) => {
-          e.stopPropagation();
-          manejarEstadoEpisodio(btn, icon, ep, false);
-        });
-  
-        btn.appendChild(icon);
-        li.appendChild(btn);
-        fragmentEpisodios.appendChild(li);
-      });
-  
-      capContenedor.appendChild(fragmentEpisodios);
-    });
+  icon.addEventListener('click', e => {
+    e.stopPropagation();
+    manejarEstadoEpisodio(btn, icon, ep);
+  });
+
+  return li;
+};
+
+async function crearBotonesEpisodios(anime) {
+  capContenedor.innerHTML = '';
+  const episodios = Array.isArray(anime.episodes) ? anime.episodes : [];
+  const vistos = await obtenerCapitulosVistos(id) || [];
+  const fragment = document.createDocumentFragment();
+  episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
+  capContenedor.appendChild(fragment);
+
+  // Desplazar al primer episodio no visto
+  const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
+  if (primerNoVisto) {
+    primerNoVisto.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-  
-  // Crear el ícono de visto/no visto
-  function crearIconoEstado(estaVisto) {
-    const icon = document.createElement("img");
-    icon.className = "icon-eye";
-    icon.src = estaVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
-    icon.alt = "visto";
-    return icon;
+}
+
+// Scroll-snap via CSS
+capContenedor.addEventListener('wheel', e => {
+  e.preventDefault();
+  const ancho = getAnchoColumna();
+  if (!ancho) return;
+  const dir = e.deltaY > 0 ? 1 : -1;
+  const curr = capContenedor.scrollLeft;
+  const col = Math.round(curr / ancho);
+  const target = (col + dir) * ancho;
+  capContenedor.scrollTo({ left: Math.max(0, Math.min(target, capContenedor.scrollWidth - ancho)), behavior: 'smooth' });
+}, { passive: false });
+
+filtroCapitulo.addEventListener('input', debounce(() => {
+  const filtro = filtroCapitulo.value.toLowerCase();
+  const botones = capContenedor.querySelectorAll('.episode-btn');
+  const idx = Array.from(botones).findIndex(btn => btn.textContent.toLowerCase().includes(filtro));
+  if (idx >= 0) botones[idx].parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}));
+
+async function manejarEstadoEpisodio(btn, icon, ep) {
+  const nuevo = !btn.classList.contains('ep-visto');
+  btn.classList.toggle('ep-visto', nuevo);
+  btn.classList.toggle('ep-no-visto', !nuevo);
+  icon.src = nuevo ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
+  try {
+    const titulo = tituloEl.textContent;
+    await toggleCapituloVisto(id, titulo, ep.number, nuevo);
+  } catch (e) {
+    console.error(e);
   }
-  
-  // Manejar el cambio de estado de un episodio
-  async function manejarEstadoEpisodio(btn, icon, ep, estaVisto) {
-    const estadoVistoActual = btn.classList.contains("ep-visto");
-    const nuevoEstado = !estadoVistoActual;
-    btn.classList.toggle("ep-visto", nuevoEstado);
-    btn.classList.toggle("ep-no-visto", !nuevoEstado);
-    icon.src = nuevoEstado ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
-  
-    try {
-      const titulo = document.getElementById("titulo").textContent;
-      await toggleCapituloVisto(id, titulo, ep.number, nuevoEstado);
-    } catch (error) {
-      console.error("Error al cambiar estado del capítulo:", error);
-      // Revertir cambios visuales si hay un error
-      btn.classList.toggle("ep-visto", estaVisto);
-      btn.classList.toggle("ep-no-visto", !estaVisto);
-      icon.src = estaVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
-    }
+}
+
+async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
+  const user = auth.currentUser;
+  if (!user) throw 'No autenticado';
+  const ref = doc(db, 'usuarios', user.uid, 'caps-vistos', animeId);
+  const snap = await getDoc(ref);
+  let arr = snap.exists() ? snap.data().episodiosVistos || [] : [];
+  arr = esVisto ? Array.from(new Set([...arr, episodio.toString()])) : arr.filter(x => x !== episodio.toString());
+  await setDoc(ref, { titulo, fechaAgregado: serverTimestamp(), episodiosVistos: arr });
+  actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, arr);
+}
+
+async function obtenerCapitulosVistos(animeId) {
+  const user = auth.currentUser;
+  if (!user) return [];
+  const ref = doc(db, 'usuarios', user.uid, 'caps-vistos', animeId);
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data().episodiosVistos || [] : [];
+}
+
+(async () => {
+  if (!id) return console.error('ID inválido');
+  const cached = cargarDatosDesdeCache(id);
+  if (cached) renderAnime({
+    titulo: cached.titulo,
+    portada: cached.portada,
+    descripcion: cached.descripcion,
+    generos: cached.generos,
+    episodes: cached.episodios
+  });
+  try {
+    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
+    const data = await res.json();
+    const anime = {
+      titulo: data.title || '',
+      portada: data.cover || '',
+      descripcion: data.synopsis || '',
+      episodes: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
+      generos: data.genres || [],
+      estado: data.status || '',
+      calificacion: data.score || null,
+      rating: data.rating || null
+    };
+    await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
+    actualizarCache(id, anime);
+    renderAnime(anime);
+  } catch (err) {
+    console.error('Error carga anime:', err);
+    descripcionEl.textContent = 'Error al cargar el anime.';
   }
-  
-  // Función para alternar capítulos vistos
-  async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
-    const user = auth.currentUser;
-    if (!user) {
-      alert("Debes iniciar sesión para marcar capítulos.");
-      throw "Usuario no autenticado";
-    }
-  
-    const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
-  
-    try {
-      const docSnap = await getDoc(animeRef);
-      const datosActuales = docSnap.exists() ? docSnap.data() : {};
-  
-      let episodiosActuales, episodiosUnicos;
-      if (esVisto) {
-        episodiosActuales = datosActuales.episodiosVistos || [];
-        episodiosUnicos = new Set([...episodiosActuales, episodio.toString()]);
-      } else {
-        episodiosActuales = datosActuales.episodiosVistos || [];
-        episodiosUnicos = episodiosActuales.filter(ep => ep !== episodio.toString());
-      }
-  
-      await setDoc(animeRef, { 
-        titulo, 
-        fechaAgregado: serverTimestamp(),
-        episodiosVistos: Array.from(episodiosUnicos)
-      });
-  
-      const totalEpisodios = document.querySelectorAll('.episode-btn').length;
-      actualizarProgresoCapitulos(totalEpisodios, Array.from(episodiosUnicos));
-  
-      return { mensaje: `Episodio ${episodio} ${esVisto ? 'marcado' : 'desmarcado'} como visto` };
-    } catch (error) {
-      console.error("Error al cambiar estado del capítulo:", error);
-      alert("Hubo un error al cambiar el estado del capítulo.");
-      throw error;
-    }
-  }
-  
-  // Función para obtener capítulos vistos de un anime
-  async function obtenerCapitulosVistos(animeId) {
-    const user = auth.currentUser;
-    if (!user) return [];
-  
-    try {
-      const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
-      const docSnap = await getDoc(animeRef);
-  
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        return data.episodiosVistos || [];
-      } else {
-        return [];
-      }
-    } catch (error) {
-      console.error("Error al obtener capítulos vistos:", error);
-      return [];
-    }
-  }
+})();
+
   
 // Toggle búsqueda de capítulos
 document.getElementById('btn-search-capitulo').addEventListener('click', function () {
