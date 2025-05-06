@@ -3,7 +3,7 @@ import {
   collection,
   doc,
   getDocs,
-  getDoc // <-- Añadir getDoc aquí
+  getDoc 
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contadorSpan.textContent = tiempoRestante + 's';
       } else {
         clearInterval(intervalo);
-        contadorSpan.textContent = ''; // Opcional: ocultar o limpiar
+        contadorSpan.textContent = '';
       }
     }, 1000);
   });
@@ -28,15 +28,13 @@ function extraerIdDeLink(link) {
   if (!link) return '';
   const partes = link.split('/');
   let id = partes[partes.length - 1] || '';
-  // Eliminar números al final del ID
   return id.replace(/(-\d+)$/, '');
 }
 
-// Función para redirigir a la página de un anime
 function ver(id) {
   window.location.href = `anime.html?id=${id}`;
 }
-// Mostrar la sección correspondiente al hash en la URL
+
 function mostrarSeccionDesdeHash() {
   const hash = window.location.hash;
   if (!hash) return;
@@ -45,26 +43,19 @@ function mostrarSeccionDesdeHash() {
   const seccion = document.getElementById(id);
   if (!seccion) return;
 
-  // Ocultar y mostrar secciones
   document.querySelectorAll(".content-section").forEach(sec => 
     sec.classList.toggle("hidden", sec.id !== id)
   );
 
-  // Actualizar menú activo
   document.querySelectorAll('.sidebar li').forEach(item => 
     item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
   );
-
-  // Actualizar altura
   actualizarAlturaMain();
 }
 
-// Ejecutar al cargar la página
 window.addEventListener("DOMContentLoaded", () => {
   mostrarSeccionDesdeHash();
 });
-
-// Ejecutar cuando cambia el hash (por navegación interna)
 window.addEventListener("hashchange", () => {
   mostrarSeccionDesdeHash();
 });
@@ -72,22 +63,18 @@ window.addEventListener("hashchange", () => {
 window.handleHashChange = function () {
   let hash = window.location.hash.substring(1);
 
-  // Si no hay hash, establecer Ultimos-Episodios por defecto
   if (!hash) {
     hash = 'Ultimos-Episodios';
     history.replaceState(null, '', '#' + hash);
   }
 
-  // Ocultar todas las secciones
   document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
 
-  // Mostrar la sección correspondiente al hash
   const targetSection = document.getElementById(hash);
   if (targetSection) {
     targetSection.classList.remove('hidden');
     actualizarAlturaMain();
 
-    // Activar ítem del sidebar
     const activeMenuItem = document.querySelector(`.sidebar li[data-target="${hash}"]`);
     if (activeMenuItem) {
       document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
@@ -106,27 +93,21 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarUltimosCapsVistos(),
     cargarUltimosCapitulos()
   ])
-  // Eventos de redimensionamiento y cambio de sección
+  
   window.addEventListener('resize', actualizarAlturaMain);
 
-  // Agregar eventos para actualizar altura al cambiar secciones
   const sidebarItems = document.querySelectorAll('.sidebar li');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      // Ocultar todas las secciones
       document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
-      
-      // Mostrar la sección correspondiente
       const targetId = e.target.getAttribute('data-target');
       const targetSection = document.getElementById(targetId);
       if (targetSection) {
         targetSection.classList.remove('hidden');
         
-        // Actualizar la URL sin recargar la página
         history.pushState(null, '', `#${targetId}`);
       }
       
-      // Actualizar altura
       actualizarAlturaMain();
     });
   });
@@ -134,26 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-// Actualizar altura de la variable CSS --altura-main
 function actualizarAlturaMain() {
-  // Priorizar la sección de contenido visible
   const contentSection = document.querySelector('.content-section:not(.hidden)') || 
                          document.querySelector('.content-section');
 
   if (!contentSection) return;
 
-  // Usar requestAnimationFrame para optimizar el rendimiento
   requestAnimationFrame(() => {
-    // Usar offsetHeight como medida más precisa y eficiente
     const alturaFinal = contentSection.offsetHeight;
     
-    // Establecer la variable CSS
     document.documentElement.style.setProperty('--altura-main', `${alturaFinal}px`);
   });
 }
 
-// Función auxiliar para crear el elemento DOM del botón "Siguiente Capítulo"
-// Acepta un objeto con los datos necesarios.
 function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('div');
   btn.className = 'btn-siguiente-capitulo';
@@ -163,8 +137,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   portada.alt = itemData.titulo;
   portada.className = 'portada-anime';
   portada.onerror = () => {
-    // Opcional: establecer una imagen por defecto si la portada no carga
-    // portada.src = 'path/to/default/image.png'; 
+    portada.src = 'path/to/default/image.png'; 
   };
   
   const contenedorTexto = document.createElement('div');
@@ -191,14 +164,12 @@ function crearElementoSiguienteCapitulo(itemData) {
   return btn;
 }
 
-// Cargar últimos capítulos vistos
 async function cargarUltimosCapsVistos() {
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
   if (!ultimosCapsContainer) return;
 
-  // Función auxiliar para renderizar botones desde una lista de datos
   const renderizarBotones = (datos) => {
-    ultimosCapsContainer.innerHTML = ''; // Limpiar antes de renderizar
+    ultimosCapsContainer.innerHTML = ''; 
     if (!datos || datos.length === 0) {
       ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
       return;
@@ -211,10 +182,9 @@ async function cargarUltimosCapsVistos() {
       }
     });
     ultimosCapsContainer.appendChild(fragment);
-    actualizarAlturaMain(); // Actualizar altura después de renderizar
+    actualizarAlturaMain(); 
   };
 
-  // Esperar a que se complete la autenticación
   const user = await new Promise(resolve => {
     onAuthStateChanged(auth, (user) => {
       resolve(user);
@@ -229,7 +199,6 @@ async function cargarUltimosCapsVistos() {
   const cacheKey = `ultimosCapsVistosCache_${user.uid}`;
   let cachedData = null;
 
-  // 1. Intentar cargar y mostrar desde localStorage
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
     if (cachedDataString) {
@@ -247,7 +216,6 @@ async function cargarUltimosCapsVistos() {
     localStorage.removeItem(cacheKey);
   }
 
-  // 2. Cargar datos frescos desde Firestore sin N+1
   try {
     const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
     const snap = await getDocs(ref);
@@ -303,7 +271,6 @@ async function cargarUltimosCapsVistos() {
       }).filter(Boolean);
     }
 
-    // 3. Comparar datos frescos con caché y actualizar si es necesario
     const freshDataString = JSON.stringify(freshData);
     const cachedDataString = JSON.stringify(cachedData);
 
@@ -391,36 +358,32 @@ async function cargarUltimosCapsVistos() {
     return div;
   }
 
-// Función principal para cargar últimos capítulos generales desde la API
 async function cargarUltimosCapitulos() {
   const mainContainer = document.getElementById('ultimos-episodios');
   if (!mainContainer) return;
 
-  // Función auxiliar para renderizar tarjetas de anime
   const renderizarUltimosEpisodios = (datos) => {
     document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
-    mainContainer.innerHTML = ''; // Limpiar antes de renderizar
+    mainContainer.innerHTML = ''; 
     if (!datos || datos.length === 0) {
         mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';
-        actualizarAlturaMain(); // Asegurar altura correcta incluso sin episodios
+        actualizarAlturaMain(); 
         return;
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      // Asegurarse de pasar un objeto válido a createAnimeCard
       const card = createAnimeCard(anime || {}); 
       if (card) {
         fragment.appendChild(card);
       }
     });
     mainContainer.appendChild(fragment);
-    actualizarAlturaMain(); // Actualizar altura después de renderizar
+    actualizarAlturaMain(); 
   };
 
   const cacheKey = 'ultimosEpisodiosGeneralesCache';
   let cachedData = null;
 
-  // 1. Intentar cargar y mostrar desde localStorage
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
     if (cachedDataString) {
@@ -439,7 +402,6 @@ async function cargarUltimosCapitulos() {
     localStorage.removeItem(cacheKey);
   }
 
-  // 2. Cargar datos frescos desde la API
   try {
     const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest', {
       method: 'GET',
@@ -454,7 +416,6 @@ async function cargarUltimosCapitulos() {
     
     const data = await res.json();
 
-    // Encontrar array de animes de forma dinámica
     let freshDataRaw = [];
     const possibleKeys = ['latestEpisodes', 'animesEnEmision', 'ultimosAnimes', 'data', 'results', 'animes'];
     for (const key of possibleKeys) {
@@ -463,7 +424,6 @@ async function cargarUltimosCapitulos() {
             break;
         }
     }
-    // Si no se encuentra en las claves esperadas, intentar buscar cualquier array en el primer nivel
     if (freshDataRaw.length === 0) {
         for (const key in data) {
             if (Array.isArray(data[key])) {
@@ -472,51 +432,42 @@ async function cargarUltimosCapitulos() {
             }
         }
     }
-     // Si data es directamente el array
      if (freshDataRaw.length === 0 && Array.isArray(data)) {
         freshDataRaw = data;
      }
 
 
-    // Mapear/limpiar los datos frescos para asegurar formato consistente
     const freshData = freshDataRaw.map(item => ({ 
-        // Intentar extraer ID de varias formas, incluyendo desde el link si es necesario
         id: item.id 
         || item.anime_id 
         || (item.url ? item.url.split('/').pop().replace(/-\d+$/, '') : 'id_desconocido_' + Math.random().toString(16).slice(2)),
         title: item.title || item.name || item.nombre || 'Anime sin título',
-        cover: item.cover || item.image || item.poster || 'img/background.webp', // URL por defecto más genérica
-        link: item.url || '', // Guardar el link original
+        cover: item.cover || item.image || item.poster || 'img/background.webp', 
+        link: item.url || '', 
         chapter: item.chapter || '',
-    })).filter(item => item.title !== 'Anime sin título'); // Filtrar items sin título válido
+    })).filter(item => item.title !== 'Anime sin título'); 
 
 
-    // 3. Comparar datos frescos con caché y actualizar si es necesario
     const freshDataString = JSON.stringify(freshData);
     const cachedDataString = JSON.stringify(cachedData);
 
     if (freshDataString !== cachedDataString) {
       console.log("Datos de API diferentes a la caché. Actualizando UI y caché...");
       renderizarUltimosEpisodios(freshData);
-      // Solo guardar en caché si hay datos válidos
       if (freshData && freshData.length > 0) { 
           localStorage.setItem(cacheKey, freshDataString);
       } else {
-          // Si los datos frescos están vacíos, limpiar la caché también
           localStorage.removeItem(cacheKey);
       }
     } else {
-      // Si son iguales, pero no había caché (primera carga) y hay datos frescos
       if (cachedData === null && freshData && freshData.length > 0) {
           console.log("Mostrando datos frescos de API (sin caché previa).");
           renderizarUltimosEpisodios(freshData);
-          localStorage.setItem(cacheKey, freshDataString); // Guardar caché por primera vez
+          localStorage.setItem(cacheKey, freshDataString); 
       } 
-      // Si no había caché y tampoco hay datos frescos
       else if (cachedData === null && (!freshData || freshData.length === 0)) {
            renderizarUltimosEpisodios([]); // Asegura mostrar mensaje "No se encontraron..."
       } 
-      // Si son iguales y había caché, simplemente log
       else {
           console.log("Datos de API coinciden con la caché. No se requiere actualización.");
       }
@@ -605,7 +556,6 @@ async function cargarFavoritos() {
     const bloques = dividirEnBloques(ids, 10);
     const freshData = [];
 
-    // Mostrar primeros 10 mientras se cargan los demás
     const primerBloque = await Promise.all(
       bloques[0].map(id =>
         getDoc(doc(db, "datos-animes", id))
@@ -623,9 +573,8 @@ async function cargarFavoritos() {
     );
 
     freshData.push(...primerBloque.filter(Boolean));
-    renderizarFavoritos(freshData, true); // Mostrar primeros 10
+    renderizarFavoritos(freshData, true);
 
-    // Cargar el resto en segundo plano
     for (let i = 1; i < bloques.length; i++) {
       const bloque = bloques[i];
       const resultados = await Promise.all(
@@ -645,7 +594,7 @@ async function cargarFavoritos() {
       );
       const nuevos = resultados.filter(Boolean);
       freshData.push(...nuevos);
-      renderizarFavoritos(nuevos); // Añadir al final
+      renderizarFavoritos(nuevos);
     }
 
     localStorage.setItem(cacheKey, JSON.stringify(freshData));
@@ -748,9 +697,8 @@ async function cargarViendo() {
       )
     );
     freshData.push(...primerBloque.filter(Boolean));
-    renderizarViendo(freshData, true); // Mostrar primeros 10
+    renderizarViendo(freshData, true);
 
-    // Cargar el resto en segundo plano
     for (let i = 1; i < bloques.length; i++) {
       const bloque = bloques[i];
       const resultados = await Promise.all(
@@ -769,7 +717,7 @@ async function cargarViendo() {
       );
       const nuevos = resultados.filter(Boolean);
       freshData.push(...nuevos);
-      renderizarViendo(nuevos); // Añadir al final
+      renderizarViendo(nuevos);
     }
 
     localStorage.setItem(cacheKey, JSON.stringify(freshData));
@@ -1008,7 +956,6 @@ document.addEventListener("DOMContentLoaded", () => {
   menuBtn.addEventListener("click", () => {
     sidebar.classList.toggle("active");
     
-    // Si el sidebar se abre y no está en la parte superior, hacer scroll
     if (sidebar.classList.contains("active") && window.scrollY > 0) {
       window.scrollTo({
         top: 0,
@@ -1017,7 +964,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Opcional: ocultar sidebar al hacer clic en una opción
   document.querySelectorAll(".sidebar li").forEach(item => {
     item.addEventListener("click", () => {
       if (window.innerWidth <= 600) {
@@ -1026,21 +972,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Ocultar sidebar al hacer scroll en dispositivos móviles
   window.addEventListener("scroll", () => {
     if (window.innerWidth <= 600 && sidebar.classList.contains("active")) {
       sidebar.classList.remove("active");
     }
   });
 
-  // Cerrar sidebar al hacer clic fuera de él
   document.addEventListener("click", (event) => {
     if (!sidebar.contains(event.target) && !menuBtn.contains(event.target) && sidebar.classList.contains("active")) {
       sidebar.classList.remove("active");
     }
   });
 
-  // Soporte para cerrar sidebar con gesto de deslizamiento
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -1054,17 +997,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }, false);
 
   function handleSwipe() {
-    // Si el sidebar está activo y el deslizamiento es hacia la izquierda
     if (sidebar.classList.contains('active') && touchEndX < touchStartX) {
       const swipeDistance = touchStartX - touchEndX;
-      // Si el deslizamiento es significativo (más de 50 píxeles)
       if (swipeDistance > 50) {
         sidebar.classList.remove('active');
       }
     }
   }
 
-  // --- NUEVO CÓDIGO PARA ABRIR SIDEBAR CON DESLIZAMIENTO DERECHA ---
   const contentSections = document.querySelectorAll('.content-section');
   contentSections.forEach(section => {
     let touchStartXContent = 0;
@@ -1072,21 +1012,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     section.addEventListener('touchstart', (e) => {
       touchStartXContent = e.changedTouches[0].screenX;
-    }, { passive: true }); // Añadido passive: true para mejorar el rendimiento del scroll
+    }, { passive: true });
 
     section.addEventListener('touchend', (e) => {
       touchEndXContent = e.changedTouches[0].screenX;
       handleContentSwipe();
-    }, { passive: true }); // Añadido passive: true
+    }, { passive: true });
 
     function handleContentSwipe() {
-      // Si el sidebar NO está activo, el deslizamiento es hacia la derecha y es en móvil
       if (!sidebar.classList.contains('active') && touchEndXContent > touchStartXContent && window.innerWidth <= 600) {
         const swipeDistance = touchEndXContent - touchStartXContent;
-        // Si el deslizamiento es significativo (más de 50 píxeles)
         if (swipeDistance > 50) {
           sidebar.classList.add('active');
-          // Opcional: Scroll al inicio si el sidebar se abre y no está en la parte superior
           if (window.scrollY > 0) {
             window.scrollTo({
               top: 0,
@@ -1097,25 +1034,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
-  // --- FIN NUEVO CÓDIGO ---
 
-  // Marcar el primer elemento del menú como activo al cargar
   const menuItems = document.querySelectorAll(".sidebar li");
   const sections = document.querySelectorAll(".content-section");
   const firstMenuItem = menuItems[0];
   const firstSectionId = firstMenuItem.getAttribute("data-target");
 
-  // Marcar primer elemento como activo
   firstMenuItem.classList.add("active-menu-item");
 
-  // Mostrar primera sección
   sections.forEach(sec => {
     sec.classList.add("hidden");
   });
   document.getElementById(firstSectionId).classList.remove("hidden");
 });
 
-//sidebar
 const menuItems = document.querySelectorAll(".sidebar li");
 const sections = document.querySelectorAll(".content-section");
 
@@ -1123,20 +1055,14 @@ menuItems.forEach(item => {
   item.addEventListener("click", () => {
     const targetId = item.getAttribute("data-target");
 
-    // Quitar clase active de todos los elementos del menú
     menuItems.forEach(menuItem => {
       menuItem.classList.remove("active-menu-item");
     });
-
-    // Agregar clase active al elemento clickeado
     item.classList.add("active-menu-item");
 
-    // Ocultar todas las secciones
     sections.forEach(sec => {
       sec.classList.add("hidden");
     });
-
-    // Mostrar sección seleccionada
     document.getElementById(targetId).classList.remove("hidden");
   });
 });
