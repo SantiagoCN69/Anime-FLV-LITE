@@ -44,8 +44,14 @@ btnBloquear.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
   btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
   btnBloquear.classList.toggle("activo", bloquearAnuncios);
-  const servidorActivo = document.querySelector("#controles .servidor-activo");
-  if (embeds.length && servidorActivo) mostrarVideo(embeds[embeds.indexOf(servidorActivo.dataset.link)], servidorActivo);
+  const servidorActivoBtn = document.querySelector("#controles .servidor-activo");
+  if (embeds.length && servidorActivoBtn) {
+    const botonesServidor = Array.from(document.querySelectorAll("#controles button"));
+    const indiceServidorActivo = botonesServidor.indexOf(servidorActivoBtn);
+    if (indiceServidorActivo !== -1) {
+      mostrarVideo(embeds[indiceServidorActivo], servidorActivoBtn);
+    }
+  }
 });
 
 btnCensura.addEventListener("click", () => {
@@ -245,73 +251,85 @@ async function cargarEpisodios() {
 
 async function cargarVideoDesdeEpisodio(index) {
   const ep = episodios[index];
-  const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(ep.url)}`);
-  const data = await res.json();
-  if (!data.servidores || !data.servidores.length) {
-    document.getElementById("video").innerHTML = "No se encontraron servidores.";
-    return;
-  }
 
-  // Guardar servidores en el objeto del episodio
-  ep.servidores = data.servidores.map((servidor, index) => ({
-    nombre: `Servidor ${index + 1}`,
-    url: servidor
-  }));
-
-  // Actualizar episodios en Firestore
+  // 1. Intentar cargar servidores desde Firestore
   try {
     const animeDatosRef = doc(db, 'datos-animes', animeId);
     const animeDatosSnap = await getDoc(animeDatosRef);
     const animeDatos = animeDatosSnap.data() || {};
 
-    // Actualizar el episodio específico en el array de episodios
-    if (!animeDatos.episodios) animeDatos.episodios = [];
-    const episodioIndex = animeDatos.episodios.findIndex(e => e.url === ep.url);
-    
-    if (episodioIndex !== -1) {
-      animeDatos.episodios[episodioIndex] = {
-        ...animeDatos.episodios[episodioIndex],
-        servidores: ep.servidores
-      };
-    } else {
-      animeDatos.episodios.push({
-        ...ep,
-        servidores: ep.servidores
-      });
+    const episodioGuardado = animeDatos.episodios?.find(e => e.url === ep.url);
+    if (episodioGuardado?.servidores?.length) {
+      ep.servidores = episodioGuardado.servidores;
+      console.log(`Servidores cargados desde Firestore para el episodio ${ep.number}`);
     }
-
-    // Guardar los datos actualizados
-    await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
-    console.log(`Servidores del episodio ${ep.number} guardados en Firestore`);
   } catch (error) {
-    console.error('Error al guardar servidores en Firestore:', error);
+    console.error("Error al cargar datos desde Firestore:", error);
   }
 
-  embeds = data.servidores;
+  // 2. Si no hay servidores, usar el backend
+  if (!ep.servidores || !ep.servidores.length) {
+    try {
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(ep.url)}`);
+      const data = await res.json();
+
+      if (!data.servidores?.length) {
+        document.getElementById("video").innerHTML = "No se encontraron servidores.";
+        return;
+      }
+
+      ep.servidores = data.servidores.map((servidor, index) => ({
+        nombre: `Servidor ${index + 1}`,
+        url: servidor
+      }));
+
+      // Guardar en Firestore
+      const animeDatosRef = doc(db, 'datos-animes', animeId);
+      const animeDatosSnap = await getDoc(animeDatosRef);
+      const animeDatos = animeDatosSnap.data() || {};
+
+      if (!animeDatos.episodios) animeDatos.episodios = [];
+      const episodioIndex = animeDatos.episodios.findIndex(e => e.url === ep.url);
+
+      if (episodioIndex !== -1) {
+        animeDatos.episodios[episodioIndex].servidores = ep.servidores;
+      } else {
+        animeDatos.episodios.push({ ...ep });
+      }
+
+      await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
+      console.log(`Servidores guardados en Firestore para episodio ${ep.number}`);
+    } catch (error) {
+      console.error('Error al cargar desde backend o guardar en Firestore:', error);
+    }
+  }
+
+  embeds = ep.servidores;
   episodioActualIndex = index;
 
-  // Buscar si existe un servidor de YourUpload
-  const yourUploadIndex = embeds.findIndex(link => link && link.includes('yourupload.com/embed/'));
+ // Buscar el servidor de mega primero
+const megaIndex = embeds.findIndex(link => link && typeof link.url === "string" && link.url.includes('mega.nz/'));
+// Luego, buscar el servidor de yourupload
+const yourUploadIndex = embeds.findIndex(link => link && typeof link.url === "string" && link.url.includes('yourupload.com/embed/'));
+
 
   const btnCap = document.getElementById("btn-cap");
   btnCap.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
 
-  // Configurar evento para cambiar estado de capítulo
   const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
-  const textoEstado = document.getElementById("texto-estado-capitulo");
-  const iconoVisto = document.getElementById("icon-estado-capitulo");
+  let iconoVisto = document.getElementById("icon-estado-capitulo");
 
   if (!iconoVisto) {
-    const nuevoIconoVisto = document.createElement("img");
-    nuevoIconoVisto.id = "icon-estado-capitulo";
-    nuevoIconoVisto.src = "/icons/eye-slash-solid.svg";
-    btnEstadoCapitulo.appendChild(nuevoIconoVisto);
+    iconoVisto = document.createElement("img");
+    iconoVisto.id = "icon-estado-capitulo";
+    iconoVisto.src = "/icons/eye-slash-solid.svg";
+    btnEstadoCapitulo.appendChild(iconoVisto);
   }
 
   btnEstadoCapitulo.addEventListener("click", async () => {
     const titulo = tituloAnime.textContent;
     const esVisto = !iconoVisto.classList.contains("visto");
-    
+
     try {
       await toggleCapituloVisto(animeId, titulo, ep.number || ep.title, esVisto);
       await actualizarEstadoCapitulo();
@@ -333,17 +351,14 @@ async function cargarVideoDesdeEpisodio(index) {
     controles.appendChild(btn);
   });
 
-  // Determinar qué servidor mostrar inicialmente (priorizando YourUpload)
-  const initialIndex = yourUploadIndex !== -1 ? yourUploadIndex : (embeds.length > 0 ? 0 : -1);
+  const initialIndex = megaIndex !== -1 ? megaIndex : (yourUploadIndex !== -1 ? yourUploadIndex : (embeds.length > 0 ? 0 : -1));
 
   if (initialIndex !== -1) {
-    // Asegurarse de que los botones existan antes de intentar seleccionarlos
     const buttons = controles.querySelectorAll("button");
     if (buttons.length > initialIndex) {
       mostrarVideo(embeds[initialIndex], buttons[initialIndex]);
     } else {
       console.warn("No se encontró el botón correspondiente al índice inicial.");
-      // Opcional: Mostrar el primero si el botón de YourUpload no se encuentra
       if (buttons.length > 0) {
         mostrarVideo(embeds[0], buttons[0]);
       } else {
@@ -354,10 +369,46 @@ async function cargarVideoDesdeEpisodio(index) {
     document.getElementById("video").innerHTML = "No hay servidores disponibles para mostrar.";
   }
 
+  // Pre-cargar siguiente episodio (si existe)
+  const siguiente = episodios[index + 1];
+  if (siguiente && (!siguiente.servidores || !siguiente.servidores.length)) {
+    try {
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(siguiente.url)}`);
+      const data = await res.json();
+
+      if (data.servidores?.length) {
+        siguiente.servidores = data.servidores.map((srv, i) => ({
+          nombre: `Servidor ${i + 1}`,
+          url: srv
+        }));
+
+        const ref = doc(db, 'datos-animes', animeId);
+        const snap = await getDoc(ref);
+        const datos = snap.data() || {};
+        if (!datos.episodios) datos.episodios = [];
+
+        const idx = datos.episodios.findIndex(e => e.url === siguiente.url);
+        if (idx !== -1) {
+          datos.episodios[idx].servidores = siguiente.servidores;
+        } else {
+          datos.episodios.push({ ...siguiente });
+        }
+
+        await setDoc(ref, { episodios: datos.episodios }, { merge: true });
+        console.log(`Pre-cargado episodio ${siguiente.number}`);
+      }
+    } catch (err) {
+      console.warn("No se pudo pre-cargar el siguiente episodio:", err);
+    }
+  }
+
   return ep;
 }
 
+
 function mostrarVideo(link, botonSeleccionado) {
+  const url = typeof link === "string" ? link : link.url;
+
   const botones = document.querySelectorAll("#controles button");
   botones.forEach(btn => btn.classList.remove("servidor-activo"));
   if (botonSeleccionado) botonSeleccionado.classList.add("servidor-activo");
@@ -365,9 +416,9 @@ function mostrarVideo(link, botonSeleccionado) {
   const videoDiv = document.getElementById("video");
   videoDiv.innerHTML = "";
 
-  if (link.endsWith(".mp4") || link.endsWith(".m3u8") || link.includes(".mp4?") || link.includes(".m3u8?")) {
+  if (url.endsWith(".mp4") || url.endsWith(".m3u8") || url.includes(".mp4?") || url.includes(".m3u8?")) {
     const video = document.createElement("video");
-    video.src = link;
+    video.src = url;
     video.controls = true;
     video.autoplay = true;
     video.width = "100%";
@@ -376,7 +427,7 @@ function mostrarVideo(link, botonSeleccionado) {
     videoDiv.appendChild(video);
   } else {
     const iframe = document.createElement("iframe");
-    iframe.src = link;
+    iframe.src = url;
     iframe.width = "100%";
     iframe.height = "100%";
     iframe.frameBorder = "0";
@@ -392,6 +443,7 @@ function mostrarVideo(link, botonSeleccionado) {
     videoDiv.appendChild(iframe);
   }
 }
+
 
 function actualizarEstadoBotones() {
   btnAnterior.disabled = episodioActualIndex <= 0;
