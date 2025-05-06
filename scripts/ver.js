@@ -290,6 +290,9 @@ async function cargarVideoDesdeEpisodio(index) {
   embeds = data.servidores;
   episodioActualIndex = index;
 
+  // Buscar si existe un servidor de YourUpload
+  const yourUploadIndex = embeds.findIndex(link => link && link.includes('yourupload.com/embed/'));
+
   const btnCap = document.getElementById("btn-cap");
   btnCap.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
 
@@ -330,7 +333,27 @@ async function cargarVideoDesdeEpisodio(index) {
     controles.appendChild(btn);
   });
 
-  mostrarVideo(embeds[0], controles.querySelector("button"));
+  // Determinar qué servidor mostrar inicialmente (priorizando YourUpload)
+  const initialIndex = yourUploadIndex !== -1 ? yourUploadIndex : (embeds.length > 0 ? 0 : -1);
+
+  if (initialIndex !== -1) {
+    // Asegurarse de que los botones existan antes de intentar seleccionarlos
+    const buttons = controles.querySelectorAll("button");
+    if (buttons.length > initialIndex) {
+      mostrarVideo(embeds[initialIndex], buttons[initialIndex]);
+    } else {
+      console.warn("No se encontró el botón correspondiente al índice inicial.");
+      // Opcional: Mostrar el primero si el botón de YourUpload no se encuentra
+      if (buttons.length > 0) {
+        mostrarVideo(embeds[0], buttons[0]);
+      } else {
+        document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
+      }
+    }
+  } else {
+    document.getElementById("video").innerHTML = "No hay servidores disponibles para mostrar.";
+  }
+
   return ep;
 }
 
