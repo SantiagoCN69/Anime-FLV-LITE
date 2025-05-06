@@ -374,11 +374,11 @@ h2 {
     .anime-details {
         padding: 10px 15px 15px 15px;
         grid-template-columns:1fr 2fr;
-        grid-template-rows: 1fr auto;
+        grid-template-rows: auto 1fr;
         grid-template-areas: 
         "container1 container2"
         "container3 container3";
-        height: fit-content;
+        max-height: fit-content ;
     }
     .anime-container1 {
         padding: 0;

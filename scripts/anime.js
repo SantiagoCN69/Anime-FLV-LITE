@@ -15,10 +15,32 @@ const id = new URLSearchParams(location.search).get("id");
 // Cargar información del anime
 document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
 
+const cargarDatosDesdeCache = (id) => {
+  const cacheKey = `anime_${id}`;
+  const cachedData = localStorage.getItem(cacheKey);
+  return cachedData ? JSON.parse(cachedData) : null;
+};
+
+const actualizarCache = (id, anime) => {
+  const cacheKey = `anime_${id}`;
+  localStorage.setItem(cacheKey, JSON.stringify(anime));
+};
+
 fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
   .then(res => res.json())
   .then(async anime => {
-    // Guardar datos del anime en Firestore
+    // Intentar cargar desde cache primero
+    const cachedAnime = cargarDatosDesdeCache(id);
+    if (cachedAnime) {
+      document.getElementById("titulo").textContent = cachedAnime.titulo;
+      document.getElementById("portada").src = cachedAnime.portada;
+      document.body.style.backgroundImage = `url(${cachedAnime.portada})`;
+      document.getElementById("descripcion").textContent = cachedAnime.descripcion;
+      crearBotonesEpisodios(cachedAnime, document.getElementById("capitulos"));
+      console.log('Datos cargados desde cache');
+    }
+
+    // Luego, actualizar con los datos más recientes de Firestore
     try {
       if (!id) {
         console.error('ID de anime no válido');
@@ -39,55 +61,69 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         estado: anime.status || '',
         fechaEstreno: anime.premiered || '',
         calificacion: anime.score || null,
-        fechaGuardado: serverTimestamp(), // Añade timestamp de guardado
+        fechaGuardado: serverTimestamp(), // Añadir timestamp de guardado
         fuenteDatos: 'AnimeFlv' // Opcional: añade la fuente de los datos
       };
 
       const animeDatosRef = doc(db, 'datos-animes', id);
       await setDoc(animeDatosRef, datosAnime, { merge: true });
       console.log(`Datos del anime ${anime.title} guardados exitosamente`);
+
+      // Actualizar cache con los datos frescos
+      actualizarCache(id, {
+        titulo: anime.title,
+        portada: anime.cover,
+        descripcion: anime.synopsis,
+        episodios: anime.episodes || [],
+        generos: anime.genres,
+        tipo: anime.type,
+        estado: anime.status,
+        fechaEstreno: anime.premiered,
+        calificacion: anime.score
+      });
+
+      // Actualizar UI con los datos más recientes
+      document.getElementById("titulo").textContent = anime.title;
+      document.getElementById("portada").src = anime.cover;
+      document.body.style.backgroundImage = `url(${anime.cover})`;
+      document.getElementById("descripcion").textContent = anime.synopsis;
+      crearBotonesEpisodios(anime, document.getElementById("capitulos"));
     } catch (error) {
       console.error('Error al guardar datos del anime en Firestore:', error);
     }
-
-    document.getElementById("titulo").textContent = anime.title;
-    document.getElementById("portada").src = anime.cover;
-    document.body.style.backgroundImage = `url(${anime.cover})`;
-    document.getElementById("descripcion").textContent = anime.synopsis;
 
     const capContenedor = document.getElementById("capitulos");
     const filtroCapitulo = document.getElementById("filtro-capitulo");
 
     // Scroll horizontal con la rueda del mouse
-capContenedor.addEventListener("wheel", function (e) {
-  e.preventDefault();
-  const columnas = this.querySelectorAll("li");
-  if (columnas.length === 0) return;
-  const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
-  const direccion = e.deltaY > 0 ? 1 : -1;
-  const scrollActual = this.scrollLeft;
-  const columnaActual = Math.floor(scrollActual / anchoColumna);
-  const nuevoScroll = (columnaActual + direccion) * anchoColumna;
-  const scrollMaximo = (columnas.length - 1) * anchoColumna;
-  this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
-}, { passive: false });
+    capContenedor.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      const columnas = this.querySelectorAll("li");
+      if (columnas.length === 0) return;
+      const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
+      const direccion = e.deltaY > 0 ? 1 : -1;
+      const scrollActual = this.scrollLeft;
+      const columnaActual = Math.floor(scrollActual / anchoColumna);
+      const nuevoScroll = (columnaActual + direccion) * anchoColumna;
+      const scrollMaximo = (columnas.length - 1) * anchoColumna;
+      this.scrollLeft = Math.max(0, Math.min(nuevoScroll, scrollMaximo));
+    }, { passive: false });
 
-// Ajustar scroll a columna completa al terminar
-capContenedor.addEventListener('scrollend', function() {
-  const columnas = this.querySelectorAll("li");
-  if (columnas.length === 0) return;
-  const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
-  const scrollActual = this.scrollLeft;
-  const columnaActual = Math.round(scrollActual / anchoColumna);
-  const nuevoScroll = columnaActual * anchoColumna;
+    // Ajustar scroll a columna completa al terminar
+    capContenedor.addEventListener('scrollend', function() {
+      const columnas = this.querySelectorAll("li");
+      if (columnas.length === 0) return;
+      const anchoColumna = columnas[0].getBoundingClientRect().width;  // Usar getBoundingClientRect() para precisión
+      const scrollActual = this.scrollLeft;
+      const columnaActual = Math.round(scrollActual / anchoColumna);
+      const nuevoScroll = columnaActual * anchoColumna;
 
-  // Añadir un pequeño margen de corrección para evitar desvíos
-  this.scrollTo({
-    left: nuevoScroll + 0.1,  // Ajuste ligero para evitar desvíos
-    behavior: 'smooth'
-  });
-});
-
+      // Añadir un pequeño margen de corrección para evitar desvíos
+      this.scrollTo({
+        left: nuevoScroll + 0.1,  // Ajuste ligero para evitar desvíos
+        behavior: 'smooth'
+      });
+    });
 
     // Filtro de capítulos
     filtroCapitulo.addEventListener("input", function () {
@@ -125,11 +161,12 @@ capContenedor.addEventListener('scrollend', function() {
           });
         }
       });
-    })
-    .catch(err => {
-      console.error("Error al cargar datos del anime:", err);
-      document.getElementById("descripcion").textContent = "Error al cargar el anime.";
-    });
+  })
+  .catch(err => {
+    console.error("Error al cargar datos del anime:", err);
+    document.getElementById("descripcion").textContent = "Error al cargar el anime.";
+  });
+
     
     function crearBotonesEpisodios(anime, capContenedor) {
       const fragmentEpisodios = document.createDocumentFragment();
