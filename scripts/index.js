@@ -366,6 +366,7 @@ async function cargarUltimosCapitulos() {
 
   // Función auxiliar para renderizar tarjetas de anime
   const renderizarUltimosEpisodios = (datos) => {
+    document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
     mainContainer.innerHTML = ''; // Limpiar antes de renderizar
     if (!datos || datos.length === 0) {
         mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';

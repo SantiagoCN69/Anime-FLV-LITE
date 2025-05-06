@@ -360,8 +360,17 @@ main {
   padding-bottom: 1rem;
   min-height: calc(100vh - 120px);
   height: fit-content;
+  position: relative;
 }
-
+.init-loading-servidores {
+  text-align: center;
+  margin-top: 2rem;
+  color: #aaa;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 /* Ocultar secciones */
 .hidden {
   display: none;
