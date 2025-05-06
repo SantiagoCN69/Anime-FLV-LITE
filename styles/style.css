@@ -513,7 +513,16 @@ main {
     font-weight: bold;
     z-index: 1;
     background-color: #1c1c2b67;
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+  }
+  .anime-card span img {
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    background-color: transparent;
+    position: relative;
+    top: 1px; 
   }
   .anime-card img {
     width: 100%;
@@ -525,7 +534,7 @@ main {
   }
   @media screen and (hover: hover) {
     .anime-card:hover img {
-      transform: scale(1.1);
+      transform: scale(1.15);
     }
   }
 

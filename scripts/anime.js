@@ -72,10 +72,9 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         })),
         generos: anime.genres || [],
         tipo: anime.type || '',
-        fechaEstreno: anime.premiered || '',
+        estado: anime.status || '',
         calificacion: anime.score || null,
         fechaGuardado: serverTimestamp(),
-        fuenteDatos: 'AnimeFlv'
       };
 
       const animeDatosRef = doc(db, 'datos-animes', id);
@@ -89,7 +88,7 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         episodios: anime.episodes || [],
         generos: anime.genres,
         tipo: anime.type,
-        fechaEstreno: anime.premiered,
+        estado: anime.status,
         calificacion: anime.score
       });
 
