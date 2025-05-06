@@ -362,7 +362,7 @@ main {
   height: fit-content;
   position: relative;
 }
-.init-loading-servidores {
+.content-section p, .init-loading-servidores {
   text-align: center;
   margin-top: 2rem;
   color: #aaa;
@@ -370,6 +370,7 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
 }
 /* Ocultar secciones */
 .hidden {
@@ -456,7 +457,7 @@ main {
 
 #main, .grid-animes {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, auto));
     gap: 15px;
     margin: 0 auto;
     width: clamp(0px, 100%, 1000px);
