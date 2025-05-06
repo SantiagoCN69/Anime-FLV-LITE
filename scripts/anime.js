@@ -111,7 +111,7 @@ const createEpisodeButton = (ep, vistos = []) => {
 
 async function crearBotonesEpisodios(anime) {
   capContenedor.innerHTML = '';
-  const episodios = Array.isArray(anime.episodes) ? anime.episodes : [];
+  const episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
   const vistos = await obtenerCapitulosVistos(id) || [];
   const fragment = document.createDocumentFragment();
   episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
@@ -195,7 +195,7 @@ async function obtenerCapitulosVistos(animeId) {
     portada: cached.portada,
     descripcion: cached.descripcion,
     generos: cached.generos,
-    episodes: cached.episodios
+    episodios: cached.episodios
   });
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
@@ -204,7 +204,7 @@ async function obtenerCapitulosVistos(animeId) {
       titulo: data.title || '',
       portada: data.cover || '',
       descripcion: data.synopsis || '',
-      episodes: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
+      episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
       generos: data.genres || [],
       estado: data.status || '',
       calificacion: data.score || null,
