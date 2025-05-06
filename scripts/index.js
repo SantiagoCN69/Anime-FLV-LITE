@@ -499,42 +499,39 @@ async function cargarUltimosCapitulos() {
   }
 }
 
-  // Cargar animes favoritos
 async function cargarFavoritos() {
   const favsContainer = document.getElementById('favs');
   if (!favsContainer) return;
 
-  // Función auxiliar para renderizar favoritos
-  const renderizarFavoritos = (datos) => {
-    favsContainer.innerHTML = ''; // Limpiar antes de renderizar
-    if (!datos || datos.length === 0) {
-        favsContainer.innerHTML = '<p>No tienes animes favoritos.</p>';
-        actualizarAlturaMain();
-        return;
-    }
+  const renderizarFavoritos = (datos, reemplazar = false) => {
+    if (reemplazar) favsContainer.innerHTML = '';
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      // Usar la función reutilizable createAnimeCard
-      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
-      if (card) { // Verificar si la tarjeta se creó correctamente
-        fragment.appendChild(card);
-      }
+      const card = createAnimeCard(anime || {});
+      if (card) fragment.appendChild(card);
     });
     favsContainer.appendChild(fragment);
     actualizarAlturaMain();
   };
 
-  // Esperar a que se complete la autenticación
+  const dividirEnBloques = (array, tamaño) => {
+    const bloques = [];
+    for (let i = 0; i < array.length; i += tamaño) {
+      bloques.push(array.slice(i, i + tamaño));
+    }
+    return bloques;
+  };
+
   const user = await new Promise(resolve => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe(); // Dejar de escuchar después de obtener el estado inicial
+      unsubscribe();
       resolve(user);
     });
   });
 
   if (!user) {
     favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
-    actualizarAlturaMain(); // Asegurar altura
+    actualizarAlturaMain();
     return;
   }
 
@@ -542,14 +539,13 @@ async function cargarFavoritos() {
   const cacheKey = `favoritosCache_${userId}`;
   let cachedData = null;
 
-  // 1. Intentar cargar y mostrar desde localStorage
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
     if (cachedDataString) {
       cachedData = JSON.parse(cachedDataString);
       if (Array.isArray(cachedData)) {
         console.log("Mostrando favoritos desde caché...");
-        renderizarFavoritos(cachedData);
+        renderizarFavoritos(cachedData, true);
       } else {
         cachedData = null;
         localStorage.removeItem(cacheKey);
@@ -561,128 +557,98 @@ async function cargarFavoritos() {
     localStorage.removeItem(cacheKey);
   }
 
-  // 2. Cargar datos frescos desde Firestore
   try {
     const ref = collection(doc(db, "usuarios", userId), "favoritos");
     const snap = await getDocs(ref);
-    
-    let freshData = []; // Array para guardar los datos frescos procesados
 
-    if (!snap.empty) {
-      const promises = [];
-      for (const docSnap of snap.docs) {
-        const animeId = docSnap.id;
-        const detallePromise = getDoc(doc(db, "datos-animes", animeId))
-          .then(animeDetalleSnap => {
-            if (animeDetalleSnap.exists()) {
-              const animeData = animeDetalleSnap.data();
-              // Devolver solo los datos necesarios para la caché y renderizado
-              return {
-                id: animeId,
-                titulo: animeData.titulo || 'Título no encontrado',
-                portada: animeData.portada || 'img/background.webp'
-              };
-            } else {
-              console.warn(`No se encontraron detalles para el anime favorito con ID: ${animeId}`);
-              return null;
-            }
-          })
+    if (snap.empty) {
+      renderizarFavoritos([], true);
+      localStorage.removeItem(cacheKey);
+      return;
+    }
+
+    const ids = snap.docs.map(doc => doc.id);
+    const bloques = dividirEnBloques(ids, 10);
+    const freshData = [];
+
+    // Mostrar primeros 10 mientras se cargan los demás
+    const primerBloque = await Promise.all(
+      bloques[0].map(id =>
+        getDoc(doc(db, "datos-animes", id))
+          .then(docSnap => docSnap.exists() ? {
+            id: id,
+            titulo: docSnap.data().titulo || 'Título no encontrado',
+            portada: docSnap.data().portada || 'img/background.webp'
+          } : null)
           .catch(error => {
-            console.error(`Error al buscar detalles del anime favorito ${animeId}:`, error);
+            console.error(`Error al obtener anime ${id}:`, error);
             return null;
-          });
-        promises.push(detallePromise);
-      }
-      
-      const resultados = await Promise.all(promises);
-      freshData = resultados.filter(item => item !== null); // Filtrar nulos
-    }
-    // Si snap estaba vacío, freshData permanecerá vacío, lo cual es correcto.
+          })
+      )
+    );
 
-    // 3. Comparar datos frescos con caché y actualizar si es necesario
-    const freshDataString = JSON.stringify(freshData);
-    const cachedDataString = JSON.stringify(cachedData);
+    freshData.push(...primerBloque.filter(Boolean));
+    renderizarFavoritos(freshData, true); // Mostrar primeros 10
 
-    if (freshDataString !== cachedDataString) {
-      // Solo renderizar si los datos son diferentes O si no había caché
-      if (cachedData === null || freshData.length !== (cachedData || []).length || freshDataString !== cachedDataString) {
-        console.log("Datos de Firestore diferentes a la caché de favoritos o sin caché previa. Actualizando UI y caché...");
-        renderizarFavoritos(freshData);
-      }
-      // Guardar o limpiar caché según los datos frescos
-      if (freshData && freshData.length > 0) {
-          localStorage.setItem(cacheKey, freshDataString);
-      } else {
-          localStorage.removeItem(cacheKey);
-          // Si no había caché y tampoco hay datos frescos, asegurar mostrar mensaje.
-          // Si snap estaba vacío, renderizar ya mostró el mensaje. Si no, lo mostramos ahora.
-          if (cachedData === null && !snap.empty) {
-              renderizarFavoritos([]); 
-          }
-      }
-    } else {
-      // Si son iguales y había caché, no es necesario re-renderizar ni actualizar caché.
-      if (cachedData !== null) {
-         console.log("Datos de Firestore coinciden con la caché de favoritos. No se requiere actualización.");
-      } 
-      // Si son iguales pero no había caché (primera carga) y hay datos frescos, 
-      // ya se renderizó desde la caché (que estaba vacía) o se renderizará ahora.
-      // Nos aseguramos de que esté renderizado y guardamos la caché.
-      else if (cachedData === null && freshData && freshData.length > 0) {
-          console.log("Mostrando datos frescos de Firestore (sin caché previa de favoritos).");
-          // Puede que ya se haya renderizado si la caché estaba vacía, pero aseguramos.
-          renderizarFavoritos(freshData); 
-          localStorage.setItem(cacheKey, freshDataString);
-      }
-      // Si son iguales (vacíos) y no había caché, el mensaje de "no tienes favoritos" 
-      // ya se mostró o se mostrará por renderizar un array vacío.
-      else if (cachedData === null && (!freshData || freshData.length === 0)) {
-          console.log("No hay favoritos en Firestore ni en caché.");
-          // Asegurar que se muestra el mensaje correcto si no se hizo antes
-          renderizarFavoritos([]); 
-      }
+    // Cargar el resto en segundo plano
+    for (let i = 1; i < bloques.length; i++) {
+      const bloque = bloques[i];
+      const resultados = await Promise.all(
+        bloque.map(id =>
+          getDoc(doc(db, "datos-animes", id))
+            .then(docSnap => docSnap.exists() ? {
+              id: id,
+              titulo: docSnap.data().titulo || 'Título no encontrado',
+              portada: docSnap.data().portada || 'img/background.webp'
+            } : null)
+            .catch(error => {
+              console.error(`Error al obtener anime ${id}:`, error);
+              return null;
+            })
+        )
+      );
+      const nuevos = resultados.filter(Boolean);
+      freshData.push(...nuevos);
+      renderizarFavoritos(nuevos); // Añadir al final
     }
 
+    localStorage.setItem(cacheKey, JSON.stringify(freshData));
   } catch (error) {
     console.error('Error al cargar favoritos desde Firestore:', error);
-    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
-    if (cachedData === null) { 
+    if (cachedData === null) {
       favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
       actualizarAlturaMain();
     }
-    // Si ya se mostró desde caché, dejamos la UI como está.
   }
 }
 
-// Cargar animes en curso
+// Cargar animes en curso (de 10 en 10)
 async function cargarViendo() {
   const viendoContainer = document.getElementById('viendo');
   if (!viendoContainer) return;
 
-  // Función auxiliar para renderizar animes en curso
-  const renderizarViendo = (datos) => {
-    viendoContainer.innerHTML = ''; // Limpiar antes de renderizar
-    if (!datos || datos.length === 0) {
-      viendoContainer.innerHTML = '<p>No tienes animes en curso.</p>';
-      actualizarAlturaMain();
-      return;
-    }
+  const renderizarViendo = (datos, reemplazar = false) => {
+    if (reemplazar) viendoContainer.innerHTML = '';
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      // Usar la función reutilizable createAnimeCard
-      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
-      if (card) { // Verificar si la tarjeta se creó correctamente
-        fragment.appendChild(card);
-      }
+      const card = createAnimeCard(anime || {});
+      if (card) fragment.appendChild(card);
     });
     viendoContainer.appendChild(fragment);
     actualizarAlturaMain();
   };
 
-  // Esperar a que se complete la autenticación
+  const dividirEnBloques = (array, tamaño) => {
+    const bloques = [];
+    for (let i = 0; i < array.length; i += tamaño) {
+      bloques.push(array.slice(i, i + tamaño));
+    }
+    return bloques;
+  };
+
   const user = await new Promise(resolve => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe(); // Dejar de escuchar después de obtener el estado inicial
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      unsubscribe();
       resolve(user);
     });
   });
@@ -697,14 +663,13 @@ async function cargarViendo() {
   const cacheKey = `viendoCache_${userId}`;
   let cachedData = null;
 
-  // 1. Intentar cargar y mostrar desde localStorage
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
     if (cachedDataString) {
       cachedData = JSON.parse(cachedDataString);
       if (Array.isArray(cachedData)) {
         console.log("Mostrando 'Viendo' desde caché...");
-        renderizarViendo(cachedData);
+        renderizarViendo(cachedData, true);
       } else {
         cachedData = null;
         localStorage.removeItem(cacheKey);
@@ -716,100 +681,77 @@ async function cargarViendo() {
     localStorage.removeItem(cacheKey);
   }
 
-  // 2. Cargar datos frescos desde Firestore
   try {
     const ref = collection(doc(db, "usuarios", userId), "viendo");
     const snap = await getDocs(ref);
-    
-    let freshData = []; // Array para guardar los datos frescos procesados
 
-    if (!snap.empty) {
-      const promises = [];
-      for (const docSnap of snap.docs) {
-        const animeId = docSnap.id;
-        // Crear una promesa para buscar los detalles en 'datos-animes'
-        const detallePromise = getDoc(doc(db, "datos-animes", animeId))
-          .then(animeDetalleSnap => {
-            if (animeDetalleSnap.exists()) {
-              const animeData = animeDetalleSnap.data();
-              return {
-                id: animeId,
-                titulo: animeData.titulo || 'Título no encontrado',
-                portada: animeData.portada || 'img/background.webp'
-              };
-            } else {
-              console.warn(`No se encontraron detalles para el anime en curso con ID: ${animeId}`);
-              return null;
-            }
-          })
+    if (snap.empty) {
+      renderizarViendo([], true);
+      localStorage.removeItem(cacheKey);
+      return;
+    }
+
+    const ids = snap.docs.map(doc => doc.id);
+    const bloques = dividirEnBloques(ids, 10);
+    const freshData = [];
+
+    // Cargar primer bloque
+    const primerBloque = await Promise.all(
+      bloques[0].map(id =>
+        getDoc(doc(db, "datos-animes", id))
+          .then(docSnap => docSnap.exists() ? {
+            id: id,
+            titulo: docSnap.data().titulo || 'Título no encontrado',
+            portada: docSnap.data().portada || 'img/background.webp'
+          } : null)
           .catch(error => {
-            console.error(`Error al buscar detalles del anime en curso ${animeId}:`, error);
+            console.error(`Error al obtener anime ${id}:`, error);
             return null;
-          });
-        promises.push(detallePromise);
-      }
-      
-      const resultados = await Promise.all(promises);
-      freshData = resultados.filter(item => item !== null); // Filtrar nulos
+          })
+      )
+    );
+    freshData.push(...primerBloque.filter(Boolean));
+    renderizarViendo(freshData, true); // Mostrar primeros 10
+
+    // Cargar el resto en segundo plano
+    for (let i = 1; i < bloques.length; i++) {
+      const bloque = bloques[i];
+      const resultados = await Promise.all(
+        bloque.map(id =>
+          getDoc(doc(db, "datos-animes", id))
+            .then(docSnap => docSnap.exists() ? {
+              id: id,
+              titulo: docSnap.data().titulo || 'Título no encontrado',
+              portada: docSnap.data().portada || 'img/background.webp'
+            } : null)
+            .catch(error => {
+              console.error(`Error al obtener anime ${id}:`, error);
+              return null;
+            })
+        )
+      );
+      const nuevos = resultados.filter(Boolean);
+      freshData.push(...nuevos);
+      renderizarViendo(nuevos); // Añadir al final
     }
 
-    // 3. Comparar datos frescos con caché y actualizar si es necesario
-    const freshDataString = JSON.stringify(freshData);
-    const cachedDataString = JSON.stringify(cachedData);
-
-    if (freshDataString !== cachedDataString) {
-      // Solo renderizar si los datos son diferentes O si no había caché
-      if (cachedData === null || freshData.length !== (cachedData || []).length || freshDataString !== cachedDataString) {
-        console.log("Datos de Firestore diferentes a la caché de 'Viendo' o sin caché previa. Actualizando UI y caché...");
-        renderizarViendo(freshData);
-      }
-      // Guardar o limpiar caché según los datos frescos
-      if (freshData && freshData.length > 0) {
-          localStorage.setItem(cacheKey, freshDataString);
-      } else {
-          localStorage.removeItem(cacheKey);
-          // Si no había caché y tampoco hay datos frescos, asegurar mostrar mensaje.
-          if (cachedData === null && !snap.empty) {
-              renderizarViendo([]); 
-          }
-      }
-    } else {
-      // Si son iguales y había caché, no es necesario re-renderizar ni actualizar caché.
-      if (cachedData !== null) {
-         console.log("Datos de Firestore coinciden con la caché de 'Viendo'. No se requiere actualización.");
-      } 
-      // Manejar caso donde no había caché pero los datos frescos sí existen (primera carga)
-      else if (cachedData === null && freshData && freshData.length > 0) {
-          console.log("Mostrando datos frescos de Firestore (sin caché previa de 'Viendo').");
-          renderizarViendo(freshData); 
-          localStorage.setItem(cacheKey, freshDataString);
-      }
-      // Manejar caso donde no hay datos ni en caché ni en Firestore
-      else if (cachedData === null && (!freshData || freshData.length === 0)) {
-          console.log("No hay animes 'Viendo' en Firestore ni en caché.");
-          renderizarViendo([]); // Asegurar mensaje de "no tienes..."
-      }
-    }
-
+    localStorage.setItem(cacheKey, JSON.stringify(freshData));
   } catch (error) {
     console.error('Error al cargar animes en curso desde Firestore:', error);
-    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
-    if (cachedData === null) { 
+    if (cachedData === null) {
       viendoContainer.innerHTML = '<p>Error al cargar animes en curso.</p>';
       actualizarAlturaMain();
     }
   }
 }
 
-
-  // Cargar animes pendientes
+// Cargar animes pendientes
 async function cargarPendientes() {
   const pendientesContainer = document.getElementById('pendientes');
   if (!pendientesContainer) return;
 
-  // Función auxiliar para renderizar animes pendientes
   const renderizarPendientes = (datos) => {
-    pendientesContainer.innerHTML = ''; // Limpiar antes de renderizar
+    pendientesContainer.innerHTML = '';
     if (!datos || datos.length === 0) {
       pendientesContainer.innerHTML = '<p>No tienes animes pendientes.</p>';
       actualizarAlturaMain();
@@ -817,20 +759,16 @@ async function cargarPendientes() {
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      // Usar la función reutilizable createAnimeCard
-      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
-      if (card) { // Verificar si la tarjeta se creó correctamente
-        fragment.appendChild(card);
-      }
+      const card = createAnimeCard(anime || {});
+      if (card) fragment.appendChild(card);
     });
     pendientesContainer.appendChild(fragment);
     actualizarAlturaMain();
   };
 
-  // Esperar a que se complete la autenticación
   const user = await new Promise(resolve => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe(); // Dejar de escuchar después de obtener el estado inicial
+      unsubscribe();
       resolve(user);
     });
   });
@@ -845,7 +783,6 @@ async function cargarPendientes() {
   const cacheKey = `pendientesCache_${userId}`;
   let cachedData = null;
 
-  // 1. Intentar cargar y mostrar desde localStorage
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
     if (cachedDataString) {
@@ -859,104 +796,73 @@ async function cargarPendientes() {
       }
     }
   } catch (error) {
-    console.error("Error al leer o parsear caché de 'Pendientes':", error);
+    console.error("Error al leer caché de 'Pendientes':", error);
     cachedData = null;
     localStorage.removeItem(cacheKey);
   }
 
-  // 2. Cargar datos frescos desde Firestore
   try {
-    const ref = collection(doc(db, "usuarios", userId), "pendiente");
-    const snap = await getDocs(ref);
-    
-    let freshData = []; // Array para guardar los datos frescos procesados
+    const pendienteSnap = await getDocs(collection(doc(db, "usuarios", userId), "pendiente"));
+    const pendienteIds = pendienteSnap.docs.map(doc => doc.id);
 
-    if (!snap.empty) {
-      const promises = [];
-      for (const docSnap of snap.docs) {
-        const animeId = docSnap.id;
-        // Crear una promesa para buscar los detalles en 'datos-animes'
-        const detallePromise = getDoc(doc(db, "datos-animes", animeId))
-          .then(animeDetalleSnap => {
-            if (animeDetalleSnap.exists()) {
-              const animeData = animeDetalleSnap.data();
-              return {
-                id: animeId,
-                titulo: animeData.titulo || 'Título no encontrado',
-                portada: animeData.portada || 'img/background.webp'
-              };
-            } else {
-              console.warn(`No se encontraron detalles para el anime pendiente con ID: ${animeId}`);
-              return null;
-            }
-          })
-          .catch(error => {
-            console.error(`Error al buscar detalles del anime pendiente ${animeId}:`, error);
-            return null;
-          });
-        promises.push(detallePromise);
-      }
-      
-      const resultados = await Promise.all(promises);
-      freshData = resultados.filter(item => item !== null); // Filtrar nulos
+    let freshData = [];
+
+    if (pendienteIds.length > 0) {
+      const datosSnap = await getDocs(collection(db, "datos-animes"));
+      const datosMap = {};
+      datosSnap.forEach(doc => datosMap[doc.id] = doc.data());
+
+      freshData = pendienteIds.map(id => {
+        const anime = datosMap[id];
+        if (!anime) return null;
+        return {
+          id,
+          titulo: anime.titulo || 'Título no encontrado',
+          portada: anime.portada || 'img/background.webp'
+        };
+      }).filter(item => item !== null);
     }
 
-    // 3. Comparar datos frescos con caché y actualizar si es necesario
     const freshDataString = JSON.stringify(freshData);
     const cachedDataString = JSON.stringify(cachedData);
 
     if (freshDataString !== cachedDataString) {
-      // Solo renderizar si los datos son diferentes O si no había caché
-      if (cachedData === null || freshData.length !== (cachedData || []).length || freshDataString !== cachedDataString) {
-        console.log("Datos de Firestore diferentes a la caché de 'Pendientes' o sin caché previa. Actualizando UI y caché...");
-        renderizarPendientes(freshData);
-      }
-      // Guardar o limpiar caché según los datos frescos
-      if (freshData && freshData.length > 0) {
-          localStorage.setItem(cacheKey, freshDataString);
+      console.log("Actualizando UI y caché de 'Pendientes'...");
+      renderizarPendientes(freshData);
+      if (freshData.length > 0) {
+        localStorage.setItem(cacheKey, freshDataString);
       } else {
-          localStorage.removeItem(cacheKey);
-          // Si no había caché y tampoco hay datos frescos, asegurar mostrar mensaje.
-          if (cachedData === null && !snap.empty) {
-              renderizarPendientes([]); 
-          }
+        localStorage.removeItem(cacheKey);
+        if (cachedData === null && pendienteIds.length > 0) {
+          renderizarPendientes([]);
+        }
       }
     } else {
-      // Si son iguales y había caché, no es necesario re-renderizar ni actualizar caché.
-      if (cachedData !== null) {
-         console.log("Datos de Firestore coinciden con la caché de 'Pendientes'. No se requiere actualización.");
-      } 
-      // Manejar caso donde no había caché pero los datos frescos sí existen (primera carga)
-      else if (cachedData === null && freshData && freshData.length > 0) {
-          console.log("Mostrando datos frescos de Firestore (sin caché previa de 'Pendientes').");
-          renderizarPendientes(freshData); 
-          localStorage.setItem(cacheKey, freshDataString);
-      }
-      // Manejar caso donde no hay datos ni en caché ni en Firestore
-      else if (cachedData === null && (!freshData || freshData.length === 0)) {
-          console.log("No hay animes 'Pendientes' en Firestore ni en caché.");
-          renderizarPendientes([]); // Asegurar mensaje de "no tienes..."
+      if (cachedData === null && freshData.length > 0) {
+        console.log("Mostrando datos frescos de Firestore sin caché previa.");
+        renderizarPendientes(freshData);
+        localStorage.setItem(cacheKey, freshDataString);
+      } else if (cachedData === null && freshData.length === 0) {
+        console.log("No hay animes pendientes.");
+        renderizarPendientes([]);
       }
     }
 
   } catch (error) {
-    console.error('Error al cargar animes pendientes desde Firestore:', error);
-    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
-    if (cachedData === null) { 
+    console.error('Error al cargar animes pendientes:', error);
+    if (cachedData === null) {
       pendientesContainer.innerHTML = '<p>Error al cargar animes pendientes.</p>';
       actualizarAlturaMain();
     }
   }
 }
 
-  // Cargar animes completados
 async function cargarCompletados() {
   const completadosContainer = document.getElementById('completados');
   if (!completadosContainer) return;
 
-  // Función auxiliar para renderizar animes completados
   const renderizarCompletados = (datos) => {
-    completadosContainer.innerHTML = ''; // Limpiar antes de renderizar
+    completadosContainer.innerHTML = '';
     if (!datos || datos.length === 0) {
       completadosContainer.innerHTML = '<p>No tienes animes completados.</p>';
       actualizarAlturaMain();
@@ -964,20 +870,16 @@ async function cargarCompletados() {
     }
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
-      // Usar la función reutilizable createAnimeCard
-      const card = createAnimeCard(anime || {}); // Asegurar que pasamos un objeto
-      if (card) { // Verificar si la tarjeta se creó correctamente
-        fragment.appendChild(card);
-      }
+      const card = createAnimeCard(anime || {});
+      if (card) fragment.appendChild(card);
     });
     completadosContainer.appendChild(fragment);
     actualizarAlturaMain();
   };
 
-  // Esperar a que se complete la autenticación
   const user = await new Promise(resolve => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe(); // Dejar de escuchar después de obtener el estado inicial
+      unsubscribe();
       resolve(user);
     });
   });
@@ -992,13 +894,11 @@ async function cargarCompletados() {
   const cacheKey = `completadosCache_${userId}`;
   let cachedData = null;
 
-  // 1. Intentar cargar y mostrar desde localStorage
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
     if (cachedDataString) {
       cachedData = JSON.parse(cachedDataString);
       if (Array.isArray(cachedData)) {
-        console.log("Mostrando 'Completados' desde caché...");
         renderizarCompletados(cachedData);
       } else {
         cachedData = null;
@@ -1006,24 +906,19 @@ async function cargarCompletados() {
       }
     }
   } catch (error) {
-    console.error("Error al leer o parsear caché de 'Completados':", error);
     cachedData = null;
     localStorage.removeItem(cacheKey);
   }
 
-  // 2. Cargar datos frescos desde Firestore
   try {
-    const ref = collection(doc(db, "usuarios", userId), "visto"); // Colección 'visto'
+    const ref = collection(doc(db, "usuarios", userId), "visto");
     const snap = await getDocs(ref);
     
-    let freshData = []; // Array para guardar los datos frescos procesados
-
+    let freshData = [];
     if (!snap.empty) {
-      const promises = [];
-      for (const docSnap of snap.docs) {
+      const promises = snap.docs.map(docSnap => {
         const animeId = docSnap.id;
-        // Crear una promesa para buscar los detalles en 'datos-animes'
-        const detallePromise = getDoc(doc(db, "datos-animes", animeId))
+        return getDoc(doc(db, "datos-animes", animeId))
           .then(animeDetalleSnap => {
             if (animeDetalleSnap.exists()) {
               const animeData = animeDetalleSnap.data();
@@ -1032,71 +927,39 @@ async function cargarCompletados() {
                 titulo: animeData.titulo || 'Título no encontrado',
                 portada: animeData.portada || 'img/background.webp'
               };
-            } else {
-              console.warn(`No se encontraron detalles para el anime completado con ID: ${animeId}`);
-              return null;
             }
-          })
-          .catch(error => {
-            console.error(`Error al buscar detalles del anime completado ${animeId}:`, error);
             return null;
-          });
-        promises.push(detallePromise);
-      }
+          })
+          .catch(() => null);
+      });
       
-      const resultados = await Promise.all(promises);
-      freshData = resultados.filter(item => item !== null); // Filtrar nulos
+      freshData = (await Promise.all(promises)).filter(item => item !== null);
     }
 
-    // 3. Comparar datos frescos con caché y actualizar si es necesario
     const freshDataString = JSON.stringify(freshData);
     const cachedDataString = JSON.stringify(cachedData);
 
     if (freshDataString !== cachedDataString) {
-      // Solo renderizar si los datos son diferentes O si no había caché
-      if (cachedData === null || freshData.length !== (cachedData || []).length || freshDataString !== cachedDataString) {
-        console.log("Datos de Firestore diferentes a la caché de 'Completados' o sin caché previa. Actualizando UI y caché...");
-        renderizarCompletados(freshData);
-      }
-      // Guardar o limpiar caché según los datos frescos
-      if (freshData && freshData.length > 0) {
-          localStorage.setItem(cacheKey, freshDataString);
+      renderizarCompletados(freshData);
+      if (freshData.length > 0) {
+        localStorage.setItem(cacheKey, freshDataString);
       } else {
-          localStorage.removeItem(cacheKey);
-          // Si no había caché y tampoco hay datos frescos, asegurar mostrar mensaje.
-          if (cachedData === null && !snap.empty) {
-              renderizarCompletados([]); 
-          }
+        localStorage.removeItem(cacheKey);
       }
-    } else {
-       // Si son iguales y había caché, no es necesario re-renderizar ni actualizar caché.
-       if (cachedData !== null) {
-          console.log("Datos de Firestore coinciden con la caché de 'Completados'. No se requiere actualización.");
-       } 
-       // Manejar caso donde no había caché pero los datos frescos sí existen (primera carga)
-       else if (cachedData === null && freshData && freshData.length > 0) {
-           console.log("Mostrando datos frescos de Firestore (sin caché previa de 'Completados').");
-           renderizarCompletados(freshData); 
-           localStorage.setItem(cacheKey, freshDataString);
-       }
-       // Manejar caso donde no hay datos ni en caché ni en Firestore
-       else if (cachedData === null && (!freshData || freshData.length === 0)) {
-           console.log("No hay animes 'Completados' en Firestore ni en caché.");
-           renderizarCompletados([]); // Asegurar mensaje de "no tienes..."
-       }
+    } else if (cachedData === null && freshData.length > 0) {
+      renderizarCompletados(freshData);
+      localStorage.setItem(cacheKey, freshDataString);
+    } else if (cachedData === null && freshData.length === 0) {
+      renderizarCompletados([]);
     }
-
   } catch (error) {
-    console.error('Error al cargar animes completados desde Firestore:', error);
-    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
-    if (cachedData === null) { 
+    if (cachedData === null) {
       completadosContainer.innerHTML = '<p>Error al cargar animes completados.</p>';
       actualizarAlturaMain();
     }
   }
 }
 
-  
 // Toggle del menú
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
