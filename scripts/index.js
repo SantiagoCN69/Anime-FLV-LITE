@@ -563,7 +563,8 @@ async function cargarFavoritos() {
             id: id,
             titulo: docSnap.data().titulo || 'Título no encontrado',
             portada: docSnap.data().portada || 'img/background.webp',
-            estado: docSnap.data().estado || 'No disponible'
+            estado: docSnap.data().estado || 'No disponible',
+            rating: docSnap.data().rating || null
           } : null)
           .catch(error => {
             console.error(`Error al obtener anime ${id}:`, error);
@@ -689,6 +690,7 @@ async function cargarViendo() {
             titulo: docSnap.data().titulo || 'Título no encontrado',
             portada: docSnap.data().portada || 'img/background.webp',
             estado: docSnap.data().estado || 'No disponible',
+            rating: docSnap.data().rating || null
           } : null)
           .catch(error => {
             console.error(`Error al obtener anime ${id}:`, error);
@@ -707,7 +709,9 @@ async function cargarViendo() {
             .then(docSnap => docSnap.exists() ? {
               id: id,
               titulo: docSnap.data().titulo || 'Título no encontrado',
-              portada: docSnap.data().portada || 'img/background.webp'
+              portada: docSnap.data().portada || 'img/background.webp',
+              estado: docSnap.data().estado || 'No disponible',
+              rating: docSnap.data().rating || null,
             } : null)
             .catch(error => {
               console.error(`Error al obtener anime ${id}:`, error);
@@ -914,6 +918,7 @@ async function cargarCompletados() {
                 titulo: animeData.titulo || 'Título no encontrado',
                 portada: animeData.portada || 'img/background.webp',
                 estado: animeData.estado || 'No disponible',
+                rating: animeData.rating || null,
               };
             }
             return null;
