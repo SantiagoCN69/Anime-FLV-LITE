@@ -235,7 +235,6 @@ async function cargarUltimosCapsVistos() {
     if (cachedDataString) {
       cachedData = JSON.parse(cachedDataString);
       if (Array.isArray(cachedData)) {
-        console.log("Mostrando datos desde caché...");
         renderizarBotones(cachedData);
       } else {
         cachedData = null;

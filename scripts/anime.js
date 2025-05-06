@@ -52,8 +52,6 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       } else {
         generoContainerCache.textContent = 'Géneros no disponibles.';
       }
-
-      console.log('Datos cargados desde cache');
     }
 
     // Luego, actualizar con los datos más recientes de Firestore
@@ -82,7 +80,6 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
 
       const animeDatosRef = doc(db, 'datos-animes', id);
       await setDoc(animeDatosRef, datosAnime, { merge: true });
-      console.log(`Datos del anime ${anime.title} guardados exitosamente`);
 
       // Actualizar cache con los datos frescos
       actualizarCache(id, {
@@ -376,7 +373,6 @@ btnFav.addEventListener("click", () => {
 
   toggleFavoritoAnime(id, titulo)
     .then(res => {
-      console.log(res.mensaje);
       actualizarEstadoFavorito();
     })
     .catch(err => {
@@ -390,7 +386,6 @@ btnFav.addEventListener("click", () => {
 async function toggleFavoritoAnime(animeId, titulo) {
   const user = auth.currentUser;
   if (!user) {
-    console.log("Usuario no autenticado");
     throw "Usuario no autenticado";
   }
 

@@ -72,15 +72,12 @@ async function loginConGoogle() {
     }
 
     updateUIForUser(user);
-    console.log('Usuario autenticado:', user.displayName);
     
     // Recargar la página actual
     window.location.reload();
   } catch (error) {
     if (error.code === 'auth/popup-closed-by-user') {
-      console.log('Inicio de sesión cancelado por el usuario');
     } else {
-      console.error('Error de autenticación:', error);
     }
   }
 }
@@ -127,7 +124,6 @@ async function logoutConGoogle() {
   try {
     await signOut(auth);
     updateUIForUser(null);
-    console.log('Sesión cerrada');
     // Recargar la página actual
     window.location.reload();
   } catch (error) {
@@ -140,7 +136,6 @@ const cachedDisplayName = localStorage.getItem('cachedUserDisplayName');
 const cachedPhotoURL = localStorage.getItem('cachedUserPhotoURL');
 
 if (cachedDisplayName || cachedPhotoURL) {
-  console.log('Cargando usuario desde caché...');
   updateUIForUser({
     displayName: cachedDisplayName,
     photoURL: cachedPhotoURL,
@@ -150,20 +145,16 @@ if (cachedDisplayName || cachedPhotoURL) {
 
 // Estado real del usuario (verifica y actualiza si es necesario)
 onAuthStateChanged(auth, (user) => {
-  console.log('Estado de autenticación verificado.');
-  // Solo actualiza si el estado real difiere del cacheado o si no había caché
   const currentUsername = document.getElementById('btn-login')?.getAttribute('data-username');
-  if (!user && currentUsername) { // Si no hay usuario real pero la UI muestra uno (del caché)
+  if (!user && currentUsername) {
       updateUIForUser(null);
-  } else if (user && (!currentUsername || currentUsername !== user.displayName)) { // Si hay usuario real y la UI no lo muestra o muestra uno diferente
+  } else if (user && (!currentUsername || currentUsername !== user.displayName)) {
       updateUIForUser(user);
   } else if (user) {
-      // Si el usuario real coincide con el cacheado, aseguramos que el caché esté actualizado (por si acaso)
       try {
           localStorage.setItem('cachedUserDisplayName', user.displayName || '');
           localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
       } catch (e) {
-          console.warn('No se pudo actualizar localStorage en onAuthStateChanged:', e);
       }
   }
 });
