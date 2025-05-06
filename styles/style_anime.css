@@ -267,7 +267,6 @@ h2 {
    font-weight: bold;
    text-shadow: 0 0 5px 10px #000;
    font-size: 1rem;
-   cursor: pointer;
    -webkit-tap-highlight-color: transparent;
    -webkit-user-select: none;
    user-select: none;
@@ -275,9 +274,7 @@ h2 {
   }
   @media screen and (max-width:600px){
     #estado {
-      right: 2%;
-      top: 0;
-      font-size: .8rem;
+      display: none;
     }
     .info1 {
       flex-direction: column;
