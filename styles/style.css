@@ -512,7 +512,8 @@ main {
     font-size: .7rem;
     font-weight: bold;
     z-index: 1;
-    background-color: #ff8c00;
+    background-color: #1c1c2b67;
+    backdrop-filter: blur(10px);
   }
   .anime-card img {
     width: 100%;
