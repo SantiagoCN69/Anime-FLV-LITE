@@ -27,7 +27,7 @@ let episodios = [];
 let episodioActualIndex = -1;
 let embeds = [];
 let bloquearAnuncios = true;
-let censuraActiva = false;
+let censuraActiva = true;
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 const btnCensura = document.getElementById("btn-censura");
@@ -38,6 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBloquear.classList.add("activo");
         btnBloquear.textContent = "AdBlock: ON";
     }
+
+    // Inicializar estado del botón de Censura y el video
+    if (btnCensura) {
+        btnCensura.classList.toggle("activo", censuraActiva);
+        btnCensura.textContent = `Censura: ${censuraActiva ? "ON" : "OFF"}`;
+        document.querySelector(".reproductor-container").classList.toggle("censure", censuraActiva);
+    } 
 });
 
 btnBloquear.addEventListener("click", () => {
@@ -58,7 +65,7 @@ btnCensura.addEventListener("click", () => {
   censuraActiva = !censuraActiva;
   btnCensura.textContent = `Censura: ${censuraActiva ? "ON" : "OFF"}`;
   btnCensura.classList.toggle("activo", censuraActiva);
-  document.getElementById("video").classList.toggle("censure", censuraActiva);
+  document.querySelector(".reproductor-container").classList.toggle("censure", censuraActiva);
 });
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";

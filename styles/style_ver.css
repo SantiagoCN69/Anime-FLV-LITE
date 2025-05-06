@@ -95,6 +95,7 @@ main section:nth-child(1) {
   flex-direction: column;
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
 }
 #controles {
   display: flex;
@@ -123,9 +124,43 @@ main section:nth-child(1) {
 }
 #video {
   flex: 1;
+  z-index: 3;
 }
-#video.censure {
-  filter: blur(20px);
+.reproductor-container.censure #video {
+  filter: blur(7px);
+  z-index: 1;
+}
+#fullscreen {
+  position: absolute;
+  top: 48%;
+  left: 47%;
+  cursor: pointer;
+  z-index: 2;
+  pointer-events: none;
+}
+#fullscreen::before {
+  content: url(/icons/play-solid.svg);
+  width: 45px;
+  height: 45px;
+  display: inline-block;
+  filter:  drop-shadow(0 0 10px #222) invert(70%);
+
+}
+/* Mostrar mensaje en hover o active */
+.reproductor-container.censure:hover::after,
+.reproductor-container.censure:active::after {
+  content: "Haz doble clic para pantalla completa";
+  position: absolute;
+  top: 70%;
+  left: 35%;
+  background: #000000cc;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5 ;
 }
 
 .botones-reproductor {
