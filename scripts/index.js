@@ -1064,6 +1064,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // --- NUEVO CÓDIGO PARA ABRIR SIDEBAR CON DESLIZAMIENTO DERECHA ---
+  const contentSections = document.querySelectorAll('.content-section');
+  contentSections.forEach(section => {
+    let touchStartXContent = 0;
+    let touchEndXContent = 0;
+
+    section.addEventListener('touchstart', (e) => {
+      touchStartXContent = e.changedTouches[0].screenX;
+    }, { passive: true }); // Añadido passive: true para mejorar el rendimiento del scroll
+
+    section.addEventListener('touchend', (e) => {
+      touchEndXContent = e.changedTouches[0].screenX;
+      handleContentSwipe();
+    }, { passive: true }); // Añadido passive: true
+
+    function handleContentSwipe() {
+      // Si el sidebar NO está activo, el deslizamiento es hacia la derecha y es en móvil
+      if (!sidebar.classList.contains('active') && touchEndXContent > touchStartXContent && window.innerWidth <= 600) {
+        const swipeDistance = touchEndXContent - touchStartXContent;
+        // Si el deslizamiento es significativo (más de 50 píxeles)
+        if (swipeDistance > 50) {
+          sidebar.classList.add('active');
+          // Opcional: Scroll al inicio si el sidebar se abre y no está en la parte superior
+          if (window.scrollY > 0) {
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    }
+  });
+  // --- FIN NUEVO CÓDIGO ---
+
   // Marcar el primer elemento del menú como activo al cargar
   const menuItems = document.querySelectorAll(".sidebar li");
   const sections = document.querySelectorAll(".content-section");
