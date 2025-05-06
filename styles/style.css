@@ -524,6 +524,11 @@ main {
     position: relative;
     top: 1px; 
   }
+  .anime-card span.rating {
+    top: 3px;
+    left: auto;
+    right: 3px;
+  }
   .anime-card img {
     width: 100%;
     max-height: 194px;

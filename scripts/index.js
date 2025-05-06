@@ -341,6 +341,7 @@ async function cargarUltimosCapsVistos() {
     const animeId = anime.id || anime.anime_id || '';
     const chapter = anime.chapter || '';
     const estado = anime.estado || '';
+    const rating = anime.rating || '';
   
     const div = document.createElement('div');
     div.className = 'anime-card';
@@ -358,11 +359,16 @@ async function cargarUltimosCapsVistos() {
         estadoHtml = `<span><img src="../icons/circle-solid.svg" alt="${estado}">${estado}</span>`;
       }
     }
+    let ratingHtml = '';
+    if (rating) {
+      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${rating}">${rating}</span>`;
+    }
     div.innerHTML = `
       <div class="container-img">
         <img src="${cover}" alt="${title}">
         ${chapterHtml}
         ${estadoHtml}
+        ${ratingHtml}
       </div>
       <strong>${title}</strong>
     `;
@@ -851,6 +857,7 @@ async function cargarPendientes() {
           titulo: anime.titulo || 'Título no encontrado',
           portada: anime.portada || 'img/background.webp',
           estado: anime.estado || 'No disponible',
+          rating: anime.rating || null,
         };
       }).filter(item => item !== null);
     }

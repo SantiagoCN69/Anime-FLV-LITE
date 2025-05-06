@@ -67,14 +67,13 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         descripcion: anime.synopsis || '',
         episodios: (anime.episodes || []).map(ep => ({
           numero: ep.number || '',
-          titulo: ep.title || '',
           url: ep.url || ''
         })),
         generos: anime.genres || [],
-        tipo: anime.type || '',
         estado: anime.status || '',
         calificacion: anime.score || null,
         fechaGuardado: serverTimestamp(),
+        rating: anime.rating || null,
       };
 
       const animeDatosRef = doc(db, 'datos-animes', id);
@@ -87,9 +86,9 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         descripcion: anime.synopsis,
         episodios: anime.episodes || [],
         generos: anime.genres,
-        tipo: anime.type,
         estado: anime.status,
-        calificacion: anime.score
+        calificacion: anime.score,
+        rating: anime.rating
       });
 
       // Actualizar UI con los datos más recientes
