@@ -38,18 +38,6 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
       document.getElementById("descripcion").textContent = cachedAnime.descripcion;
       crearBotonesEpisodios(cachedAnime, document.getElementById("capitulos"));
 
-      // Actualizar estado desde cache
-      const estadoDivCache = document.getElementById("estado");
-      const statusTextCache = cachedAnime.estado || 'Estado no disponible';
-      estadoDivCache.textContent = statusTextCache;
-      estadoDivCache.classList.remove('status-emision', 'status-finalizado', 'status-otro'); // Limpiar clases previas
-      if (statusTextCache.toLowerCase().includes('emisión') || statusTextCache.toLowerCase().includes('en emision')) {
-        estadoDivCache.classList.add('status-emision');
-      } else if (statusTextCache.toLowerCase().includes('finalizado')) {
-        estadoDivCache.classList.add('status-finalizado');
-      } else if (statusTextCache !== 'Estado no disponible'){
-        estadoDivCache.classList.add('status-otro'); // Clase para otros estados si es necesario
-      }
 
       // Actualizar géneros desde cache
       const generoContainerCache = document.querySelector(".genero");
@@ -86,11 +74,10 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         })),
         generos: anime.genres || [],
         tipo: anime.type || '',
-        estado: anime.status || '',
         fechaEstreno: anime.premiered || '',
         calificacion: anime.score || null,
-        fechaGuardado: serverTimestamp(), // Añadir timestamp de guardado
-        fuenteDatos: 'AnimeFlv' // Opcional: añade la fuente de los datos
+        fechaGuardado: serverTimestamp(),
+        fuenteDatos: 'AnimeFlv'
       };
 
       const animeDatosRef = doc(db, 'datos-animes', id);
@@ -105,27 +92,12 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         episodios: anime.episodes || [],
         generos: anime.genres,
         tipo: anime.type,
-        estado: anime.status,
         fechaEstreno: anime.premiered,
         calificacion: anime.score
       });
 
       // Actualizar UI con los datos más recientes
       document.getElementById("titulo").textContent = anime.title;
-
-      // Mostrar estado y añadir clase CSS
-      const estadoDiv = document.getElementById("estado");
-      const statusText = anime.status || 'Estado no disponible';
-      estadoDiv.textContent = statusText;
-      estadoDiv.classList.remove('status-emision', 'status-finalizado', 'status-otro'); // Limpiar clases previas
-      if (statusText.toLowerCase().includes('emisión') || statusText.toLowerCase().includes('en emision')) {
-        estadoDiv.classList.add('status-emision');
-      } else if (statusText.toLowerCase().includes('finalizado')) {
-        estadoDiv.classList.add('status-finalizado');
-      } else if (statusText !== 'Estado no disponible'){
-        estadoDiv.classList.add('status-otro'); // Clase para otros estados si es necesario
-      }
-
       document.getElementById("portada").src = anime.cover;
       document.body.style.backgroundImage = `url(${anime.cover})`;
       document.getElementById("descripcion").textContent = anime.synopsis;
@@ -137,9 +109,7 @@ fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`)
         anime.genres.slice(0, 5).forEach(genre => { // Limitar a 5 géneros
           const btn = document.createElement("button");
           btn.textContent = genre;
-          btn.className = 'genre-btn'; // Puedes añadir una clase para estilos
-          // Opcional: Añadir evento de clic si quieres que los botones hagan algo
-          // btn.addEventListener('click', () => { /* acción al hacer clic */ });
+          btn.className = 'genre-btn';
           generoContainer.appendChild(btn);
         });
       } else {

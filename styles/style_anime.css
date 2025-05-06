@@ -248,6 +248,7 @@ h2 {
     display: flex;
     width: 50%;
     gap: 5px;
+    justify-content: end;
   }
   .genero button {
     background-color: #1c1c2bb6;
@@ -260,22 +261,8 @@ h2 {
     -webkit-user-select: none;
     user-select: none;
   }
-  #estado {
-   position: absolute;
-   right: 5%;
-   top: 2%;
-   font-weight: bold;
-   text-shadow: 0 0 5px 10px #000;
-   font-size: 1rem;
-   -webkit-tap-highlight-color: transparent;
-   -webkit-user-select: none;
-   user-select: none;
-   z-index: 1;
-  }
+
   @media screen and (max-width:600px){
-    #estado {
-      display: none;
-    }
     .info1 {
       flex-direction: column;
       gap: 5px;
