@@ -116,7 +116,9 @@ async function crearBotonesEpisodios(anime) {
   const fragment = document.createDocumentFragment();
   episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
   capContenedor.appendChild(fragment);
-
+  if (episodios.length > 0) {
+    actualizarProgresoCapitulos(episodios.length, vistos);
+  }
   // Desplazar al primer episodio no visto
   const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
   if (primerNoVisto) {
