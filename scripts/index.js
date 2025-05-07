@@ -951,13 +951,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.querySelector(".sidebar");
 
   menuBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("active");
-    
-    if (sidebar.classList.contains("active") && window.scrollY > 0) {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+    // si aún no está abierto y hay scroll
+    if (!sidebar.classList.contains("active") && window.scrollY > 0) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const onScrollEnd = () => {
+        if (window.scrollY === 0) {
+          sidebar.classList.add("active");
+          window.removeEventListener("scroll", onScrollEnd);
+        }
+      };
+      window.addEventListener("scroll", onScrollEnd);
+    } else {
+      sidebar.classList.toggle("active");
     }
   });
 
@@ -975,11 +980,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  document.addEventListener("click", (event) => {
-    if (!sidebar.contains(event.target) && !menuBtn.contains(event.target) && sidebar.classList.contains("active")) {
-      sidebar.classList.remove("active");
+  let pageTouchStartX = 0, pageTouchEndX = 0;
+  document.addEventListener('touchstart', e => {
+    pageTouchStartX = e.changedTouches[0].screenX;
+  }, false);
+  document.addEventListener('touchend', e => {
+    pageTouchEndX = e.changedTouches[0].screenX;
+    const dist = pageTouchStartX - pageTouchEndX;
+    if (sidebar.classList.contains('active') && dist > 50) {
+      sidebar.classList.remove('active');
     }
-  });
+  }, false);
 
   let touchStartX = 0;
   let touchEndX = 0;
