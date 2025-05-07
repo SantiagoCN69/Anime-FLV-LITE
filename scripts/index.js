@@ -947,8 +947,6 @@ async function cargarCompletados() {
 
 // Sidebar toggle y navegación
 
-// Sidebar toggle & navigation optimized
-
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
@@ -978,50 +976,61 @@ document.addEventListener("DOMContentLoaded", () => {
   // Swipe para cerrar sidebar (en cualquier parte de la página)
   let touchStartX = 0;
   let touchEndX = 0;
-
   const handleSwipe = () => {
     if (sidebar.classList.contains("active")) {
       const dist = touchStartX - touchEndX;
       if (dist > 50) closeSidebar();
     }
   };
-
-  document.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
-
-  document.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }, { passive: true });
+  document.addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  document.addEventListener("touchend", e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
 
   // Swipe desde secciones de contenido para abrir sidebar
   sections.forEach(section => {
-    let secTouchStartX = 0;
-    let secTouchEndX = 0;
-
-    section.addEventListener("touchstart", e => {
-      secTouchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
+    let sx = 0, ex = 0;
+    section.addEventListener("touchstart", e => { sx = e.changedTouches[0].screenX; }, { passive: true });
     section.addEventListener("touchend", e => {
-      secTouchEndX = e.changedTouches[0].screenX;
-      const swipeDist = secTouchEndX - secTouchStartX;
-      if (!sidebar.classList.contains("active") && swipeDist > 50 && isMobile()) {
+      ex = e.changedTouches[0].screenX;
+      if (!sidebar.classList.contains("active") && ex - sx > 50 && isMobile()) {
         sidebar.classList.add("active");
-        if (window.scrollY > 0) {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+        if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }, { passive: true });
   });
 
-  // Mostrar sección inicial
-  const firstItem = menuItems[0];
-  const firstSectionId = firstItem.getAttribute("data-target");
+  // Evitar overscroll del body al llegar a tope o fondo del sidebar
+  sidebar.addEventListener("touchstart", function(e) {
+    this._startY = e.touches[0].pageY;
+    this._startScroll = this.scrollTop;
+  }, { passive: false });
 
+  sidebar.addEventListener("touchmove", function(e) {
+    const y = e.touches[0].pageY;
+    const dy = this._startY - y;
+    const atTop = this.scrollTop === 0;
+    const atBottom = this.scrollTop + this.clientHeight >= this.scrollHeight;
+    // Si intenta sobrepasar el límite, evitar propagación al body
+    if ((atTop && dy < 0) || (atBottom && dy > 0)) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Mostrar sección inicial y navegación
+  const firstItem = menuItems[0];
   firstItem.classList.add("active-menu-item");
-  sections.forEach(sec => sec.classList.add("hidden"));
+  const firstSectionId = firstItem.getAttribute("data-target");
+  sections.forEach(s => s.classList.add("hidden"));
   document.getElementById(firstSectionId).classList.remove("hidden");
 
+  // Manejo de clic en ítems del menú
+  menuItems.forEach(item => {
+    item.addEventListener("click", () => {
+      const id = item.getAttribute("data-target");
+      menuItems.forEach(i => i.classList.remove("active-menu-item"));
+      item.classList.add("active-menu-item");
+      sections.forEach(s => s.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      if (isMobile()) closeSidebar();
+    });
+  });
 });
