@@ -957,9 +957,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const dy = Math.abs(ey - sy);
   
       if (dx > 50 && dy < 35 && !sidebar.classList.contains("active") && isMobile()) {
-        sidebar.classList.add("active");
         if (window.scrollY > 0) {
           window.scrollTo({ top: 0, behavior: "smooth" });
+          const checkScroll = () => {
+            if (window.scrollY === 0) {
+              sidebar.classList.add("active");
+            } else {
+              requestAnimationFrame(checkScroll);
+            }
+          };
+          checkScroll(); 
+        } else {
+          sidebar.classList.add("active");
         }
       }
     }, { passive: true });
