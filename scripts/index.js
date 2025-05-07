@@ -987,13 +987,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Swipe desde secciones de contenido para abrir sidebar
   sections.forEach(section => {
-    let sx = 0, ex = 0;
-    section.addEventListener("touchstart", e => { sx = e.changedTouches[0].screenX; }, { passive: true });
+    let sx = 0, sy = 0, ex = 0, ey = 0;
+  
+    section.addEventListener("touchstart", e => {
+      sx = e.changedTouches[0].screenX;
+      sy = e.changedTouches[0].screenY;
+    }, { passive: true });
+  
     section.addEventListener("touchend", e => {
       ex = e.changedTouches[0].screenX;
-      if (!sidebar.classList.contains("active") && ex - sx > 50 && isMobile()) {
+      ey = e.changedTouches[0].screenY;
+  
+      const dx = ex - sx;
+      const dy = Math.abs(ey - sy);
+  
+      if (dx > 50 && dy < 35 && !sidebar.classList.contains("active") && isMobile()) {
         sidebar.classList.add("active");
-        if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
+        if (window.scrollY > 0) {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
       }
     }, { passive: true });
   });
