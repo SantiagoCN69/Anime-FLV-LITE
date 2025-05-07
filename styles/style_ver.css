@@ -189,6 +189,10 @@ main section:nth-child(1) {
   font-size: 1rem;
   font-weight: bold;
   color: #fff;
+  transition: transform .3s;  
+}
+.btn-anterior:active, .btn-siguiente:active, .btn-anuncios:active, .btn-censura:active, #btn-estado-capitulo:active {
+  transform: scale(.95);
 }
 .btn-anterior, .btn-siguiente {
   background-color: #e76f51;

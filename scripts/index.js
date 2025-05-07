@@ -436,7 +436,7 @@ async function cargarUltimosCapitulos() {
         || item.anime_id 
         || (item.url ? item.url.split('/').pop().replace(/-\d+$/, '') : 'id_desconocido_' + Math.random().toString(16).slice(2)),
         title: item.title || item.name || item.nombre || 'Anime sin título',
-        cover: item.cover || item.image || item.poster || 'img/background.webp', 
+        cover: item.cover || item.image || item.poster || '', 
         link: item.url || '', 
         chapter: item.chapter || '',
     })).filter(item => item.title !== 'Anime sin título'); 
@@ -469,12 +469,10 @@ async function cargarUltimosCapitulos() {
 
   } catch (error) {
     console.error('Error al cargar últimos capítulos desde API:', error);
-    // Solo mostrar error en UI si no se pudo mostrar nada desde caché
     if (cachedData === null) { 
       mainContainer.innerHTML = '<p>Error al cargar últimos episodios.</p>';
       actualizarAlturaMain();
     }
-    // Si ya se mostró desde caché, dejamos la UI como está para no perder información
   }
 }
 

@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -462,9 +463,7 @@ main {
     gap: 15px;
     margin: 0 auto;
     width: clamp(0px, 100%, 1000px);
-    -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
+
     padding-inline: 1rem;
 }
 .anime-card {
@@ -508,7 +507,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 2px;
     font-size: .7rem;
     font-weight: bold;
     z-index: 1;
@@ -522,7 +520,6 @@ main {
     margin-right: 5px;
     background-color: transparent;
     position: relative;
-    top: 1px; 
   }
   .anime-card span.rating {
     top: 3px;
