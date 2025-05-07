@@ -906,7 +906,6 @@ async function cargarCompletados() {
 }
 
 // Sidebar toggle y navegación
-
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
@@ -917,7 +916,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeSidebar = () => sidebar.classList.remove("active");
   const isMobile = () => window.innerWidth <= 600;
 
-  // Al hacer clic en el botón del menú
   menuBtn.addEventListener("click", () => {
     if (!sidebar.classList.contains("active") && window.scrollY > 0) {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -926,14 +924,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Ocultar sidebar en scroll si está activo en móvil
   window.addEventListener("scroll", () => {
     if (isMobile() && sidebar.classList.contains("active")) {
       closeSidebar();
     }
   });
 
-  // Swipe para cerrar sidebar (en cualquier parte de la página)
   let touchStartX = 0;
   let touchEndX = 0;
   const handleSwipe = () => {
@@ -945,7 +941,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
   document.addEventListener("touchend", e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
 
-  // Swipe desde secciones de contenido para abrir sidebar
   sections.forEach(section => {
     let sx = 0, sy = 0, ex = 0, ey = 0;
   
@@ -970,7 +965,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { passive: true });
   });
 
-  // Evitar overscroll del body al llegar a tope o fondo del sidebar
   sidebar.addEventListener("touchstart", function(e) {
     this._startY = e.touches[0].pageY;
     this._startScroll = this.scrollTop;
@@ -981,20 +975,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const dy = this._startY - y;
     const atTop = this.scrollTop === 0;
     const atBottom = this.scrollTop + this.clientHeight >= this.scrollHeight;
-    // Si intenta sobrepasar el límite, evitar propagación al body
     if ((atTop && dy < 0) || (atBottom && dy > 0)) {
       e.preventDefault();
     }
   }, { passive: false });
 
-  // Mostrar sección inicial y navegación
   const firstItem = menuItems[0];
   firstItem.classList.add("active-menu-item");
   const firstSectionId = firstItem.getAttribute("data-target");
   sections.forEach(s => s.classList.add("hidden"));
   document.getElementById(firstSectionId).classList.remove("hidden");
 
-  // Manejo de clic en ítems del menú
   menuItems.forEach(item => {
     item.addEventListener("click", () => {
       const id = item.getAttribute("data-target");
