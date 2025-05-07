@@ -206,7 +206,6 @@ async function obtenerCapitulosVistos(animeId) {
       descripcion: data.synopsis || '',
       episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
       generos: data.genres || [],
-      estado: data.status || '',
       calificacion: data.score || null,
       rating: data.rating || null
     };

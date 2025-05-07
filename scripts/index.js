@@ -558,9 +558,7 @@ async function cargarUltimosCapsVistos() {
       }
     }
   }
-  
 
-// Cargar animes en curso (de 10 en 10)
 async function cargarViendo() {
   const viendoContainer = document.getElementById('viendo');
   if (!viendoContainer) return;
@@ -584,6 +582,7 @@ async function cargarViendo() {
     return bloques;
   };
 
+  // Esperar a que el usuario esté autenticado
   const user = await new Promise(resolve => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       unsubscribe();
@@ -599,24 +598,11 @@ async function cargarViendo() {
 
   const userId = user.uid;
   const cacheKey = `viendoCache_${userId}`;
-  let cachedData = null;
+  const cachedData = leerCache(cacheKey);
 
-  try {
-    const cachedDataString = localStorage.getItem(cacheKey);
-    if (cachedDataString) {
-      cachedData = JSON.parse(cachedDataString);
-      if (Array.isArray(cachedData)) {
-        console.log("Mostrando 'Viendo' desde caché...");
-        renderizarViendo(cachedData, true);
-      } else {
-        cachedData = null;
-        localStorage.removeItem(cacheKey);
-      }
-    }
-  } catch (error) {
-    console.error("Error al leer o parsear caché de 'Viendo':", error);
-    cachedData = null;
-    localStorage.removeItem(cacheKey);
+  if (cachedData) {
+    console.log("Mostrando 'Viendo' desde caché...");
+    renderizarViendo(cachedData, true);
   }
 
   try {
@@ -633,12 +619,12 @@ async function cargarViendo() {
     const bloques = dividirEnBloques(ids, 10);
     const freshData = [];
 
-    // Cargar primer bloque
+    // Cargar y mostrar el primer bloque inmediatamente
     const primerBloque = await Promise.all(
       bloques[0].map(id =>
         getDoc(doc(db, "datos-animes", id))
           .then(docSnap => docSnap.exists() ? {
-            id: id,
+            id,
             titulo: docSnap.data().titulo || 'Título no encontrado',
             portada: docSnap.data().portada || 'img/background.webp',
             estado: docSnap.data().estado || 'No disponible',
@@ -650,20 +636,22 @@ async function cargarViendo() {
           })
       )
     );
+
     freshData.push(...primerBloque.filter(Boolean));
     renderizarViendo(freshData, true);
 
+    // Cargar bloques restantes en segundo plano
     for (let i = 1; i < bloques.length; i++) {
       const bloque = bloques[i];
       const resultados = await Promise.all(
         bloque.map(id =>
           getDoc(doc(db, "datos-animes", id))
             .then(docSnap => docSnap.exists() ? {
-              id: id,
+              id,
               titulo: docSnap.data().titulo || 'Título no encontrado',
               portada: docSnap.data().portada || 'img/background.webp',
               estado: docSnap.data().estado || 'No disponible',
-              rating: docSnap.data().rating || null,
+              rating: docSnap.data().rating || null
             } : null)
             .catch(error => {
               console.error(`Error al obtener anime ${id}:`, error);
@@ -676,10 +664,11 @@ async function cargarViendo() {
       renderizarViendo(nuevos);
     }
 
-    localStorage.setItem(cacheKey, JSON.stringify(freshData));
+    // Guardar en caché todos los datos frescos
+    guardarCache(cacheKey, freshData);
   } catch (error) {
     console.error('Error al cargar animes en curso desde Firestore:', error);
-    if (cachedData === null) {
+    if (!cachedData) {
       viendoContainer.innerHTML = '<p>Error al cargar animes en curso.</p>';
       actualizarAlturaMain();
     }
@@ -688,113 +677,59 @@ async function cargarViendo() {
 
 // Cargar animes pendientes
 async function cargarPendientes() {
-  const pendientesContainer = document.getElementById('pendientes');
-  if (!pendientesContainer) return;
+  const cont = document.getElementById('pendientes');
+  if (!cont) return;
 
-  const renderizarPendientes = (datos) => {
-    pendientesContainer.innerHTML = '';
-    if (!datos || datos.length === 0) {
-      pendientesContainer.innerHTML = '<p>No tienes animes pendientes.</p>';
-      actualizarAlturaMain();
-      return;
+  const render = (animes, reset = false) => {
+    if (reset) cont.innerHTML = '';
+    if (!animes || !animes.length) {
+      cont.innerHTML = '<p>No tienes animes pendientes.</p>';
+      return actualizarAlturaMain();
     }
-    const fragment = document.createDocumentFragment();
-    datos.forEach(anime => {
-      const card = createAnimeCard(anime || {});
-      if (card) fragment.appendChild(card);
+    const frag = document.createDocumentFragment();
+    animes.forEach(a => {
+      const card = createAnimeCard(a);
+      if (card) frag.appendChild(card);
     });
-    pendientesContainer.appendChild(fragment);
+    cont.appendChild(frag);
     actualizarAlturaMain();
   };
 
-  const user = await new Promise(resolve => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      resolve(user);
-    });
-  });
+  const user = await new Promise(res => onAuthStateChanged(auth, u => res(u)));
+  if (!user) return render([], true);
 
-  if (!user) {
-    pendientesContainer.innerHTML = '<p>Inicia sesión para ver tus animes pendientes</p>';
-    actualizarAlturaMain();
-    return;
-  }
-
-  const userId = user.uid;
-  const cacheKey = `pendientesCache_${userId}`;
-  let cachedData = null;
+  const key = `pendientesCache_${user.uid}`;
+  const cache = leerCache(key);
+  if (cache) render(cache, true);
 
   try {
-    const cachedDataString = localStorage.getItem(cacheKey);
-    if (cachedDataString) {
-      cachedData = JSON.parse(cachedDataString);
-      if (Array.isArray(cachedData)) {
-        console.log("Mostrando 'Pendientes' desde caché...");
-        renderizarPendientes(cachedData);
-      } else {
-        cachedData = null;
-        localStorage.removeItem(cacheKey);
-      }
-    }
-  } catch (error) {
-    console.error("Error al leer caché de 'Pendientes':", error);
-    cachedData = null;
-    localStorage.removeItem(cacheKey);
-  }
-
-  try {
-    const pendienteSnap = await getDocs(collection(doc(db, "usuarios", userId), "pendiente"));
-    const pendienteIds = pendienteSnap.docs.map(doc => doc.id);
-
-    let freshData = [];
-
-    if (pendienteIds.length > 0) {
-      const datosSnap = await getDocs(collection(db, "datos-animes"));
-      const datosMap = {};
-      datosSnap.forEach(doc => datosMap[doc.id] = doc.data());
-
-      freshData = pendienteIds.map(id => {
-        const anime = datosMap[id];
-        if (!anime) return null;
-        return {
-          id,
-          titulo: anime.titulo || 'Título no encontrado',
-          portada: anime.portada || 'img/background.webp',
-          estado: anime.estado || 'No disponible',
-          rating: anime.rating || null,
-        };
-      }).filter(item => item !== null);
+    const snap = await getDocs(collection(doc(db, 'usuarios', user.uid), 'pendiente'));
+    if (snap.empty) {
+      return render([], true) && localStorage.removeItem(key);
     }
 
-    const freshDataString = JSON.stringify(freshData);
-    const cachedDataString = JSON.stringify(cachedData);
+    const ids = snap.docs.map(d => d.id);
+    const bloques = [];
+    for (let i = 0; i < ids.length; i += 10) bloques.push(ids.slice(i, i + 10));
 
-    if (freshDataString !== cachedDataString) {
-      console.log("Actualizando UI y caché de 'Pendientes'...");
-      renderizarPendientes(freshData);
-      if (freshData.length > 0) {
-        localStorage.setItem(cacheKey, freshDataString);
-      } else {
-        localStorage.removeItem(cacheKey);
-        if (cachedData === null && pendienteIds.length > 0) {
-          renderizarPendientes([]);
-        }
-      }
-    } else {
-      if (cachedData === null && freshData.length > 0) {
-        console.log("Mostrando datos frescos de Firestore sin caché previa.");
-        renderizarPendientes(freshData);
-        localStorage.setItem(cacheKey, freshDataString);
-      } else if (cachedData === null && freshData.length === 0) {
-        console.log("No hay animes pendientes.");
-        renderizarPendientes([]);
-      }
+    let all = [];
+    for (let i = 0; i < bloques.length; i++) {
+      const datos = await Promise.all(
+        bloques[i].map(id =>
+          getDoc(doc(db, 'datos-animes', id))
+            .then(ds => ds.exists() ? { id, ...ds.data() } : null)
+            .catch(() => null)
+        )
+      );
+      const valid = datos.filter(Boolean);
+      all = all.concat(valid);
+      render(valid, i === 0);
     }
 
-  } catch (error) {
-    console.error('Error al cargar animes pendientes:', error);
-    if (cachedData === null) {
-      pendientesContainer.innerHTML = '<p>Error al cargar animes pendientes.</p>';
+    guardarCache(key, all);
+  } catch {
+    if (!cache) {
+      cont.innerHTML = '<p>Error al cargar animes pendientes.</p>';
       actualizarAlturaMain();
     }
   }
