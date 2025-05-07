@@ -10,11 +10,13 @@ const isAnimePage = location.pathname.includes('anime.html');
 const isIndexPage = location.pathname === '/' || location.pathname.endsWith('index.html');
 const animeDetails = document.querySelector('.anime-details');
 const mainContainer = document.getElementById('main');
+const sidebar = document.querySelector('.sidebar');
 
 // Toggle de búsqueda para móviles
 document.getElementById('btn-search').addEventListener('click', function () {
   document.querySelector('header').classList.add('search-active');
   document.getElementById('busqueda').focus();
+  sidebar.classList.remove('active');
 });
 
 // Cerrar búsqueda
@@ -22,7 +24,7 @@ document.getElementById('btn-close-search').addEventListener('click', function (
   document.querySelector('header').classList.remove('search-active');
   const input = document.getElementById('busqueda');
   input.value = "";
-  input.dispatchEvent(new Event('input')); // fuerza que se limpie todo
+  input.dispatchEvent(new Event('input'));
 });
 
 
@@ -30,9 +32,9 @@ document.getElementById('btn-close-search').addEventListener('click', function (
 // Función de búsqueda en tiempo real
 const busquedaInput = document.getElementById('busqueda');
 let busquedaTimer;
-let busquedaCountdownInterval; // Para el temporizador de la cuenta regresiva de búsqueda
-let initialDelayTimer; // Para el retraso de 2s antes de mostrar el loading
-let fetchCallMade = false; // Bandera para controlar el estado de la llamada fetch
+let busquedaCountdownInterval;
+let initialDelayTimer; 
+let fetchCallMade = false; 
 
 busquedaInput.addEventListener('input', function () {
   clearTimeout(busquedaTimer);
