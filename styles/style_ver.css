@@ -132,27 +132,35 @@ main section:nth-child(1) {
 }
 #fullscreen {
   position: absolute;
-  top: 48%;
-  left: 47%;
+  top: 54%;
+  left: 50%;
+  transform: translate(-54%, -50%);
   cursor: pointer;
   z-index: 2;
   pointer-events: none;
+  background-color: #ffffff8f;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  width: 115px;
+  height: 115px;
 }
-#fullscreen::before {
-  content: url(/icons/play-solid.svg);
-  width: 45px;
-  height: 45px;
-  display: inline-block;
-  filter:  drop-shadow(0 0 10px #222) invert(70%);
-
+#fullscreen img {
+  width: 50px;
+  padding-left: 7px;
+  filter: invert(20%);
 }
 /* Mostrar mensaje en hover o active */
 .reproductor-container.censure:hover::after,
 .reproductor-container.censure:active::after {
   content: "Haz doble clic para pantalla completa";
   position: absolute;
-  top: 77%;
-  left: 35%;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #000000cc;
   color: white;
   padding: 6px 10px;
