@@ -945,132 +945,60 @@ async function cargarCompletados() {
   }
 }
 
-// Toggle del menú
+// Sidebar toggle y navegación
+
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
+  const sections = document.querySelectorAll(".content-section");
+  const menuItems = [...document.querySelectorAll(".sidebar li")];
+
+  const closeSidebar = () => sidebar.classList.remove("active");
+  const openSidebar = () => sidebar.classList.add("active");
+  const toggleSidebar = () => sidebar.classList.toggle("active");
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   menuBtn.addEventListener("click", () => {
-    // si aún no está abierto y hay scroll
     if (!sidebar.classList.contains("active") && window.scrollY > 0) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      const onScrollEnd = () => {
+      scrollToTop();
+      const onScroll = () => {
         if (window.scrollY === 0) {
-          sidebar.classList.add("active");
-          window.removeEventListener("scroll", onScrollEnd);
+          openSidebar(); window.removeEventListener("scroll", onScroll);
         }
       };
-      window.addEventListener("scroll", onScrollEnd);
-    } else {
-      sidebar.classList.toggle("active");
-    }
+      window.addEventListener("scroll", onScroll);
+    } else toggleSidebar();
   });
 
-  document.querySelectorAll(".sidebar li").forEach(item => {
-    item.addEventListener("click", () => {
-      if (window.innerWidth <= 600) {
-        sidebar.classList.remove("active");
-      }
+  ['scroll', 'click'].forEach(evt => {
+    const target = evt === 'scroll' ? window : sidebar;
+    target.addEventListener(evt, () => {
+      if (window.innerWidth <= 600 && sidebar.classList.contains("active")) closeSidebar();
     });
   });
 
-  window.addEventListener("scroll", () => {
-    if (window.innerWidth <= 600 && sidebar.classList.contains("active")) {
-      sidebar.classList.remove("active");
+  // Swipe detection
+  let startX = 0;
+  const onTouchStart = e => startX = e.changedTouches[0].screenX;
+  const onTouchEnd = e => {
+    const endX = e.changedTouches[0].screenX;
+    const delta = endX - startX;
+    if (sidebar.classList.contains('active') && delta < -50) closeSidebar();
+    if (!sidebar.classList.contains('active') && delta > 50 && window.innerWidth <= 600) {
+      scrollToTop(); openSidebar();
     }
-  });
+  };
+  document.addEventListener('touchstart', onTouchStart);
+  document.addEventListener('touchend', onTouchEnd);
+  sidebar.addEventListener('touchstart', onTouchStart);
+  sidebar.addEventListener('touchend', onTouchEnd);
 
-  let pageTouchStartX = 0, pageTouchEndX = 0;
-  document.addEventListener('touchstart', e => {
-    pageTouchStartX = e.changedTouches[0].screenX;
-  }, false);
-  document.addEventListener('touchend', e => {
-    pageTouchEndX = e.changedTouches[0].screenX;
-    const dist = pageTouchStartX - pageTouchEndX;
-    if (sidebar.classList.contains('active') && dist > 50) {
-      sidebar.classList.remove('active');
-    }
-  }, false);
+  const activate = id => {
+    menuItems.forEach(i => i.classList.toggle('active-menu-item', i.dataset.target === id));
+    sections.forEach(s => s.classList.toggle('hidden', s.id !== id));
+  };
 
-  let touchStartX = 0;
-  let touchEndX = 0;
-
-  sidebar.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  }, false);
-
-  sidebar.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }, false);
-
-  function handleSwipe() {
-    if (sidebar.classList.contains('active') && touchEndX < touchStartX) {
-      const swipeDistance = touchStartX - touchEndX;
-      if (swipeDistance > 50) {
-        sidebar.classList.remove('active');
-      }
-    }
-  }
-
-  const contentSections = document.querySelectorAll('.content-section');
-  contentSections.forEach(section => {
-    let touchStartXContent = 0;
-    let touchEndXContent = 0;
-
-    section.addEventListener('touchstart', (e) => {
-      touchStartXContent = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    section.addEventListener('touchend', (e) => {
-      touchEndXContent = e.changedTouches[0].screenX;
-      handleContentSwipe();
-    }, { passive: true });
-
-    function handleContentSwipe() {
-      if (!sidebar.classList.contains('active') && touchEndXContent > touchStartXContent && window.innerWidth <= 600) {
-        const swipeDistance = touchEndXContent - touchStartXContent;
-        if (swipeDistance > 50) {
-          sidebar.classList.add('active');
-          if (window.scrollY > 0) {
-            window.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-            });
-          }
-        }
-      }
-    }
-  });
-
-  const menuItems = document.querySelectorAll(".sidebar li");
-  const sections = document.querySelectorAll(".content-section");
-  const firstMenuItem = menuItems[0];
-  const firstSectionId = firstMenuItem.getAttribute("data-target");
-
-  firstMenuItem.classList.add("active-menu-item");
-
-  sections.forEach(sec => {
-    sec.classList.add("hidden");
-  });
-  document.getElementById(firstSectionId).classList.remove("hidden");
+  activate(menuItems[0].dataset.target);
+  menuItems.forEach(item => item.addEventListener('click', () => activate(item.dataset.target)));
 });
 
-const menuItems = document.querySelectorAll(".sidebar li");
-const sections = document.querySelectorAll(".content-section");
-
-menuItems.forEach(item => {
-  item.addEventListener("click", () => {
-    const targetId = item.getAttribute("data-target");
-
-    menuItems.forEach(menuItem => {
-      menuItem.classList.remove("active-menu-item");
-    });
-    item.classList.add("active-menu-item");
-
-    sections.forEach(sec => {
-      sec.classList.add("hidden");
-    });
-    document.getElementById(targetId).classList.remove("hidden");
-  });
-});
