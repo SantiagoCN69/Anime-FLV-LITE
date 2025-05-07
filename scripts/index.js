@@ -739,8 +739,8 @@ async function cargarCompletados() {
   const completadosContainer = document.getElementById('completados');
   if (!completadosContainer) return;
 
-  const renderizarCompletados = (datos) => {
-    completadosContainer.innerHTML = '';
+  const renderizarCompletados = (datos, reset = false) => {
+    if (reset) completadosContainer.innerHTML = '';
     if (!datos || datos.length === 0) {
       completadosContainer.innerHTML = '<p>No tienes animes completados.</p>';
       actualizarAlturaMain();
@@ -770,22 +770,10 @@ async function cargarCompletados() {
 
   const userId = user.uid;
   const cacheKey = `completadosCache_${userId}`;
-  let cachedData = null;
+  const cache = leerCache(cacheKey);
 
-  try {
-    const cachedDataString = localStorage.getItem(cacheKey);
-    if (cachedDataString) {
-      cachedData = JSON.parse(cachedDataString);
-      if (Array.isArray(cachedData)) {
-        renderizarCompletados(cachedData);
-      } else {
-        cachedData = null;
-        localStorage.removeItem(cacheKey);
-      }
-    }
-  } catch (error) {
-    cachedData = null;
-    localStorage.removeItem(cacheKey);
+  if (cache) {
+    renderizarCompletados(cache, true);
   }
 
   try {
@@ -816,29 +804,23 @@ async function cargarCompletados() {
       freshData = (await Promise.all(promises)).filter(item => item !== null);
     }
 
-    const freshDataString = JSON.stringify(freshData);
-    const cachedDataString = JSON.stringify(cachedData);
-
-    if (freshDataString !== cachedDataString) {
-      renderizarCompletados(freshData);
-      if (freshData.length > 0) {
-        localStorage.setItem(cacheKey, freshDataString);
-      } else {
-        localStorage.removeItem(cacheKey);
-      }
-    } else if (cachedData === null && freshData.length > 0) {
-      renderizarCompletados(freshData);
-      localStorage.setItem(cacheKey, freshDataString);
-    } else if (cachedData === null && freshData.length === 0) {
+    if (JSON.stringify(freshData) !== JSON.stringify(cache)) {
+      renderizarCompletados(freshData, true);
+      guardarCache(cacheKey, freshData);
+    } else if (cache === null && freshData.length > 0) {
+      renderizarCompletados(freshData, true);
+      guardarCache(cacheKey, freshData);
+    } else if (cache === null && freshData.length === 0) {
       renderizarCompletados([]);
     }
   } catch (error) {
-    if (cachedData === null) {
+    if (!cache) {
       completadosContainer.innerHTML = '<p>Error al cargar animes completados.</p>';
       actualizarAlturaMain();
     }
   }
 }
+
 
 // Sidebar toggle y navegación
 document.addEventListener("DOMContentLoaded", () => {
