@@ -126,7 +126,6 @@ async function crearBotonesEpisodios(anime) {
   }
 }
 
-// Scroll-snap via JS for wheel
 capContenedor.addEventListener('wheel', e => {
   e.preventDefault();
   const ancho = getAnchoColumna();
@@ -138,7 +137,6 @@ capContenedor.addEventListener('wheel', e => {
   capContenedor.scrollTo({ left: Math.max(0, Math.min(target, capContenedor.scrollWidth - ancho)), behavior: 'smooth' });
 }, { passive: false });
 
-// Auto-snap after scroll ends (mobile/touch)
 let scrollTimeout;
 capContenedor.addEventListener('scroll', () => {
   clearTimeout(scrollTimeout);
