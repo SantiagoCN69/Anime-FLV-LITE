@@ -352,232 +352,170 @@ async function cargarUltimosCapsVistos() {
     return div;
   }
 
-async function cargarUltimosCapitulos() {
-  const mainContainer = document.getElementById('ultimos-episodios');
-  if (!mainContainer) return;
-
-  const renderizarUltimosEpisodios = (datos) => {
-    document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
-    mainContainer.innerHTML = ''; 
-    if (!datos || datos.length === 0) {
-        mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';
-        actualizarAlturaMain(); 
-        return;
+  function leerCache(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      const data = JSON.parse(raw);
+      if (Array.isArray(data)) return data;
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.error(`Error leyendo cache (${key}):`, e);
+      localStorage.removeItem(key);
     }
-    const fragment = document.createDocumentFragment();
-    datos.forEach(anime => {
-      const card = createAnimeCard(anime || {}); 
-      if (card) {
-        fragment.appendChild(card);
-      }
-    });
-    mainContainer.appendChild(fragment);
-    actualizarAlturaMain(); 
-  };
-
-  const cacheKey = 'ultimosEpisodiosGeneralesCache';
-  let cachedData = null;
-
-  try {
-    const cachedDataString = localStorage.getItem(cacheKey);
-    if (cachedDataString) {
-      cachedData = JSON.parse(cachedDataString);
-      if (Array.isArray(cachedData)) {
-        console.log("Mostrando últimos episodios desde caché...");
-        renderizarUltimosEpisodios(cachedData);
-      } else {
-        cachedData = null;
-        localStorage.removeItem(cacheKey);
-      }
-    }
-  } catch (error) {
-    console.error("Error al leer o parsear caché de últimos episodios:", error);
-    cachedData = null;
-    localStorage.removeItem(cacheKey);
+    return null;
   }
-
-  try {
-    const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-    
-    if (!res.ok) {
-      throw new Error(`Error de red: ${res.status}`);
-    }
-    
-    const data = await res.json();
-
-    let freshDataRaw = [];
-    const possibleKeys = ['latestEpisodes', 'animesEnEmision', 'ultimosAnimes', 'data', 'results', 'animes'];
-    for (const key of possibleKeys) {
-        if (Array.isArray(data[key])) {
-            freshDataRaw = data[key];
-            break;
-        }
-    }
-    if (freshDataRaw.length === 0) {
-        for (const key in data) {
-            if (Array.isArray(data[key])) {
-                freshDataRaw = data[key];
-                break;
-            }
-        }
-    }
-     if (freshDataRaw.length === 0 && Array.isArray(data)) {
-        freshDataRaw = data;
-     }
-
-
-    const freshData = freshDataRaw.map(item => ({ 
-        id: item.id 
-        || item.anime_id 
-        || (item.url ? item.url.split('/').pop().replace(/-\d+$/, '') : 'id_desconocido_' + Math.random().toString(16).slice(2)),
-        title: item.title || item.name || item.nombre || 'Anime sin título',
-        cover: item.cover || item.image || item.poster || '', 
-        link: item.url || '', 
-        chapter: item.chapter || '',
-    })).filter(item => item.title !== 'Anime sin título'); 
-
-
-    const freshDataString = JSON.stringify(freshData);
-    const cachedDataString = JSON.stringify(cachedData);
-
-    if (freshDataString !== cachedDataString) {
-      console.log("Datos de API diferentes a la caché. Actualizando UI y caché...");
-      renderizarUltimosEpisodios(freshData);
-      if (freshData && freshData.length > 0) { 
-          localStorage.setItem(cacheKey, freshDataString);
-      } else {
-          localStorage.removeItem(cacheKey);
-      }
+  
+  function guardarCache(key, data) {
+    if (!Array.isArray(data) || data.length === 0) {
+      localStorage.removeItem(key);
     } else {
-      if (cachedData === null && freshData && freshData.length > 0) {
-          console.log("Mostrando datos frescos de API (sin caché previa).");
-          renderizarUltimosEpisodios(freshData);
-          localStorage.setItem(cacheKey, freshDataString); 
-      } 
-      else if (cachedData === null && (!freshData || freshData.length === 0)) {
-           renderizarUltimosEpisodios([]); // Asegura mostrar mensaje "No se encontraron..."
-      } 
-      else {
-          console.log("Datos de API coinciden con la caché. No se requiere actualización.");
-      }
+      localStorage.setItem(key, JSON.stringify(data));
     }
-
-  } catch (error) {
-    console.error('Error al cargar últimos capítulos desde API:', error);
-    if (cachedData === null) { 
-      mainContainer.innerHTML = '<p>Error al cargar últimos episodios.</p>';
+  }
+  async function cargarUltimosCapitulos() {
+    const mainContainer = document.getElementById('ultimos-episodios');
+    if (!mainContainer) return;
+  
+    const renderizarUltimosEpisodios = (datos) => {
+      document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
+      mainContainer.innerHTML = '';
+      if (!datos || datos.length === 0) {
+        mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';
+        actualizarAlturaMain();
+        return;
+      }
+      const fragment = document.createDocumentFragment();
+      datos.forEach(anime => {
+        const card = createAnimeCard(anime || {});
+        if (card) fragment.appendChild(card);
+      });
+      mainContainer.appendChild(fragment);
       actualizarAlturaMain();
+    };
+  
+    const cacheKey = 'ultimosEpisodiosGeneralesCache';
+    const cachedData = leerCache(cacheKey);
+    if (cachedData) {
+      console.log("Mostrando últimos episodios desde caché...");
+      renderizarUltimosEpisodios(cachedData);
     }
-  }
-}
-
-async function cargarFavoritos() {
-  const favsContainer = document.getElementById('favs');
-  if (!favsContainer) return;
-
-  const renderizarFavoritos = (datos, reemplazar = false) => {
-    if (reemplazar) favsContainer.innerHTML = '';
-    const fragment = document.createDocumentFragment();
-    datos.forEach(anime => {
-      const card = createAnimeCard(anime || {});
-      if (card) fragment.appendChild(card);
-    });
-    favsContainer.appendChild(fragment);
-    actualizarAlturaMain();
-  };
-
-  const dividirEnBloques = (array, tamaño) => {
-    const bloques = [];
-    for (let i = 0; i < array.length; i += tamaño) {
-      bloques.push(array.slice(i, i + tamaño));
-    }
-    return bloques;
-  };
-
-  const user = await new Promise(resolve => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      resolve(user);
-    });
-  });
-
-  if (!user) {
-    favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
-    actualizarAlturaMain();
-    return;
-  }
-
-  const userId = user.uid;
-  const cacheKey = `favoritosCache_${userId}`;
-  let cachedData = null;
-
-  try {
-    const cachedDataString = localStorage.getItem(cacheKey);
-    if (cachedDataString) {
-      cachedData = JSON.parse(cachedDataString);
-      if (Array.isArray(cachedData)) {
-        console.log("Mostrando favoritos desde caché...");
-        renderizarFavoritos(cachedData, true);
+  
+    try {
+      const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
+      if (!res.ok) throw new Error(`Error de red: ${res.status}`);
+      const data = await res.json();
+  
+      const extraerListaValida = (obj) => {
+        const posibles = ['latestEpisodes', 'animesEnEmision', 'ultimosAnimes', 'data', 'results', 'animes'];
+        for (const key of posibles) {
+          if (Array.isArray(obj[key])) return obj[key];
+        }
+        for (const key in obj) {
+          if (Array.isArray(obj[key])) return obj[key];
+        }
+        return Array.isArray(obj) ? obj : [];
+      };
+  
+      const rawList = extraerListaValida(data);
+      const freshData = rawList.map(item => ({
+        id: item.id || item.anime_id || (item.url ? item.url.split('/').pop().replace(/-\d+$/, '') : 'id_' + Math.random().toString(16).slice(2)),
+        title: item.title || item.name || item.nombre || 'Anime sin título',
+        cover: item.cover || item.image || item.poster || '',
+        link: item.url || '',
+        chapter: item.chapter || '',
+      })).filter(item => item.title !== 'Anime sin título');
+  
+      const cachedString = JSON.stringify(cachedData);
+      const freshString = JSON.stringify(freshData);
+  
+      if (freshString !== cachedString) {
+        console.log("Datos de API diferentes a la caché. Actualizando UI y caché...");
+        renderizarUltimosEpisodios(freshData);
+        guardarCache(cacheKey, freshData);
+      } else if (!cachedData) {
+        console.log("Mostrando datos frescos de API (sin caché previa).");
+        renderizarUltimosEpisodios(freshData);
+        guardarCache(cacheKey, freshData);
       } else {
-        cachedData = null;
-        localStorage.removeItem(cacheKey);
+        console.log("Datos de API coinciden con la caché. No se requiere actualización.");
+      }
+  
+    } catch (error) {
+      console.error('Error al cargar últimos capítulos desde API:', error);
+      if (!cachedData) {
+        mainContainer.innerHTML = '<p>Error al cargar últimos episodios.</p>';
+        actualizarAlturaMain();
       }
     }
-  } catch (error) {
-    console.error("Error al leer o parsear caché de favoritos:", error);
-    cachedData = null;
-    localStorage.removeItem(cacheKey);
   }
-
-  try {
-    const ref = collection(doc(db, "usuarios", userId), "favoritos");
-    const snap = await getDocs(ref);
-
-    if (snap.empty) {
-      renderizarFavoritos([], true);
-      localStorage.removeItem(cacheKey);
+  async function cargarFavoritos() {
+    const favsContainer = document.getElementById('favs');
+    if (!favsContainer) return;
+  
+    const renderizarFavoritos = (datos, reemplazar = false) => {
+      if (reemplazar) favsContainer.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+      datos.forEach(anime => {
+        const card = createAnimeCard(anime || {});
+        if (card) fragment.appendChild(card);
+      });
+      favsContainer.appendChild(fragment);
+      actualizarAlturaMain();
+    };
+  
+    const dividirEnBloques = (array, tamaño) => {
+      const bloques = [];
+      for (let i = 0; i < array.length; i += tamaño) {
+        bloques.push(array.slice(i, i + tamaño));
+      }
+      return bloques;
+    };
+  
+    const user = await new Promise(resolve => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        unsubscribe();
+        resolve(user);
+      });
+    });
+  
+    if (!user) {
+      favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
+      actualizarAlturaMain();
       return;
     }
-
-    const ids = snap.docs.map(doc => doc.id);
-    const bloques = dividirEnBloques(ids, 10);
-    const freshData = [];
-
-    const primerBloque = await Promise.all(
-      bloques[0].map(id =>
-        getDoc(doc(db, "datos-animes", id))
-          .then(docSnap => docSnap.exists() ? {
-            id: id,
-            titulo: docSnap.data().titulo || 'Título no encontrado',
-            portada: docSnap.data().portada || 'img/background.webp',
-            estado: docSnap.data().estado || 'No disponible',
-            rating: docSnap.data().rating || null
-          } : null)
-          .catch(error => {
-            console.error(`Error al obtener anime ${id}:`, error);
-            return null;
-          })
-      )
-    );
-
-    freshData.push(...primerBloque.filter(Boolean));
-    renderizarFavoritos(freshData, true);
-
-    for (let i = 1; i < bloques.length; i++) {
-      const bloque = bloques[i];
-      const resultados = await Promise.all(
-        bloque.map(id =>
+  
+    const userId = user.uid;
+    const cacheKey = `favoritosCache_${userId}`;
+    const cachedData = leerCache(cacheKey);
+  
+    if (cachedData) {
+      console.log("Mostrando favoritos desde caché...");
+      renderizarFavoritos(cachedData, true);
+    }
+  
+    try {
+      const ref = collection(doc(db, "usuarios", userId), "favoritos");
+      const snap = await getDocs(ref);
+  
+      if (snap.empty) {
+        renderizarFavoritos([], true);
+        localStorage.removeItem(cacheKey);
+        return;
+      }
+  
+      const ids = snap.docs.map(doc => doc.id);
+      const bloques = dividirEnBloques(ids, 10);
+      const freshData = [];
+  
+      const primerBloque = await Promise.all(
+        bloques[0].map(id =>
           getDoc(doc(db, "datos-animes", id))
             .then(docSnap => docSnap.exists() ? {
-              id: id,
+              id,
               titulo: docSnap.data().titulo || 'Título no encontrado',
               portada: docSnap.data().portada || 'img/background.webp',
-              estado: docSnap.data().estado || 'No disponible'
+              estado: docSnap.data().estado || 'No disponible',
+              rating: docSnap.data().rating || null
             } : null)
             .catch(error => {
               console.error(`Error al obtener anime ${id}:`, error);
@@ -585,20 +523,42 @@ async function cargarFavoritos() {
             })
         )
       );
-      const nuevos = resultados.filter(Boolean);
-      freshData.push(...nuevos);
-      renderizarFavoritos(nuevos);
-    }
-
-    localStorage.setItem(cacheKey, JSON.stringify(freshData));
-  } catch (error) {
-    console.error('Error al cargar favoritos desde Firestore:', error);
-    if (cachedData === null) {
-      favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
-      actualizarAlturaMain();
+  
+      freshData.push(...primerBloque.filter(Boolean));
+      renderizarFavoritos(freshData, true);
+  
+      for (let i = 1; i < bloques.length; i++) {
+        const bloque = bloques[i];
+        const resultados = await Promise.all(
+          bloque.map(id =>
+            getDoc(doc(db, "datos-animes", id))
+              .then(docSnap => docSnap.exists() ? {
+                id,
+                titulo: docSnap.data().titulo || 'Título no encontrado',
+                portada: docSnap.data().portada || 'img/background.webp',
+                estado: docSnap.data().estado || 'No disponible'
+              } : null)
+              .catch(error => {
+                console.error(`Error al obtener anime ${id}:`, error);
+                return null;
+              })
+          )
+        );
+        const nuevos = resultados.filter(Boolean);
+        freshData.push(...nuevos);
+        renderizarFavoritos(nuevos);
+      }
+  
+      guardarCache(cacheKey, freshData);
+    } catch (error) {
+      console.error('Error al cargar favoritos desde Firestore:', error);
+      if (!cachedData) {
+        favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
+        actualizarAlturaMain();
+      }
     }
   }
-}
+  
 
 // Cargar animes en curso (de 10 en 10)
 async function cargarViendo() {
