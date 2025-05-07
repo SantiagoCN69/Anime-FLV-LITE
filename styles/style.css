@@ -364,7 +364,11 @@ main {
   height: fit-content;
   position: relative;
 }
-.content-section p, .init-loading-servidores {
+#init-loading-servidores-busqueda {
+  display: none;
+}
+
+.content-section p, .init-loading-servidores, .no-results {
   text-align: center;
   margin-top: 2rem;
   color: #aaa;
@@ -372,7 +376,9 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
+}
+.no-results {
+  top: 25%;
 }
 /* Ocultar secciones */
 .hidden {

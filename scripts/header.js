@@ -30,21 +30,30 @@ document.getElementById('btn-close-search').addEventListener('click', function (
 // Función de búsqueda en tiempo real
 const busquedaInput = document.getElementById('busqueda');
 let busquedaTimer;
+let busquedaCountdownInterval; // Para el temporizador de la cuenta regresiva de búsqueda
+let initialDelayTimer; // Para el retraso de 2s antes de mostrar el loading
+let fetchCallMade = false; // Bandera para controlar el estado de la llamada fetch
 
 busquedaInput.addEventListener('input', function () {
   clearTimeout(busquedaTimer);
+  clearTimeout(initialDelayTimer);
+  if (isIndexPage && busquedaCountdownInterval) {
+    clearInterval(busquedaCountdownInterval);
+  }
+  fetchCallMade = true; // Se cancela cualquier operación pendiente, se asume que fetch terminó o no inició
 
   const valor = this.value.trim();
+  const loadingSpanBusqueda = document.getElementById('init-loading-servidores-busqueda');
+  const contadorBusquedaSpan = document.getElementById('contador-busqueda');
+  const seccionResultados = document.getElementById('Busqueda-Resultados');
+  const resultadosContainer = document.getElementById('resultados-busqueda');
 
-  if (!valor) {
+  if (!valor) { // Input está vacío
     if (isIndexPage) {
-      const seccionResultados = document.getElementById('Busqueda-Resultados');
-      const resultadosContainer = document.getElementById('resultados-busqueda');
-  
-      seccionResultados.classList.add('hidden');
-      resultadosContainer.innerHTML = '';
-  
-      // Restaurar la sección correspondiente al hash actual
+      if (loadingSpanBusqueda) loadingSpanBusqueda.style.display = 'none';
+      if (contadorBusquedaSpan) contadorBusquedaSpan.textContent = '';
+      if (seccionResultados) seccionResultados.classList.add('hidden');
+      if (resultadosContainer) resultadosContainer.innerHTML = '';
       handleHashChange();
     } else {
       if (animeDetails) animeDetails.style.display = 'grid';
@@ -52,19 +61,79 @@ busquedaInput.addEventListener('input', function () {
     }
     return;
   }
-  
+
+  if (isIndexPage) {
+    const secciones = document.querySelectorAll('.content-section');
+    secciones.forEach(sec => {
+      if (sec.id !== 'Busqueda-Resultados' && !sec.classList.contains('hidden')) {
+        sec.classList.add('hidden');
+      }
+    });
+    if (seccionResultados) seccionResultados.classList.remove('hidden');
+    if (resultadosContainer) resultadosContainer.innerHTML = ''; 
+    // NO mostrar loadingSpanBusqueda aquí todavía
+  }
 
   busquedaTimer = setTimeout(() => {
+    fetchCallMade = false; // La nueva operación de búsqueda va a comenzar
     const queryNormalizada = normalizarTexto(valor);
+    let countdownValue = 22; // Cuenta regresiva después del delay de 2s
+
+    // Iniciar temporizador de 2 segundos para mostrar el mensaje de carga
+    initialDelayTimer = setTimeout(() => {
+      if (!fetchCallMade && isIndexPage) { // Si fetch no ha terminado y estamos en index
+        if (loadingSpanBusqueda) loadingSpanBusqueda.style.display = 'block';
+        if (contadorBusquedaSpan) contadorBusquedaSpan.textContent = countdownValue + 's';
+        
+        clearInterval(busquedaCountdownInterval); // Limpiar por si acaso
+        busquedaCountdownInterval = setInterval(() => {
+          countdownValue--;
+          if (contadorBusquedaSpan) contadorBusquedaSpan.textContent = countdownValue + 's';
+          if (countdownValue <= 0) {
+            clearInterval(busquedaCountdownInterval);
+            if (!fetchCallMade && loadingSpanBusqueda && loadingSpanBusqueda.style.display === 'block') {
+              loadingSpanBusqueda.style.display = 'none';
+              if (resultadosContainer && resultadosContainer.innerHTML.trim() === '') {
+                if(seccionResultados && seccionResultados.classList.contains('hidden')) {
+                    seccionResultados.classList.remove('hidden');
+                 }
+                resultadosContainer.innerHTML = '<span class="no-results">El servidor tarda demasiado en responder. Intenta de nuevo.</span>';
+              }
+            }
+          }
+        }, 1000);
+      }
+    }, 1000);
+
     fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${valor}`)
-      .then(res => res.json())
       .then(res => {
-        const resultadosFiltrados = res.data.filter(anime =>
+        if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+        return res.json();
+      })
+      .then(resData => {
+        fetchCallMade = true;
+        clearTimeout(initialDelayTimer);
+        clearInterval(busquedaCountdownInterval);
+        if (isIndexPage && loadingSpanBusqueda) loadingSpanBusqueda.style.display = 'none';
+        
+        const resultadosFiltrados = (resData.data || []).filter(anime =>
           normalizarTexto(anime.title).includes(queryNormalizada)
         );
         mostrarResultados(resultadosFiltrados);
       })
-      .catch(err => console.error("Error al buscar anime:", err));
+      .catch(err => {
+        fetchCallMade = true;
+        clearTimeout(initialDelayTimer);
+        clearInterval(busquedaCountdownInterval);
+        console.error("Error al buscar anime:", err);
+        if (isIndexPage) {
+          if (loadingSpanBusqueda) loadingSpanBusqueda.style.display = 'none';
+          if (seccionResultados) seccionResultados.classList.remove('hidden');
+          if (resultadosContainer) resultadosContainer.innerHTML = '<span class="no-results">Error al buscar. Intenta de nuevo más tarde.</span>';
+        } else {
+           if(mainContainer) mainContainer.innerHTML = '<span class="no-results">Error al buscar. Intenta de nuevo más tarde.</span>';
+        }
+      });
   }, 300);
 });
 
@@ -120,29 +189,30 @@ function mostrarResultados(data) {
         resultadosContainer.appendChild(animeCard);
       });
     } else {
-      seccionResultados.classList.add('hidden');
-      handleHashChange(); // Restaura la sección si no hay resultados
+      seccionResultados.classList.remove('hidden');
+      resultadosContainer.innerHTML = '<span class="no-results">No hay resultados</span>';
     }
-    return; // no renderizamos en mainContainer si es index
+    return; 
   }
 
-  // Para otras páginas (como anime.html)
   if (!mainContainer) return;
-  mainContainer.innerHTML = ''; // Limpia el contenedor principal
+  mainContainer.innerHTML = ''; 
 
   if (isAnimePage) {
     if (resultados.length > 0) {
-      if (animeDetails) animeDetails.style.display = 'none'; // Oculta detalles si hay resultados
+      if (animeDetails) animeDetails.style.display = 'none'; 
     } else {
-      if (animeDetails) animeDetails.style.display = 'grid'; // Muestra detalles si no hay resultados
-      return; // No renderizar nada más si no hay resultados en anime.html
+      if (animeDetails) animeDetails.style.display = 'grid'; 
+      return; 
     }
   }
 
-  resultados.forEach(anime => {
-    const animeCard = crearAnimeCard(anime);
-    mainContainer.appendChild(animeCard);
-  });
+  if (resultados.length > 0) {
+    resultados.forEach(anime => {
+      const animeCard = crearAnimeCard(anime);
+      mainContainer.appendChild(animeCard);
+    });
+  }
 }
 
 // Extrae el id de un link tipo '/anime/dragon-ball-z' => 'dragon-ball-z'
