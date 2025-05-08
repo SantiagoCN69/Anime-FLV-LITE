@@ -370,6 +370,7 @@ h2 {
     max-height: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
+    min-height: 100px;
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
@@ -393,7 +394,7 @@ h2 {
     width: 100%;
     display: flex;
     flex:1;
-    min-height: 60px;
+    min-height: 80px;
 }
 .episode-btn {
   background-color: transparent;
@@ -577,8 +578,4 @@ h2 {
     padding-left: 3px;
     filter: invert(50%) sepia(71%) saturate(653%) hue-rotate(326deg) brightness(97%) contrast(90%);
   }
-}
-#disqus_thread {
-  width: 95%;
-  margin: 0 auto;
 }

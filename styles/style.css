@@ -638,3 +638,8 @@ footer {
 #cancel-logout:hover {
   background-color: #000e;
 }
+
+#disqus_thread {
+  width: 90%;
+  margin: 0 auto;
+}
