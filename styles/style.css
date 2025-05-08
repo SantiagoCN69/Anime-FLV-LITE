@@ -80,12 +80,9 @@ header {
     padding: 2rem;
     width: 100%;
     margin: 0 auto;
-    height:5.5rem;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
+    height:5.5rem;;
     position: relative;
-    background: #0002;
+    background: #111322;
 }
 .title {
     flex: 1;
@@ -185,14 +182,13 @@ button:hover {
   width: 220px;
   min-width: 220px;
   padding: 1rem;
+  margin: 2rem;
+  border-radius: 3px;
   max-height: var(--altura-main);
   overflow-y: auto;
   border-right: 1px solid #444;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
   
 }
 
@@ -236,8 +232,10 @@ button:hover {
     top: 88px;
     left: 0;
     padding: 1rem;
+    margin: 0;
+    border-radius: 0;
     width: 60%;
-    background: #0127;
+    background: #111322;
     height: calc(100dvh - 88px);
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
@@ -351,6 +349,9 @@ main {
   min-height: calc(100vh - 88px);
   color: #fff;
   font-family: 'Segoe UI', sans-serif;
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
 }
 
 
@@ -363,6 +364,8 @@ main {
   min-height: calc(100vh - 88px);
   height: fit-content;
   position: relative;
+  margin: 2rem;
+  margin-left: 0;
 }
 #init-loading-servidores-busqueda {
   display: none;
@@ -387,17 +390,36 @@ main {
 
 /* Títulos */
 .content-section h2 {
-  margin: 2rem;
   margin-bottom: 1.1rem;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   padding-bottom: 0.5rem;
+}
+#Ultimos-Episodios h2::after {
+  content: "Hoy";
+  position: absolute;
+  top: 18px;
+  right: 0;
+  background-color: #e76f51;
+  border-radius: 50px;
+  padding: 3px 14px;
+  font-size: 1rem;
+}
+#Ultimos-Episodios h2::before {
+  content: "";
+  width: 20px;
+  height: 15px;
+  background-color: #e76f51;
+  position: absolute;
+  top: 32px;
+  rotate: -45deg;
+  right: 17px;
 }
 /* Estilos para el bloque "Continuar viendo" */
 .sidebar h3 {
+  width: clamp(0px, 100%, 1000px);
   margin-top: 2rem;
   font-size: 1.1rem;
   border-bottom: 1px solid #444;
-  padding-bottom: 0.5rem;
   color: #aaa;
 }
 .continuar-viendo {
@@ -468,9 +490,7 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
     margin: 0 auto;
-    width: clamp(0px, 100%, 1000px);
-
-    padding-inline: 1rem;
+    margin-bottom: 1.2rem;
 }
 .anime-card {
     position: relative;
