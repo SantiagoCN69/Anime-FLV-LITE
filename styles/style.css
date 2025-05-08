@@ -224,7 +224,9 @@ button:hover {
 }
 
 @media screen and (max-width: 600px) {
-
+  header {
+    padding-inline: 1rem;
+  }
   #menu-toggle {
     display: inline-block;
   }

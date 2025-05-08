@@ -578,3 +578,7 @@ h2 {
     filter: invert(50%) sepia(71%) saturate(653%) hue-rotate(326deg) brightness(97%) contrast(90%);
   }
 }
+#disqus_thread {
+  width: 95%;
+  margin: 0 auto;
+}
