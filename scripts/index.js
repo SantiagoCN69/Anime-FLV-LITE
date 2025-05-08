@@ -309,7 +309,7 @@ async function cargarUltimosCapsVistos() {
     div.style.setProperty('--cover', `url(${cover})`);
     let chapterHtml = ''; 
     if (chapter) {
-      chapterHtml = `<span>Episodio ${chapter}</span>`;
+      chapterHtml = `<span id="chapter">Episodio ${chapter}</span>`;
     }
     let estadoHtml = '';
     if (estado) {
@@ -326,7 +326,8 @@ async function cargarUltimosCapsVistos() {
     }
     div.innerHTML = `
       <div class="container-img">
-        <img src="${cover}" alt="${title}">
+        <img src="${cover}" class="cover" alt="${title}">
+        <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
         ${chapterHtml}
         ${estadoHtml}
         ${ratingHtml}
