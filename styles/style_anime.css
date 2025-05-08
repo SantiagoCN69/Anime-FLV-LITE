@@ -60,7 +60,7 @@ h2 {
     margin: 0 auto;
     padding: 0 50px 40px 50px;
     width: 100%;
-    height: calc(100dvh - 120px);
+    height: calc(100dvh - 88px);
   }
 @media screen and (max-height:600px) and (min-width:600px){
   .anime-details {
