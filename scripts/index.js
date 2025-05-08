@@ -314,10 +314,10 @@ async function cargarUltimosCapsVistos() {
     let estadoHtml = '';
     if (estado) {
       if (estado === 'En emision') {
-        estadoHtml = `<span><img src="../icons/circle-solid-blue.svg" alt="${estado}">${estado}</span>`;
+        estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${estado}">${estado}</span>`;
       }
       else{
-        estadoHtml = `<span><img src="../icons/circle-solid.svg" alt="${estado}">${estado}</span>`;
+        estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${estado}">${estado}</span>`;
       }
     }
     let ratingHtml = '';

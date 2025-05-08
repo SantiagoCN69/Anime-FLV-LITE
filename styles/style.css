@@ -585,6 +585,15 @@ main {
     .anime-card:hover #chapter {
       transform: translate(-25px, 25px) scale(1.8);
       opacity: 0;
+
+    }
+    .anime-card:hover .estado {
+    transform: translate(-25px, 25px) scale(1.8);
+    opacity: 0;
+    }
+    .anime-card:hover .rating {
+    transform: translate(25px, -25px) scale(1.8);
+    opacity: 0;
     }
     .anime-card:hover .cover {
       filter: blur(10px);
