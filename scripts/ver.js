@@ -447,11 +447,15 @@ function mostrarVideo(link, botonSeleccionado) {
       iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
     }
 
+    if (url.toLowerCase().includes("mega")) {
+      const btnCensura = document.getElementById("btn-censura");
+      if (btnCensura) {
+        btnCensura.click();
+      }
+    }
     videoDiv.appendChild(iframe);
   }
 }
-
-
 function actualizarEstadoBotones() {
   btnAnterior.disabled = episodioActualIndex <= 0;
   btnAnterior.classList.toggle('desactivado', episodioActualIndex <= 0);
@@ -500,5 +504,6 @@ btnAnterior.addEventListener("click", async (e) => {
     actualizarEstadoBotones();
   }
 });
+
 
 cargarEpisodios().then(actualizarEstadoBotones);
