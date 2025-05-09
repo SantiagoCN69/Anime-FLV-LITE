@@ -39,6 +39,7 @@
 
 - HTML5
 - CSS3
+- Tailwind CSS
 - JavaScript
 - Service Workers
 - Progressive Web App (PWA)
