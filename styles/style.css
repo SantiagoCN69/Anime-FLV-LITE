@@ -182,7 +182,7 @@ button:hover {
   width: 220px;
   min-width: 220px;
   padding: 1rem;
-  margin: 2rem;
+  margin: 2rem auto;
   border-radius: 3px;
   max-height: var(--altura-main);
   overflow-y: auto;
@@ -231,7 +231,7 @@ button:hover {
     position: absolute;
     top: 88px;
     left: 0;
-    padding: 1rem;
+    padding: 1.5rem;
     margin: 0;
     border-radius: 0;
     width: 60%;
@@ -351,7 +351,7 @@ main {
   font-family: 'Segoe UI', sans-serif;
   margin-inline: auto;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1150px;
 }
 
 
@@ -364,8 +364,8 @@ main {
   min-height: calc(100vh - 88px);
   height: fit-content;
   position: relative;
-  margin: 2rem;
-  margin-left: 0;
+  margin: 2rem auto;
+  padding-inline: 1.5rem;
 }
 #init-loading-servidores-busqueda {
   display: none;
@@ -398,7 +398,7 @@ main {
   content: "Hoy";
   position: absolute;
   top: 18px;
-  right: 0;
+  right: 10px;
   background-color: #e76f51;
   border-radius: 50px;
   padding: 3px 14px;
@@ -412,7 +412,7 @@ main {
   position: absolute;
   top: 32px;
   rotate: -45deg;
-  right: 17px;
+  right: 27px;
 }
 /* Estilos para el bloque "Continuar viendo" */
 .sidebar h3 {
@@ -601,9 +601,7 @@ main {
   }
 .cover {
   filter: blur(0px);
-  transition: filter .5s ease;
-  will-change: filter;
-  transform: translateZ(0);
+  transition: filter 0.5s ease;
 }
   .anime-card img,
 .anime-card strong {
