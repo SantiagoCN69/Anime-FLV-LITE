@@ -82,7 +82,7 @@ header {
     margin: 0 auto;
     height:5.5rem;;
     position: relative;
-    background: #111322;
+    background: #181b2ecc;
 }
 .title {
     flex: 1;
@@ -98,7 +98,7 @@ header {
 #busqueda {
     padding: 13px;
     border: 1px solid #fff8;
-    border-radius: 8px;
+    border-radius: 20px;
     background-color: #00000000;
     color: #ffffff;
     font-size: 1rem;
@@ -203,7 +203,7 @@ button:hover {
   margin-bottom: 8px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color .5s;
 }
 
 .sidebar li:hover {
@@ -218,8 +218,25 @@ button:hover {
 .sidebar {
   transition: transform 0.3s ease, filter 0.5s ease;
 }
-
+.search {
+  position:relative;
+}
+.search::after {
+  content: url('../icons/magnifying-glass-solid.svg');
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  right: 25px;
+  top:12px;
+  z-index: 20000;
+  filter: invert(100%);
+  pointer-events: none;
+}
 @media screen and (max-width: 600px) {
+  .search::after {
+    top: 34px;
+    right: 70px;
+  }
   header {
     padding-inline: 1rem;
   }
@@ -448,7 +465,7 @@ main {
   border-bottom: 1px solid #444;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background .5s;
 }
 
 .btn-siguiente-capitulo .portada-anime {
