@@ -48,7 +48,7 @@ function mostrarSeccionDesdeHash() {
   );
 
   document.querySelectorAll('.sidebar li').forEach(item => 
-    item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
+    item.classList.toggle('bg-white/20', item.getAttribute('data-target') === id)
   );
   actualizarAlturaMain();
 }
@@ -908,7 +908,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { passive: false });
 
   const firstItem = menuItems[0];
-  firstItem.classList.add("active-menu-item");
+  firstItem.classList.add("bg-white/20");
   const firstSectionId = firstItem.getAttribute("data-target");
   sections.forEach(s => s.classList.add("hidden-section"));
   document.getElementById(firstSectionId).classList.remove("hidden-section");
@@ -916,8 +916,8 @@ document.addEventListener("DOMContentLoaded", () => {
   menuItems.forEach(item => {
     item.addEventListener("click", () => {
       const id = item.getAttribute("data-target");
-      menuItems.forEach(i => i.classList.remove("active-menu-item"));
-      item.classList.add("active-menu-item");
+      menuItems.forEach(i => i.classList.remove("bg-white/20"));
+      item.classList.add("bg-white/20");
       sections.forEach(s => s.classList.add("hidden-section"));
       document.getElementById(id).classList.remove("hidden-section");
       if (isMobile()) closeSidebar();

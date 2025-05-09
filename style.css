@@ -40,14 +40,7 @@
   overscroll-behavior-y: contain;
 }
 
-.active-menu-item {
-  background-color: #ffffff33;
-}
-
 @media screen and (max-width: 600px) {
-  .sidebar.active {
-    transform: translate(0);
-  }
   #btn-login::after {
     display: none;
   }
