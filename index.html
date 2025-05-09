@@ -27,20 +27,24 @@
 <body class="font-sans mx-auto bg-gray-900 flex flex-col min-h-screen">
     <div class="aurora blur-3xl fixed inset-0 -z-10"></div>
 
-    <header class="relative flex p-8 px-4 md:px-8">
+    <header class="relative flex gap-4 p-8 px-4 md:px-8 border-b border-gray-500 bg-black/20">
       <h1 class="title mr-auto text-3xl font-bold text-white text-nowrap overflow-hidden text-ellipsis"><a href="index.html">AnimeFLV Lite</a></h1>
       <div class="search">
-        <input class="outline-none p-3 rounded-full border border-gray-400 text-white mx-4" type="text" id="busqueda" placeholder="Buscar anime...">
+        <input class="outline-none p-3 rounded-full border border-gray-400 text-white" type="text" id="busqueda" placeholder="Buscar anime...">
         <button class="hidden" id="btn-close-search" title="Cerrar búsqueda"></button>
       </div>
       <button 
-        class="py-1 px-4 border border-gray-400 rounded-full cursor-pointer flex items-center text-white hover:opacity-60 transition-opacity" 
+        class="py-1 px-4 border border-gray-400 rounded-full cursor-pointer flex items-center gap-2 text-white hover:opacity-60 transition-opacity" 
         type="button" 
         id="btn-login" 
         title="Iniciar sesión">
+        <img class="size-8 md:size-6" src="icons/user-solid.svg" alt="user">
+        <span class="hidden md:inline-block" id="btn-login-text">Login</span>
       </button>
       <button class="hidden" type="button" id="btn-search" title="Buscar anime"></button>
-      <button class="flex items-center md:hidden cursor-pointer" type="button" id="menu-toggle" title="Menú"><img class="size-8" src="icons/bars-solid.svg" alt="Menú"></button>
+      <button class="flex items-center md:hidden cursor-pointer" type="button" id="menu-toggle" title="Menú">
+        <img class="size-8" src="icons/bars-solid.svg" alt="Menú">
+      </button>
     </header>
 
     <main>
@@ -59,7 +63,7 @@
             </div>
           </div>
         </section>
-        <section id="Busqueda-Resultados" class="content-section hidden">
+        <section id="Busqueda-Resultados" class="content-section hidden-section">
           <h2>Resultados de la búsqueda</h2>
           <div id="resultados-busqueda" class="grid-animes"></div>
           <span id="init-loading-servidores-busqueda">Iniciando servidores...<span id="contador-busqueda"></span></span>
@@ -71,25 +75,25 @@
           <span class="init-loading-servidores">Iniciando servidores...<span class="contador"></span></span>
         </section>
       
-        <section id="Mis-Favoritos" class="content-section hidden">
+        <section id="Mis-Favoritos" class="content-section hidden-section">
           <h2>Mis Favoritos</h2>
           <div id="favs" class="grid-animes"></div>
           <span class="init-loading-servidores">Iniciando servidores...<span class="contador"></span></span>
         </section>
       
-        <section id="Viendo" class="content-section hidden">
+        <section id="Viendo" class="content-section hidden-section">
           <h2>Viendo</h2>
           <div id="viendo" class="grid-animes"></div>
           <span class="init-loading-servidores">Iniciando servidores...<span class="contador"></span></span>
         </section>
       
-        <section id="Pendientes" class="content-section hidden">
+        <section id="Pendientes" class="content-section hidden-section">
           <h2>Pendientes</h2>
           <div id="pendientes" class="grid-animes"></div>
           <span class="init-loading-servidores">Iniciando servidores...<span class="contador"></span></span>
         </section>
       
-        <section id="Completados" class="content-section hidden">
+        <section id="Completados" class="content-section hidden-section">
           <h2>Completados</h2>
           <div id="completados" class="grid-animes"></div>
           <span class="init-loading-servidores">Iniciando servidores...<span class="contador"></span></span>

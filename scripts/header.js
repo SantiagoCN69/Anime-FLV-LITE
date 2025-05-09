@@ -54,7 +54,7 @@ busquedaInput.addEventListener('input', function () {
     if (isIndexPage) {
       if (loadingSpanBusqueda) loadingSpanBusqueda.style.display = 'none';
       if (contadorBusquedaSpan) contadorBusquedaSpan.textContent = '';
-      if (seccionResultados) seccionResultados.classList.add('hidden');
+      if (seccionResultados) seccionResultados.classList.add('hidden-section');
       if (resultadosContainer) resultadosContainer.innerHTML = '';
       handleHashChange();
     } else {
@@ -67,11 +67,11 @@ busquedaInput.addEventListener('input', function () {
   if (isIndexPage) {
     const secciones = document.querySelectorAll('.content-section');
     secciones.forEach(sec => {
-      if (sec.id !== 'Busqueda-Resultados' && !sec.classList.contains('hidden')) {
-        sec.classList.add('hidden');
+      if (sec.id !== 'Busqueda-Resultados' && !sec.classList.contains('hidden-section')) {
+        sec.classList.add('hidden-section');
       }
     });
-    if (seccionResultados) seccionResultados.classList.remove('hidden');
+    if (seccionResultados) seccionResultados.classList.remove('hidden-section');
     if (resultadosContainer) resultadosContainer.innerHTML = ''; 
     // NO mostrar loadingSpanBusqueda aquí todavía
   }
@@ -96,8 +96,8 @@ busquedaInput.addEventListener('input', function () {
             if (!fetchCallMade && loadingSpanBusqueda && loadingSpanBusqueda.style.display === 'block') {
               loadingSpanBusqueda.style.display = 'none';
               if (resultadosContainer && resultadosContainer.innerHTML.trim() === '') {
-                if(seccionResultados && seccionResultados.classList.contains('hidden')) {
-                    seccionResultados.classList.remove('hidden');
+                if(seccionResultados && seccionResultados.classList.contains('hidden-section')) {
+                    seccionResultados.classList.remove('hidden-section');
                  }
                 resultadosContainer.innerHTML = '<span class="no-results">El servidor tarda demasiado en responder. Intenta de nuevo.</span>';
               }
@@ -130,7 +130,7 @@ busquedaInput.addEventListener('input', function () {
         console.error("Error al buscar anime:", err);
         if (isIndexPage) {
           if (loadingSpanBusqueda) loadingSpanBusqueda.style.display = 'none';
-          if (seccionResultados) seccionResultados.classList.remove('hidden');
+          if (seccionResultados) seccionResultados.classList.remove('hidden-section');
           if (resultadosContainer) resultadosContainer.innerHTML = '<span class="no-results">Error al buscar. Intenta de nuevo más tarde.</span>';
         } else {
            if(mainContainer) mainContainer.innerHTML = '<span class="no-results">Error al buscar. Intenta de nuevo más tarde.</span>';
@@ -176,8 +176,8 @@ function mostrarResultados(data) {
 
     // Oculta todas las secciones visibles excepto la de resultados
     secciones.forEach(sec => {
-      if (!sec.classList.contains('hidden')) {
-        sec.classList.add('hidden');
+      if (!sec.classList.contains('hidden-section')) {
+        sec.classList.add('hidden-section');
       }
     });
 
@@ -185,13 +185,13 @@ function mostrarResultados(data) {
     resultadosContainer.innerHTML = '';
 
     if (resultados.length > 0) {
-      seccionResultados.classList.remove('hidden');
+      seccionResultados.classList.remove('hidden-section');
       resultados.forEach(anime => {
         const animeCard = crearAnimeCard(anime);
         resultadosContainer.appendChild(animeCard);
       });
     } else {
-      seccionResultados.classList.remove('hidden');
+      seccionResultados.classList.remove('hidden-section');
       resultadosContainer.innerHTML = '<span class="no-results">No hay resultados</span>';
     }
     return; 

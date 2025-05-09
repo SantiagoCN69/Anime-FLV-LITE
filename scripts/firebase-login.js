@@ -23,34 +23,19 @@ const provider = new GoogleAuthProvider();
 // Función para actualizar UI y gestionar caché
 function updateUIForUser(user) {
   const btnLogin = document.getElementById('btn-login');
-  if (!btnLogin) return;
+  const btnLoginImg = btnLogin.querySelector('img');
+  const btnLoginText = document.getElementById('btn-login-text');
+  
+  if (!btnLogin || !btnLoginImg || !btnLoginText) return;
 
   if (user) {
-    // Actualizar UI
-    btnLogin.setAttribute('data-username', user.displayName);
-    btnLogin.style.setProperty('--user-photo', `url('${user.photoURL || '../icons/user-solid.svg'}')`);
-    btnLogin.classList.add('logged-in');
-    
-    // Guardar en caché
-    try {
-      localStorage.setItem('cachedUserDisplayName', user.displayName || '');
-      localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
-    } catch (e) {
-      console.warn('No se pudo guardar en localStorage:', e);
-    }
+    // Actualizar UI con foto y nombre
+    btnLoginImg.src = user.photoURL || 'icons/user-solid.svg';
+    btnLoginText.textContent = user.displayName || 'Usuario';
   } else {
-    // Actualizar UI
-    btnLogin.style.setProperty('--user-photo', `url('../icons/user-solid.svg')`);
-    btnLogin.removeAttribute('data-username');
-    btnLogin.classList.remove('logged-in');
-    
-    // Limpiar caché
-    try {
-      localStorage.removeItem('cachedUserDisplayName');
-      localStorage.removeItem('cachedUserPhotoURL');
-    } catch (e) {
-      console.warn('No se pudo limpiar localStorage:', e);
-    }
+    // Restaurar UI por defecto
+    btnLoginImg.src = 'icons/user-solid.svg';
+    btnLoginText.textContent = 'Login';
   }
 }
 
@@ -66,8 +51,7 @@ async function loginConGoogle() {
     if (!docSnap.exists()) {
       await setDoc(refUsuario, {
         nombre: user.displayName,
-        email: user.email,
-        creado: serverTimestamp()
+        email: user.email
       });
     }
 

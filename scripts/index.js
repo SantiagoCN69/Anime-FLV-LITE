@@ -44,7 +44,7 @@ function mostrarSeccionDesdeHash() {
   if (!seccion) return;
 
   document.querySelectorAll(".content-section").forEach(sec => 
-    sec.classList.toggle("hidden", sec.id !== id)
+    sec.classList.toggle("hidden-section", sec.id !== id)
   );
 
   document.querySelectorAll('.sidebar li').forEach(item => 
@@ -68,11 +68,11 @@ window.handleHashChange = function () {
     history.replaceState(null, '', '#' + hash);
   }
 
-  document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+  document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden-section'));
 
   const targetSection = document.getElementById(hash);
   if (targetSection) {
-    targetSection.classList.remove('hidden');
+    targetSection.classList.remove('hidden-section');
     actualizarAlturaMain();
 
     const activeMenuItem = document.querySelector(`.sidebar li[data-target="${hash}"]`);
@@ -99,11 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarItems = document.querySelectorAll('.sidebar li');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+      document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden-section'));
       const targetId = e.target.getAttribute('data-target');
       const targetSection = document.getElementById(targetId);
       if (targetSection) {
-        targetSection.classList.remove('hidden');
+        targetSection.classList.remove('hidden-section');
         
         history.pushState(null, '', `#${targetId}`);
       }
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function actualizarAlturaMain() {
-  const contentSection = document.querySelector('.content-section:not(.hidden)') || 
+  const contentSection = document.querySelector('.content-section:not(.hidden-section)') || 
                          document.querySelector('.content-section');
 
   if (!contentSection) return;
@@ -910,16 +910,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const firstItem = menuItems[0];
   firstItem.classList.add("active-menu-item");
   const firstSectionId = firstItem.getAttribute("data-target");
-  sections.forEach(s => s.classList.add("hidden"));
-  document.getElementById(firstSectionId).classList.remove("hidden");
+  sections.forEach(s => s.classList.add("hidden-section"));
+  document.getElementById(firstSectionId).classList.remove("hidden-section");
 
   menuItems.forEach(item => {
     item.addEventListener("click", () => {
       const id = item.getAttribute("data-target");
       menuItems.forEach(i => i.classList.remove("active-menu-item"));
       item.classList.add("active-menu-item");
-      sections.forEach(s => s.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
+      sections.forEach(s => s.classList.add("hidden-section"));
+      document.getElementById(id).classList.remove("hidden-section");
       if (isMobile()) closeSidebar();
     });
   });
