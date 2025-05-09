@@ -5,21 +5,21 @@ h2 {
   white-space: nowrap;
   min-height: fit-content;
   text-shadow: 2px 2px 10px #000a;
-
 }
-header{
+header {
   background: transparent;
 }
 main {
   display: flex;
   height: calc(100dvh - 88px);
+  min-height: 600px;
   gap: 20px;
   margin: 0 auto;
   width: 95%;
   max-width: 1050px;
   padding-bottom: 40px;
 }
-@media screen and (max-height:600px){
+@media screen and (max-height: 600px) {
   main {
     height: 100vh;
   }
@@ -29,7 +29,9 @@ main section:nth-child(1) {
   display: flex;
   flex-direction: column;
 }
-.btn-volver, .btn-anterior, .btn-siguiente {
+.btn-volver,
+.btn-anterior,
+.btn-siguiente {
   text-decoration: none;
 }
 .btn-volver {
@@ -102,25 +104,25 @@ main section:nth-child(1) {
 }
 #controles button {
   padding: 15px 8px;
-  flex:1;
-  border:none;
+  flex: 1;
+  border: none;
   background-color: #2e3437;
   color: #ffffff8c;
   font-weight: bolder;
   cursor: pointer;
 }
-@media screen and (min-width:1047px){
+@media screen and (min-width: 1047px) {
   #controles button::before {
-    content: "Servidor "
+    content: "Servidor ";
   }
 }
 #controles .servidor-activo {
   color: #fff;
-  background-color: #252a2c ;
+  background-color: #252a2c;
   border-top: 2px solid #e76f51;
 }
 #controles button:hover {
-  opacity: .9;
+  opacity: 0.9;
 }
 #video {
   flex: 1;
@@ -132,9 +134,9 @@ main section:nth-child(1) {
 }
 #fullscreen {
   position: absolute;
-  top: 54%;
+  top: 50%;
   left: 50%;
-  transform: translate(-54%, -50%);
+  transform: translate(-50%, -50%);
   cursor: pointer;
   z-index: 2;
   pointer-events: none;
@@ -168,7 +170,7 @@ main section:nth-child(1) {
   font-size: 12px;
   white-space: nowrap;
   pointer-events: none;
-  z-index: 5 ;
+  z-index: 5;
 }
 
 .botones-reproductor {
@@ -176,16 +178,19 @@ main section:nth-child(1) {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto 1fr;
-  grid-template-areas: 
-  "btn-anuncios btn-anuncios"
-  "btn-censura btn-censura"
-  "btn-anterior btn-siguiente";
+  grid-template-areas:
+    "btn-anuncios btn-anuncios"
+    "btn-censura btn-censura"
+    "btn-anterior btn-siguiente";
   justify-items: center;
   height: calc(100% - 88px);
   margin-top: auto;
   gap: 15px;
 }
-.btn-anterior, .btn-siguiente, .btn-anuncios, .btn-censura {
+.btn-anterior,
+.btn-siguiente,
+.btn-anuncios,
+.btn-censura {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,18 +202,23 @@ main section:nth-child(1) {
   font-size: 1rem;
   font-weight: bold;
   color: #fff;
-  transition: transform .3s;  
+  transition: transform 0.3s;
 }
-.btn-anterior:active, .btn-siguiente:active, .btn-anuncios:active, .btn-censura:active, #btn-estado-capitulo:active {
-  transform: scale(.95);
+.btn-anterior:active,
+.btn-siguiente:active,
+.btn-anuncios:active,
+.btn-censura:active,
+#btn-estado-capitulo:active {
+  transform: scale(0.95);
 }
-.btn-anterior, .btn-siguiente {
+.btn-anterior,
+.btn-siguiente {
   background-color: #e76f51;
   padding: 15px 0;
   margin-top: auto;
-
 }
-.btn-anuncios, .btn-censura {
+.btn-anuncios,
+.btn-censura {
   padding: 30px 0px;
   width: 100%;
   background-color: #2e3437;
@@ -235,7 +245,6 @@ main section:nth-child(1) {
   border-top-right-radius: 22px;
   border-bottom-right-radius: 22px;
 }
-
 
 .activo {
   background-color: #4caf50;
@@ -265,9 +274,8 @@ main section:nth-child(1) {
   filter: invert(100%);
 }
 
-@media screen and (max-width:600px){
+@media screen and (max-width: 600px) {
   main {
     flex-direction: column;
   }
-
 }
