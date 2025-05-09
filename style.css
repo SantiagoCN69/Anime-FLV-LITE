@@ -37,84 +37,16 @@
 
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
-  width: 220px;
-  min-width: 220px;
-  padding: 1rem;
-  margin: 2rem auto;
-  border-radius: 3px;
-  background-color: #0a0a0a41;
-  max-height: var(--altura-main);
-  overflow-y: auto;
-  border-right: 1px solid #444;
-  -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar li {
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.5s;
-}
-
-.sidebar li:hover {
-  background-color: #ffffff1a;
-}
-
-.sidebar li.active-menu-item {
+.active-menu-item {
   background-color: #ffffff33;
-  color: #ffffff;
 }
-/* Sidebar oculto por defecto en móvil */
-.sidebar {
-  transition: transform 0.3s ease, filter 0.5s ease;
-}
-.search {
-  position: relative;
-}
-.search::after {
-  content: url("../icons/magnifying-glass-solid.svg");
-  width: 22px;
-  height: 22px;
-  position: absolute;
-  right: 25px;
-  top: 12px;
-  z-index: 20000;
-  filter: invert(100%);
-  pointer-events: none;
-}
+
 @media screen and (max-width: 600px) {
-  .search::after {
-    content: "";
-  }
-
-  .sidebar {
-    position: absolute;
-    top: 88px;
-    left: 0;
-    padding: 1.5rem;
-    margin: 0;
-    border-radius: 0;
-    width: 60%;
-    background: #181b2edd;
-    height: calc(100dvh - 88px);
-    -webkit-backdrop-filter: blur(30px);
-    backdrop-filter: blur(30px);
-    transform: translateX(-120%);
-    z-index: 1000;
-    overflow-y: auto;
-    will-change: transform;
-  }
-
   .sidebar.active {
-    transform: translateX(0);
+    transform: translate(0);
   }
   #btn-login::after {
     display: none;
@@ -144,7 +76,6 @@
     content: url("../icons/magnifying-glass-solid.svg");
     width: 25px;
     height: 25px;
-    filter: invert(100%);
   }
 
   /* Botón de login */

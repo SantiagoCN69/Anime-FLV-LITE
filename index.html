@@ -27,18 +27,19 @@
 <body class="font-sans mx-auto bg-gray-900 flex flex-col min-h-screen">
     <div class="aurora blur-3xl fixed inset-0 -z-10"></div>
 
-    <header class="relative flex gap-4 p-8 px-4 md:px-8 border-b border-gray-500 bg-black/20">
+    <header class="relative flex md:gap-4 p-7 px-4 md:px-8 border-b border-gray-500 bg-black/20">
       <h1 class="title mr-auto text-3xl font-bold text-white text-nowrap overflow-hidden text-ellipsis"><a href="index.html">AnimeFLV Lite</a></h1>
-      <div class="search">
+      <div class="search relative">
         <input class="outline-none p-3 rounded-full border border-gray-400 text-white" type="text" id="busqueda" placeholder="Buscar anime...">
+        <img class="pointer-events-none absolute top-1/2 -translate-y-1/2 sm:top-3 right-17 sm:right-4 size-6"src="icons/magnifying-glass-solid.svg" alt=" buscar">
         <button class="hidden" id="btn-close-search" title="Cerrar búsqueda"></button>
       </div>
       <button 
-        class="py-1 px-4 border border-gray-400 rounded-full cursor-pointer flex items-center gap-2 text-white hover:opacity-60 transition-opacity" 
+        class="py-1 px-4 md:border border-gray-400 rounded-full cursor-pointer flex items-center gap-2 text-white hover:opacity-60 transition-opacity" 
         type="button" 
         id="btn-login" 
         title="Iniciar sesión">
-        <img class="size-8 md:size-6" src="icons/user-solid.svg" alt="user">
+        <img class="rounded-full size-8" src="icons/user-solid.svg" alt="user">
         <span class="hidden md:inline-block" id="btn-login-text">Login</span>
       </button>
       <button class="hidden" type="button" id="btn-search" title="Buscar anime"></button>
@@ -46,15 +47,31 @@
         <img class="size-8" src="icons/bars-solid.svg" alt="Menú">
       </button>
     </header>
-
+<!---  .sidebar {
+    position: absolute;
+    top: 93px;
+    left: 0;
+    padding: 1.5rem;
+    margin: 0;
+    border-radius: 0;
+    width: 60%;
+    background: #181b2edd;
+    height: calc(100dvh - 93px);
+    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(30px);
+    transform: translateX(-100%);
+    z-index: 1000;
+    overflow-y: auto;
+    will-change: transform;
+  }-->
     <main>
-        <section class="sidebar">
+        <section class="sidebar absolute top-93px z-40 backdrop-blur-2xl h-[calc(100dvh-93px)] translate-x-[-100%] sm:translate-x-0 bg-black/20 sm:bg-transparent sm:static sm:my-8 sm:mx-auto sm:h-[var(--altura-main)] w-56 min-w-56 p-4 overflow-y-auto border-r border-gray-500 transition-transform will-change-transform">
           <ul>
-            <li data-target="Ultimos-Episodios">Últimos Episodios</li>
-            <li data-target="Mis-Favoritos">Mis Favoritos</li>
-            <li data-target="Viendo">Viendo</li>
-            <li data-target="Pendientes">Pendientes</li>
-            <li data-target="Completados">Completados</li>
+            <li class="py-3 px-4 mb-2 cursor-pointer transition-colors hover:bg-white/10 rounded-sm" data-target="Ultimos-Episodios">Últimos Episodios</li>
+            <li class="py-3 px-4 mb-2 cursor-pointer transition-colors hover:bg-white/10 rounded-sm" data-target="Mis-Favoritos">Mis Favoritos</li>
+            <li class="py-3 px-4 mb-2 cursor-pointer transition-colors hover:bg-white/10 rounded-sm" data-target="Viendo">Viendo</li>
+            <li class="py-3 px-4 mb-2 cursor-pointer transition-colors hover:bg-white/10 rounded-sm" data-target="Pendientes">Pendientes</li>
+            <li class="py-3 px-4 mb-2 cursor-pointer transition-colors hover:bg-white/10 rounded-sm" data-target="Completados">Completados</li>
           </ul>
           <div class="continuar-viendo">
             <h3>Continuar viendo</h3>

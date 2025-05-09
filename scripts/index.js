@@ -830,12 +830,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const sections = document.querySelectorAll(".content-section");
   const menuItems = [...document.querySelectorAll(".sidebar li")];
 
-  const toggleSidebar = () => sidebar.classList.toggle("active");
-  const closeSidebar = () => sidebar.classList.remove("active");
+  const toggleSidebar = () => sidebar.classList.toggle("translate-x-[-100]");
+  const closeSidebar = () => sidebar.classList.remove("translate-x-[-100]");
   const isMobile = () => window.innerWidth <= 600;
 
   menuBtn.addEventListener("click", () => {
-    if (!sidebar.classList.contains("active") && window.scrollY > 0) {
+    if (!sidebar.classList.contains("translate-x-[-100]") && window.scrollY > 0) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       toggleSidebar();
@@ -843,7 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   window.addEventListener("scroll", () => {
-    if (isMobile() && sidebar.classList.contains("active")) {
+    if (isMobile() && sidebar.classList.contains("translate-x-[-100]")) {
       closeSidebar();
     }
   });
@@ -851,7 +851,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let touchStartX = 0;
   let touchEndX = 0;
   const handleSwipe = () => {
-    if (sidebar.classList.contains("active")) {
+    if (sidebar.classList.contains("translate-x-[-100]")) {
       const dist = touchStartX - touchEndX;
       if (dist > 50) closeSidebar();
     }
@@ -874,19 +874,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const dx = ex - sx;
       const dy = Math.abs(ey - sy);
   
-      if (dx > 50 && dy < 35 && !sidebar.classList.contains("active") && isMobile()) {
+      if (dx > 50 && dy < 35 && !sidebar.classList.contains("translate-x-[-100]") && isMobile()) {
         if (window.scrollY > 0) {
           window.scrollTo({ top: 0, behavior: "smooth" });
           const checkScroll = () => {
             if (window.scrollY === 0) {
-              sidebar.classList.add("active");
+              sidebar.classList.add("translate-x-[-100]");
             } else {
               requestAnimationFrame(checkScroll);
             }
           };
           checkScroll(); 
         } else {
-          sidebar.classList.add("active");
+          sidebar.classList.add("translate-x-[-100]");
         }
       }
     }, { passive: true });

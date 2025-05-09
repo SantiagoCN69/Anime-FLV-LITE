@@ -29,13 +29,29 @@ function updateUIForUser(user) {
   if (!btnLogin || !btnLoginImg || !btnLoginText) return;
 
   if (user) {
-    // Actualizar UI con foto y nombre
+    // Actualizar UI con foto y nombre del usuario actual
     btnLoginImg.src = user.photoURL || 'icons/user-solid.svg';
     btnLoginText.textContent = user.displayName || 'Usuario';
+    
+    // Guardar en caché
+    try {
+      localStorage.setItem('cachedUserDisplayName', user.displayName || '');
+      localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
+    } catch (e) {
+      console.warn('No se pudo guardar en localStorage:', e);
+    }
   } else {
     // Restaurar UI por defecto
     btnLoginImg.src = 'icons/user-solid.svg';
     btnLoginText.textContent = 'Login';
+
+    // Limpiar caché
+    try {
+      localStorage.removeItem('cachedUserDisplayName');
+      localStorage.removeItem('cachedUserPhotoURL');
+    } catch (e) {
+      console.warn('No se pudo limpiar localStorage:', e);
+    }
   }
 }
 
