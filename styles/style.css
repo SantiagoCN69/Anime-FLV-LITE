@@ -649,14 +649,7 @@ main {
   }
   
 
-footer {
-    padding: 15px 15px 10px 0 ;
-    color: #555;
-    text-align: right;
-    margin-top: auto;
-    margin-bottom: 5px;
-    font-size: .8rem;
-}
+
 
 /* style modal */
 
@@ -725,4 +718,12 @@ footer {
 #disqus_thread {
   width: 90%;
   margin: 0 auto;
+}
+footer {
+  background-color: #1c1c2b;
+  padding: 15px;
+  color: #555;
+  text-align: center;
+  margin-top: auto;
+  font-size: .8rem;
 }
