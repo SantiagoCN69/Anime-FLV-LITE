@@ -18,24 +18,29 @@
     <link rel="icon" type="image/png" href="/icons/icon.png">
     <link rel="apple-touch-icon" sizes="256x256" href="/icons/icon.png">
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/output.css">
     <script type="module" src="scripts/index.js" defer></script>
     <script type="module" src="scripts/header.js" defer></script>
     <script type="module" src="scripts/firebase-login.js" defer></script>
 </head>
-<body>
-    <div class="aurora"></div>
+<body class="font-sans mx-auto bg-gray-900 flex flex-col min-h-screen">
+    <div class="aurora blur-3xl fixed inset-0 -z-10"></div>
 
-    <header>
-        <a href="index.html" class="title"><h1>AnimeFLV Lite</h1></a>
-        <div class="search">
-            <input type="text" id="busqueda" placeholder="Buscar anime...">
-            <button id="btn-close-search" title="Cerrar búsqueda"></button>
-        </div>
-        <button type="button" id="btn-login" title="Iniciar sesión"></button>
-        <button type="button" id="btn-search" title="Buscar anime"></button>
-        <button type="button" id="menu-toggle" title="Menú"></button>
-
+    <header class="relative flex p-8 px-4 md:px-8">
+      <h1 class="title mr-auto text-3xl font-bold text-white text-nowrap overflow-hidden text-ellipsis"><a href="index.html">AnimeFLV Lite</a></h1>
+      <div class="search">
+        <input class="outline-none p-3 rounded-full border border-gray-400 text-white mx-4" type="text" id="busqueda" placeholder="Buscar anime...">
+        <button class="hidden" id="btn-close-search" title="Cerrar búsqueda"></button>
+      </div>
+      <button 
+        class="py-1 px-4 border border-gray-400 rounded-full cursor-pointer flex items-center text-white hover:opacity-60 transition-opacity" 
+        type="button" 
+        id="btn-login" 
+        title="Iniciar sesión">
+      </button>
+      <button class="hidden" type="button" id="btn-search" title="Buscar anime"></button>
+      <button class="flex items-center md:hidden cursor-pointer" type="button" id="menu-toggle" title="Menú"><img class="size-8" src="icons/bars-solid.svg" alt="Menú"></button>
     </header>
 
     <main>
