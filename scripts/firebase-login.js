@@ -23,13 +23,15 @@ const provider = new GoogleAuthProvider();
 // Función para actualizar UI y gestionar caché
 function updateUIForUser(user) {
   const btnLogin = document.getElementById('btn-login');
-  if (!btnLogin) return;
+  const btnLoginImg = btnLogin.querySelector('img');
+  const btnLoginSpan = btnLogin.querySelector('span');
+  
+  if (!btnLogin || !btnLoginImg || !btnLoginSpan) return;
 
   if (user) {
     // Actualizar UI
-    btnLogin.setAttribute('data-username', user.displayName);
-    btnLogin.style.setProperty('--user-photo', `url('${user.photoURL || '../icons/user-solid.svg'}')`);
-    btnLogin.classList.add('logged-in');
+    btnLoginImg.src = user.photoURL || 'icons/user-solid.svg';
+    btnLoginSpan.textContent = user.displayName || '';
     
     // Guardar en caché
     try {
@@ -40,9 +42,8 @@ function updateUIForUser(user) {
     }
   } else {
     // Actualizar UI
-    btnLogin.style.setProperty('--user-photo', `url('../icons/user-solid.svg')`);
-    btnLogin.removeAttribute('data-username');
-    btnLogin.classList.remove('logged-in');
+    btnLoginImg.src = 'icons/user-solid.svg';
+    btnLoginSpan.textContent = '';
     
     // Limpiar caché
     try {
@@ -111,6 +112,13 @@ function showLogoutModal() {
   // Cerrar modal al hacer scroll
   const handleScroll = () => closeModal();
   window.addEventListener('scroll', handleScroll, { once: true });
+
+  // Cerrar modal al hacer clic fuera del contenido
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
 
   document.getElementById('confirm-logout').addEventListener('click', async () => {
     await logoutConGoogle();

@@ -83,17 +83,19 @@ header {
     height:5.5rem;;
     position: relative;
     background: #181b2ecc;
+    gap:15px
 }
 .title {
-    flex: 1;
     margin-right: auto;
-    color: #ffffff;
     text-decoration: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
+.title a {
+    color: #ffffff;
+    text-decoration: none;
+}
 
 #busqueda {
     padding: 13px;
@@ -102,7 +104,6 @@ header {
     background-color: #00000000;
     color: #ffffff;
     font-size: 1rem;
-    margin-inline: 15px;
 }
 #busqueda:focus {
     outline: none;
@@ -114,46 +115,23 @@ button:hover {
   opacity: .8;
 }
 #btn-login {
-    padding: 6px 16px;
+    padding: 8px 16px;
     background-color: transparent;
     color: #ffffff;
     border: 1px solid #fff8;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
     transition: transform 0.2s;
     display: flex;
     align-items: center;
 }
-#btn-login::before {
-  content: url('../icons/user-solid.svg');
-  width: 22px;
-  height: 22px;
+#btn-login img {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  padding: 2px 0 6px 0 ;
 }
-
-#btn-login.logged-in::before {
-  content: '';
-  background-image: var(--user-photo, url('../icons/user-solid.svg'));
-  width: 32px;
-  height: 32px;
-  padding: 0 0;
-}
-#btn-login.logged-in::after {
-  content: attr(data-username);
-  margin-left: 10px;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-#btn-login:not(.logged-in)::after {
-  content: "Login";
-  margin-left: 10px;
-  font-size: 1rem;
-  font-weight: bold;
-  margin-top: 1px;
+#btn-login span {
+  margin-left: 9px;
 }
 #btn-search, #btn-close-search {
   display: none;
@@ -226,15 +204,15 @@ button:hover {
   width: 22px;
   height: 22px;
   position: absolute;
-  right: 25px;
-  top:12px;
+  right: 18px;
+  top:50%;
+  transform: translateY(-50%);
   z-index: 20000;
   filter: invert(100%);
   pointer-events: none;
 }
 @media screen and (max-width: 600px) {
   .search::after {
-    top: 34px;
     right: 70px;
   }
   header {
@@ -265,7 +243,7 @@ button:hover {
   .sidebar.active {
     transform: translateX(0);
   }
-  #btn-login::after {
+  #btn-login span{
     display: none;
   }
   #btn-search, #btn-close-search {
@@ -282,7 +260,6 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-inline: 20px;
 }
 
 #btn-search::before {
@@ -325,6 +302,8 @@ header.search-active #menu-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap:10px;
+  padding-inline: 1rem;
   opacity: 0;
   transform: translateY(-20px);
   pointer-events: none;
@@ -342,17 +321,14 @@ header.search-active .search {
 #btn-close-search {
   background: none;
   border: none;
-  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  filter: invert(100%);
   display: flex;
-  margin-right: 15px;
+  align-items: center;
+  justify-content: center;
 }
 
-#btn-close-search::before {
-  content: '✕';
-  color: #fff;
-  font-size: 2rem;
-  padding-bottom: 4px;
-}
 
 /* Input de búsqueda */
 #busqueda {

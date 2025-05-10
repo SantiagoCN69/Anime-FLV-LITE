@@ -200,6 +200,44 @@ async function actualizarEstadoCapitulo() {
   }
 }
 
+// Función para obtener y mostrar noticias
+async function obtenerNoticias() {
+  try {
+    const respuesta = await fetch('http://localhost:3000/api/noticias');
+    const noticias = await respuesta.json();
+    const contenedorNoticias = document.getElementById('noticias_container');
+    const initLoadingServidores = document.querySelector('.init-loading-servidores');
+    
+    // Limpiar contenedor
+    contenedorNoticias.innerHTML = '';
+    
+    // Crear tarjetas de noticias
+    noticias.forEach(noticia => {
+      const tarjetaNoticia = document.createElement('div');
+      tarjetaNoticia.classList.add('tarjeta-noticia');
+      
+      tarjetaNoticia.innerHTML = `
+        <img src="${noticia.image}" alt="${noticia.title}" class="noticia-imagen">
+        <h3 class="noticia-titulo">${noticia.title}</h3>
+        <p class="noticia-fecha">${noticia.date}</p>
+      `;
+      
+      contenedorNoticias.appendChild(tarjetaNoticia);
+    });
+    
+    // Ocultar mensaje de carga
+    initLoadingServidores.style.display = 'none';
+  } catch (error) {
+    console.error('Error al obtener noticias:', error);
+    // Mostrar mensaje de error
+    initLoadingServidores.textContent = 'Error al cargar noticias';
+    initLoadingServidores.style.color = 'red';
+  }
+}
+
+// Llamar a la función de noticias cuando el DOM esté cargado
+document.addEventListener('DOMContentLoaded', obtenerNoticias);
+
 // Verificación de capítulos vistos al cargar
 onAuthStateChanged(auth, async (user) => {
   if (user) {

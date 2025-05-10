@@ -29,7 +29,7 @@ body::after {
     left: 0;
     width: 100vw;
     height: 101vh;
-    background: linear-gradient(to bottom, transparent 0%, #1c1c2b 90%, #13131b 100%);
+    background: linear-gradient(to bottom, transparent 0%, #1c1c2b 80%, #13131b 100%);
     pointer-events: none;
     z-index: -2;
   }
@@ -61,6 +61,7 @@ h2 {
     padding: 0 50px 40px 50px;
     width: 100%;
     height: calc(100dvh - 88px);
+    min-height: 500px;
   }
 @media screen and (max-height:600px) and (min-width:600px){
   .anime-details {
