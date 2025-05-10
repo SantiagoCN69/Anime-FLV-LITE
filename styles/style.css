@@ -83,7 +83,8 @@ header {
     height:5.5rem;;
     position: relative;
     background: #181b2ecc;
-    gap:15px
+    gap:15px;
+    border-bottom: 1px solid #888;
 }
 .title {
     margin-right: auto;
@@ -164,7 +165,7 @@ button:hover {
   border-radius: 3px;
   max-height: var(--altura-main);
   overflow-y: auto;
-  border-right: 1px solid #444;
+  border-right: 1px solid #888;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   
@@ -565,7 +566,7 @@ main {
     pointer-events: none;
     z-index: 1;
   }
-  @media screen and (hover: hover) {
+
     .anime-card:hover img {
       transform: scale(1.15);
     }
@@ -592,7 +593,7 @@ main {
     .anime-card:hover .cover {
       filter: blur(10px);
     }
-  }
+  
 
   .anime-card img,
 .anime-card strong {

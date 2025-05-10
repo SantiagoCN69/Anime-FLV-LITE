@@ -34,7 +34,8 @@ body::after {
     z-index: -2;
   }
 header {
-  background: linear-gradient(to bottom, transparent 0%, transparent);
+  background: transparent;
+  border: none;
 }
 #busqueda {
     background-color: #00000011;
@@ -61,13 +62,8 @@ h2 {
     padding: 0 50px 40px 50px;
     width: 100%;
     height: calc(100dvh - 88px);
-    min-height: 500px;
   }
-@media screen and (max-height:600px) and (min-width:600px){
-  .anime-details {
-    height: 100vh;
-  }
-}
+
   .anime-container1 {
     margin-inline: auto;
     display: flex;

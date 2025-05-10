@@ -187,16 +187,40 @@ async function obtenerCapitulosVistos(animeId) {
   return snap.exists() ? snap.data().episodiosVistos || [] : [];
 }
 
+
 (async () => {
   if (!id) return console.error('ID inválido');
+
+  // 1. Cargar desde caché (si existe)
   const cached = cargarDatosDesdeCache(id);
-  if (cached) renderAnime({
-    titulo: cached.titulo,
-    portada: cached.portada,
-    descripcion: cached.descripcion,
-    generos: cached.generos,
-    episodios: cached.episodios
-  });
+  if (cached) {
+    renderAnime({
+      titulo: cached.titulo,
+      portada: cached.portada,
+      descripcion: cached.descripcion,
+      generos: cached.generos,
+      episodios: cached.episodios
+    });
+  }
+
+  // 2. Cargar desde Firestore siempre
+  try {
+    const docSnap = await getDoc(doc(db, 'datos-animes', id));
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      renderAnime({
+        titulo: data.titulo,
+        portada: data.portada,
+        descripcion: data.descripcion,
+        generos: data.generos,
+        episodios: data.episodios
+      });
+    }
+  } catch (err) {
+    console.error('Error al cargar desde Firestore:', err);
+  }
+
+  // 3. Cargar desde API externa y actualizar todo
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
@@ -213,8 +237,7 @@ async function obtenerCapitulosVistos(animeId) {
     actualizarCache(id, anime);
     renderAnime(anime);
   } catch (err) {
-    console.error('Error carga anime:', err);
-    descripcionEl.textContent = 'Error al cargar el anime.';
+    console.error('Error carga anime:', err)
   }
 })();
 
