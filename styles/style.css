@@ -213,6 +213,9 @@ button:hover {
   pointer-events: none;
 }
 @media screen and (max-width: 600px) {
+  .no-results {
+    top: 25%;
+  }
   .search::after {
     right: 70px;
   }
@@ -374,9 +377,7 @@ main {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.no-results {
-  top: 25%;
-}
+
 /* Ocultar secciones */
 .hidden {
   display: none;
@@ -484,7 +485,9 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
     margin: 0 auto;
-    margin-bottom: 1.2rem;
+}
+#main {
+  max-width: 1150px;
 }
 .anime-card {
     position: relative;
