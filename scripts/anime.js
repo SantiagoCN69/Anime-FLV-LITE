@@ -117,6 +117,7 @@ async function crearBotonesEpisodios(anime) {
   capContenedor.innerHTML = '';
   const episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
   const vistos = await obtenerCapitulosVistos(id) || [];
+  console.log(vistos)
   const fragment = document.createDocumentFragment();
   episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
   capContenedor.appendChild(fragment);
@@ -185,12 +186,40 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
 
 async function obtenerCapitulosVistos(animeId) {
   const user = auth.currentUser;
+  console.log("usuario autenticado: ", user)
   if (!user) return [];
   const ref = doc(db, 'usuarios', user.uid, 'caps-vistos', animeId);
   const snap = await getDoc(ref);
   return snap.exists() ? snap.data().episodiosVistos || [] : [];
 }
 
+//comparar datos antes de jecutar renderAnime
+function compararDatos(a, b) {
+  if (!a || !b) return false;
+
+  const normalizar = (v) => (typeof v === "string" ? v.trim() : v);
+
+  // Comparación detallada de campos
+  const tituloIgual = normalizar(a.titulo) === normalizar(b.titulo);
+  const portadaIgual = normalizar(a.portada) === normalizar(b.portada);
+  const descripcionIgual = normalizar(a.descripcion) === normalizar(b.descripcion);
+  const ratingIgual = normalizar(a.rating) === normalizar(b.rating);
+  const estadoIgual = normalizar(a.estado) === normalizar(b.estado);
+  const generosIgual = JSON.stringify(a.generos) === JSON.stringify(b.generos);
+
+  // Normalizar y ordenar episodios
+  const normalizarEpisodios = (episodios) => {
+    return episodios
+      .map(ep => ({ url: ep.url, number: ep.number })) // Asegurarse de que la estructura sea la misma
+      .sort((ep1, ep2) => ep1.number - ep2.number); // Ordenar por número
+  };
+
+  const episodiosA = JSON.stringify(normalizarEpisodios(a.episodios));
+  const episodiosB = JSON.stringify(normalizarEpisodios(b.episodios));
+
+  // Retornamos el resultado final
+  return tituloIgual && portadaIgual && descripcionIgual && ratingIgual && estadoIgual && generosIgual && episodiosA === episodiosB;
+}
 
 (async () => {
   if (!id) return console.error('ID inválido');
@@ -203,8 +232,9 @@ async function obtenerCapitulosVistos(animeId) {
       portada: cached.portada,
       descripcion: cached.descripcion,
       generos: cached.generos,
+      rating: cached.rating,
+      estado: cached.estado,
       episodios: cached.episodios,
-      rating: cached.rating
     });
   }
 
@@ -213,16 +243,19 @@ async function obtenerCapitulosVistos(animeId) {
     const docSnap = await getDoc(doc(db, 'datos-animes', id));
     if (docSnap.exists()) {
       const data = docSnap.data();
-      renderAnime({
-        titulo: data.titulo,
-        portada: data.portada,
-        descripcion: data.descripcion,
-        generos: data.generos,
-        episodios: data.episodios,
-        rating: data.rating,
-        estado: data.estado
-      });
-    }
+      if (!compararDatos(cached, data)) {
+        console.log("Datos diferentes de cache a firestore, actualizando...")
+        renderAnime({
+          titulo: data.titulo,
+          portada: data.portada,
+          descripcion: data.descripcion,
+          generos: data.generos,
+          rating: data.rating,
+          estado: data.estado,
+          episodios: data.episodios,
+        });
+      actualizarCache(id, data);
+    }}
   } catch (err) {
     console.error('Error al cargar desde Firestore:', err);
   }
@@ -230,21 +263,22 @@ async function obtenerCapitulosVistos(animeId) {
   // 3. Cargar desde API externa y actualizar todo
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
-    console.log(res)
     const data = await res.json();
-    console.log(data)
     const anime = {
       titulo: data.title || '',
       portada: data.cover || '',
       descripcion: data.synopsis || '',
-      episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
       generos: data.genres || [],
       rating: data.rating || null,
       estado: data.status || null,
+      episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
     };
     await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
     actualizarCache(id, anime);
-    renderAnime(anime);
+    if (!compararDatos(cached, anime)) {
+      console.log("Datos diferentes de firestore a api, actualizando...")
+      renderAnime(anime);
+    }
   } catch (err) {
     console.error('Error carga anime:', err)
   }
