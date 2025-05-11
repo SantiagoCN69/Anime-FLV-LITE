@@ -162,6 +162,7 @@ button:hover {
   min-width: 220px;
   padding: 1rem;
   margin: 2rem auto;
+  margin-right: 3%;
   border-radius: 3px;
   max-height: var(--altura-main);
   overflow-y: auto;
@@ -346,7 +347,7 @@ main {
   color: #fff;
   font-family: 'Segoe UI', sans-serif;
   margin-inline: auto;
-  width: 100%;
+  width: 95%;
   max-width: 1150px;
 }
 
@@ -357,11 +358,11 @@ main {
   display: block;
   border-radius: 3px;
   padding-bottom: 1rem;
-  min-height: calc(100vh - 88px);
+  min-height: calc(100dvh - 216px);
   height: fit-content;
   position: relative;
   margin: 2rem auto;
-  padding-inline: 1.5rem;
+  width: 100%;
 }
 #init-loading-servidores-busqueda {
   display: none;
@@ -706,4 +707,5 @@ footer {
   color: #555;
   text-align: center;
   font-size: .8rem;
+  margin-top: auto;
 }
