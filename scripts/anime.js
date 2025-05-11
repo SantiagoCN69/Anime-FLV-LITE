@@ -97,7 +97,9 @@ const createEpisodeButton = (ep, vistos = []) => {
   li.appendChild(btn);
 
   btn.addEventListener('click', async () => {
-    await manejarEstadoEpisodio(btn, icon, ep);
+    if (btn.classList.contains("ep-no-visto")) {
+      await manejarEstadoEpisodio(btn, icon, ep);
+    }
     window.location.href = `ver.html?animeId=${id}&url=${encodeURIComponent(ep.url)}`;
   });
 

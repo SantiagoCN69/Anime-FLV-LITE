@@ -193,6 +193,9 @@ main section:nth-child(2) {
   flex: 1;
   z-index: 3;
 }
+iframe {
+  height: auto;
+}
 .reproductor-container.censure #video {
   filter: blur(7px);
   z-index: 1;

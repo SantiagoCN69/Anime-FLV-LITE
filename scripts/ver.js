@@ -88,7 +88,7 @@ async function obtenerTituloAnime(id) {
 
     // 3. Mostrar el título en la interfaz
     const tituloAnime = document.getElementById('titulo-anime');
-    tituloAnime.textContent = titulo;
+    tituloAnime.textContent = "Volver a " + titulo;
   } catch (err) {
     console.error('Error al obtener título del anime:', err);
     const tituloAnime = document.getElementById('titulo-anime');
