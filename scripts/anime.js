@@ -127,7 +127,35 @@ async function crearBotonesEpisodios(anime) {
   // Desplazar al primer episodio no visto
   const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
   if (primerNoVisto) {
-    primerNoVisto.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const targetElement = primerNoVisto.parentElement;
+    if (targetElement) { // Check if parentElement is not null
+      const anchoColumna = typeof getAnchoColumna === 'function' ? getAnchoColumna() : 0; // Ensure getAnchoColumna is callable and provide a default
+
+      if (anchoColumna && anchoColumna > 0) {
+        // Calculate scroll position based on columns
+        const columnaDelTarget = Math.floor(targetElement.offsetLeft / anchoColumna);
+        let scrollToX = columnaDelTarget * anchoColumna;
+        
+        // Ensure the scroll position is within valid bounds
+        const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
+        scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
+
+        capContenedor.scrollTo({
+          left: scrollToX,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback: scroll to bring the element's start into view if no valid column width
+        let scrollToX = targetElement.offsetLeft;
+        const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
+        scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
+
+        capContenedor.scrollTo({
+          left: scrollToX,
+          behavior: 'smooth'
+        });
+      }
+    }
   }
 }
 
