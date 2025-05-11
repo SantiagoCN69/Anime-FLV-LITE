@@ -472,6 +472,9 @@ h2 {
         width: 100%;
         max-height: 500px;
     }
+    .episodes-list {
+      max-height: 410px;
+    }
    }
 /* Ocultar botones por defecto */
 #btn-search-capitulo,
