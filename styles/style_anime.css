@@ -234,8 +234,8 @@ h2 {
     text-overflow: ellipsis;
     white-space: nowrap;
     width: fit-content;
+    max-width: 80%;
     color:#e76f51;
-    min-height: fit-content;
     z-index: 1;
   }
   .anime-rating {
