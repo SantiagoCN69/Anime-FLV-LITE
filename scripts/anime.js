@@ -225,7 +225,9 @@ async function obtenerCapitulosVistos(animeId) {
   // 3. Cargar desde API externa y actualizar todo
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
+    console.log(res)
     const data = await res.json();
+    console.log(data)
     const anime = {
       titulo: data.title || '',
       portada: data.cover || '',

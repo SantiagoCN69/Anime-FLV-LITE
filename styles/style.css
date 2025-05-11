@@ -487,7 +487,9 @@ main {
     margin: 0 auto;
 }
 #main {
+  width: 95%;
   max-width: 1150px;
+  margin-block: 2rem;
 }
 .anime-card {
     position: relative;
@@ -704,6 +706,5 @@ footer {
   padding: 15px;
   color: #555;
   text-align: center;
-  margin-top: auto;
   font-size: .8rem;
 }
