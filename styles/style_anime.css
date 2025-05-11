@@ -320,6 +320,7 @@ h2 {
     padding: 1rem;
     gap: 1rem;
     background-color: #202031;
+    height: fit-content;
   }
   .header-caps {
     display: flex;
@@ -367,7 +368,7 @@ h2 {
     max-height: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
-    min-height: 100px;
+    height: fit-content;
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
@@ -390,7 +391,8 @@ h2 {
 .episodes-list li {
     width: 100%;
     display: flex;
-    flex:1;
+    flex:1 ;
+    max-height: 80px;
     min-height: 80px;
 }
 .episode-btn {
