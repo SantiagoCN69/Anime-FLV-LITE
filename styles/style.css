@@ -540,6 +540,7 @@ main {
     backdrop-filter: blur(10px);
     transition: transform .4s, opacity .3s;
     opacity: 1;
+    color: #fff;
   }
   .anime-card span img {
     width: 10px;

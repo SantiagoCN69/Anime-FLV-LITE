@@ -185,12 +185,46 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
 }
 
 async function obtenerCapitulosVistos(animeId) {
-  const user = auth.currentUser;
-  console.log("usuario autenticado: ", user)
-  if (!user) return [];
-  const ref = doc(db, 'usuarios', user.uid, 'caps-vistos', animeId);
-  const snap = await getDoc(ref);
-  return snap.exists() ? snap.data().episodiosVistos || [] : [];
+  return new Promise(async (resolve, reject) => {
+    const fetchChaptersLogic = async (userInstance) => {
+      if (!userInstance) {
+        console.warn("obtenerCapitulosVistos: fetchChaptersLogic llamado sin instancia de usuario válida. Retornando [].");
+        resolve([]);
+        return;
+      }
+      try {
+        // Asumiendo que 'db', 'doc', 'getDoc' están disponibles en este alcance
+        const ref = doc(db, 'usuarios', userInstance.uid, 'caps-vistos', animeId);
+        const snap = await getDoc(ref);
+        resolve(snap.exists() ? snap.data().episodiosVistos || [] : []);
+      } catch (error) {
+        console.error("Error al obtener capítulos vistos:", error);
+        reject(error); // O podrías resolver con [] si prefieres manejar errores así
+      }
+    };
+
+    // Asumiendo que 'auth' está disponible en este alcance
+    const currentUser = auth.currentUser;
+    console.log("obtenerCapitulosVistos: Verificando usuario actual:", currentUser);
+
+    if (currentUser) {
+      console.log("obtenerCapitulosVistos: Usuario ya autenticado, procediendo.");
+      await fetchChaptersLogic(currentUser);
+    } else {
+      console.log("obtenerCapitulosVistos: Usuario no autenticado inicialmente, esperando authStateReady.");
+      const authReadyListener = async (event) => {
+        document.removeEventListener("authStateReady", authReadyListener); // Limpiar listener
+        if (event.detail && event.detail.user) {
+          console.log("obtenerCapitulosVistos: authStateReady recibido con usuario:", event.detail.user);
+          await fetchChaptersLogic(event.detail.user);
+        } else {
+          console.warn("obtenerCapitulosVistos: authStateReady recibido sin usuario autenticado. Retornando [].");
+          resolve([]);
+        }
+      };
+      document.addEventListener("authStateReady", authReadyListener);
+    }
+  });
 }
 
 //comparar datos antes de jecutar renderAnime
