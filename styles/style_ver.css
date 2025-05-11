@@ -31,10 +31,11 @@ main section:nth-child(2) {
   flex: 1;
   position: relative;
   max-width: 300px;
-  height: 530px;
+  height: 488px;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: 15px;
 }
 #noticias_container {
   display: flex;
