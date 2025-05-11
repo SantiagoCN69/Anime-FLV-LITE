@@ -433,7 +433,7 @@ async function cargarVideoDesdeEpisodio(index) {
           otherServers.push(srv);
         }
       } else {
-        otherServers.push(srv); // Mantener servidores con formato inesperado o sin URL
+        otherServers.push(srv); 
       }
     });
 
@@ -450,9 +450,8 @@ async function cargarVideoDesdeEpisodio(index) {
   controles.innerHTML = "";
   embeds.forEach((srv, i) => {
     const btn = document.createElement("button");
-    // Asignar nombre del servidor si existe, sino un número
     btn.textContent = srv.nombre ? srv.nombre.replace("Servidor ", "") : `${i + 1}`;
-    // btn.dataset.link = srv; // No es necesario si pasamos el objeto srv directamente
+    btn.title = extraerNombreDesdeURL(srv.url);
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
   });
@@ -506,6 +505,22 @@ async function cargarVideoDesdeEpisodio(index) {
   return ep;
 }
 
+//funcion extraer nombre del link
+function extraerNombreDesdeURL(url) {
+  try {
+    const sinProtocolo = url.split('//')[1];
+    if (!sinProtocolo) return null;
+
+    const partes = sinProtocolo.split('.');
+    if (sinProtocolo.startsWith('www.')) {
+      return partes[1]; 
+    } else {
+      return partes[0]; 
+    }
+  } catch (e) {
+    return null;
+  }
+}
 
 function mostrarVideo(link, botonSeleccionado) {
   const url = typeof link === "string" ? link : link.url;
