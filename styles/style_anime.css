@@ -211,13 +211,12 @@ h2 {
     color: #fff;
 }
   .anime-container2 {
-    justify-content: start;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     grid-area: container2;
-    align-items: center;
     padding-inline: 1rem;
+    gap: 7px;
   }
 
   .info1 {
@@ -232,7 +231,6 @@ h2 {
   .anime-title {
     color: #e76f51;
     font-size: 1.8rem;
-    margin-bottom: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -243,11 +241,7 @@ h2 {
   }
   .genero {
     display: flex;
-    width: 50%;
     gap: 5px;
-    justify-content: end;
-    flex-wrap: wrap;
-    overflow: hidden;
     max-height: 25px;
   }
   .genero button {
@@ -264,19 +258,14 @@ h2 {
 
   @media screen and (max-width:800px){
     .info1 {
-      flex-direction: column;
       gap: 5px;
     }
     .genero {
       width: 100%;
       flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 5px;
-      justify-content: start;
-       max-height: fit-content;
+      max-height: fit-content;
     }
     .anime-title {
-      margin-bottom: 0;
       width: 100%;
     }
   }

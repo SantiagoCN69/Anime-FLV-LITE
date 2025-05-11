@@ -44,6 +44,7 @@ const descripcionEl = document.getElementById("descripcion");
 const generoContainer = document.querySelector(".genero");
 const capContenedor = document.getElementById("capitulos");
 const filtroCapitulo = document.getElementById("filtro-capitulo");
+const ratingEl = document.getElementById("rating");
 
 const renderGeneros = (container, generos) => {
   container.innerHTML = '';
@@ -66,6 +67,7 @@ const renderAnime = anime => {
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);
   crearBotonesEpisodios(anime);
+  ratingEl.textContent = anime.rating;
 };
 
 const getAnchoColumna = () => {
@@ -201,7 +203,8 @@ async function obtenerCapitulosVistos(animeId) {
       portada: cached.portada,
       descripcion: cached.descripcion,
       generos: cached.generos,
-      episodios: cached.episodios
+      episodios: cached.episodios,
+      rating: cached.rating
     });
   }
 
@@ -215,7 +218,8 @@ async function obtenerCapitulosVistos(animeId) {
         portada: data.portada,
         descripcion: data.descripcion,
         generos: data.generos,
-        episodios: data.episodios
+        episodios: data.episodios,
+        rating: data.rating
       });
     }
   } catch (err) {
@@ -234,7 +238,6 @@ async function obtenerCapitulosVistos(animeId) {
       descripcion: data.synopsis || '',
       episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
       generos: data.genres || [],
-      calificacion: data.score || null,
       rating: data.rating || null
     };
     await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
