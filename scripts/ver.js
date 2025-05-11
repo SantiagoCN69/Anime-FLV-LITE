@@ -57,7 +57,7 @@ btnCensura.addEventListener("click", () => {
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 // Inicialización de Firebase optimizada
@@ -238,7 +238,7 @@ async function obtenerNoticias() {
 
     // 1. Obtener todas las noticias de Firestore
     const firestoreSnap = await getDocs(cacheCollection);
-    const noticiasFirestore = new Map(); // Usaremos un Map para facilitar la búsqueda por ID
+    const noticiasFirestore = new Map(); 
     firestoreSnap.forEach(doc => {
       noticiasFirestore.set(doc.id, doc.data());
     });
@@ -246,9 +246,9 @@ async function obtenerNoticias() {
     // 2. Obtener noticias de la API
     const respuesta = await fetch('https://backend-noticias-anime.onrender.com/api/noticias');
     const noticiasAPI = await respuesta.json();
-    const noticiasAPIMap = new Map(); // Map para las noticias de la API para facilitar la búsqueda
+    const noticiasAPIMap = new Map(); 
     noticiasAPI.forEach(noticia => {
-      noticiasAPIMap.set(noticia.title, noticia); // Asumiendo que el título es un ID único
+      noticiasAPIMap.set(noticia.title, noticia); 
     });
 
     // 3. Identificar y agregar nuevas noticias desde la API a Firestore
