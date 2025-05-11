@@ -67,7 +67,7 @@ const renderAnime = anime => {
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);
   crearBotonesEpisodios(anime);
-  ratingEl.textContent = anime.rating;
+  ratingEl.textContent = anime.rating + "/5";
 };
 
 const getAnchoColumna = () => {

@@ -237,6 +237,25 @@ h2 {
     min-height: fit-content;
     z-index: 1;
   }
+  .anime-rating {
+    color: #e76f51;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  .anime-rating::before {
+    content: "";
+    background-image: url('../icons/star-solid.svg');
+    background-size: cover;
+    width: 19px;
+    height: 17px;
+    display: inline-block;
+  }
+
   .genero {
     display: flex;
     gap: 5px;

@@ -104,6 +104,7 @@ main section:nth-child(2) {
   color: #a5a5a5;
   font-weight: 600;
   width: fit-content;
+  transition: transform .3s;
 }
 .btn-volver::before {
   content: url(/icons/house-solid.svg);
@@ -112,6 +113,13 @@ main section:nth-child(2) {
   display: inline-block;
   margin: 5px;
   filter: invert(55%);
+}
+
+.btn-volver:hover {
+  opacity: .7;
+}
+.btn-volver:active {
+  transform: scale(.95);
 }
 .contenedor-btn-cap {
   display: flex;
@@ -123,7 +131,6 @@ main section:nth-child(2) {
   color: #e76f51;
   margin-right: 10px;
 }
-
 #btn-estado-capitulo {
   background: none;
   border: none;
