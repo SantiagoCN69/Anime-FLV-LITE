@@ -57,7 +57,7 @@ btnCensura.addEventListener("click", () => {
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 // Inicialización de Firebase optimizada
@@ -223,6 +223,7 @@ btnEstadoCapitulo.addEventListener("click", async () => {
 });
 
 // Función para obtener y mostrar noticias
+
 async function obtenerNoticias() {
   const contenedorNoticias = document.getElementById('noticias_container');
   const initLoadingServidores = document.querySelector('.init-loading-servidores');
@@ -233,79 +234,77 @@ async function obtenerNoticias() {
       initializeApp(firebaseConfig);
     }
     const db = getFirestore();
+    const cacheCollection = collection(db, 'cache');
 
-    // 1. Obtener noticias de Firestore
-    const noticiaRef = doc(db, 'cache', 'noticias');
-    const noticiaSnap = await getDoc(noticiaRef);
-    const noticiaFirestore = noticiaSnap.exists() ? noticiaSnap.data().noticias : [];
+    // 1. Obtener todas las noticias de Firestore
+    const firestoreSnap = await getDocs(cacheCollection);
+    const noticiasFirestore = new Map(); // Usaremos un Map para facilitar la búsqueda por ID
+    firestoreSnap.forEach(doc => {
+      noticiasFirestore.set(doc.id, doc.data());
+    });
 
+    // 2. Obtener noticias de la API
+    const respuesta = await fetch('https://backend-noticias-anime.onrender.com/api/noticias');
+    const noticiasAPI = await respuesta.json();
+    const noticiasAPIMap = new Map(); // Map para las noticias de la API para facilitar la búsqueda
+    noticiasAPI.forEach(noticia => {
+      noticiasAPIMap.set(noticia.title, noticia); // Asumiendo que el título es un ID único
+    });
 
-    // 2. Renderizar noticias de Firestore primero
+    // 3. Identificar y agregar nuevas noticias desde la API a Firestore
+    for (const [tituloAPI, noticiaAPI] of noticiasAPIMap) {
+      if (!noticiasFirestore.has(tituloAPI)) {
+        const noticiaRef = doc(cacheCollection, tituloAPI);
+        await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
+        console.log(`➕ Noticia "${tituloAPI}" agregada a Firestore.`);
+      } else {
+        // Opcional: podrías verificar si la noticia existente necesita actualización
+        const noticiaFirestore = noticiasFirestore.get(tituloAPI);
+        const { timestamp, ...firestoreData } = noticiaFirestore;
+        const { ...apiData } = noticiaAPI;
+        if (JSON.stringify(apiData) !== JSON.stringify(firestoreData)) {
+          const noticiaRef = doc(cacheCollection, tituloAPI);
+          await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
+          console.log(`🔄 Noticia "${tituloAPI}" actualizada en Firestore.`);
+        }
+      }
+    }
+
+    // 4. Identificar y eliminar noticias de Firestore que no están en la API
+    for (const tituloFirestore of noticiasFirestore.keys()) {
+      if (!noticiasAPIMap.has(tituloFirestore)) {
+        const noticiaRef = doc(cacheCollection, tituloFirestore);
+        await deleteDoc(noticiaRef);
+        console.log(`🗑️ Noticia "${tituloFirestore}" eliminada de Firestore.`);
+      }
+    }
+
+    // 5. Volver a obtener y renderizar todas las noticias actualizadas de Firestore (ordenadas)
     contenedorNoticias.innerHTML = '';
-    noticiaFirestore.forEach(noticia => {
+    const nuevasCacheSnapshot = await getDocs(
+      query(cacheCollection, orderBy('date', 'desc'))
+    );
+    nuevasCacheSnapshot.forEach(doc => {
+      const noticia = doc.data();
       const tarjetaNoticia = document.createElement('div');
       tarjetaNoticia.classList.add('tarjeta-noticia');
-
       tarjetaNoticia.innerHTML = `
         <img src="${noticia.image}" alt="${noticia.title}" class="noticia-imagen">
         <h3 class="noticia-titulo">${noticia.title}</h3>
         <p class="noticia-fecha">${noticia.date}</p>
       `;
-      initLoadingServidores.style.display = 'none';
       contenedorNoticias.appendChild(tarjetaNoticia);
     });
 
-    // 3. Obtener noticias de la API
-    const respuesta = await fetch('https://backend-noticias-anime.onrender.com/api/noticias');
-    const noticiasAPI = await respuesta.json();
-
-
-    // 4. Comparar noticias de la API con las de Firestore
-    let noticiasFinales = [...noticiaFirestore];
-    let actualizarFirestore = false;
-
-    // Filtrar noticias de la API que no están en Firestore
-    noticiasAPI.forEach(noticiaAPI => {
-      const noticiaExistente = noticiasFinales.some(noticia => noticia.slug === noticiaAPI.slug);
-      if (!noticiaExistente) {
-        noticiasFinales.push(noticiaAPI);
-      }
-    });
-
-    // 5. Si hay diferencias, actualizar Firestore y las noticias visualizadas
-    if (JSON.stringify(noticiasFinales) !== JSON.stringify(noticiaFirestore)) {
-      // Actualizar Firestore
-      await setDoc(noticiaRef, {
-        noticias: noticiasFinales,
-        timestamp: serverTimestamp(),
-      });
-
-      // Actualizar la visualización con las noticias finales
-      contenedorNoticias.innerHTML = '';
-      noticiasFinales.forEach(noticia => {
-        const tarjetaNoticia = document.createElement('div');
-        tarjetaNoticia.classList.add('tarjeta-noticia');
-
-        tarjetaNoticia.innerHTML = `
-          <img src="${noticia.image}" alt="${noticia.title}" class="noticia-imagen">
-          <h3 class="noticia-titulo">${noticia.title}</h3>
-          <p class="noticia-fecha">${noticia.date}</p>
-        `;
-
-        contenedorNoticias.appendChild(tarjetaNoticia);
-      });
-    }
-    // 6. Ocultar mensaje de carga
- 
+    initLoadingServidores.style.display = 'none';
 
   } catch (error) {
-    console.error('❌ Error al obtener noticias:', error);
+    console.error('❌ Error al sincronizar noticias:', error);
+    initLoadingServidores.textContent = 'Error al cargar las noticias.';
   }
 }
 
-// Llamar a la función de noticias cuando el DOM esté cargado
-document.addEventListener('DOMContentLoaded', obtenerNoticias);
-
+obtenerNoticias();
 
 
 
