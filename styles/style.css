@@ -343,7 +343,6 @@ header.search-active .search {
       /* Estructura principal */
 main {
   display: flex;
-  min-height: calc(100vh - 88px);
   color: #fff;
   font-family: 'Segoe UI', sans-serif;
   margin-inline: auto;
