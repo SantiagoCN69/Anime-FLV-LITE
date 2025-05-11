@@ -273,7 +273,10 @@ h2 {
     font-size: .9rem;
     overflow-y: auto;
     scrollbar-width: none;
-    max-height: 100px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
 }
     
   .anime-container3 {
@@ -439,6 +442,10 @@ h2 {
         width: 100%;
         padding: 0;
         max-height: var(--altura-container-1);
+    }
+    .anime-description {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
     }
     .anime-title {
       font-size: 1.5rem;
