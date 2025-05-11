@@ -60,11 +60,22 @@ document.getElementById('btn-close-search').addEventListener('click', () => {
 function crearAnimeCard(anime) {
   const animeId = obtenerAnimeId(anime);
   const div = document.createElement('div');
+  let ratingHtml = '';
+  if (anime.rating) {
+    ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
+  }
   div.className = 'anime-card';
   div.style.setProperty('--cover', `url(${anime.cover})`);
   div.innerHTML = `
-    <div class=\"container-img\">\n      <img src=\"${anime.cover}\" alt=\"${anime.title || anime.name}\">\n    </div>\n    <strong>${anime.title || anime.name}</strong>
-  `;
+  <div class="container-img">
+    <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
+    <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+    ${ratingHtml}
+    <span class="estado">${anime.type}</span>
+  </div>
+  <strong>${anime.title || anime.name}</strong>
+`;
+
   div.addEventListener('click', () => ver(animeId));
   return div;
 }

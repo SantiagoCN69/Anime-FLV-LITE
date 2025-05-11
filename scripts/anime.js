@@ -219,7 +219,8 @@ async function obtenerCapitulosVistos(animeId) {
         descripcion: data.descripcion,
         generos: data.generos,
         episodios: data.episodios,
-        rating: data.rating
+        rating: data.rating,
+        estado: data.estado
       });
     }
   } catch (err) {
@@ -238,7 +239,8 @@ async function obtenerCapitulosVistos(animeId) {
       descripcion: data.synopsis || '',
       episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
       generos: data.genres || [],
-      rating: data.rating || null
+      rating: data.rating || null,
+      estado: data.status || null,
     };
     await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
     actualizarCache(id, anime);
