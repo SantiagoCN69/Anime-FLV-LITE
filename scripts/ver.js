@@ -355,7 +355,7 @@ async function cargarEpisodios() {
 
 async function cargarVideoDesdeEpisodio(index) {
   const ep = episodios[index];
-  const btnCap = document.getElementById("btn-cap"); // Asegurarse que btnCap esté disponible aquí
+  const btnCap = document.getElementById("btn-cap"); 
   if (btnCap && ep) {
     btnCap.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
   } else if (btnCap) {
@@ -417,11 +417,32 @@ async function cargarVideoDesdeEpisodio(index) {
   embeds = ep.servidores;
   episodioActualIndex = index;
 
- // Buscar el servidor de mega primero
-const megaIndex = embeds.findIndex(link => link && typeof link.url === "string" && link.url.includes('mega.nz/'));
-// Luego, buscar el servidor de yourupload
-const yourUploadIndex = embeds.findIndex(link => link && typeof link.url === "string" && link.url.includes('yourupload.com/embed/'));
+  // Reordenar servidores: Mega primero, luego YourUpload, luego el resto
+  if (embeds && embeds.length > 0) {
+    let megaServer = null;
+    let yourUploadServer = null;
+    const otherServers = [];
 
+    embeds.forEach(srv => {
+      if (srv && typeof srv.url === "string") {
+        if (srv.url.includes('mega.nz/')) {
+          megaServer = srv;
+        } else if (srv.url.includes('yourupload.com/embed/')) {
+          yourUploadServer = srv;
+        } else {
+          otherServers.push(srv);
+        }
+      } else {
+        otherServers.push(srv); // Mantener servidores con formato inesperado o sin URL
+      }
+    });
+
+    const orderedEmbeds = [];
+    if (megaServer) orderedEmbeds.push(megaServer);
+    if (yourUploadServer) orderedEmbeds.push(yourUploadServer);
+    orderedEmbeds.push(...otherServers);
+    embeds = orderedEmbeds;
+  }
 
   history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${encodeURIComponent(ep.url)}`);
 
@@ -429,25 +450,21 @@ const yourUploadIndex = embeds.findIndex(link => link && typeof link.url === "st
   controles.innerHTML = "";
   embeds.forEach((srv, i) => {
     const btn = document.createElement("button");
-    btn.textContent = `${i + 1}`;
-    btn.dataset.link = srv;
+    // Asignar nombre del servidor si existe, sino un número
+    btn.textContent = srv.nombre ? srv.nombre.replace("Servidor ", "") : `${i + 1}`;
+    // btn.dataset.link = srv; // No es necesario si pasamos el objeto srv directamente
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
   });
 
-  const initialIndex = megaIndex !== -1 ? megaIndex : (yourUploadIndex !== -1 ? yourUploadIndex : (embeds.length > 0 ? 0 : -1));
-
-  if (initialIndex !== -1) {
+  // Mostrar el primer video de la lista reordenada (si existe)
+  if (embeds && embeds.length > 0) {
     const buttons = controles.querySelectorAll("button");
-    if (buttons.length > initialIndex) {
-      mostrarVideo(embeds[initialIndex], buttons[initialIndex]);
+    if (buttons.length > 0) {
+      mostrarVideo(embeds[0], buttons[0]);
     } else {
-      console.warn("No se encontró el botón correspondiente al índice inicial.");
-      if (buttons.length > 0) {
-        mostrarVideo(embeds[0], buttons[0]);
-      } else {
-        document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
-      }
+      // Esto no debería ocurrir si embeds tiene elementos y los botones se crean correctamente
+      document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
     }
   } else {
     document.getElementById("video").innerHTML = "No hay servidores disponibles para mostrar.";
