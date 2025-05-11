@@ -128,15 +128,13 @@ async function crearBotonesEpisodios(anime) {
   const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
   if (primerNoVisto) {
     const targetElement = primerNoVisto.parentElement;
-    if (targetElement) { // Check if parentElement is not null
-      const anchoColumna = typeof getAnchoColumna === 'function' ? getAnchoColumna() : 0; // Ensure getAnchoColumna is callable and provide a default
+    if (targetElement) { 
+      const anchoColumna = typeof getAnchoColumna === 'function' ? getAnchoColumna() : 0; 
 
       if (anchoColumna && anchoColumna > 0) {
-        // Calculate scroll position based on columns
         const columnaDelTarget = Math.floor(targetElement.offsetLeft / anchoColumna);
         let scrollToX = columnaDelTarget * anchoColumna;
         
-        // Ensure the scroll position is within valid bounds
         const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
         scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
 
@@ -145,7 +143,6 @@ async function crearBotonesEpisodios(anime) {
           behavior: 'smooth'
         });
       } else {
-        // Fallback: scroll to bring the element's start into view if no valid column width
         let scrollToX = targetElement.offsetLeft;
         const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
         scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
@@ -221,32 +218,23 @@ async function obtenerCapitulosVistos(animeId) {
         return;
       }
       try {
-        // Asumiendo que 'db', 'doc', 'getDoc' están disponibles en este alcance
         const ref = doc(db, 'usuarios', userInstance.uid, 'caps-vistos', animeId);
         const snap = await getDoc(ref);
         resolve(snap.exists() ? snap.data().episodiosVistos || [] : []);
       } catch (error) {
         console.error("Error al obtener capítulos vistos:", error);
-        reject(error); // O podrías resolver con [] si prefieres manejar errores así
+        reject(error); 
       }
     };
-
-    // Asumiendo que 'auth' está disponible en este alcance
     const currentUser = auth.currentUser;
-    console.log("obtenerCapitulosVistos: Verificando usuario actual:", currentUser);
-
     if (currentUser) {
-      console.log("obtenerCapitulosVistos: Usuario ya autenticado, procediendo.");
       await fetchChaptersLogic(currentUser);
     } else {
-      console.log("obtenerCapitulosVistos: Usuario no autenticado inicialmente, esperando authStateReady.");
       const authReadyListener = async (event) => {
-        document.removeEventListener("authStateReady", authReadyListener); // Limpiar listener
+        document.removeEventListener("authStateReady", authReadyListener); 
         if (event.detail && event.detail.user) {
-          console.log("obtenerCapitulosVistos: authStateReady recibido con usuario:", event.detail.user);
           await fetchChaptersLogic(event.detail.user);
         } else {
-          console.warn("obtenerCapitulosVistos: authStateReady recibido sin usuario autenticado. Retornando [].");
           resolve([]);
         }
       };
