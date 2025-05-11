@@ -78,7 +78,7 @@ async function obtenerTituloAnime(id) {
       titulo = animeSnap.data().titulo || "Anime";
     } else {
       // Si no existe, lo obtenemos desde la API
-      const res = await fetch(`http://localhost:3000/api/anime?id=${id}`);
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
       const data = await res.json();
       
       // 2. Guardar el título del anime en Firestore
