@@ -358,3 +358,33 @@ iframe {
   gap: 15px;
 }
 }
+#menu-toggle {
+  display: block;
+}
+.sidebar {
+  position: absolute;
+  top: 56px;
+  transform: translateX(-100%);
+  left: 0;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: transparent;
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+  color: #fff;
+  z-index: 1000;
+  box-shadow: 0 20px 10px #00000080;
+  height: 100vh;
+}
+.sidebar ul a {
+text-decoration: none;
+color: #fff;
+}
+@media screen and (max-width: 600px)  {
+.sidebar {
+  top: 88px;
+}
+}
+.sidebar.active {
+  transform: translateX(0);
+}
