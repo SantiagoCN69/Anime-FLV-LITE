@@ -117,7 +117,6 @@ async function crearBotonesEpisodios(anime) {
   capContenedor.innerHTML = '';
   const episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
   const vistos = await obtenerCapitulosVistos(id) || [];
-  console.log(vistos)
   const fragment = document.createDocumentFragment();
   episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
   capContenedor.appendChild(fragment);
@@ -210,36 +209,47 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
 }
 
 async function obtenerCapitulosVistos(animeId) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => { 
     const fetchChaptersLogic = async (userInstance) => {
       if (!userInstance) {
-        console.warn("obtenerCapitulosVistos: fetchChaptersLogic llamado sin instancia de usuario válida. Retornando [].");
-        resolve([]);
+        console.warn("obtenerCapitulosVistos: No hay instancia de usuario. Retornando [].");
+        resolve([]); 
         return;
       }
       try {
         const ref = doc(db, 'usuarios', userInstance.uid, 'caps-vistos', animeId);
         const snap = await getDoc(ref);
-        resolve(snap.exists() ? snap.data().episodiosVistos || [] : []);
+        resolve(snap.exists() ? snap.data().episodiosVistos || [] : []); 
       } catch (error) {
         console.error("Error al obtener capítulos vistos:", error);
         reject(error); 
       }
     };
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      await fetchChaptersLogic(currentUser);
-    } else {
-      const authReadyListener = async (event) => {
-        document.removeEventListener("authStateReady", authReadyListener); 
-        if (event.detail && event.detail.user) {
-          await fetchChaptersLogic(event.detail.user);
-        } else {
-          resolve([]);
-        }
-      };
-      document.addEventListener("authStateReady", authReadyListener);
-    }
+
+    let resolved = false; 
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      unsubscribe(); 
+      if (!resolved) {
+        resolved = true;
+        await fetchChaptersLogic(user); 
+      }
+    }, (error) => {
+      if (!resolved) {
+         resolved = true;
+         console.error("Error en onAuthStateChanged:", error);
+         reject(error); 
+         unsubscribe(); 
+      }
+    });
+
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        unsubscribe(); 
+        console.warn("obtenerCapitulosVistos timed out esperando estado de auth. Retornando [].");
+        resolve([]); 
+      }
+    }, 10000); 
   });
 }
 
@@ -277,15 +287,7 @@ function compararDatos(a, b) {
   // 1. Cargar desde caché (si existe)
   const cached = cargarDatosDesdeCache(id);
   if (cached) {
-    renderAnime({
-      titulo: cached.titulo,
-      portada: cached.portada,
-      descripcion: cached.descripcion,
-      generos: cached.generos,
-      rating: cached.rating,
-      estado: cached.estado,
-      episodios: cached.episodios,
-    });
+    renderAnime(cached);
   }
 
   // 2. Cargar desde Firestore siempre
@@ -294,19 +296,11 @@ function compararDatos(a, b) {
     if (docSnap.exists()) {
       const data = docSnap.data();
       if (!compararDatos(cached, data)) {
-        console.log("Datos diferentes de cache a firestore, actualizando...")
-        renderAnime({
-          titulo: data.titulo,
-          portada: data.portada,
-          descripcion: data.descripcion,
-          generos: data.generos,
-          rating: data.rating,
-          estado: data.estado,
-          episodios: data.episodios,
-        });
+       console.log("Datos diferentes de cache a firestore, actualizando...")
       actualizarCache(id, data);
-    }}
-  } catch (err) {
+      renderAnime(data);
+    }
+  }} catch (err) {
     console.error('Error al cargar desde Firestore:', err);
   }
 

@@ -154,7 +154,6 @@ async function toggleYGuardarEstadoCapitulo() {
   const user = auth.currentUser;
   if (!user) {
     console.warn('toggleYGuardarEstadoCapitulo: No hay usuario autenticado.');
-    alert('Debe iniciar sesión para marcar capítulos como vistos.');
     return;
   }
 
