@@ -223,63 +223,19 @@ btnEstadoCapitulo.addEventListener("click", async () => {
 
 // Función para obtener y mostrar noticias
 
-async function obtenerNoticias() {
+async function mostrarNoticiasDesdeFirestore() {
   const contenedorNoticias = document.getElementById('noticias_container');
   const initLoadingServidores = document.querySelector('.init-loading-servidores');
 
   try {
-    // Inicializar Firebase si no está inicializado
-    if (!getApps().length) {
-      initializeApp(firebaseConfig);
-    }
     const db = getFirestore();
     const cacheCollection = collection(db, 'cache');
 
-    // 1. Obtener todas las noticias de Firestore
-    const firestoreSnap = await getDocs(cacheCollection);
-    const noticiasFirestore = new Map(); 
-    firestoreSnap.forEach(doc => {
-      noticiasFirestore.set(doc.id, doc.data());
-    });
-
-    // 2. Obtener noticias de la API
-    const respuesta = await fetch('https://backend-noticias-anime.onrender.com/api/noticias');
-    const noticiasAPI = await respuesta.json();
-    const noticiasAPIMap = new Map(); 
-    noticiasAPI.forEach(noticia => {
-      noticiasAPIMap.set(noticia.title, noticia); 
-    });
-
-    // 3. Identificar y agregar nuevas noticias desde la API a Firestore
-    for (const [tituloAPI, noticiaAPI] of noticiasAPIMap) {
-      if (!noticiasFirestore.has(tituloAPI)) {
-        const noticiaRef = doc(cacheCollection, tituloAPI);
-        await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
-      } else {
-        // Opcional: podrías verificar si la noticia existente necesita actualización
-        const noticiaFirestore = noticiasFirestore.get(tituloAPI);
-        const { timestamp, ...firestoreData } = noticiaFirestore;
-        const { ...apiData } = noticiaAPI;
-        if (JSON.stringify(apiData) !== JSON.stringify(firestoreData)) {
-          const noticiaRef = doc(cacheCollection, tituloAPI);
-          await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
-        }
-      }
-    }
-
-    // 4. Identificar y eliminar noticias de Firestore que no están en la API
-    for (const tituloFirestore of noticiasFirestore.keys()) {
-      if (!noticiasAPIMap.has(tituloFirestore)) {
-        const noticiaRef = doc(cacheCollection, tituloFirestore);
-        await deleteDoc(noticiaRef);
-      }
-    }
-
-    // 5. Volver a obtener y renderizar todas las noticias actualizadas de Firestore (ordenadas)
     contenedorNoticias.innerHTML = '';
     const nuevasCacheSnapshot = await getDocs(
       query(cacheCollection, orderBy('date', 'desc'))
     );
+
     nuevasCacheSnapshot.forEach(doc => {
       const noticia = doc.data();
       const tarjetaNoticia = document.createElement('div');
@@ -296,12 +252,70 @@ async function obtenerNoticias() {
     });
 
     initLoadingServidores.style.display = 'none';
+  } catch (error) {
+    console.error('❌ Error al mostrar noticias:', error);
+    initLoadingServidores.textContent = 'Error al mostrar las noticias.';
+  }
+}
+
+async function obtenerNoticias() {
+  const initLoadingServidores = document.querySelector('.init-loading-servidores');
+
+  try {
+    if (!getApps().length) {
+      initializeApp(firebaseConfig);
+    }
+    const db = getFirestore();
+    const cacheCollection = collection(db, 'cache');
+
+    // Mostrar primero las noticias ya guardadas
+    await mostrarNoticiasDesdeFirestore();
+
+    // Luego sincronizar con la API
+    const firestoreSnap = await getDocs(cacheCollection);
+    const noticiasFirestore = new Map();
+    firestoreSnap.forEach(doc => {
+      noticiasFirestore.set(doc.id, doc.data());
+    });
+
+    const respuesta = await fetch('https://backend-noticias-anime.onrender.com/api/noticias');
+    const noticiasAPI = await respuesta.json();
+    const noticiasAPIMap = new Map();
+    noticiasAPI.forEach(noticia => {
+      noticiasAPIMap.set(noticia.title, noticia);
+    });
+
+    for (const [tituloAPI, noticiaAPI] of noticiasAPIMap) {
+      if (!noticiasFirestore.has(tituloAPI)) {
+        const noticiaRef = doc(cacheCollection, tituloAPI);
+        await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
+      } else {
+        const noticiaFirestore = noticiasFirestore.get(tituloAPI);
+        const { timestamp, ...firestoreData } = noticiaFirestore;
+        const { ...apiData } = noticiaAPI;
+        if (JSON.stringify(apiData) !== JSON.stringify(firestoreData)) {
+          const noticiaRef = doc(cacheCollection, tituloAPI);
+          await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
+        }
+      }
+    }
+
+    for (const tituloFirestore of noticiasFirestore.keys()) {
+      if (!noticiasAPIMap.has(tituloFirestore)) {
+        const noticiaRef = doc(cacheCollection, tituloFirestore);
+        await deleteDoc(noticiaRef);
+      }
+    }
+
+    // Mostrar nuevamente después de sincronizar
+    await mostrarNoticiasDesdeFirestore();
 
   } catch (error) {
     console.error('❌ Error al sincronizar noticias:', error);
     initLoadingServidores.textContent = 'Error al cargar las noticias.';
   }
 }
+
 
 obtenerNoticias();
 
@@ -557,7 +571,7 @@ function mostrarVideo(link, botonSeleccionado) {
 
     if (url.toLowerCase().includes("mega")) {
       const btnCensura = document.getElementById("btn-censura");
-      if (btnCensura) {
+      if (btnCensura && censuraActiva) {
         btnCensura.click();
       }
     }
