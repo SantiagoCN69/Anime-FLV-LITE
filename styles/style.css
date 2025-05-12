@@ -236,6 +236,7 @@ button:hover {
     border-radius: 0;
     width: 60%;
     background: #181b2edd;
+    max-height: unset;
     height: calc(100dvh - 88px);
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
