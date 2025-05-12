@@ -164,7 +164,7 @@ button:hover {
   margin: 2rem auto;
   margin-right: 3%;
   border-radius: 3px;
-  max-height: var(--altura-main);
+  height: var(--altura-main);
   overflow-y: auto;
   border-right: 1px solid #888;
   -webkit-overflow-scrolling: touch;
@@ -236,7 +236,6 @@ button:hover {
     border-radius: 0;
     width: 60%;
     background: #181b2edd;
-    max-height: unset;
     height: calc(100dvh - 88px);
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
