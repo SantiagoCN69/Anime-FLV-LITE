@@ -256,7 +256,6 @@ async function obtenerNoticias() {
       if (!noticiasFirestore.has(tituloAPI)) {
         const noticiaRef = doc(cacheCollection, tituloAPI);
         await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
-        console.log(`➕ Noticia "${tituloAPI}" agregada a Firestore.`);
       } else {
         // Opcional: podrías verificar si la noticia existente necesita actualización
         const noticiaFirestore = noticiasFirestore.get(tituloAPI);
@@ -265,7 +264,6 @@ async function obtenerNoticias() {
         if (JSON.stringify(apiData) !== JSON.stringify(firestoreData)) {
           const noticiaRef = doc(cacheCollection, tituloAPI);
           await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
-          console.log(`🔄 Noticia "${tituloAPI}" actualizada en Firestore.`);
         }
       }
     }
@@ -275,7 +273,6 @@ async function obtenerNoticias() {
       if (!noticiasAPIMap.has(tituloFirestore)) {
         const noticiaRef = doc(cacheCollection, tituloFirestore);
         await deleteDoc(noticiaRef);
-        console.log(`🗑️ Noticia "${tituloFirestore}" eliminada de Firestore.`);
       }
     }
 
@@ -293,6 +290,9 @@ async function obtenerNoticias() {
         <h3 class="noticia-titulo">${noticia.title}</h3>
         <p class="noticia-fecha">${noticia.date}</p>
       `;
+      tarjetaNoticia.addEventListener('click', () => {
+        window.open(`https://somoskudasai.com/noticias/${noticia.slug}`, '_blank');
+      });
       contenedorNoticias.appendChild(tarjetaNoticia);
     });
 
