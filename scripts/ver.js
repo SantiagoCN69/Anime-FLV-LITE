@@ -602,16 +602,17 @@ btnAnterior.addEventListener("click", async (e) => {
 
 
 cargarEpisodios().then(actualizarEstadoBotones);
-//sidebar
 
+//side bar
 const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.querySelector('.sidebar');
+const noticiasList = document.getElementById('noticias_container');
 
 let touchStartX = 0;
 let touchStartY = 0;
 let touchEndX = 0;
 let touchEndY = 0;
-let touchStartedOnEpisodeList = false;
+let touchStartedOnNoticiasList = false;
 const swipeThreshold = 50;
 const verticalThreshold = 50;
 
@@ -637,13 +638,19 @@ document.addEventListener('click', (event) => {
 document.addEventListener('touchstart', (event) => {
   touchStartX = event.changedTouches[0].screenX;
   touchStartY = event.changedTouches[0].screenY;
-  touchStartedOnEpisodeList = capContenedor.contains(event.target);
+
+  if (noticiasList) {
+    touchStartedOnNoticiasList = noticiasList.contains(event.target);
+  } else {
+    touchStartedOnNoticiasList = false;
+  }
 }, { passive: true });
 
 document.addEventListener('touchend', (event) => {
   touchEndX = event.changedTouches[0].screenX;
   touchEndY = event.changedTouches[0].screenY;
   handleSwipeGesture();
+  touchStartedOnNoticiasList = false; 
 }, { passive: true });
 
 function handleSwipeGesture() {
@@ -653,7 +660,7 @@ function handleSwipeGesture() {
   const isSwipeLeft = swipeDistanceX < -swipeThreshold;
 
   // Abrir: Swipe derecho, menú cerrado, movimiento vertical bajo, y no iniciado en lista de episodios
-  if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnEpisodeList) {
+  if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnNoticiasList) {
     if (window.scrollY > 0) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
@@ -669,7 +676,7 @@ function handleSwipeGesture() {
     } else {
       sidebar.classList.add('active');
     }
-  // Cerrar: Swipe izquierdo, menú abierto, movimiento vertical bajo
+
   } else if (isSwipeLeft && sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold) {
     sidebar.classList.remove('active');
   }
