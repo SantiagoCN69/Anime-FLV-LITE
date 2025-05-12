@@ -575,7 +575,8 @@ h2 {
 }
 .sidebar {
     position: absolute;
-    top: 56px;
+    top: 88px;
+    margin: 0;
     transform: translateX(-100%);
     left: 0;
     gap: 1rem;
@@ -586,21 +587,12 @@ h2 {
     color: #fff;
     z-index: 1000;
     box-shadow: 0 20px 10px #00000080;
-    height: calc(100dvh - 88px);
-    overflow-y: auto; /* Permitir scroll interno y ayudar a overscroll-behavior */
-    
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
 }
 .sidebar ul a {
   text-decoration: none;
   color: #fff;
 }
-@media screen and (max-width: 600px)  {
-  .sidebar {
-    top: 88px;
-}
-}
+
 .sidebar.active {
     transform: translateX(0);
 }
