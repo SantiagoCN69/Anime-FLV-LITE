@@ -582,8 +582,8 @@ btnSiguiente.addEventListener("click", async (e) => {
       await toggleYGuardarEstadoCapitulo();
     }
     await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
-    await refrescarUIEstadoCapitulo();
     actualizarEstadoBotones();
+    await refrescarUIEstadoCapitulo();
   }
 });
 
