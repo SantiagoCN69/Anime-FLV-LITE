@@ -343,7 +343,7 @@ iframe {
   #noticias_container {
     width: 100%;
     flex-direction: row;
-    
+    height: 152px;
   }
   
 }
@@ -353,7 +353,7 @@ iframe {
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: auto;
   grid-template-areas: 
-  "btn-anuncios btn-censura"
+  "btn-censura btn-anuncios"
   "btn-anterior btn-siguiente";
   gap: 15px;
 }
