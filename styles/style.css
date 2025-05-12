@@ -697,7 +697,8 @@ main {
 }
 
 #disqus_thread {
-  width: 90%;
+  width: 95%;
+  max-width: 1150px;
   margin: 0 auto;
 }
 footer {
