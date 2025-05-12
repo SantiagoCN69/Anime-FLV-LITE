@@ -88,10 +88,8 @@ header {
 }
 .title {
     margin-right: auto;
-    text-decoration: none;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 .title a {
     color: #ffffff;
