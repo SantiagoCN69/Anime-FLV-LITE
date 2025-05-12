@@ -621,8 +621,10 @@ menuToggle.addEventListener('click', () => {
 });
 
 window.addEventListener('scroll', () => {
-  if (sidebar.classList.contains('active')) {
-    sidebar.classList.remove('active');
+  if (window.innerWidth < 600) {
+    if (sidebar.classList.contains('active')) {
+      sidebar.classList.remove('active');
+    }
   }
 });
 
@@ -661,20 +663,24 @@ function handleSwipeGesture() {
 
   // Abrir: Swipe derecho, menú cerrado, movimiento vertical bajo, y no iniciado en lista de episodios
   if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnNoticiasList) {
-    if (window.scrollY > 0) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      function checkScrollAndOpen() {
-        if (window.scrollY === 0) {
-          sidebar.classList.add('active');
-        } else {
-          requestAnimationFrame(checkScrollAndOpen);
-        }
-      }
-      requestAnimationFrame(checkScrollAndOpen);
+    if (window.innerWidth <= 600) { 
+      if (window.scrollY > 0) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    } else {
-      sidebar.classList.add('active');
+        function checkScrollAndOpen() {
+          if (window.scrollY === 0) {
+            sidebar.classList.add('active');
+          } else {
+            requestAnimationFrame(checkScrollAndOpen);
+          }
+        }
+        requestAnimationFrame(checkScrollAndOpen);
+
+      } else {
+        sidebar.classList.add('active');
+      }
+    } else { 
+      sidebar.classList.add('active'); 
     }
 
   } else if (isSwipeLeft && sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold) {
