@@ -604,8 +604,7 @@ function handleSwipeGesture() {
   const isSwipeLeft = swipeDistanceX < -swipeThreshold;
 
   // Abrir: Swipe derecho, menú cerrado, movimiento vertical bajo, y no iniciado en lista de episodios
-  if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnNoticiasList) {
-    if (window.innerWidth <= 600) { 
+  if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnEpisodeList) {    if (window.innerWidth <= 600) { 
       if (window.scrollY > 0) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
