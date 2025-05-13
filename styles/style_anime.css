@@ -578,12 +578,13 @@ h2 {
 }
 .sidebar {
     position: absolute;
-    top: 88px;
+    top: 0;
     margin: 0;
     transform: translateX(-100%);
     left: 0;
     gap: 1rem;
     padding: 1rem;
+    padding-top: 88px;
     background: transparent;
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
