@@ -286,7 +286,6 @@ async function obtenerNoticias() {
   }
 }
 
-
 obtenerNoticias();
 
 

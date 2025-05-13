@@ -434,6 +434,7 @@ h2 {
         "container1 container2"
         "container3 container3";
         max-height: fit-content ;
+        gap: 1rem;
     }
     .anime-container1 {
         padding: 0;
@@ -464,7 +465,7 @@ h2 {
     font-size: .9rem;
     }
     .anime-title {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
     }
     .anime-rating {
       font-size: .8rem;
