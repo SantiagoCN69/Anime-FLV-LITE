@@ -1,6 +1,6 @@
 const params = new URLSearchParams(location.search);
 const animeId = params.get("animeId");
-const episodioUrl = decodeURIComponent(params.get("url") || "");
+const episodioUrl = params.get("url");
 const btnVolver = document.getElementById("btn-volver-anime");
 const tituloAnime = document.getElementById("titulo-anime");
 btnVolver.href = `anime.html?id=${animeId}`;
@@ -65,45 +65,15 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-async function obtenerTituloAnime(id) {
-  try {
-    // 1. Verificar si el título del anime está en Firestore
-    const animeRef = doc(db, 'datos-animes', id);
-    const animeSnap = await getDoc(animeRef);
-
-    let titulo = "Anime"; // Título por defecto
-
-    if (animeSnap.exists()) {
-      // Si el título existe en Firestore, lo cargamos
-      titulo = animeSnap.data().titulo || "Anime";
-    } else {
-      // Si no existe, lo obtenemos desde la API
-      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
-      const data = await res.json();
-      
-      // 2. Guardar el título del anime en Firestore
-      titulo = data.title || "Anime";
-      await setDoc(doc(db, 'datos-animes', id), { titulo, fechaGuardado: serverTimestamp() }, { merge: true });
-    }
-
-    // 3. Mostrar el título en la interfaz
-    const tituloAnime = document.getElementById('titulo-anime');
-    tituloAnime.textContent = "Volver a " + titulo;
-  } catch (err) {
-    console.error('Error al obtener título del anime:', err);
-    const tituloAnime = document.getElementById('titulo-anime');
-    tituloAnime.textContent = "Error al cargar título";
-  }
+function ponerTitulo(id) {
+  const tituloAnime = document.getElementById('titulo-anime');
+  tituloAnime.textContent = "Volver a " + id;
 }
-
-// Llamar a la función pasando el ID del anime
-obtenerTituloAnime(animeId);
+ponerTitulo(animeId);
 
 async function refrescarUIEstadoCapitulo() {
   const user = auth.currentUser;
   if (!user) {
-    // No actualizamos UI si no hay usuario, podría mostrar "No visto" incorrectamente
-    // o podríamos decidir mostrar un estado deshabilitado/oculto.
     console.warn('refrescarUIEstadoCapitulo: No hay usuario autenticado, no se actualiza UI de estado del capítulo.');
     return;
   }
@@ -323,20 +293,14 @@ obtenerNoticias();
 
 async function cargarEpisodios() {
   try {
-    // Intentamos cargar el episodio desde Firestore
-    const episodiosRef = doc(db, "datos-animes", animeId);  // Cambia esto a la ruta de Firestore que corresponda
-    const docSnap = await getDoc(episodiosRef);
+    const episodiosRef = doc(db, "datos-animes", animeId); 
     
+    const docSnap = await getDoc(episodiosRef);
+
     if (docSnap.exists()) {
       const data = docSnap.data();
       episodios = data.episodios || [];
-      episodioActualIndex = episodios.findIndex(ep => ep.url === episodioUrl);
-
-      if (episodioActualIndex === -1) {
-        console.warn("Episodio no encontrado en Firestore, cargando desde API externa.");
-        throw new Error("Episodio no encontrado en Firestore");
-      }
-
+      episodioActualIndex = episodios.findIndex(ep => ep.number === parseInt(episodioUrl));
       // Si encontramos el episodio en Firestore, cargamos el video
       await cargarVideoDesdeEpisodio(episodioActualIndex);
       return episodios;
@@ -346,31 +310,17 @@ async function cargarEpisodios() {
   } catch (err) {
     console.warn("Error al cargar desde Firestore:", err);
     
-    // Si falla con Firestore, cargamos desde la API externa
-    try {
-      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episodes?id=${animeId}`);
-      const data = await res.json();
-      episodios = data.episodes || [];
-      episodioActualIndex = episodios.findIndex(ep => ep.url === episodioUrl);
-      
-      if (episodioActualIndex === -1) throw new Error("Episodio no encontrado");
-      
-      await cargarVideoDesdeEpisodio(episodioActualIndex);
-      return episodios;
-    } catch (err) {
-      document.getElementById("video").innerHTML = "Error al cargar episodio.";
-      console.error(err);
-      return [];
-    }
+    
   }
 }
 
 
 async function cargarVideoDesdeEpisodio(index) {
   const ep = episodios[index];
+  console.log("episodi actual: ", ep);
   const btnCap = document.getElementById("btn-cap"); 
   if (btnCap && ep) {
-    btnCap.textContent = `Episodio ${ep.number || ep.title || "desconocido"}`;
+    btnCap.textContent = `Episodio ${ep.number || "desconocido"}`;
   } else if (btnCap) {
     btnCap.textContent = "Episodio desconocido";
     console.warn("No se pudo determinar el episodio actual para btnCap en cargarVideoDesdeEpisodio");
@@ -387,14 +337,16 @@ async function cargarVideoDesdeEpisodio(index) {
     if (episodioGuardado?.servidores?.length) {
       ep.servidores = episodioGuardado.servidores;
     }
+    console.log("servidores cargados de firestore: ", ep.servidores);
   } catch (error) {
     console.error("Error al cargar datos desde Firestore:", error);
   }
 
   // 2. Si no hay servidores, usar el backend
   if (!ep.servidores || !ep.servidores.length) {
+    console.log("No se encontraron servidores en Firestore, cargando desde el backend.");
     try {
-      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(ep.url)}`);
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=https://www3.animeflv.net/ver/${animeId}-${episodioUrl}`);
       const data = await res.json();
 
       if (!data.servidores?.length) {
@@ -457,7 +409,7 @@ async function cargarVideoDesdeEpisodio(index) {
     embeds = orderedEmbeds;
   }
 
-  history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${encodeURIComponent(ep.url)}`);
+  history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${ep.number}`);
 
   const controles = document.getElementById("controles");
   controles.innerHTML = "";
@@ -484,9 +436,10 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Pre-cargar siguiente episodio (si existe)
   const siguiente = episodios[index + 1];
+  console.log("siguiente: ", siguiente);
   if (siguiente && (!siguiente.servidores || !siguiente.servidores.length)) {
     try {
-      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(siguiente.url)}`);
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${siguiente.url}`);
       const data = await res.json();
 
       if (data.servidores?.length) {

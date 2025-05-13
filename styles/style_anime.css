@@ -132,9 +132,6 @@ h2 {
     grid-area: estado;
     transition: background 0.3s ease;
     background: #6c757d;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -464,11 +461,17 @@ h2 {
     .anime-description {
     -webkit-line-clamp: unset;
     line-clamp: unset;
+    font-size: .9rem;
     }
     .anime-title {
-      font-size: 1.5rem;
+      font-size: 1.1rem;
     }
-
+    .anime-rating {
+      font-size: .8rem;
+    }
+    .genero button {
+      font-size: .8rem;
+    }
     .anime-container3 {
         width: 100%;
         max-height: 500px;
