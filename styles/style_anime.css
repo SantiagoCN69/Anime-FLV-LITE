@@ -431,12 +431,10 @@ flex-direction: column;
   display: flex;
   gap: 1rem;
   overflow-y: auto;
-  scroll-snap-type: x mandatory;
   flex-direction: row;
   overflow: auto;
 }
 #relacionados .anime-card {
-scroll-snap-align: start;
 width: 250px;
 min-width: 250px;
 }

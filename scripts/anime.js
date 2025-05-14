@@ -598,6 +598,15 @@ onAuthStateChanged(auth, async (user) => {
     actualizarBotonEstado(estado);
   }
 });
+// dezplazamiento relacioandos
+const scrollContainer = document.querySelector('#animes-relacionados');
+
+scrollContainer.addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
+    e.preventDefault(); // evita el scroll vertical
+    scrollContainer.scrollLeft += e.deltaY;
+  }
+}, { passive: false });
 
 
 //side bar
