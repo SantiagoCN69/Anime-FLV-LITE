@@ -21,6 +21,7 @@ function limpiarVistaAnimePage() {
   if (animeDetails) animeDetails.style.display = 'grid';
   if (mainContainer) mainContainer.innerHTML = "";
   if (disqusThread) disqusThread.style.display = 'block';
+  if (relacionados) relacionados.style.display = 'flex';
   const verAnime = document.getElementById('main-ver');
   if (verAnime) verAnime.style.display = 'flex';
 }
@@ -41,6 +42,7 @@ const animeDetails = document.querySelector('.anime-details');
 const mainContainer = document.getElementById('main');
 const sidebar = document.querySelector('.sidebar');
 const disqusThread = document.getElementById('disqus_thread');
+const relacionados = document.getElementById('relacionados');
 
 // === UI: eventos de búsqueda ===
 document.getElementById('btn-search').addEventListener('click', () => {
@@ -108,6 +110,7 @@ function mostrarResultados(data) {
   if (isAnimePage || isVerPage) {
     if (animeDetails) animeDetails.style.display = resultados.length > 0 ? 'none' : 'grid';
     if (disqusThread) disqusThread.style.display = resultados.length > 0 ? 'none' : 'block';
+    if (relacionados) relacionados.style.display = resultados.length > 0 ? 'none' : 'flex';
     const verAnime = document.getElementById('main-ver');
     if (verAnime) verAnime.style.display = resultados.length > 0 ? 'none' : 'flex';
     if (resultados.length === 0) return;

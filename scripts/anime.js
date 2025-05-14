@@ -60,6 +60,49 @@ const renderGeneros = (container, generos) => {
   }
 };
 
+// Renderizar relacionados
+async function renderRelacionados(anime) {
+  const relacionadosContainer = document.getElementById('animes-relacionados');
+  const relacionadosSection = document.getElementById('relacionados');
+  
+  if (!relacionadosContainer || !anime.relacionados || !anime.relacionados.length) {
+    if (relacionadosSection) relacionadosSection.style.display = 'none';
+    return;
+  }
+  
+  if (relacionadosSection) relacionadosSection.style.display = 'flex';
+
+  relacionadosContainer.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+
+  for (const relacionado of anime.relacionados) {
+    try {
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`);
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+      const data = await res.json();
+
+      // Tomar solo el primer resultado
+      const primerResultado = data.data?.[0];
+      if (primerResultado) {
+        const card = crearAnimeCard(primerResultado);
+        
+        // Agregar la relación debajo de la tarjeta
+        const relationSpan = document.createElement('span');
+        relationSpan.className = 'relation-tag';
+        relationSpan.textContent = relacionado.relation;
+        card.appendChild(relationSpan);
+
+        fragment.appendChild(card);
+      }
+    } catch (err) {
+      console.error('Error al buscar anime relacionado:', relacionado.title, err);
+    }
+  }
+
+  relacionadosContainer.appendChild(fragment);
+}
+
+
 const renderAnime = anime => {
   tituloEl.textContent = anime.titulo;
   portadaEl.src = anime.portada;
@@ -68,6 +111,7 @@ const renderAnime = anime => {
   renderGeneros(generoContainer, anime.generos);
   crearBotonesEpisodios(anime);
   ratingEl.textContent = anime.rating + "/5";
+  renderRelacionados(anime);
 };
 
 const getAnchoColumna = () => {
@@ -273,12 +317,21 @@ function compararDatos(a, b) {
       .map(ep => ({ url: ep.url, number: ep.number })) // Asegurarse de que la estructura sea la misma
       .sort((ep1, ep2) => ep1.number - ep2.number); // Ordenar por número
   };
+// normalizar y ordenar relacionados
+const normalizarRelacionados = (relacionados) => {
+  return relacionados
+    .map(rel => ({ title: rel.title, relation: rel.relation })) // Asegurarse de que la estructura sea la misma
+    .sort((rel1, rel2) => rel1.title.localeCompare(rel2.title)); // Ordenar alfabéticamente por título
+};
 
   const episodiosA = JSON.stringify(normalizarEpisodios(a.episodios));
   const episodiosB = JSON.stringify(normalizarEpisodios(b.episodios));
 
+  const relacionadosA = JSON.stringify(normalizarRelacionados(a.relacionados));
+  const relacionadosB = JSON.stringify(normalizarRelacionados(b.relacionados));
+
   // Retornamos el resultado final
-  return tituloIgual && portadaIgual && descripcionIgual && ratingIgual && estadoIgual && generosIgual && episodiosA === episodiosB;
+  return tituloIgual && portadaIgual && descripcionIgual && ratingIgual && estadoIgual && generosIgual && episodiosA === episodiosB && relacionadosA === relacionadosB;
 }
 
 (async () => {
@@ -316,6 +369,8 @@ function compararDatos(a, b) {
       rating: data.rating || null,
       estado: data.status || null,
       episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
+      relacionados: data.related.map(ep => ({ title: ep.title, relation: ep.relation })) || [],
+
     };
     await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
     actualizarCache(id, anime);
@@ -549,12 +604,14 @@ onAuthStateChanged(auth, async (user) => {
 const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.querySelector('.sidebar');
 const episodeList = document.getElementById('capitulos');
+const relatedAnimes = document.getElementById('animes-relacionados');
 
 let touchStartX = 0;
 let touchStartY = 0;
 let touchEndX = 0;
 let touchEndY = 0;
 let touchStartedOnEpisodeList = false;
+let touchStartedOnRelatedAnimes = false;
 const swipeThreshold = 50;
 const verticalThreshold = 50;
 
@@ -583,18 +640,16 @@ document.addEventListener('touchstart', (event) => {
   touchStartX = event.changedTouches[0].screenX;
   touchStartY = event.changedTouches[0].screenY;
 
-  if (episodeList) {
-    touchStartedOnEpisodeList = episodeList.contains(event.target);
-  } else {
-    touchStartedOnEpisodeList = false;
-  }
+  touchStartedOnEpisodeList = episodeList?.contains(event.target) || false;
+  touchStartedOnRelatedAnimes = relatedAnimes?.contains(event.target) || false;
 }, { passive: true });
 
 document.addEventListener('touchend', (event) => {
   touchEndX = event.changedTouches[0].screenX;
   touchEndY = event.changedTouches[0].screenY;
   handleSwipeGesture();
-  touchStartedOnEpisodeList = false; 
+  touchStartedOnEpisodeList = false;
+  touchStartedOnRelatedAnimes = false;
 }, { passive: true });
 
 function handleSwipeGesture() {
@@ -603,8 +658,10 @@ function handleSwipeGesture() {
   const isSwipeRight = swipeDistanceX > swipeThreshold;
   const isSwipeLeft = swipeDistanceX < -swipeThreshold;
 
-  // Abrir: Swipe derecho, menú cerrado, movimiento vertical bajo, y no iniciado en lista de episodios
-  if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnEpisodeList) {    if (window.innerWidth <= 600) { 
+  const swipeStartedInRestrictedArea = touchStartedOnEpisodeList || touchStartedOnRelatedAnimes;
+
+  if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !swipeStartedInRestrictedArea) {
+    if (window.innerWidth <= 600) {
       if (window.scrollY > 0) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -616,18 +673,17 @@ function handleSwipeGesture() {
           }
         }
         requestAnimationFrame(checkScrollAndOpen);
-
       } else {
         sidebar.classList.add('active');
       }
-    } else { 
-      sidebar.classList.add('active'); 
+    } else {
+      sidebar.classList.add('active');
     }
-
   } else if (isSwipeLeft && sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold) {
     sidebar.classList.remove('active');
   }
 }
+
 
 function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, siguienteEpisodioUrl, animeId }) {
   const btn = document.createElement('div');
