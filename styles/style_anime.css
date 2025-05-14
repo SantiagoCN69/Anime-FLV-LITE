@@ -43,14 +43,13 @@ header {
 
   .anime-details {
     display: grid;
-    grid-template-columns: auto auto ;
-    grid-template-rows: auto 332px auto;
+    grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
+    grid-template-rows: 177px auto auto;
     grid-template-areas: 
     "container1 container2"
     "container1 container3"
     "container4 container4";
     gap: 25px;
-    margin: 0 auto;
     height: fit-content;
     overflow: hidden;
   }
@@ -64,15 +63,13 @@ header {
     max-height: fit-content;
     grid-area: container1;
     position: relative;
-    width: fit-content;
-    max-width: 240px;
+    width: 100%;
   }
   
   .anime-container1 img {
     border-radius: 5px;
     width: 100%;
     height: auto;
-    max-height: 70%;
     object-fit: contain;
   }
   
@@ -202,6 +199,7 @@ header {
     overflow: hidden;
     grid-area: container2;
     gap: 7px;
+    height: fit-content;
   }
 
   .info1 {
@@ -465,7 +463,7 @@ min-width: 250px;
   }
     .anime-details {
         grid-template-columns:1fr 2fr;
-        grid-template-rows: auto 490px auto;
+        grid-template-rows: auto auto auto;
         grid-template-areas: 
         "container1 container2"
         "container3 container3"
