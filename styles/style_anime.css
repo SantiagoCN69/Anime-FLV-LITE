@@ -457,14 +457,16 @@ h2 {
         width: 100%;
         padding: 0;
         max-height: var(--altura-container-1);
+        gap: 7px;
     }
     .anime-description {
     -webkit-line-clamp: unset;
     line-clamp: unset;
-    font-size: .9rem;
+    font-size: .8rem;
+    line-height: 1.5;
     }
     .anime-title {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
     }
     .anime-rating {
       font-size: .8rem;
