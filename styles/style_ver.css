@@ -379,6 +379,11 @@ body {
   z-index: 1000;
   height: calc(100% - 88px);
 }
+@media screen and (max-width: 600px) {
+  .sidebar {
+      height: 100dvh;
+  }
+}
 .sidebar ul a {
 text-decoration: none;
 color: #fff;

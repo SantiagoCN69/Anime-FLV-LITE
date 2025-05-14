@@ -288,7 +288,6 @@ h2 {
     color: #fff;
     font-size: .9rem;
     overflow-y: auto;
-    scrollbar-width: none;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 5;
@@ -592,6 +591,11 @@ h2 {
     color: #fff;
     z-index: 1000;
     height: 100%;
+}
+@media screen and (max-width: 600px) {
+    .sidebar {
+        height: 100dvh;
+    }
 }
 .sidebar ul a {
   text-decoration: none;
