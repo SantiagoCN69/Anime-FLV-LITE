@@ -20,17 +20,17 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/directorio-styles.css">
-    <script type="module" src="scripts/index.js" defer></script>
     <script type="module" src="scripts/header.js" defer></script>
+    <script type="module" src="scripts/directorio.js" defer></script>
+    <script type="module" src="scripts/firebase-login.js" defer></script>
 </head>
 <body>
     <div class="aurora"></div>
     <header>
         <h1 class="title"><a href="index.html">AnimeFLV Lite</a></h1>
-        <a href="directorio.html" id="btn-directorio" title="Directorio" style="color: #bdbdbd">Directorio Anime</a>
         <div class="search">
             <input type="text" id="busqueda" placeholder="Buscar anime...">
-            <button type="button" id="btn-close-search" title="Cerrar búsqueda">
+            <button id="btn-close-search" title="Cerrar búsqueda">
               <img src="icons/xmark-solid.svg" alt="Cerrar búsqueda">
             </button>
         </div>
@@ -41,6 +41,22 @@
         <button type="button" id="btn-search" title="Buscar anime"></button>
         <button type="button" id="menu-toggle" title="Menú"></button>
     </header>
+
+    <section class="sidebar">
+        <ul>
+          <li><a href="index.html#Ultimos-Episodios">Últimos Episodios</a></li>
+          <li><a href="index.html#Mis-Favoritos">Mis Favoritos</a></li>
+          <li><a href="index.html#Viendo">Viendo</a></li>
+          <li><a href="index.html#Pendientes">Pendientes</a></li>
+          <li><a href="index.html#Completados">Completados</a></li>
+        </ul>
+        <div class="continuar-viendo">
+          <h3>Continuar viendo</h3>
+          <div id="ultimos-caps-viendo">
+              <!-- se agregan los ultimos caps viendo -->
+          </div>
+        </div>
+      </section>
 
     <main class="anime-details">
         <h1 class="section-title">Directorio de Animes</h1>
@@ -142,5 +158,4 @@
     <footer>
         <p>Este proyecto es una iniciativa independiente desarrollada con fines educativos y de entretenimiento. La información y el contenido multimedia son obtenidos de AnimeFLV. Todos los derechos sobre dicho contenido pertenecen a sus respectivos propietarios.</p>
       </footer>
-    <script type="module" src="scripts/directorio.js" defer></script>
     </body>
