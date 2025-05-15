@@ -15,7 +15,10 @@ body {
     scrollbar-gutter: stable;
     overflow-y: scroll;
 }
-
+a {
+  text-decoration: none;
+  color: inherit;
+}
 /* Scrollbar styles */
 ::-webkit-scrollbar {
     width: 7px;
@@ -93,14 +96,23 @@ header {
 }
 .title a {
     color: #ffffff;
-    text-decoration: none;
 }
 #btn-directorio {
-    color: #3c457e;
+    color: #555b80;
     font-weight: bolder;
     text-transform: uppercase;
-    text-decoration: none;
     margin-right: 10px;
+}
+#btn-directorio2 {
+  display: none;
+}
+@media screen and (max-width: 850px) {
+  #btn-directorio {
+    display: none;
+  }
+  #btn-directorio2 {
+    display: block;
+  }
 }
 #busqueda {
     padding: 13px;
