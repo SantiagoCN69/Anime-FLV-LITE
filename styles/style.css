@@ -95,7 +95,13 @@ header {
     color: #ffffff;
     text-decoration: none;
 }
-
+#btn-directorio {
+    color: #3c457e;
+    font-weight: bolder;
+    text-transform: uppercase;
+    text-decoration: none;
+    margin-right: 10px;
+}
 #busqueda {
     padding: 13px;
     border: 1px solid #fff8;
