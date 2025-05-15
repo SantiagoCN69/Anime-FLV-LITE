@@ -244,7 +244,7 @@ header {
   .genero {
     display: flex;
     gap: 5px;
-    max-height: 25px;
+    max-height: fit-content;
     overflow: auto;
     flex-wrap: wrap;
   }
@@ -490,14 +490,17 @@ min-width: 250px;
     .anime-container2 {
         width: 100%;
         padding: 0;
-        max-height: var(--altura-container-1);
+        height: var(--altura-container-1);
         gap: 7px;
+        justify-content: space-between;
     }
     .anime-description {
-    -webkit-line-clamp: unset;
-    line-clamp: unset;
+    -webkit-line-clamp: 11;
+    line-clamp: 11;
     font-size: .8rem;
     line-height: 1.5;
+    margin-bottom: auto;
+
     }
     .anime-title {
       font-size: 1.3rem;
