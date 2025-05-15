@@ -372,7 +372,6 @@ body {
   left: 0;
   gap: 1rem;
   padding: 1rem;
-  background: transparent;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   color: #fff;
