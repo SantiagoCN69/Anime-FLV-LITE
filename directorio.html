@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AnimeFLV Lite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AnimeFLV Lite: El repositorio más completo de anime en un solo lugar. Disfruta de miles de series y películas sin anuncios ni molestias.">
+    <meta name="keywords" content="anime, series anime, películas anime, streaming anime, AnimeFLV">
+    <meta name="author" content="Santiago Cardona Nossa">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="AnimeFLV Lite - Tu Repositorio de Anime">
+    <meta property="og:description" content="Disfruta de miles de series y películas de anime sin interrupciones.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AnimeFLV Lite">
+    <meta name="twitter:description" content="El mejor repositorio de anime sin anuncios.">
+    <link rel="canonical" href="https://tudominio.com/index.html">
+    <link rel="icon" type="image/png" href="/icons/icon.png">
+    <link rel="apple-touch-icon" sizes="256x256" href="/icons/icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/directorio-styles.css">
+    <script type="module" src="scripts/index.js" defer></script>
+    <script type="module" src="scripts/header.js" defer></script>
+</head>
+<body>
+    <div class="aurora"></div>
+    <header>
+        <h1 class="title"><a href="index.html">AnimeFLV Lite</a></h1>
+        <a href="directorio.html" id="btn-directorio" title="Directorio" style="color: #bdbdbd">Directorio Anime</a>
+        <div class="search">
+            <input type="text" id="busqueda" placeholder="Buscar anime...">
+            <button type="button" id="btn-close-search" title="Cerrar búsqueda">
+              <img src="icons/xmark-solid.svg" alt="Cerrar búsqueda">
+            </button>
+        </div>
+        <button type="button" id="btn-login" title="Iniciar sesión">
+          <img src="icons/user-solid.svg" alt="Foto de perfil">
+          <span>Login</span>
+        </button>
+        <button type="button" id="btn-search" title="Buscar anime"></button>
+        <button type="button" id="menu-toggle" title="Menú"></button>
+    </header>
+
+    <main class="anime-details">
+        <h1 class="section-title">Directorio de Animes</h1>
+        <nav>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-genero" class="btn-filtro" title="Genero">Genero: <span>Todos</span></button>
+            <nav id="filtro-genero" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion">Acción ⚔️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Aventura 🏞️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Comedia 😂</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Drama 😭</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Fantasía 🔮</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Romance ❤️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Ciencia Ficción 🚀</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Slice of Life 🏠</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Supernatural 👻</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Mecha 🤖</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Psicológico 🧠</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Terror 👹</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-ano" class="btn-filtro" title="Año">Año: <span>Todos</span></button>
+            <nav id="filtro-ano" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion">Todos</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2024</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2023</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2022</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2021</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2020</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2019</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2018</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2017</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2016</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2015</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2014</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2013</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2012</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2011</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2010</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2009</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2008</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2007</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2006</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2005</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2004</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2003</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2002</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2001</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">2000</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-tipo" class="btn-filtro" title="Tipo">Tipo: <span>Todos</span></button>
+            <nav id="filtro-tipo" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion">TV</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Película</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Especial</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">OVA</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-estado" class="btn-filtro" title="Estado">Estado: <span>Todos</span></button>
+            <nav id="filtro-estado" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion">En emisión</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Finalizado</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Proximamente</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-orden" class="btn-filtro" title="Orden">Orden: <span>Por defecto</span></button>
+            <nav id="filtro-orden" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion">Por defecto</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Recientemente actualizados</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Recientemente agregados</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Nombre (A-Z)</button></li>
+                    <li><button type="button" class="btn-filtro-opcion">Calificación</button></li>
+                </ul>
+            </nav>
+            </section>
+            
+            <button type="button" id="btn-filtrar" title="Filtrar">FILTRAR</button>
+        </nav>
+        <div id="resultados" class="grid-resultados">
+            <!-- Aquí se insertarán los resultados dinámicamente -->
+        </div>
+    </main>
+
+    <div id="main"></div>
+    <footer>
+        <p>Este proyecto es una iniciativa independiente desarrollada con fines educativos y de entretenimiento. La información y el contenido multimedia son obtenidos de AnimeFLV. Todos los derechos sobre dicho contenido pertenecen a sus respectivos propietarios.</p>
+      </footer>
+    <script type="module" src="scripts/directorio.js" defer></script>
+    </body>
