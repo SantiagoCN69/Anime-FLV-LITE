@@ -417,6 +417,7 @@ header {
   margin-bottom: 1rem;
 }
 #relacionados {
+display: none;
 width: fit-content;
 max-width: 1150px;
 grid-area: container4;

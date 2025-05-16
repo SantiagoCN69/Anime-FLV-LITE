@@ -54,6 +54,281 @@ filtros.forEach(({ filtro }) => {
     });
 });
 
+// contador 
+const contador = document.getElementById('contador');
+let count = 30;
+setInterval(() => {
+    count--;
+    contador.textContent = count;
+    if (count === 0) {
+        initLoading.remove();
+    }
+}, 500);
+
+// carga inicial 
+const initLoading = document.getElementById('init-loading');
+const resultadosContainer = document.getElementById('resultados');
+
+function crearAnimeCardResultados(anime) {
+  const div = document.createElement('div');
+  div.className = 'anime-card';
+  div.style.setProperty('--cover', `url(${anime.cover})`);
+  div.innerHTML = `
+  <div class="container-img">
+    <img src="${anime.cover}" class="cover" alt="${anime.title}">
+    <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+    <span class="estado">${anime.type}</span>
+  </div>
+  <strong>${anime.title}</strong>
+`;
+  const urlPart = anime.url.split('/').slice(2).join('/');
+  div.addEventListener('click', () => window.location.href = `anime.html?id=${urlPart}`);
+  return div;
+}
+// Sistema de caché para animes
+const CACHE_KEY = 'animes_cache';
+
+function cargarAnimesConCache() {
+  // Mostrar caché existente
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  if (cachedData) {
+    const { data } = JSON.parse(cachedData);
+    resultadosContainer.innerHTML = '';
+    data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+    return;
+  }
+
+  // Hacer la petición a la API
+  fetch('http://localhost:3000/api/browse?order=default')
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      
+      // Actualizar la caché
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ data }));
+      
+      // Mostrar los datos
+      resultadosContainer.innerHTML = '';
+      data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+    })
+    .catch(error => console.error('Error al cargar animes:', error));
+}
+
+// Cargar animes al inicio
+cargarAnimesConCache();
+
+
+
+// Sistema de filtros de género
+const generosBtn = document.getElementById('btn-filtro-genero');
+const generosOpciones = document.querySelectorAll('#filtro-genero .btn-filtro-opcion');
+const btnFiltrar = document.getElementById('btn-filtrar');
+
+// Sistema de filtros de año
+const anoBtn = document.getElementById('btn-filtro-ano');
+const anosOpciones = document.querySelectorAll('#filtro-ano .btn-filtro-opcion');
+
+// Sistema de filtros de tipo
+const tipoBtn = document.getElementById('btn-filtro-tipo');
+const tiposOpciones = document.querySelectorAll('#filtro-tipo .btn-filtro-opcion');
+
+// Sistema de filtros de estado
+const estadoBtn = document.getElementById('btn-filtro-estado');
+const estadosOpciones = document.querySelectorAll('#filtro-estado .btn-filtro-opcion');
+
+// Sistema de filtros de orden
+const ordenBtn = document.getElementById('btn-filtro-orden');
+const ordenesOpciones = document.querySelectorAll('#filtro-orden .btn-filtro-opcion');
+
+// Función para actualizar el link de búsqueda
+function actualizarLinkBusqueda() {
+    // Obtener los géneros activos
+    const generosActivos = Array.from(generosOpciones)
+        .filter(btn => btn.classList.contains('active'))
+        .map(btn => btn.id);
+
+    // Obtener los años activos
+    const anosActivos = Array.from(document.querySelectorAll('#filtro-ano .btn-filtro-opcion'))
+        .filter(btn => btn.classList.contains('active'))
+        .map(btn => btn.id);
+
+    // Obtener los tipos activos
+    const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo .btn-filtro-opcion'))
+        .filter(btn => btn.classList.contains('active'))
+        .map(btn => btn.id);
+
+    // Obtener los estados activos
+    const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado .btn-filtro-opcion'))
+        .filter(btn => btn.classList.contains('active'))
+        .map(btn => btn.id);
+
+    // Obtener los ordenes activos
+    const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden .btn-filtro-opcion'))
+        .filter(btn => btn.classList.contains('active'))
+        .map(btn => btn.id);
+
+    // Construir el link
+    let link = 'http://localhost:3000/api/browse?';
+    
+    // Agregar géneros si hay
+    if (generosActivos.length > 0) {
+        link += 'genre%5B%5D=' + generosActivos.join('&genre%5B%5D=');
+    }
+
+    // Agregar años si hay
+    if (anosActivos.length > 0) {
+        if (generosActivos.length > 0) link += '&'; // Agregar & si ya hay géneros
+        link += 'year%5B%5D=' + anosActivos.join('&year%5B%5D=');
+    }
+
+    // Agregar tipos si hay
+    if (tiposActivos.length > 0) {
+        if (generosActivos.length > 0 || anosActivos.length > 0) link += '&'; // Agregar & si ya hay géneros o años
+        link += 'type%5B%5D=' + tiposActivos.join('&type%5B%5D=');
+    }
+
+    // Agregar estados si hay
+    if (estadosActivos.length > 0) {
+        if (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0) link += '&'; // Agregar & si ya hay géneros, años o tipos
+        link += 'status%5B%5D=' + estadosActivos.join('&status%5B%5D=');
+    }
+
+    // Agregar orden al final
+    const orden = ordenesActivos.length > 0 && (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0 || estadosActivos.length > 0) 
+        ? ordenesActivos[0] // Usar el primer orden seleccionado
+        : 'default';
+    
+    link += '&order=' + orden;
+    
+    console.log('Link actual:', link);
+    return link;
+}
+
+// Event listeners para los botones de género
+generosOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Alternar clase active
+        btn.classList.toggle('active');
+        
+        // Actualizar el texto del botón principal
+        const generosActivos = Array.from(generosOpciones)
+            .filter(btn => btn.classList.contains('active'));
+        
+        if (generosActivos.length > 0) {
+            generosBtn.querySelector('span').textContent = `(${generosActivos.length})`;
+        } else {
+            generosBtn.querySelector('span').textContent = 'Todos';
+        }
+        
+        // Actualizar el link
+        actualizarLinkBusqueda();
+    });
+});
+
+// Event listeners para los botones de año
+anosOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Alternar clase active
+        btn.classList.toggle('active');
+        
+        // Actualizar el texto del botón principal
+        const anosActivos = Array.from(anosOpciones)
+            .filter(btn => btn.classList.contains('active'));
+        
+        if (anosActivos.length > 0) {
+            anoBtn.querySelector('span').textContent = `(${anosActivos.length})`;
+        } else {
+            anoBtn.querySelector('span').textContent = 'Todos';
+        }
+        
+        // Actualizar el link
+        actualizarLinkBusqueda();
+    });
+});
+
+// Event listeners para los botones de tipo
+tiposOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Alternar clase active
+        btn.classList.toggle('active');
+        
+        // Actualizar el texto del botón principal
+        const tiposActivos = Array.from(tiposOpciones)
+            .filter(btn => btn.classList.contains('active'));
+        
+        if (tiposActivos.length > 0) {
+            tipoBtn.querySelector('span').textContent = `(${tiposActivos.length})`;
+        } else {
+            tipoBtn.querySelector('span').textContent = 'Todos';
+        }
+        
+        // Actualizar el link
+        actualizarLinkBusqueda();
+    });
+});
+
+// Event listeners para los botones de estado
+estadosOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Alternar clase active
+        btn.classList.toggle('active');
+        
+        // Actualizar el texto del botón principal
+        const estadosActivos = Array.from(estadosOpciones)
+            .filter(btn => btn.classList.contains('active'));
+        
+        if (estadosActivos.length > 0) {
+            estadoBtn.querySelector('span').textContent = `(${estadosActivos.length})`;
+        } else {
+            estadoBtn.querySelector('span').textContent = 'Todos';
+        }
+        
+        // Actualizar el link
+        actualizarLinkBusqueda();
+    });
+});
+// Event listeners para los botones de orden
+ordenesOpciones.forEach(btn => {
+  btn.addEventListener('click', () => {
+      // Desactivar todos los botones de orden
+      ordenesOpciones.forEach(b => b.classList.remove('active'));
+      
+      // Activar solo el botón clickeado
+      btn.classList.add('active');
+      
+      // Actualizar el texto del botón principal
+      ordenBtn.querySelector('span').textContent = btn.textContent;
+      
+      // Actualizar el link
+      actualizarLinkBusqueda();
+  });
+});
+
+// Event listener para el botón filtrar
+btnFiltrar.addEventListener('click', async () => {
+    // Obtener el link actualizado
+    const link = actualizarLinkBusqueda();
+    // Limpiar el contenedor de resultados
+    resultadosContainer.innerHTML = '';
+    
+    try {
+        const response = await fetch(link);
+        const data = await response.json();
+        
+        // Mostrar los resultados
+        resultadosContainer.innerHTML = '';
+        data.animes.forEach(anime => {
+            const card = crearAnimeCardResultados(anime);
+            resultadosContainer.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error al cargar animes:', error);
+        resultadosContainer.innerHTML = '<p>Error al cargar los animes</p>';
+    }
+});
+
+
+
 
 
 //sidebar
@@ -132,10 +407,12 @@ function handleSwipeGesture() {
 
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 let userid = null;
 onAuthStateChanged(auth, (user) => {
   if (user) {

@@ -1,6 +1,4 @@
-#btn-directorio {
-    color: #bdbdbd;
-}
+
 h2 {
     font-size: 2rem;
 }
@@ -17,8 +15,10 @@ h2 {
 }
 main {
     flex-direction: column;
-    margin-block: 1.5rem;
+    margin-block: 1rem;
+    flex: 1;
 }
+
 h1 {
     font-size: clamp(1.5rem, 3vw, 2rem);
 }
@@ -26,7 +26,7 @@ nav {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-block: 1.5rem;
+    margin-block: 1rem;
     width: fit-content;
 }
 .filtro-section {
@@ -78,10 +78,9 @@ nav {
     max-height: calc(100vh - 230px);
     overflow-y: auto;
     overflow-x: hidden;
+    min-width: 100%;
 }
-#filtro-estado {
-    width: 100%;
-}
+
 @media screen and (max-width: 688px) {
    #filtro-tipo {
         right: 0;
@@ -99,18 +98,18 @@ nav {
 }
 .filtro-opciones ul {
     display: grid;
-    gap: 10px;
+    gap: 5px;
     min-width: 110px;
     width: 100%;
 }
 
 #filtro-genero ul {
-    grid-template-columns: repeat(auto-fill, 140px);
-    max-width: min(590px, calc(95vw - 20px));
+    grid-template-columns: repeat(auto-fill, 120px);
+    max-width: min(500px, calc(95vw - 20px));
 }
 #filtro-ano ul {
-    grid-template-columns: repeat(auto-fill, 50px);
-    max-width: min(230px, calc(95vw - 157px));
+    grid-template-columns: repeat(auto-fill, 60px);
+    max-width: min(260px, calc(95vw - 157px));
 }
 
 .filtro-opciones ul li {
@@ -121,15 +120,31 @@ nav {
     cursor: pointer;
     transition: background 0.3s ease;
     max-height: 35px;
-    padding: 5px;
+    padding: 5px 15px;
     font-size: .8rem;
     background-color: transparent;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
 }
 .btn-filtro-opcion:hover {
-    background-color: #e76f51;
+    background-color: #4d4d4d;
     color: #fff;
+    opacity: 1;
+}
+.btn-filtro-opcion.active {
+    background-color: #e76f51;
 }
     
+#resultados {
+    flex: 1;
+    position: relative;
+    width: 100%;
+}
+.container-img img {
+    aspect-ratio: 3/5;
+}
 
 
 /*sidebar*/
