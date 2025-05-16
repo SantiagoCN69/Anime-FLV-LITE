@@ -27,7 +27,7 @@
 <body>
     <div class="aurora"></div>
     <header>
-        <h1 class="title"><a href="index.html">AnimeFLV Lite</a></h1>
+        <h2 class="title"><a href="index.html">AnimeFLV Lite</a></h1>
         <div class="search">
             <input type="text" id="busqueda" placeholder="Buscar anime...">
             <button id="btn-close-search" title="Cerrar búsqueda">
@@ -80,7 +80,7 @@
                 </ul>
             </nav>
             </section>
-            <section class="filtro-section">
+            <section class="filtro-section" id="filtro-ano-section">
             <button type="button" id="btn-filtro-ano" class="btn-filtro" title="Año">Año: <span>Todos</span></button>
             <nav id="filtro-ano" class="filtro-opciones">
                 <ul>
@@ -146,8 +146,9 @@
                 </ul>
             </nav>
             </section>
-            
+            <section class="filtro-section">
             <button type="button" id="btn-filtrar" title="Filtrar">FILTRAR</button>
+            </section>
         </nav>
         <div id="resultados" class="grid-resultados">
             <!-- Aquí se insertarán los resultados dinámicamente -->

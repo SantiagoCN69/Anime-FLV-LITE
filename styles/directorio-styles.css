@@ -1,7 +1,10 @@
 #btn-directorio {
     color: #bdbdbd;
 }
-button {
+h2 {
+    font-size: 2rem;
+}
+.btn-filtro, #btn-filtrar, .btn-filtro-opcion {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -16,19 +19,27 @@ main {
     flex-direction: column;
     margin-block: 1.5rem;
 }
+h1 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+}
 nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 10px;
     margin-block: 1.5rem;
+    width: fit-content;
 }
 .filtro-section {
     position: relative;
+    display: flex;
+    flex:1 1 0;
 }
 .btn-filtro, #btn-filtrar {
     width: fit-content;
     cursor: pointer;
     position: relative;
+    min-width: 156px;
+    flex:1 1 0;
 }
 .btn-filtro::after {
     content: "▼";
@@ -62,10 +73,25 @@ nav {
     opacity: 0;
     padding: 10px;
     pointer-events: none;
-    transition: opacity .2s ease, transform .3s ease;
+    transition: opacity .2s ease, transform .3s ease, height .3s ease;
     transform: translateY(-35px) scale(.8);
+    max-height: calc(100vh - 230px);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
-
+#filtro-estado {
+    width: 100%;
+}
+@media screen and (max-width: 688px) {
+   #filtro-tipo {
+        right: 0;
+    }
+}
+@media screen and (max-width: 513px) {
+   #filtro-ano {
+        right: 0;
+    }
+}
 .filtro-opciones.active {
     opacity: 1;
     pointer-events: auto;
@@ -74,16 +100,19 @@ nav {
 .filtro-opciones ul {
     display: grid;
     gap: 10px;
+    min-width: 110px;
+    width: 100%;
 }
 
 #filtro-genero ul {
     grid-template-columns: repeat(auto-fill, 140px);
-    max-width: min(590px, 95vw);
+    max-width: min(590px, calc(95vw - 20px));
 }
 #filtro-ano ul {
     grid-template-columns: repeat(auto-fill, 50px);
-    max-width: min(230px, 95vw);
+    max-width: min(230px, calc(95vw - 157px));
 }
+
 .filtro-opciones ul li {
     list-style: none;
 }
@@ -96,7 +125,12 @@ nav {
     font-size: .8rem;
     background-color: transparent;
 }
+.btn-filtro-opcion:hover {
+    background-color: #e76f51;
+    color: #fff;
+}
     
+
 
 /*sidebar*/
 
