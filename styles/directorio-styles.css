@@ -187,9 +187,11 @@ nav {
     display: flex;
     gap: 10px;
     margin-block: 30px;
-    padding-bottom: 5px;
+    padding: 5px;
     width: 100%;
-    overflow: auto;
+    max-width: 614px;
+    margin-inline: auto;
+    overflow-y: auto;
     scroll-snap-type: x mandatory;
   }
   #pagination::-webkit-scrollbar {
@@ -216,5 +218,5 @@ nav {
   .page-button.active {
     background-color: #e76f51;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba(231, 111, 81, 0.5);
+    box-shadow: 0 0 5px rgba(231, 111, 81, 0.5);
   }
