@@ -103,6 +103,9 @@ header {
     text-transform: uppercase;
     margin-right: 10px;
 }
+#btn-directorio:hover {
+    color: #bdbdbd;
+}
 #btn-directorio2 {
   display: none;
 }
