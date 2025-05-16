@@ -45,6 +45,7 @@ const generoContainer = document.querySelector(".genero");
 const capContenedor = document.getElementById("capitulos");
 const filtroCapitulo = document.getElementById("filtro-capitulo");
 const ratingEl = document.getElementById("rating");
+const initLoadingCap = document.getElementById("init-loading-cap");
 
 const renderGeneros = (container, generos) => {
   container.innerHTML = '';
@@ -64,7 +65,7 @@ const renderGeneros = (container, generos) => {
 async function renderRelacionados(anime) {
   const relacionadosContainer = document.getElementById('animes-relacionados');
   const relacionadosSection = document.getElementById('relacionados');
-  const initLoading = document.querySelector('.init-loading-relacionados');
+  const initLoading = document.getElementById('init-loading-relacionados');
   
   if (!relacionadosContainer || !anime.relacionados || !anime.relacionados.length) {
     if (relacionadosSection) relacionadosSection.style.display = 'none';
@@ -166,6 +167,7 @@ async function crearBotonesEpisodios(anime) {
   const fragment = document.createDocumentFragment();
   episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
   capContenedor.appendChild(fragment);
+  if (initLoadingCap) initLoadingCap.style.display = 'none';
   if (episodios.length > 0) {
     actualizarProgresoCapitulos(episodios.length, vistos);
   }

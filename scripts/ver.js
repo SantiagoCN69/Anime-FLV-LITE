@@ -195,7 +195,7 @@ btnEstadoCapitulo.addEventListener("click", async () => {
 
 async function mostrarNoticiasDesdeFirestore() {
   const contenedorNoticias = document.getElementById('noticias_container');
-  const initLoadingServidores = document.querySelector('.init-loading-servidores');
+  const initLoadingNoticias = document.getElementById('init-loading-noticias');
 
   try {
     const db = getFirestore();
@@ -221,15 +221,15 @@ async function mostrarNoticiasDesdeFirestore() {
       contenedorNoticias.appendChild(tarjetaNoticia);
     });
 
-    initLoadingServidores.style.display = 'none';
+    initLoadingNoticias.style.display = 'none';
   } catch (error) {
     console.error('❌ Error al mostrar noticias:', error);
-    initLoadingServidores.textContent = 'Error al mostrar las noticias.';
+    initLoadingNoticias.textContent = 'Error al mostrar las noticias.';
   }
 }
 
 async function obtenerNoticias() {
-  const initLoadingServidores = document.querySelector('.init-loading-servidores');
+  const initLoadingNoticias = document.getElementById('init-loading-noticias');
 
   try {
     if (!getApps().length) {
@@ -282,7 +282,7 @@ async function obtenerNoticias() {
 
   } catch (error) {
     console.error('❌ Error al sincronizar noticias:', error);
-    initLoadingServidores.textContent = 'Error al cargar las noticias.';
+    initLoadingNoticias.textContent = 'Error al cargar las noticias.';
   }
 }
 
