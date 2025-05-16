@@ -98,13 +98,13 @@ header {
     color: #ffffff;
 }
 #btn-directorio {
-    color: #555b80;
+    color: #ccc;
     font-weight: bolder;
     text-transform: uppercase;
     margin-right: 10px;
 }
 #btn-directorio:hover {
-    color: #bdbdbd;
+    color: #fff;
 }
 #btn-directorio2 {
   display: none;
@@ -387,6 +387,17 @@ main {
   display: none;
 }
 
+.span-carga {
+  text-align: center;
+  color: #aaa;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+#init-loading-cap {
+  margin-top: 1.5rem;
+}
 .content-section p, .init-loading-servidores, .no-results {
   text-align: center;
   margin-top: 2rem;

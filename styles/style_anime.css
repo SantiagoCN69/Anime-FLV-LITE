@@ -292,7 +292,9 @@ header {
     padding: 1rem;
     gap: 1rem;
     background-color: #202031;
+    min-height: 166px;
     height: fit-content;
+    position: relative;
   }
   .header-caps {
     display: flex;
@@ -300,7 +302,7 @@ header {
     justify-content: space-between;
     min-height: fit-content;
   }
-  .anime-container3 span {
+  #titulo-lista-caps {
     color: #e76f51;
     font-size: 1.5rem;
     overflow: hidden;
@@ -343,20 +345,18 @@ header {
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
-.episodes-list::-webkit-scrollbar {
+.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar {
     width: 10px;
     height: 8px;
 }
 
-.episodes-list::-webkit-scrollbar-track {
+.episodes-list::-webkit-scrollbar-track, .animes-relacionados::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.episodes-list::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 86, 86, 0.5);
+.episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb {
+    background-color: #ff565652;
     border-radius: 20px;
-    border: 2px solid transparent;
-    background-clip: content-box;
 }
 
 .episodes-list li {
@@ -380,9 +380,6 @@ header {
   align-items: center;
   position: relative;
   padding-inline: 15px;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .icon-eye {
@@ -420,11 +417,12 @@ header {
   margin-bottom: 1rem;
 }
 #relacionados {
-  width: 100%;
-margin: auto;
+width: fit-content;
 max-width: 1150px;
 grid-area: container4;
 flex-direction: column;
+position: relative;
+min-height: 261px;
 }
 
 #relacionados .animes-relacionados {
@@ -433,6 +431,7 @@ flex-direction: column;
   overflow-y: auto;
   flex-direction: row;
   overflow: auto;
+  padding-bottom: 5px;
 }
 #relacionados .anime-card {
 width: 250px;
