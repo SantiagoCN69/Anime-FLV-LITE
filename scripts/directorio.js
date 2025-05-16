@@ -22,9 +22,35 @@ const filtros = [
 
 // eventos botones filtro
 filtros.forEach(({ btn, filtro }) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+        // Cerrar todos los filtros
+        filtros.forEach(({ btn: otherBtn, filtro: otherFiltro }) => {
+            if (otherBtn !== btn) {
+                otherBtn.classList.remove('active');
+                otherFiltro.classList.remove('active');
+            }
+        });
+        
+        // Alternar el filtro actual
         btn.classList.toggle('active');
         filtro.classList.toggle('active');
+    });
+});
+
+// Cerrar filtros al hacer clic fuera
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.btn-filtro') && !e.target.closest('.filtro-opciones')) {
+        filtros.forEach(({ btn, filtro }) => {
+            btn.classList.remove('active');
+            filtro.classList.remove('active');
+        });
+    }
+});
+
+// Evitar que los clics dentro del filtro lo cierren
+filtros.forEach(({ filtro }) => {
+    filtro.addEventListener('click', (e) => {
+        e.stopPropagation();
     });
 });
 
