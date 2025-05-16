@@ -99,7 +99,7 @@ function cargarAnimesConCache() {
   }
 
   // Hacer la petición a la API
-  fetch('http://localhost:3000/api/browse?order=default')
+  fetch('https://backend-animeflv-lite.onrender.com/api/browse?order=default')
     .then(response => response.json())
     .then(data => {
       console.log(data);
@@ -168,7 +168,7 @@ function actualizarLinkBusqueda() {
         .map(btn => btn.id);
 
     // Construir el link
-    let link = 'http://localhost:3000/api/browse?';
+    let link = 'https://backend-animeflv-lite.onrender.com/api/browse?';
     
     // Agregar géneros si hay
     if (generosActivos.length > 0) {
