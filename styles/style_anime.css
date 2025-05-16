@@ -429,9 +429,8 @@ min-height: 261px;
 #relacionados .animes-relacionados {
   display: flex;
   gap: 1rem;
-  overflow-y: auto;
-  flex-direction: row;
   overflow: auto;
+  flex-direction: row;
   padding-bottom: 5px;
 }
 #relacionados .anime-card {
@@ -514,6 +513,9 @@ min-width: 250px;
     .anime-container3 {
         width: 100%;
         max-height: 500px;
+    }
+    #relacionados {
+      width: 100%;
     }
     .episodes-list {
       max-height: 410px;
