@@ -171,7 +171,7 @@ nav {
   }
   @media screen and (max-width: 600px) {
     .sidebar {
-        height: 100dvh;
+        height: calc(100dvh - 88px);
     }
   }
   .sidebar ul a {
