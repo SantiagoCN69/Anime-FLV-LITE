@@ -56,14 +56,14 @@ filtros.forEach(({ filtro }) => {
 
 // contador 
 const contador = document.getElementById('contador');
-let count = 30;
+let count = 100;
 setInterval(() => {
     count--;
-    contador.textContent = count;
+    contador.textContent = count + 's';
     if (count === 0) {
         initLoading.remove();
     }
-}, 500);
+}, 230);
 
 // carga inicial 
 const initLoading = document.getElementById('init-loading');

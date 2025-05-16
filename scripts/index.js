@@ -10,7 +10,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/f
 document.addEventListener('DOMContentLoaded', () => {
   const contadores = document.querySelectorAll('span.contador');
   contadores.forEach(contadorSpan => {
-    let tiempoRestante = 23;
+    let tiempoRestante = 100;
     contadorSpan.textContent = tiempoRestante + 's';
     const intervalo = setInterval(() => {
       tiempoRestante--;
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(intervalo);
         contadorSpan.textContent = '';
       }
-    }, 1000);
+    }, 230);
   });
 });
 
