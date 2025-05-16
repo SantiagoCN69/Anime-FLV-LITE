@@ -64,6 +64,7 @@ const renderGeneros = (container, generos) => {
 async function renderRelacionados(anime) {
   const relacionadosContainer = document.getElementById('animes-relacionados');
   const relacionadosSection = document.getElementById('relacionados');
+  const initLoading = document.querySelector('.init-loading-relacionados');
   
   if (!relacionadosContainer || !anime.relacionados || !anime.relacionados.length) {
     if (relacionadosSection) relacionadosSection.style.display = 'none';
@@ -91,15 +92,16 @@ async function renderRelacionados(anime) {
         relationSpan.className = 'relation-tag';
         relationSpan.textContent = relacionado.relation;
         card.appendChild(relationSpan);
-
+        
         fragment.appendChild(card);
       }
     } catch (err) {
       console.error('Error al buscar anime relacionado:', relacionado.title, err);
     }
   }
-
+  
   relacionadosContainer.appendChild(fragment);
+  if (initLoading) initLoading.style.display = 'none';
 }
 
 

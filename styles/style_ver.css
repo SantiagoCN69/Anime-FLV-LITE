@@ -93,11 +93,6 @@ main section:nth-child(2) {
   border-bottom-right-radius: 15px;
   font-size: 0.7rem;
 }
-.init-loading-servidores {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
 .btn-volver, .btn-anterior, .btn-siguiente {
   text-decoration: none;
 }

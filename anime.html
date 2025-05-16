@@ -70,7 +70,7 @@
 
     <section class="anime-container3">
         <div class="header-caps">
-          <span> Lista de episodios</span>
+          <span id="titulo-lista-caps"> Lista de episodios</span>
           <button type="button" id="btn-search-capitulo" title="Buscar capítulo"></button>
           <div class="search-caps">
             <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo..." />
@@ -78,10 +78,12 @@
           </div>
         </div>
         <ul id="capitulos" class="episodes-list"></ul>
+        <span class="init-loading-cap">Cargando episodios...</span>
     </section>
     <section id="relacionados">
       <h2 class="anime-title-relacionados">Relacionados</h2>
       <div id="animes-relacionados" class="animes-relacionados"></div>
+      <span class="init-loading-relacionados">Cargando relacionados...</span>
     </section>
 
   </main>
