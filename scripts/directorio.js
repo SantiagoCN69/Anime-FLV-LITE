@@ -70,48 +70,132 @@ const initLoading = document.getElementById('init-loading');
 const resultadosContainer = document.getElementById('resultados');
 
 function crearAnimeCardResultados(anime) {
-  const div = document.createElement('div');
-  div.className = 'anime-card';
-  div.style.setProperty('--cover', `url(${anime.cover})`);
-  div.innerHTML = `
-  <div class="container-img">
-    <img src="${anime.cover}" class="cover" alt="${anime.title}">
-    <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-    <span class="estado">${anime.type}</span>
-  </div>
-  <strong>${anime.title}</strong>
-`;
-  const urlPart = anime.url.split('/').slice(2).join('/');
-  div.addEventListener('click', () => window.location.href = `anime.html?id=${urlPart}`);
-  return div;
+    const div = document.createElement('div');
+    div.className = 'anime-card';
+    div.style.setProperty('--cover', `url(${anime.cover})`);
+    div.innerHTML = `
+    <div class="container-img">
+      <img src="${anime.cover}" class="cover" alt="${anime.title}">
+      <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+      <span class="estado">${anime.type}</span>
+    </div>
+    <strong>${anime.title}</strong>
+    `;
+    const urlPart = anime.url.split('/').slice(2).join('/');
+    div.addEventListener('click', () => window.location.href = `anime.html?id=${urlPart}`);
+    return div;
 }
 // Sistema de caché para animes
 const CACHE_KEY = 'animes_cache';
 
+// Inicializar elementos del DOM
+console.log('Iniciando inicialización del DOM...');
+const paginationContainer = document.getElementById('pagination');
+
+console.log('Elementos del DOM:');
+console.log('paginationContainer:', paginationContainer);
+
+let currentPage = 1;
+let totalPages = 1;
+
+// Verificar si hay caché existente
+const cachedData = localStorage.getItem(CACHE_KEY);
+if (cachedData) {
+    console.log('Caché encontrada:', JSON.parse(cachedData));
+} else {
+    console.log('No hay caché existente');
+}
+
+function updatePagination(data) {
+  console.log('Datos recibidos para paginación:', data);
+  
+  // Intentar obtener el total de páginas de diferentes formas
+  let paginasTotales = data.PaginasTotales;
+  if (!paginasTotales) {
+    console.log('No se encontró PaginasTotales');
+    paginasTotales = 1; // Si no hay páginas totales, asumimos 1 página
+  } else {
+    console.log('PaginasTotales encontrado:', paginasTotales);
+  }
+  
+  // Convertir a número
+  totalPages = parseInt(paginasTotales);
+  if (isNaN(totalPages)) {
+    console.log('Error: PaginasTotales no es un número válido');
+    totalPages = 1; 
+  }
+  
+  console.log('Total de páginas final:', totalPages);
+  paginationContainer.innerHTML = '';  
+  
+  // Crear botones de paginación
+  for (let i = 1; i <= totalPages; i++) {
+    const button = document.createElement('button');
+    button.className = 'page-button';
+    button.textContent = i;
+    button.addEventListener('click', () => cambiarPagina(i));
+    paginationContainer.appendChild(button);
+  }
+  
+  // Actualizar el botón activo
+  const buttons = paginationContainer.querySelectorAll('.page-button');
+  buttons.forEach(button => {
+    button.classList.toggle('active', parseInt(button.textContent) === currentPage);
+  });
+}
+
+function cambiarPagina(page) {
+  currentPage = page;
+  cargarAnimesConCache();
+}
+
 function cargarAnimesConCache() {
+  console.log('Iniciando carga de animes...');
+  console.log('Página actual:', currentPage);
+  
   // Mostrar caché existente
   const cachedData = localStorage.getItem(CACHE_KEY);
   if (cachedData) {
     const { data } = JSON.parse(cachedData);
-    resultadosContainer.innerHTML = '';
-    data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
-    return;
+    
+    // Verificar si la caché tiene la página actual
+    if (data.page === currentPage) {
+      console.log('Usando caché para página:', currentPage);
+      resultadosContainer.innerHTML = '';
+      data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+      updatePagination(data);
+      return;
+    }
   }
 
   // Hacer la petición a la API
-  fetch('https://backend-animeflv-lite.onrender.com/api/browse?order=default')
-    .then(response => response.json())
+  console.log('Haciendo petición a la API...');
+  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default&page=${currentPage}`)
+    .then(response => {
+      console.log('Respuesta de la API:', response.status);
+      return response.json();
+    })
     .then(data => {
-      console.log(data);
+      console.log('Datos recibidos:', data);
       
-      // Actualizar la caché
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ data }));
+      // Actualizar la caché con la página actual
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ 
+        data: data.animes,
+        page: currentPage,
+        PaginasTotales: data.PaginasTotales
+      }));
       
       // Mostrar los datos
       resultadosContainer.innerHTML = '';
       data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+      
+      updatePagination(data);
     })
-    .catch(error => console.error('Error al cargar animes:', error));
+    .catch(error => {
+      console.error('Error detallado:', error);
+      console.error('Error en la petición:', error.message);
+      console.error('Stack trace:', error.stack);
+    });
 }
 
 // Cargar animes al inicio
@@ -317,10 +401,15 @@ btnFiltrar.addEventListener('click', async () => {
         
         // Mostrar los resultados
         resultadosContainer.innerHTML = '';
+        
         data.animes.forEach(anime => {
             const card = crearAnimeCardResultados(anime);
             resultadosContainer.appendChild(card);
         });
+        
+        // Actualizar la paginación
+        currentPage = 1; // Reiniciar a la página 1 cuando se filtra
+        updatePagination(data);
     } catch (error) {
         console.error('Error al cargar animes:', error);
         resultadosContainer.innerHTML = '<p>Error al cargar los animes</p>';
