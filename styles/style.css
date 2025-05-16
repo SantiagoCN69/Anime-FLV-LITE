@@ -93,6 +93,8 @@ header {
     margin-right: auto;
     white-space: nowrap;
     overflow: hidden;
+    color: #fff;
+    text-overflow: ellipsis;
 }
 .title a {
     color: #ffffff;
@@ -102,6 +104,7 @@ header {
     font-weight: bolder;
     text-transform: uppercase;
     margin-right: 10px;
+    white-space: nowrap;
 }
 #btn-directorio:hover {
     color: #fff;
