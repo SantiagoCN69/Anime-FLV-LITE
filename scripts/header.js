@@ -20,6 +20,7 @@ function mostrarMensajeError(container, mensaje) {
 function limpiarVistaAnimePage() {
   if (animeDetails) animeDetails.style.display = 'grid';
   if (mainContainer) mainContainer.innerHTML = "";
+  if (mainContainer) mainContainer.style.display = 'none';
   if (disqusThread) disqusThread.style.display = 'block';
   if (relacionados) relacionados.style.display = 'flex';
   const verAnime = document.getElementById('main-ver');
@@ -107,8 +108,10 @@ function mostrarResultados(data) {
 
   if (!mainContainer) return;
   mainContainer.innerHTML = '';
+  if (mainContainer) mainContainer.style.display = 'grid';
 
   if (isAnimePage || isVerPage || isDirectorioPage) {
+
     if (animeDetails) animeDetails.style.display = resultados.length > 0 ? 'none' : 'grid';
     if (disqusThread) disqusThread.style.display = resultados.length > 0 ? 'none' : 'block';
     if (relacionados) relacionados.style.display = resultados.length > 0 ? 'none' : 'flex';

@@ -186,8 +186,8 @@ nav {
   #pagination {
     display: flex;
     gap: 10px;
-    margin: 20px 0;
-    padding: 10px;
+    margin-block: 30px;
+    padding-bottom: 5px;
     width: 100%;
     overflow: auto;
     scroll-snap-type: x mandatory;

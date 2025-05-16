@@ -523,6 +523,7 @@ main {
   width: 95%;
   max-width: 1150px;
   margin-block: 2rem;
+  display: none;
 }
 .anime-card {
     position: relative;
