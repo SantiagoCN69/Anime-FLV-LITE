@@ -424,6 +424,7 @@ grid-area: container4;
 flex-direction: column;
 position: relative;
 min-height: 261px;
+margin-bottom: 1rem;
 }
 
 #relacionados .animes-relacionados {
