@@ -92,9 +92,6 @@ const CACHE_KEY = 'animes_cache';
 console.log('Iniciando inicialización del DOM...');
 const paginationContainer = document.getElementById('pagination');
 
-console.log('Elementos del DOM:');
-console.log('paginationContainer:', paginationContainer);
-
 let currentPage = 1;
 let totalPages = 1;
 
@@ -109,14 +106,11 @@ if (cachedData) {
 function updatePagination(data) {
   console.log('Datos recibidos para paginación:', data);
   
-  // Intentar obtener el total de páginas de diferentes formas
   let paginasTotales = data.PaginasTotales;
   if (!paginasTotales) {
     console.log('No se encontró PaginasTotales');
-    paginasTotales = 1; // Si no hay páginas totales, asumimos 1 página
-  } else {
-    console.log('PaginasTotales encontrado:', paginasTotales);
-  }
+    paginasTotales = 1;
+  } 
   
   // Convertir a número
   totalPages = parseInt(paginasTotales);
@@ -125,7 +119,6 @@ function updatePagination(data) {
     totalPages = 1; 
   }
   
-  console.log('Total de páginas final:', totalPages);
   paginationContainer.innerHTML = '';  
   
   // Crear botones de paginación
@@ -147,15 +140,12 @@ function updatePagination(data) {
 function cambiarPagina(page) {
   currentPage = page;
   const link = actualizarLinkBusqueda();
-  console.log('Link actualizado:', link);
   resultadosContainer.innerHTML = '';
   fetch(link + `&page=${currentPage}`)
     .then(response => {
-      console.log('Respuesta de la API:', response.status);
       return response.json();
     })
     .then(data => {
-      console.log('Datos recibidos:', data);
       resultadosContainer.innerHTML = '';
       data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
       updatePagination(data);
@@ -296,9 +286,7 @@ function actualizarLinkBusqueda() {
     }
 
     // Agregar orden al final
-    const orden = ordenesActivos.length > 0 && (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0 || estadosActivos.length > 0) 
-        ? ordenesActivos[0] // Usar el primer orden seleccionado
-        : 'default';
+    const orden = ordenesActivos.length > 0 ? ordenesActivos[0] : 'default';
     
     link += '&order=' + orden;
     
