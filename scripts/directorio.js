@@ -130,9 +130,9 @@ function updatePagination(data) {
 
 function cambiarPagina(page) {
   currentPage = page;
-  const link = actualizarLinkBusqueda();
+  const link = window.location.search.substring(1);
   resultadosContainer.innerHTML = '';
-  fetch(link + `&page=${currentPage}`)
+  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${link}&page=${currentPage}`)
     .then(response => {
       return response.json();
     })
@@ -149,51 +149,47 @@ function cambiarPagina(page) {
 }
 
 function cargarAnimesConCache() {
+    const cachedData = localStorage.getItem(CACHE_KEY);
   
-  // Mostrar caché existente
-  const cachedData = localStorage.getItem(CACHE_KEY);
-  if (cachedData) {
-    const { data } = JSON.parse(cachedData);
-    
-    // Verificar si la caché tiene la página actual
-    if (data.page === currentPage) {
-      console.log('Usando caché para página:', currentPage);
-      resultadosContainer.innerHTML = '';
-      data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
-      updatePagination(data);
-      return;
+    if (cachedData) {
+      const { data, page, PaginasTotales } = JSON.parse(cachedData);
+  
+      // Verificar si la caché corresponde a la página actual
+      if (page === currentPage) {
+        console.log('Usando caché para página:', currentPage);
+        resultadosContainer.innerHTML = '';
+        data.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+        updatePagination({ animes: data, PaginasTotales });
+        return;
+      }
     }
+  
+    // Si no hay caché válida, hacer la petición
+    fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
+      .then(response => response.json())
+      .then(data => {
+        // Guardar en caché
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          data: data.animes,
+          page: currentPage,
+          PaginasTotales: data.PaginasTotales
+        }));
+  
+        // Mostrar los datos
+        resultadosContainer.innerHTML = '';
+        data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+        updatePagination(data);
+      })
+      .catch(error => {
+        console.error('Error detallado:', error);
+        console.error('Error en la petición:', error.message);
+        console.error('Stack trace:', error.stack);
+      });
   }
-
-  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
-    .then(response => {
-      return response.json();
-    })
-    .then(data => {
-      
-      // Actualizar la caché con la página actual
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ 
-        data: data.animes,
-        page: currentPage,
-        PaginasTotales: data.PaginasTotales
-      }));
-      
-      // Mostrar los datos
-      resultadosContainer.innerHTML = '';
-      data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
-      
-      updatePagination(data);
-    })
-    .catch(error => {
-      console.error('Error detallado:', error);
-      console.error('Error en la petición:', error.message);
-      console.error('Stack trace:', error.stack);
-    });
-}
-
-// Cargar animes al inicio
-cargarAnimesConCache();
-
+  
+  // Cargar animes al inicio
+  cargarAnimesConCache();
+  
 
 
 // Sistema de filtros de género
@@ -275,13 +271,6 @@ function actualizarLinkBusqueda() {
     
     link += '&order=' + orden;
 
-    // Cambia la URL sin recargar la página
-    const baseUrl = window.location.origin + window.location.pathname;
-    const fullUrl = baseUrl + '?' + link;
-    
-    // Actualizar la URL del navegador
-    history.pushState({}, '', fullUrl);
-    
     return link;
 }
 
@@ -398,6 +387,11 @@ btnFiltrar.addEventListener('click', async () => {
         
         // Mostrar los resultados
         resultadosContainer.innerHTML = '';
+        
+        const linkSolo = link.split('/browse?')[1]; 
+        const fullUrl = "directorio.html?" + linkSolo;
+        history.pushState({}, '', fullUrl);
+        
         
         data.animes.forEach(anime => {
             const card = crearAnimeCardResultados(anime);

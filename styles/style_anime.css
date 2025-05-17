@@ -249,16 +249,13 @@ header {
     overflow: auto;
     flex-wrap: wrap;
   }
-  .genero button {
+  .genero a {
     background-color: #1f1f1f;
     color: #fff;
     padding: 5px 10px;
     border-radius: 5px;
     border: none;
     font-size: .8rem;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
   }
 
   @media screen and (max-width:800px){

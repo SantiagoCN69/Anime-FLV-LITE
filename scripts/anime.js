@@ -51,10 +51,11 @@ const renderGeneros = (container, generos) => {
   container.innerHTML = '';
   if (generos && generos.length) {
     generos.slice(0, 5).forEach(g => {
-      const btn = document.createElement('button');
-      btn.textContent = g;
-      btn.className = 'genre-btn';
-      container.appendChild(btn);
+      const a = document.createElement('a');
+      a.textContent = g;
+      a.className = 'genre-link';
+      a.href = `directorio.html?genre%5B%5D=${g.replace(/ /g, '-')}`;
+      container.appendChild(a);
     });
   } else {
     container.textContent = 'Géneros no disponibles.';
