@@ -3,7 +3,7 @@ const animeId = params.get("animeId");
 const episodioUrl = params.get("url");
 const btnVolver = document.getElementById("btn-volver-anime");
 const tituloAnime = document.getElementById("titulo-anime");
-btnVolver.href = `anime.html?id=${animeId}`;
+btnVolver.href = `anime?id=${animeId}`;
 
 
 
@@ -408,7 +408,7 @@ async function cargarVideoDesdeEpisodio(index) {
     embeds = orderedEmbeds;
   }
 
-  history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${ep.number}`);
+  history.replaceState({}, "", `ver?animeId=${animeId}&url=${ep.number}`);
 
   const controles = document.getElementById("controles");
   controles.innerHTML = "";

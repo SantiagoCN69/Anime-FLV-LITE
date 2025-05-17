@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="icons/icon.png">
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/lab-styles.css">
+    <script src="scripts/header.js" defer></script>
+    <script type="module" src="scripts/sidebar.js" defer></script>
+</head>
+<body>
+    <header>
+        <h2 class="title"><a href="index.html">AnimeFLV Lite</a></h2>
+        <a href="directorio.html" id="btn-directorio" title="Directorio"><img src="icons/database-solid.svg" alt="Directorio Anime">Directorio Anime</a>
+        <div class="search">
+            <input type="text" id="busqueda" placeholder="Buscar anime...">
+            <button id="btn-close-search" title="Cerrar búsqueda">
+              <img src="icons/xmark-solid.svg" alt="Cerrar búsqueda">
+            </button>
+        </div>
+        <button type="button" id="btn-login" title="Iniciar sesión">
+          <img src="icons/user-solid.svg" alt="Foto de perfil">
+          <span>Login</span>
+        </button>
+        <button type="button" id="btn-search" title="Buscar anime"></button>
+        <button type="button" id="menu-toggle" title="Menú"></button>
+    </header>
+
+    <section class="sidebar">
+      <ul>
+        <li><a href="index.html#Ultimos-Episodios">Últimos Episodios</a></li>
+        <li><a href="index.html#Mis-Favoritos">Mis Favoritos</a></li>
+        <li><a href="index.html#Viendo">Viendo</a></li>
+        <li><a href="index.html#Pendientes">Pendientes</a></li>
+        <li><a href="index.html#Completados">Completados</a></li>
+        <li id="btn-directorio2"><a href="directorio.html">Directorio Anime ✨</a></li>
+      </ul>
+      <div class="continuar-viendo">
+        <h3>Continuar viendo</h3>
+        <div id="ultimos-caps-viendo">
+            <!-- se agregan los ultimos caps viendo -->
+        </div>
+      </div>
+    </section>
+    <main>
+      <h1>Lab de Recomendaciones IA</h1>
+      
+      <section class="ia-recomendados">
+        <h3>Recomendaciones IA</h3>
+        <div class="controles-ia">
+          <div class="filtro-genero">
+            <button id="btn-genero" class="btn-filtro">
+              <span id="genero-text">Todos los géneros</span>
+              <span class="chevron">▼</span>
+            </button>
+            <div id="opciones-genero" class="opciones-filtro">
+              <div class="opcion" data-value="accion">Acción</div>
+              <div class="opcion" data-value="aventura">Aventura</div>
+              <div class="opcion" data-value="comedia">Comedia</div>
+              <div class="opcion" data-value="drama">Drama</div>
+              <div class="opcion" data-value="fantasia">Fantasía</div>
+              <div class="opcion" data-value="ciencia-ficcion">Ciencia Ficción</div>
+            </div>
+          </div>
+          <div class="filtro-estado">
+            <button id="btn-estado" class="btn-filtro">
+              <span id="estado-text">Todos los estados</span>
+              <span class="chevron">▼</span>
+            </button>
+            <div id="opciones-estado" class="opciones-filtro">
+              <div class="opcion" data-value="en-emision">En Emisión</div>
+              <div class="opcion" data-value="finalizado">Finalizado</div>
+            </div>
+          </div>
+          <button id="generar-ia" class="btn-generar">
+            <img src="icons/robot-solid.svg" alt="Generar"> Generar Recomendaciones IA
+          </button>
+        </div>
+        <div class="grid-animes" id="recomendaciones-ia"></div>
+      </section>
+
+      <section class="favoritos">
+        <h3>Recomendaciones Basadas en Tus Favoritos</h3>
+        <div class="grid-animes" id="recomendaciones-favoritos"></div>
+      </section>
+
+      <div class="acciones">
+        <button id="generar-nuevas" class="btn-generar">
+          <img src="icons/robot-solid.svg" alt="Generar"> Generar Nuevas Recomendaciones
+        </button>
+        <button id="agregar-a-pendientes" class="btn-agregar">
+          <img src="icons/plus-solid.svg" alt="Agregar"> Agregar Seleccionados a Pendientes
+        </button>
+      </div>
+
+      <section class="personalizadas">
+        <h3>Recomendaciones Personalizadas</h3>
+        <div class="search-container">
+          <input type="text" id="busqueda-personalizada" placeholder="¿Qué tipo de anime te gustaría ver?">
+          <button id="generar-personalizadas" class="btn-generar">
+            <img src="icons/robot-solid.svg" alt="Generar"> Generar Recomendaciones
+          </button>
+        </div>
+        <div class="grid-animes" id="recomendaciones-personalizadas"></div>
+      </section>
+    </main>
+    <footer>
+      <p>Este proyecto es una iniciativa independiente desarrollada con fines educativos y de entretenimiento. La información y el contenido multimedia son obtenidos de AnimeFLV. Todos los derechos sobre dicho contenido pertenecen a sus respectivos propietarios.</p>
+    </footer>
+    <script type="module" src="scripts/firebase-login.js" defer></script>
+    <script type="module" src="scripts/lab.js" defer></script>
+</body>
+</html>

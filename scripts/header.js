@@ -36,9 +36,9 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
 }
 
 // === Variables de página ===
-const isAnimePage = location.pathname.includes('anime.html');
-const isVerPage = location.pathname.includes('ver.html');
-const isDirectorioPage = location.pathname.includes('directorio.html');
+const isAnimePage = location.pathname.includes('anime');
+const isVerPage = location.pathname.includes('ver');
+const isDirectorioPage = location.pathname.includes('directorio');
 const isIndexPage = location.pathname === '/' || location.pathname.endsWith('index.html');
 const animeDetails = document.querySelector('.anime-details');
 const mainContainer = document.getElementById('main');
@@ -125,7 +125,7 @@ function mostrarResultados(data) {
 
 // === Redirección ===
 function ver(id) {
-  location.href = `anime.html?id=${id}`;
+  location.href = `anime?id=${id}`;
 }
 
 // === Búsqueda en tiempo real ===

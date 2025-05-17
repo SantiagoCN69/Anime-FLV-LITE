@@ -29,7 +29,7 @@ body::after {
     left: 0;
     width: 100vw;
     height: 101vh;
-    background: linear-gradient(to bottom, transparent 0%, #1c1c2b 80%, #13131b 100%);
+    background: linear-gradient(to bottom, transparent 0%, #121212 80%);
     pointer-events: none;
     z-index: -2;
   }
@@ -52,12 +52,13 @@ header {
     gap: 25px;
     height: fit-content;
     overflow: hidden;
+    margin-bottom: 25px;
   }
 
   .anime-container1 {
     display: flex;
     flex-direction: column;
-    background-color: #1c1c2b;
+    background-color: #1F1F1F;
     border-radius: 5px;
     padding: .6rem;
     max-height: fit-content;
@@ -214,7 +215,7 @@ header {
 
   .anime-title {
     color: #e76f51;
-    font-size: 1.8rem;
+    font-size: 2rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -249,7 +250,7 @@ header {
     flex-wrap: wrap;
   }
   .genero button {
-    background-color: #1c1c2bb6;
+    background-color: #1f1f1f;
     color: #fff;
     padding: 5px 10px;
     border-radius: 5px;
@@ -291,7 +292,7 @@ header {
     border-radius: 5px;
     padding: 1rem;
     gap: 1rem;
-    background-color: #202031;
+    background-color: #1F1F1F;
     min-height: 166px;
     height: fit-content;
     position: relative;
@@ -304,7 +305,7 @@ header {
   }
   #titulo-lista-caps {
     color: #e76f51;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -320,7 +321,7 @@ header {
     padding: 5%;
     border: 1px solid #fa7171;
     border-radius: 14px;
-    background-color: #262637;
+    background-color: transparent;
     color: #ffffff;
     font-size: .8rem;
     transition: border-color 0.3s, box-shadow 0.3s;
@@ -417,7 +418,6 @@ grid-area: container4;
 flex-direction: column;
 position: relative;
 min-height: 261px;
-margin-bottom: 1rem;
 }
 
 #relacionados .animes-relacionados {

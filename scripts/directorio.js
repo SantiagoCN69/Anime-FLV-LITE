@@ -274,8 +274,14 @@ function actualizarLinkBusqueda() {
     const orden = ordenesActivos.length > 0 ? ordenesActivos[0] : 'default';
     
     link += '&order=' + orden;
+
+    // Cambia la URL sin recargar la página
+    const baseUrl = window.location.origin + window.location.pathname;
+    const fullUrl = baseUrl + '?' + link;
     
-    console.log('Link actual:', link);
+    // Actualizar la URL del navegador
+    history.pushState({}, '', fullUrl);
+    
     return link;
 }
 

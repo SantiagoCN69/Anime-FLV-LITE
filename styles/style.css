@@ -8,7 +8,7 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0 auto;
-    background-color: #1c1c2b;
+    background-color: #121212;
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
@@ -37,46 +37,6 @@ a {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-.aurora {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  filter: blur(80px);
-  overflow: hidden;
-  z-index: -1;
-}
-
-.aurora::before,
-.aurora::after {
-  content: '';
-  position: absolute;
-  width: 150%;
-  height: 150%;
-  background: radial-gradient(circle at 40% 40%, rgba(0, 255, 255, 0.15), transparent 70%),
-              radial-gradient(circle at 60% 60%, rgba(255, 0, 255, 0.15), transparent 70%);
-  animation: aurora-move 30s ease-in-out infinite alternate;
-  transform-origin: center;
-}
-
-.aurora::after {
-  background: radial-gradient(circle at 30% 70%, rgba(255, 255, 0, 0.1), transparent 70%),
-              radial-gradient(circle at 70% 30%, rgba(0, 128, 255, 0.1), transparent 70%);
-  animation-duration: 40s;
-  animation-delay: 5s;
-}
-
-@keyframes aurora-move {
-  0% {
-    transform: translate(-10%, -10%) scale(1) rotate(0deg);
-  }
-  50% {
-    transform: translate(5%, 5%) scale(1.1) rotate(180deg);
-  }
-  100% {
-    transform: translate(-10%, -10%) scale(1) rotate(360deg);
-  }
-}
-
 header {
     display: flex;
     align-items: center;
@@ -85,7 +45,7 @@ header {
     margin: 0 auto;
     height:5.5rem;;
     position: relative;
-    background: #181b2ecc;
+    background: #1F1F1F;
     gap:15px;
     border-bottom: 1px solid #888;
 }
@@ -268,7 +228,6 @@ button:hover {
     margin: 0;
     border-radius: 0;
     width: 60%;
-    background: #181b2edd;
     height: calc(100dvh - 88px);
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
@@ -749,7 +708,8 @@ main {
   margin: 0 auto;
 }
 footer {
-  background-color: #1c1c2b;
+  border-top: 1px solid #888;
+  background-color: #1F1F1F;
   padding: 15px;
   color: #555;
   text-align: center;
