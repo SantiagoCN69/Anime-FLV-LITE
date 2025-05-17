@@ -397,7 +397,6 @@ async function cargarUltimosCapsVistos() {
     const cacheKey = 'ultimosEpisodiosGeneralesCache';
     const cachedData = leerCache(cacheKey);
     if (cachedData) {
-      console.log("Mostrando últimos episodios desde caché...");
       renderizarUltimosEpisodios(cachedData);
     }
   
@@ -430,15 +429,12 @@ async function cargarUltimosCapsVistos() {
       const freshString = JSON.stringify(freshData);
   
       if (freshString !== cachedString) {
-        console.log("Datos de API diferentes a la caché. Actualizando UI y caché...");
         renderizarUltimosEpisodios(freshData);
         guardarCache(cacheKey, freshData);
       } else if (!cachedData) {
-        console.log("Mostrando datos frescos de API (sin caché previa).");
         renderizarUltimosEpisodios(freshData);
         guardarCache(cacheKey, freshData);
       } else {
-        console.log("Datos de API coinciden con la caché. No se requiere actualización.");
       }
   
     } catch (error) {
@@ -490,7 +486,6 @@ async function cargarUltimosCapsVistos() {
     const cachedData = leerCache(cacheKey);
   
     if (cachedData) {
-      console.log("Mostrando favoritos desde caché...");
       renderizarFavoritos(cachedData, true);
     }
   
