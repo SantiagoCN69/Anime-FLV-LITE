@@ -89,7 +89,6 @@ function crearAnimeCardResultados(anime) {
 const CACHE_KEY = 'animes_cache';
 
 // Inicializar elementos del DOM
-console.log('Iniciando inicialización del DOM...');
 const paginationContainer = document.getElementById('pagination');
 
 let currentPage = 1;
@@ -97,25 +96,17 @@ let totalPages = 1;
 
 // Verificar si hay caché existente
 const cachedData = localStorage.getItem(CACHE_KEY);
-if (cachedData) {
-    console.log('Caché encontrada:', JSON.parse(cachedData));
-} else {
-    console.log('No hay caché existente');
-}
 
 function updatePagination(data) {
-  console.log('Datos recibidos para paginación:', data);
   
   let paginasTotales = data.PaginasTotales;
   if (!paginasTotales) {
-    console.log('No se encontró PaginasTotales');
     paginasTotales = 1;
   } 
   
   // Convertir a número
   totalPages = parseInt(paginasTotales);
   if (isNaN(totalPages)) {
-    console.log('Error: PaginasTotales no es un número válido');
     totalPages = 1; 
   }
   
@@ -158,8 +149,6 @@ function cambiarPagina(page) {
 }
 
 function cargarAnimesConCache() {
-  console.log('Iniciando carga de animes...');
-  console.log('Página actual:', currentPage);
   
   // Mostrar caché existente
   const cachedData = localStorage.getItem(CACHE_KEY);
@@ -176,15 +165,11 @@ function cargarAnimesConCache() {
     }
   }
 
-  // Hacer la petición a la API
-  console.log('Haciendo petición a la API...');
   fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
     .then(response => {
-      console.log('Respuesta de la API:', response.status);
       return response.json();
     })
     .then(data => {
-      console.log('Datos recibidos:', data);
       
       // Actualizar la caché con la página actual
       localStorage.setItem(CACHE_KEY, JSON.stringify({ 
