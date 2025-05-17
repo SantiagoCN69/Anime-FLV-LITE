@@ -146,7 +146,25 @@ function updatePagination(data) {
 
 function cambiarPagina(page) {
   currentPage = page;
-  cargarAnimesConCache();
+  const link = actualizarLinkBusqueda();
+  console.log('Link actualizado:', link);
+  resultadosContainer.innerHTML = '';
+  fetch(link + `&page=${currentPage}`)
+    .then(response => {
+      console.log('Respuesta de la API:', response.status);
+      return response.json();
+    })
+    .then(data => {
+      console.log('Datos recibidos:', data);
+      resultadosContainer.innerHTML = '';
+      data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+      updatePagination(data);
+    })
+    .catch(error => {
+      console.error('Error detallado:', error);
+      console.error('Error en la petición:', error.message);
+      console.error('Stack trace:', error.stack);
+    });
 }
 
 function cargarAnimesConCache() {
@@ -170,7 +188,7 @@ function cargarAnimesConCache() {
 
   // Hacer la petición a la API
   console.log('Haciendo petición a la API...');
-  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default&page=${currentPage}`)
+  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
     .then(response => {
       console.log('Respuesta de la API:', response.status);
       return response.json();
