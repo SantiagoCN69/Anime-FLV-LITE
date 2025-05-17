@@ -112,6 +112,9 @@ header {
 #btn-directorio2 {
   display: none;
 }
+#btn-lab {
+  display: block;
+}
 #btn-directorio IMG {
   width: 18px;
   height: 18px;
@@ -188,6 +191,7 @@ button:hover {
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
   width: 220px;
+  color: #fff;
   min-width: 220px;
   padding: 1rem;
   margin: 2rem auto;
@@ -207,7 +211,7 @@ button:hover {
   margin: 0;
 }
 
-.sidebar li, #btn-directorio2 {
+.sidebar li, #btn-directorio2, #btn-lab {
   padding: 12px 16px;
   margin-bottom: 8px;
   border-radius: 8px;
@@ -215,7 +219,7 @@ button:hover {
   transition: background-color .5s;
 }
 
-.sidebar li:hover {
+.sidebar li:hover, #btn-directorio2:hover, #btn-lab:hover {
   background-color: #ffffff1a;
 }
 

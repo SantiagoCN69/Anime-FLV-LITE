@@ -379,7 +379,6 @@ body {
   background-color: #181b2e9c;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
-  color: #fff;
   z-index: 1000;
   height: calc(100% - 88px);
 }

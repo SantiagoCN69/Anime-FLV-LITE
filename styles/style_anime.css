@@ -623,7 +623,6 @@ min-width: 250px;
     background: transparent;
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
-    color: #fff;
     z-index: 1000;
     height: 100%;
 }

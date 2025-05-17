@@ -165,7 +165,6 @@ nav {
     background: #181b2edd;
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
-    color: #fff;
     z-index: 1000;
     height: calc(100% - 88px);
   }
