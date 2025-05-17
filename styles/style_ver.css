@@ -49,7 +49,7 @@ main section:nth-child(2) {
   height: 8px;
 }
 #noticias_container::-webkit-scrollbar-thumb {
-  background-color: #e76f51;
+  background-color: #e76f5186;
 }
 .tarjeta-noticia {
   margin-inline: auto;

@@ -346,17 +346,10 @@ header {
 
 /* Para navegadores WebKit (Chrome, Safari) */
 .episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar {
-    width: 10px;
     height: 8px;
 }
-
-.episodes-list::-webkit-scrollbar-track, .animes-relacionados::-webkit-scrollbar-track {
-    background: transparent;
-}
-
 .episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb {
-    background-color: #ff565652;
-    border-radius: 20px;
+    background-color: #e76f5186;
 }
 
 .episodes-list li {
