@@ -47,6 +47,13 @@ const filtroCapitulo = document.getElementById("filtro-capitulo");
 const ratingEl = document.getElementById("rating");
 const initLoadingCap = document.getElementById("init-loading-cap");
 
+function quitarTildesYEspacios(texto) {
+  return texto
+    .normalize('NFD')                   // Descompone los caracteres con tilde
+    .replace(/[\u0300-\u036f]/g, '')   // Elimina las tildes
+    .replace(/ /g, '-');                // Reemplaza espacios por guiones
+}
+
 const renderGeneros = (container, generos) => {
   container.innerHTML = '';
   if (generos && generos.length) {
@@ -54,7 +61,9 @@ const renderGeneros = (container, generos) => {
       const a = document.createElement('a');
       a.textContent = g;
       a.className = 'genre-link';
-      a.href = `directorio.html?genre%5B%5D=${g.replace(/ /g, '-')}`;
+      a.href = `directorio.html?genre%5B%5D=${quitarTildesYEspacios(g)}`;
+
+
       container.appendChild(a);
     });
   } else {

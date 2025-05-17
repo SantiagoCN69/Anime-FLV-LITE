@@ -151,6 +151,25 @@ function cambiarPagina(page) {
 function cargarAnimesConCache() {
     const cachedData = localStorage.getItem(CACHE_KEY);
   
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('genre[]')) {
+      const genero = params.get('genre[]');
+      fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default&genre[]=${genero}`)
+      .then(response => response.json())
+      .then(data => {
+        resultadosContainer.innerHTML = '';
+        data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+        updatePagination(data);
+      })
+      .catch(error => {
+        console.error('Error detallado:', error);
+        console.error('Error en la petición:', error.message);
+        console.error('Stack trace:', error.stack);
+      });
+      console.log('Genero:', genero);
+    }
+    else {
+      
     if (cachedData) {
       const { data, page, PaginasTotales } = JSON.parse(cachedData);
   
@@ -185,6 +204,7 @@ function cargarAnimesConCache() {
         console.error('Error en la petición:', error.message);
         console.error('Stack trace:', error.stack);
       });
+    }
   }
   
   // Cargar animes al inicio
