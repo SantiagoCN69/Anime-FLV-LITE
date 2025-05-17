@@ -112,6 +112,13 @@ header {
 #btn-directorio2 {
   display: none;
 }
+#btn-directorio IMG {
+  width: 18px;
+  height: 18px;
+  margin-bottom: -2px;
+  margin-inline-end: 5px;
+  filter: invert(70%);
+}
 @media screen and (max-width: 850px) {
   #btn-directorio {
     display: none;
