@@ -83,6 +83,11 @@ header {
   margin-inline-end: 5px;
   filter: invert(70%);
 }
+@media screen and (max-width: 999px) {
+#btn-index {
+  display: none;
+}
+}
 @media screen and (max-width: 850px) {
   .btn-directorio {
     display: none;
