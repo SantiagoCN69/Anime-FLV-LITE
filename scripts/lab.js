@@ -13,6 +13,20 @@ let userid = null;
 
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Cargar caché al inicio
+    const cache = obtenerCacheAnimes();
+    if (cache) {
+        const contenedor = document.getElementById('recomendaciones-favoritos');
+        if (contenedor) {
+            const fragment = document.createDocumentFragment();
+            cache.animes.forEach(anime => {
+                const card = crearAnimeCard(anime);
+                fragment.appendChild(card);
+            });
+            contenedor.innerHTML = '';
+            contenedor.appendChild(fragment);
+        }
+    }
 
     // Manejo de estado de autenticación
     onAuthStateChanged(auth, (user) => {
@@ -38,6 +52,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Funciones para manejar el caché de animes
+function guardarCacheAnimes(animes) {
+    const cache = JSON.stringify({
+        animes: animes.slice(0, 5),
+        timestamp: Date.now()
+    });
+    localStorage.setItem('cache_animes_lab', cache);
+}
+
+function obtenerCacheAnimes() {
+    const cache = localStorage.getItem('cache_animes_lab');
+    if (!cache) return null;
+    return JSON.parse(cache);
+}
+
+function limpiarCacheAnimes() {
+    localStorage.removeItem('cache_animes_lab');
+}
 
 // Función para obtener los favoritos del usuario (sin cambios)
 async function obtenerFavoritosUsuario() {
@@ -211,6 +244,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
     if (section) section.style.display = 'flex';
     
     const fragment = document.createDocumentFragment();
+    const animesEncontrados = [];
 
     for (const nombre of nombres) {
         if (!nombre) continue; 
@@ -221,12 +255,42 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
             const data = await res.json();
             const anime = data.data?.[0];
             if (anime) {
+                // Guardar datos en Firestore
+                const animeData = {
+                    titulo: anime.title || '',
+                    portada: anime.cover || '',
+                    descripcion: anime.synopsis || '',
+                    generos: anime.genres || [],
+                    rating: anime.rating || null,
+                    estado: anime.status || null,
+                    episodios: anime.episodes?.map(ep => ({ number: ep.number, url: ep.url })) || [],
+                    relacionados: anime.related?.map(ep => ({ title: ep.title, relation: ep.relation })) || [],
+                    fechaGuardado: serverTimestamp()
+                };
+                
+                await setDoc(doc(db, 'datos-animes', anime.id), animeData, { merge: true });
+                
+                // Crear y agregar la card
                 const card = crearAnimeCard(anime);
                 fragment.appendChild(card);
+                
+                // Guardar el anime en el array para el caché
+                animesEncontrados.push({
+                    id: anime.id,
+                    title: anime.title,
+                    cover: anime.cover,
+                    rating: anime.rating,
+                    type: anime.status
+                });
             }
         } catch (err) {
             console.error('Error al buscar anime:', nombre, err);
         }
+    }
+    
+    // Guardar en caché los animes encontrados
+    if (animesEncontrados.length > 0) {
+        guardarCacheAnimes(animesEncontrados);
     }
     
     contenedor.innerHTML = '';
