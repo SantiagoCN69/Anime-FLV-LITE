@@ -209,6 +209,7 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     const texto = document.getElementById("textbtngenerarfav");
     texto.textContent = "Cargando...";
     const favoritos = await obtenerFavoritosUsuario();
+    const cacheActual = obtenerCacheAnimes();
 
     if (favoritos.length === 0) {
         console.warn("No hay favoritos.");
@@ -217,8 +218,13 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
         return;
     }
 
-    const nombres = favoritos.map(f => f.nombre || f.titulo || f.id).join(', ');
-    const prompt = `Recomiéndame 5 animes parecidos a estos pero responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos : ${nombres}`;
+    const nombresFavoritos = favoritos.map(f => f.nombre || f.titulo || f.id).join(', ');
+    const animesCache = cacheActual?.animes || [];
+    const nombresCache = animesCache.map(a => a.title || a.id).join(', ');
+
+    const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos}
+    Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache}
+    Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
 
     enviarPrompt(prompt);
 });
