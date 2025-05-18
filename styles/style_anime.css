@@ -215,7 +215,7 @@ header {
 
   .anime-title {
     color: #e76f51;
-    font-size: 2rem;
+    font-size: 1.8rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -494,7 +494,7 @@ min-width: 250px;
 
     }
     .anime-title {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
     }
     .anime-rating {
       font-size: .8rem;
