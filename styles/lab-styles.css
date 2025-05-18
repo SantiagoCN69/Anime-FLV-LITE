@@ -180,6 +180,9 @@ button:hover {
 .carga {
   border: 1px solid #888;
 }
+.container-img{
+  aspect-ratio: 1/2;
+}
 .carga .container-img{
   border: 1px solid #888;
 }
