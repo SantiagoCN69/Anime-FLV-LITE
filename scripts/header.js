@@ -126,7 +126,7 @@ function mostrarResultados(data) {
 
 // === Redirección ===
 function ver(id) {
-  location.href = `anime?id=${id}`;
+  location.href = `anime.html?id=${id}`;
 }
 
 // === Búsqueda en tiempo real ===

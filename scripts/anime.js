@@ -159,7 +159,7 @@ const createEpisodeButton = (ep, vistos = []) => {
     if (btn.classList.contains("ep-no-visto")) {
       await manejarEstadoEpisodio(btn, icon, ep);
     }
-    window.location.href = `ver?animeId=${id}&url=${ep.number}`;
+    window.location.href = `ver.html?animeId=${id}&url=${ep.number}`;
   });
 
   icon.addEventListener('click', e => {

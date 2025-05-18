@@ -32,7 +32,7 @@ function extraerIdDeLink(link) {
 }
 
 function ver(id) {
-  window.location.href = `anime?id=${id}`;
+  window.location.href = `anime.html?id=${id}`;
 }
 
 function mostrarSeccionDesdeHash() {
@@ -158,7 +158,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   btn.appendChild(contenedorTexto);
   
   btn.addEventListener('click', () => {
-    window.location.href = `ver?animeId=${itemData.animeId}&url=${itemData.siguienteCapitulo}`;
+    window.location.href = `ver.html?animeId=${itemData.animeId}&url=${itemData.siguienteCapitulo}`;
   });
 
   return btn;
