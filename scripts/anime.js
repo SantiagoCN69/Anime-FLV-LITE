@@ -516,6 +516,7 @@ const btnViendo = document.getElementById('btn-viendo');
 const btnPendiente = document.getElementById('btn-pendiente');
 const btnVisto = document.getElementById('btn-visto');
 const seccionEstados = document.getElementById('Estados');
+const estadoText = document.getElementById('estado-text');
 
 // Asegúrate de definir esta variable correctamente
 
@@ -574,7 +575,7 @@ function manejarEstadoSeleccionado(btnSeleccionado) {
     seccionEstados.classList.remove('active');
     if (estado) {
       btnEstado.style.backgroundColor = '#6c757d';
-      btnEstado.innerHTML = 'ESTADO';
+      estadoText.innerHTML = 'ESTADO';
       // Eliminar el estado de Firebase
       const user = auth.currentUser;
       if (user) {
@@ -592,7 +593,7 @@ function manejarEstadoSeleccionado(btnSeleccionado) {
 
   if (estado) {
     btnEstado.style.backgroundColor = estado.color;
-    btnEstado.innerHTML = `${estado.texto}<img src="icons/${estado.icono}" style="width: 17px; height: 17px; filter: invert(100%);">`;
+    estadoText.innerHTML = `${estado.texto}<img src="icons/${estado.icono}" style="width: 17px; height: 17px; filter: invert(100%);">`;
   }
 
   actualizarEstadoFirebase(estadoId.toUpperCase());

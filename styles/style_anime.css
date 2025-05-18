@@ -136,6 +136,12 @@ header {
   z-index: 31;
 }
 
+#btn-estado span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 #btn-estado img {
   width: 17px;
   height: 17px;
