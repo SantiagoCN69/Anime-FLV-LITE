@@ -29,13 +29,17 @@ function updateUIForUser(user) {
   if (!btnLogin || !btnLoginImg || !btnLoginSpan) return;
 
   if (user) {
+    // Obtener solo el primer nombre
+    const nombres = (user.displayName || '').split(' ');
+    const primerNombre = nombres[0] || '';
+
     // Actualizar UI
     btnLoginImg.src = user.photoURL || 'icons/user-solid.svg';
-    btnLoginSpan.textContent = user.displayName || '';
+    btnLoginSpan.textContent = primerNombre;
     
     // Guardar en caché
     try {
-      localStorage.setItem('cachedUserDisplayName', user.displayName || '');
+      localStorage.setItem('cachedUserDisplayName', primerNombre);
       localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
     } catch (e) {
       console.warn('No se pudo guardar en localStorage:', e);
