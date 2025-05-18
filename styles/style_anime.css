@@ -158,7 +158,15 @@ transform: translateY(-10px);
 button:hover {
   opacity: 1;
 }
-#Estados.active, #Estados:hover, #btn-estado:hover + #Estados  {
+@media (hover: hover) {
+  #Estados:hover, #btn-estado:hover + #Estados {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+}
+
+#Estados.active {
 opacity: 1;
 pointer-events: auto;
 transform: translateY(0);
