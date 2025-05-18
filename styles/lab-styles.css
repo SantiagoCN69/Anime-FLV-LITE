@@ -170,7 +170,8 @@ button:hover {
 .anime-card {
   flex: 1;
   border: 1px solid transparent;
-  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
 }
 .anime-card.active {
   transform: translateY(-5px);
