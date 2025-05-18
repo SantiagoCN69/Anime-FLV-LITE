@@ -39,6 +39,7 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
 const isAnimePage = location.pathname.includes('anime');
 const isVerPage = location.pathname.includes('ver');
 const isDirectorioPage = location.pathname.includes('directorio');
+const isLabPage = location.pathname.includes('lab');
 const isIndexPage = location.pathname === '/' || location.pathname.endsWith('index.html');
 const animeDetails = document.querySelector('.anime-details');
 const mainContainer = document.getElementById('main');
@@ -110,7 +111,7 @@ function mostrarResultados(data) {
   mainContainer.innerHTML = '';
   if (mainContainer) mainContainer.style.display = 'grid';
 
-  if (isAnimePage || isVerPage || isDirectorioPage) {
+  if (isAnimePage || isVerPage || isDirectorioPage || isLabPage) {
 
     if (animeDetails) animeDetails.style.display = resultados.length > 0 ? 'none' : 'grid';
     if (disqusThread) disqusThread.style.display = resultados.length > 0 ? 'none' : 'block';
