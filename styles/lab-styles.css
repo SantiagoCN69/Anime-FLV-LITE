@@ -329,10 +329,7 @@ body {
       height: 100dvh;
   }
 }
-.sidebar ul a {
-text-decoration: none;
-color: #fff;
-}
+
 
 .sidebar.active {
   transform: translateX(0);

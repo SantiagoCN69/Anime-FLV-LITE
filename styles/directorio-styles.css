@@ -173,10 +173,6 @@ nav {
         height: calc(100dvh - 88px);
     }
   }
-  .sidebar ul a {
-  text-decoration: none;
-  color: #fff;
-  }
   
   .sidebar.active {
     transform: translateX(0);
