@@ -1,7 +1,7 @@
 // Importaciones de Firebase y otras dependencias
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 
@@ -16,13 +16,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Manejo de estado de autenticación
     onAuthStateChanged(auth, (user) => {
+        const botonGenerar = document.getElementById("generar-nuevas");
         if (user) {
             userid = user.uid;
             console.log('Usuario autenticado:', userid);
-            obtenerFavoritosUsuario()
+            obtenerFavoritosUsuario();
+            if (botonGenerar) {
+                botonGenerar.disabled = false;
+                botonGenerar.style.opacity = '1';
+            }
         } else {
             userid = null;
             console.log('Usuario no autenticado');
+            if (botonGenerar) {
+                botonGenerar.disabled = true;
+                botonGenerar.style.opacity = '0.5';
+                botonGenerar.style.cursor = 'not-allowed';
+                const texto = document.getElementById("textbtngenerarfav");
+                texto.textContent = "Inicia sesión para generar";
+            }
         }
     });
 });
@@ -70,18 +82,80 @@ function crearAnimeCard(anime) {
     div.innerHTML = `
     <div class="container-img">
       <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
-      <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+      <img src="./icons/añadir.svg" class="play-icon" alt="seleccionar">
       ${ratingHtml}
       <span class="estado">${anime.type}</span>
     </div>
     <strong>${anime.title || anime.name}</strong>
   `;
   
-    div.addEventListener('click', () => ver(animeId));
+    // Almacenar el ID del anime en una variable global
+    div.addEventListener('click', () => {
+      div.classList.toggle('active');
+      if (div.classList.contains('active')) {
+        window.seleccionados = window.seleccionados || new Set();
+        window.seleccionados.add(animeId);
+      } else {
+        window.seleccionados.delete(animeId);
+      }
+    });
     return div;
   }
 
 //IA 
+
+// Función para agregar animes a pendientes
+document.getElementById("agregar-a-pendientes").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Por favor, inicia sesión primero");
+    return;
+  }
+
+  if (!window.seleccionados || window.seleccionados.size === 0) {
+    alert("Por favor, selecciona al menos un anime");
+    return;
+  }
+
+  try {
+    // Limpiar estados previos de los animes seleccionados
+    for (const animeId of window.seleccionados) {
+      await limpiarEstadosPrevios(animeId);
+    }
+
+    // Agregar a pendientes
+    for (const animeId of window.seleccionados) {
+      await setDoc(doc(collection(doc(db, "usuarios", user.uid), "pendiente"), animeId), {
+        id: animeId,
+        timestamp: Date.now()
+      });
+    }
+
+    // Limpiar selección
+    window.seleccionados.clear();
+    document.querySelectorAll('.anime-card.active').forEach(card => {
+      card.classList.remove('active');
+    });
+
+    alert("Animes agregados a pendientes exitosamente!");
+  } catch (error) {
+    console.error("Error al agregar animes a pendientes:", error);
+    alert("Error al agregar animes a pendientes. Por favor, intenta nuevamente.");
+  }
+});
+
+// Función para limpiar estados previos de un anime específico
+async function limpiarEstadosPrevios(animeId) {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const estados = ['viendo', 'pendiente', 'visto'];
+  for (const estado of estados) {
+    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), animeId);
+    const snap = await getDoc(ref);
+    if (snap.exists()) await deleteDoc(ref);
+  }
+}
 
 document.getElementById("generar-nuevas").addEventListener("click", async () => {
     const texto = document.getElementById("textbtngenerarfav");
@@ -90,6 +164,8 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
 
     if (favoritos.length === 0) {
         console.warn("No hay favoritos.");
+        const texto = document.getElementById("textbtngenerarfav");
+        texto.textContent = "No hay favoritos";
         return;
     }
 
@@ -145,7 +221,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
             const data = await res.json();
             const anime = data.data?.[0];
             if (anime) {
-                const card = crearAnimeCard(anime); // usa tu función existente
+                const card = crearAnimeCard(anime);
                 fragment.appendChild(card);
             }
         } catch (err) {
