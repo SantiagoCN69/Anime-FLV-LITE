@@ -84,6 +84,8 @@ function crearAnimeCard(anime) {
 //IA 
 
 document.getElementById("generar-nuevas").addEventListener("click", async () => {
+    const texto = document.getElementById("textbtngenerarfav");
+    texto.textContent = "Cargando...";
     const favoritos = await obtenerFavoritosUsuario();
 
     if (favoritos.length === 0) {
@@ -153,4 +155,6 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
     
     contenedor.innerHTML = '';
     contenedor.appendChild(fragment);
+    const texto = document.getElementById("textbtngenerarfav");
+    texto.textContent = "Regenerar";
 }
