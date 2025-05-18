@@ -68,7 +68,9 @@ function inicializarSidebar() {
       document.getElementById('noticias_container'),
       document.getElementById('capitulos'),
       document.getElementById('animes-relacionados'),
-      document.getElementById('pagination')
+      document.getElementById('pagination'),
+      document.getElementById('recomendaciones-favoritos'),
+      document.getElementById('recomendaciones-ia')
     ];
     
     touchStartedOnRestrictedArea = elementosExcluidos.some(elemento => {
