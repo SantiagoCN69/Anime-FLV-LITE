@@ -9,6 +9,9 @@ main {
 h1 {
   margin-bottom: 2rem;
 }
+button:hover {
+  opacity: 1;
+}
 .recomendaciones,
 .favoritos,
 .ia-recomendados {
