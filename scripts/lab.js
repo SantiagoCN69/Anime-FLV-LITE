@@ -1,7 +1,7 @@
 // Importaciones de Firebase y otras dependencias
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 
@@ -13,13 +13,9 @@ let userid = null;
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Establecer "Todos" como género por defecto
     mostrarGeneroEnBoton('todos');
 
-    // Cargar caché al inicio
     const caches = obtenerTodosLosCaches();
-    
-    // Mostrar caché de favoritos si existe
     const cacheFavoritos = caches.favoritos;
     if (cacheFavoritos) {
         const contenedorFavoritos = document.getElementById('recomendaciones-favoritos');
@@ -41,12 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contenedorGenero) {
             const fragment = document.createDocumentFragment();
             cacheGenero.animes.forEach(anime => {
-                const card = crearAnimeCard(anime);
+                const card = crearAnimeCard(anime, true);
                 fragment.appendChild(card);
             });
             contenedorGenero.innerHTML = '';
             contenedorGenero.appendChild(fragment);
         }
+    }
+
+    // Manejo de clic en las cards de género
+    const contenedorGenero = document.getElementById('recomendaciones-ia-genero');
+    if (contenedorGenero) {
+        contenedorGenero.addEventListener('click', (e) => {
+            // Solo prevenir el clic si NO se hizo en un enlace
+            if (!e.target.closest('.anime-link')) {
+                e.preventDefault();
+                return false;
+            }
+        });
     }
 
     // Manejo de opciones de género
@@ -149,7 +157,7 @@ async function mostrarRecomendacionesPorGenero() {
     textobtngenero.textContent = "Cargando...";
 
     const genero = obtenerGeneroSeleccionado();
-    if (genero === 'todos los géneros') {
+    if (genero === 'todos') {
         textobtngenero.textContent = "Por favor, selecciona un género";
         return;
     }
@@ -218,7 +226,7 @@ async function mostrarRecomendadosEnContenedor(respuesta, contenedorId, tipoCach
                 await setDoc(doc(db, 'datos-animes', anime.id), animeData, { merge: true });
                 
                 // Crear y agregar la card
-                const card = crearAnimeCard(anime);
+                const card = crearAnimeCard(anime, tipoCache === 'genero');
                 fragment.appendChild(card);
                 
                 // Guardar el anime en el array para el caché
@@ -261,7 +269,6 @@ async function obtenerFavoritosUsuario() {
             favoritos.push(favorito);
         });
 
-        console.log('Favoritos del usuario:', favoritos);
         return favoritos;
     } catch (error) {
         console.error('Error al obtener favoritos:', error);
@@ -275,37 +282,65 @@ document.getElementById("btn-genero").addEventListener("click", function() {
 })
 
 
-function crearAnimeCard(anime) {
+function crearAnimeCard(anime, esGenero = false) {
     const animeId = obtenerAnimeId(anime);
     const div = document.createElement('div');
+    div.className = 'anime-card';
+    
+    // Mantener el estilo original usando innerHTML
     let ratingHtml = '';
     if (anime.rating) {
-      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
+        ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
     }
-    div.className = 'anime-card';
-    div.style.setProperty('--cover', `url(${anime.cover})`);
-    div.innerHTML = `
-    <div class="container-img">
-      <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
-      <img src="./icons/añadir.svg" class="play-icon" alt="seleccionar">
-      ${ratingHtml}
-      <span class="estado">${anime.type}</span>
-    </div>
-    <strong>${anime.title || anime.name}</strong>
-  `;
-  
-    // Almacenar el ID del anime en una variable global
-    div.addEventListener('click', () => {
-      div.classList.toggle('active');
-      if (div.classList.contains('active')) {
-        window.seleccionados = window.seleccionados || new Set();
-        window.seleccionados.add(animeId);
-      } else {
-        window.seleccionados.delete(animeId);
-      }
-    });
+    
+    // Si es una card de género, agregar el enlace
+    if (esGenero) {
+        div.innerHTML = `
+        <a href="anime.html?id=${anime.id}" class="anime-link">
+            <div class="container-img">
+                <img src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
+                <img src="./icons/añadir.svg" class="play-icon" alt="seleccionar">
+                ${ratingHtml}
+                <span class="estado">${anime.type}</span>
+            </div>
+            <strong>${anime.title || 'Título del Anime'}</strong>
+        </a>
+        `;
+        
+        // Evitar que la card sea seleccionable
+        div.style.pointerEvents = 'none';
+        div.querySelector('.anime-link').style.pointerEvents = 'auto';
+        
+        // Agregar el fondo con la imagen de portada
+        div.style.setProperty('--cover', `url(${anime.cover || 'img/loading.png'})`);
+    } else {
+        // Mantener el comportamiento original para las cards de favoritos
+        
+        div.style.setProperty('--cover', `url(${anime.cover || 'img/loading.png'})`);
+        div.innerHTML = `
+        <div class="container-img">
+            <img src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
+            <img src="./icons/añadir.svg" class="play-icon" alt="seleccionar">
+            ${ratingHtml}
+            <span class="estado">${anime.type}</span>
+        </div>
+        <strong>${anime.title || 'Título del Anime'}</strong>
+        `;
+        
+        // Evento de clic para las cards de favoritos
+        div.addEventListener('click', () => {
+            div.classList.toggle('active');
+            if (div.classList.contains('active')) {
+                window.seleccionados = window.seleccionados || new Set();
+                window.seleccionados.add(animeId);
+            } else {
+                window.seleccionados.delete(animeId);
+            }
+        });
+    }
+    
     return div;
-  }
+}
 
 //IA 
 
