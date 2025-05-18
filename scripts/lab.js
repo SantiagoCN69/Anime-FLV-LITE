@@ -19,13 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             userid = user.uid;
             console.log('Usuario autenticado:', userid);
-            obtenerFavoritosUsuario().then(favoritos => {
-                if (favoritos && favoritos.length > 0) {
-                    generarRecomendacionesIA(favoritos);
-                } else {
-                    console.log('No hay favoritos para generar recomendaciones.');
-                }
-            });
+            obtenerFavoritosUsuario()
         } else {
             userid = null;
             console.log('Usuario no autenticado');
@@ -47,7 +41,6 @@ async function obtenerFavoritosUsuario() {
                 id: doc.id,
                 ...doc.data()
             };
-            console.log('Objeto favorito:', favorito);
             favoritos.push(favorito);
         });
 
@@ -64,6 +57,100 @@ document.getElementById("btn-genero").addEventListener("click", function() {
     document.getElementById("btn-genero").classList.toggle("active")
 })
 
-document.getElementById("btn-estado").addEventListener("click", function() {
-    document.getElementById("btn-estado").classList.toggle("active")
-})
+
+function crearAnimeCard(anime) {
+    const animeId = obtenerAnimeId(anime);
+    const div = document.createElement('div');
+    let ratingHtml = '';
+    if (anime.rating) {
+      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
+    }
+    div.className = 'anime-card';
+    div.style.setProperty('--cover', `url(${anime.cover})`);
+    div.innerHTML = `
+    <div class="container-img">
+      <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
+      <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+      ${ratingHtml}
+      <span class="estado">${anime.type}</span>
+    </div>
+    <strong>${anime.title || anime.name}</strong>
+  `;
+  
+    div.addEventListener('click', () => ver(animeId));
+    return div;
+  }
+
+//IA 
+
+document.getElementById("generar-nuevas").addEventListener("click", async () => {
+    const favoritos = await obtenerFavoritosUsuario();
+
+    if (favoritos.length === 0) {
+        console.warn("No hay favoritos.");
+        return;
+    }
+
+    const nombres = favoritos.map(f => f.nombre || f.titulo || f.id).join(', ');
+    const prompt = `Recomiéndame 5 animes parecidos a estos pero responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos : ${nombres}`;
+
+    enviarPrompt(prompt);
+});
+
+async function enviarPrompt(prompt) {
+    try {
+        const response = await fetch('https://backend-ia-anime.onrender.com/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: prompt })
+        });
+
+        const data = await response.json();
+        const respuesta = data.response || 'Error en la respuesta';
+
+        console.log('Respuesta IA:', respuesta);
+        window.ultimaRespuesta = respuesta;
+
+        mostrarRelacionadosDesdeRespuesta(respuesta);
+    } catch (error) {
+        console.error('Error al enviar prompt:', error);
+    }
+}
+
+// 👇 Esta función busca y renderiza cada anime sugerido
+async function mostrarRelacionadosDesdeRespuesta(respuesta) {
+    const nombres = respuesta.split(',')
+    .map(t => t.trim().replace(/-/g, ' ').replace(/:/g, '').replace(/\s+/g, ' '));
+
+    const contenedor = document.getElementById('recomendaciones-favoritos');
+    const section = document.getElementById('relacionados');
+
+    if (!contenedor || nombres.length === 0) {
+        if (section) section.style.display = 'none';
+        return;
+    }
+
+    if (section) section.style.display = 'flex';
+    
+    const fragment = document.createDocumentFragment();
+
+    for (const nombre of nombres) {
+        if (!nombre) continue; 
+        try {
+            const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(nombre)}`);
+            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+
+            const data = await res.json();
+            const anime = data.data?.[0];
+            if (anime) {
+                const card = crearAnimeCard(anime); // usa tu función existente
+                fragment.appendChild(card);
+            }
+        } catch (err) {
+            console.error('Error al buscar anime:', nombre, err);
+        }
+    }
+    
+    contenedor.innerHTML = '';
+    contenedor.appendChild(fragment);
+}
