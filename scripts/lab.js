@@ -58,3 +58,12 @@ async function obtenerFavoritosUsuario() {
         return [];
     }
 }
+
+
+document.getElementById("btn-genero").addEventListener("click", function() {
+    document.getElementById("btn-genero").classList.toggle("active")
+})
+
+document.getElementById("btn-estado").addEventListener("click", function() {
+    document.getElementById("btn-estado").classList.toggle("active")
+})

@@ -96,7 +96,7 @@ h1 {
   transition: opacity .2s ease, transform .2s ease;
 }
 
-.opciones-filtro.active {
+.btn-filtro.active ~ .opciones-filtro {
   opacity: 1;
   pointer-events: all;
   transform: translateY(0);
