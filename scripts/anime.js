@@ -493,50 +493,6 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// Estados de visualización del anime
-const btnEstado = document.getElementById('btn-estado');
-const ESTADOS_ANIME = ['ESTADO', 'VIENDO', 'PENDIENTE', 'VISTO'];
-const CLASES_ESTADOS = {
-  'ESTADO': 'estado-default',
-  'VIENDO': 'estado-viendo',
-  'PENDIENTE': 'estado-pendiente',
-  'VISTO': 'estado-completado'
-};
-
-// Función para obtener en qué colección está este anime
-async function obtenerEstadoActual() {
-  const user = auth.currentUser;
-  if (!user) return "ESTADO";
-
-  for (const estado of ['viendo', 'pendiente', 'visto']) {
-    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
-    const snap = await getDoc(ref);
-    if (snap.exists()) return estado.toUpperCase();
-  }
-
-  return "ESTADO";
-}
-
-// Función para eliminar el anime de todas las colecciones de estado
-async function limpiarEstadosPrevios() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  for (const estado of ['viendo', 'pendiente', 'visto']) {
-    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
-    const snap = await getDoc(ref);
-    if (snap.exists()) await deleteDoc(ref);
-  }
-}
-
-// Función para actualizar el botón visual inmediatamente
-async function actualizarBotonEstado(estado) {
-  btnEstado.textContent = estado;
-  btnEstado.className = "";
-  btnEstado.classList.add(CLASES_ESTADOS[estado] || "estado-default");
-}
-
-// Función para actualizar el progreso de capítulos vistos
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
   const progreso = (episodiosVistos.length / totalEpisodios) * 100;
 
@@ -553,65 +509,150 @@ async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
     progresoElement.style.width = `${progreso}%`;
   }
 
+}
+
+// Manejo de estados con botones individuales
+const btnViendo = document.getElementById('btn-viendo');
+const btnPendiente = document.getElementById('btn-pendiente');
+const btnVisto = document.getElementById('btn-visto');
+const seccionEstados = document.getElementById('Estados');
+
+// Asegúrate de definir esta variable correctamente
+
+const ESTADOS = {
+  viendo: {
+    color: '#22cee9',
+    texto: 'VIENDO',
+    icono: 'eye-solid.svg'
+  },
+  pendiente: {
+    color: '#ffc107',
+    texto: 'PENDIENTE',
+    icono: 'clock-solid.svg'
+  },
+  visto: {
+    color: '#00c853',
+    texto: 'VISTO',
+    icono: 'circle-check-solid.svg'
+  }
+};
+async function actualizarEstadoFirebase(estado) {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  await limpiarEstadosPrevios(); 
+
+  // Guarda el anime en la colección correspondiente
+  await setDoc(doc(collection(doc(db, "usuarios", user.uid), estado.toLowerCase()), id), {
+    id: id, 
+    timestamp: Date.now()
+  });
+}
+
+// Eliminar el anime de todas las colecciones de estado
+async function limpiarEstadosPrevios() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const estados = ['viendo', 'pendiente', 'visto'];
+  for (const estado of estados) {
+    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
+    const snap = await getDoc(ref);
+    if (snap.exists()) await deleteDoc(ref);
+  }
+}
+
+// Manejar selección de estado
+function manejarEstadoSeleccionado(btnSeleccionado) {
+  const btnEstado = document.getElementById('btn-estado');
+  const estadoId = btnSeleccionado.id.replace('btn-', '');
+  const estado = ESTADOS[estadoId];
+
+  // Si el botón ya está activo, eliminar el estado
+  if (btnSeleccionado.classList.contains('active')) {
+    btnSeleccionado.classList.remove('active');
+    seccionEstados.classList.remove('active');
+    if (estado) {
+      btnEstado.style.backgroundColor = '#6c757d';
+      btnEstado.innerHTML = 'ESTADO';
+      // Eliminar el estado de Firebase
+      const user = auth.currentUser;
+      if (user) {
+        const ref = doc(collection(doc(db, "usuarios", user.uid), estadoId), id);
+        deleteDoc(ref);
+      }
+    }
+    return;
+  }
+
+  // Si el botón no estaba activo, proceder normalmente
+  [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
+  btnSeleccionado.classList.add('active');
+  seccionEstados.classList.remove('active');
+
+  if (estado) {
+    btnEstado.style.backgroundColor = estado.color;
+    btnEstado.innerHTML = `${estado.texto}<img src="icons/${estado.icono}" style="width: 17px; height: 17px; filter: invert(100%);">`;
+  }
+
+  actualizarEstadoFirebase(estadoId.toUpperCase());
+}
+
+// Obtener el estado actual
+async function obtenerEstadoActual() {
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  const estados = ['visto', 'viendo', 'pendiente'];
+  for (const estado of estados) {
+    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
+    const snap = await getDoc(ref);
+    if (snap.exists()) return estado.toUpperCase();
+  }
+  return null;
+}
+
+// Cargar el estado actual en la UI
+async function actualizarEstadoActual() {
   const user = auth.currentUser;
   if (!user) return;
 
   const estadoActual = await obtenerEstadoActual();
-
-  if (progreso === 100 && estadoActual !== "VISTO") {
-    await limpiarEstadosPrevios();
-    const ref = doc(collection(doc(db, "usuarios", user.uid), "visto"), id);
-    await setDoc(ref, {
-      titulo: document.getElementById("titulo").textContent,
-      fechaAgregado: serverTimestamp()
-    });
-    actualizarBotonEstado("VISTO");
-
-  } else if (progreso < 100 && progreso !== 0 && estadoActual !== "VIENDO") {
-    await limpiarEstadosPrevios();
-    const ref = doc(collection(doc(db, "usuarios", user.uid), "viendo"), id);
-    await setDoc(ref, {
-      titulo: document.getElementById("titulo").textContent,
-      fechaAgregado: serverTimestamp(),
-      progreso: progreso
-    });
-    actualizarBotonEstado("VIENDO");
+  if (estadoActual) {
+    const btnSeleccionado = document.getElementById(`btn-${estadoActual.toLowerCase()}`);
+    if (btnSeleccionado) manejarEstadoSeleccionado(btnSeleccionado);
+    
   }
 }
 
-// Evento para cambiar de estado cíclicamente
-btnEstado.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Debes iniciar sesión para cambiar el estado.");
-    return;
-  }
-
-  const estadoActual = await obtenerEstadoActual();
-  const indiceActual = ESTADOS_ANIME.indexOf(estadoActual);
-  const siguienteEstado = ESTADOS_ANIME[(indiceActual + 1) % ESTADOS_ANIME.length];
-
-  // Actualizar visualmente antes de guardar en Firestore
-  actualizarBotonEstado(siguienteEstado);
-
-  await limpiarEstadosPrevios();
-
-  if (["VIENDO", "PENDIENTE", "VISTO"].includes(siguienteEstado)) {
-    const ref = doc(collection(doc(db, "usuarios", user.uid), siguienteEstado.toLowerCase()), id);
-    await setDoc(ref, {
-      titulo: document.getElementById("titulo").textContent,
-      fechaAgregado: serverTimestamp()
-    });
-  }
-});
-
-// Cargar estado al iniciar sesión 
+// Escuchar cambios en la autenticación
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const estado = await obtenerEstadoActual();
-    actualizarBotonEstado(estado);
+  if (user) await actualizarEstadoActual();
+});
+
+// Eventos para los botones
+btnViendo.addEventListener('click', () => manejarEstadoSeleccionado(btnViendo));
+btnPendiente.addEventListener('click', () => manejarEstadoSeleccionado(btnPendiente));
+btnVisto.addEventListener('click', () => manejarEstadoSeleccionado(btnVisto));
+
+// Mostrar/ocultar sección
+document.getElementById("btn-estado").addEventListener("click", () => {
+  seccionEstados.classList.toggle("active");
+});
+
+// Cerrar la sección cuando se haga clic fuera
+document.addEventListener("click", (e) => {
+  const seccion = document.getElementById("Estados");
+  const btnEstado = document.getElementById("btn-estado");
+  if (seccion.classList.contains("active") && 
+      !seccion.contains(e.target) && 
+      !btnEstado.contains(e.target)) {
+    seccion.classList.remove("active");
   }
 });
+
+
+
 // dezplazamiento relacioandos
 const scrollContainer = document.querySelector('#animes-relacionados');
 

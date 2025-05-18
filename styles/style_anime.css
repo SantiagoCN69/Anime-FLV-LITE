@@ -41,63 +41,63 @@ header {
     background-color: #00000011;
 }
 
-  .anime-details {
-    display: grid;
-    grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
-    grid-template-rows: 177px auto auto;
-    grid-template-areas: 
+.anime-details {
+  display: grid;
+  grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
+  grid-template-rows: 177px auto auto;
+  grid-template-areas: 
     "container1 container2"
     "container1 container3"
     "container4 container4";
-    gap: 25px;
-    height: fit-content;
-    overflow: hidden;
-    margin-bottom: 25px;
-  }
+  gap: 25px;
+  height: fit-content;
+  overflow: hidden;
+  margin-bottom: 25px;
+}
 
-  .anime-container1 {
-    display: flex;
-    flex-direction: column;
-    background-color: #1F1F1F;
-    border-radius: 5px;
-    padding: .6rem;
-    max-height: fit-content;
-    grid-area: container1;
-    position: relative;
-    width: 100%;
-  }
+.anime-container1 {
+  display: flex;
+  flex-direction: column;
+  background-color: #1F1F1F;
+  border-radius: 5px;
+  padding: .6rem;
+  max-height: fit-content;
+  grid-area: container1;
+  position: relative;
+  width: 100%;
+}
   
-  .anime-container1 img {
-    border-radius: 5px;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-  }
+.anime-container1 img {
+  border-radius: 5px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
   
-  .botones {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    grid-template-areas: 
-      "fav fav"
-      "estado progreso";
-    gap: 10px;
-    margin-top: 10px;
-    width: 100%;
-  }
+.botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas: 
+    "fav fav"
+    "estado progreso";
+  gap: 10px;
+  margin-top: 10px;
+  width: 100%;
+}
   
-  .botones button {
-    cursor: pointer;
-    padding: 10PX;
-    border-radius: 5px;
-    border: none;
-    color: #fff;
-    transition: background 0.3s ease;
-    max-height: 35px;
+.botones button {
+  cursor: pointer;
+  padding: 10PX;
+  border-radius: 5px;
+  border: none;
+  color: #fff;
+  transition: background 0.3s ease;
+  max-height: 35px;
   }
 
   #btn-fav {
-    grid-area: fav;
+     grid-area: fav;
     background: #5a131a;
     transition: background 0.3s ease;
     display: flex;
@@ -116,64 +116,99 @@ header {
     display: block;
     
   }
-  #btn-estado {
+  #section-estados {
     grid-area: estado;
-    transition: background 0.3s ease;
-    background: #6c757d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap:4px;
-    max-width: 100%;
-    padding-inline: 5px;
-    }
+    position: relative;
+  }
+#btn-estado {
+  width: 100%;
+  background: #6c757d;
+  color: white;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  z-index: 31;
+}
+
+#btn-estado img {
+  width: 17px;
+  height: 17px;
+  filter: invert(100%);
+}
+#Estados {
+position: absolute;
+top: 100%;
+left: 0;
+border-radius: 5px;
+display: flex; 
+gap: 5px;
+padding-top: 15px;
+z-index: 30;
+opacity: 0;
+pointer-events: none;
+transition: transform .3s, opacity .3s;
+transform: translateY(-10px);
+}
+button:hover {
+  opacity: 1;
+}
+#Estados.active, #Estados:hover, #btn-estado:hover + #Estados  {
+opacity: 1;
+pointer-events: auto;
+transform: translateY(0);
+}
+#Estados button{
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  transition: background 0.3s ease;
+  background-color: #1f1f1f;
+}
+
+#Estados button.active {
+  color: white;
+  border-radius: 5px;
+}
+
+
 #btn-estado:hover {
-    opacity: 1;
-    }
+opacity: 1;
+}
   /* Estados del botón */
   #btn-estado.estado-default {
     background: #6c757d; 
   }
 
-  #btn-estado.estado-viendo {
+  #Estados img {
+    width: 17px;
+    height: 17px;
+    display: inline-block;
+    filter: invert(100%);
+  }
+  #btn-viendo.active {
     background: #22cee9;
   }
-  #btn-estado.estado-viendo::after {
-    content: url('../icons/eye-solid.svg');
-    width: 17px;
-    height: 17px;
-    display: block;
-    filter: invert(100%);
-  }
 
-  #btn-estado.estado-pendiente {
+  #btn-pendiente.active {
     background: #ffc107;
   }
-  #btn-estado.estado-pendiente::after {
-    content: url('../icons/clock-solid.svg');
-    width: 17px;
-    height: 17px;
-    display: block;
-    filter: invert(100%);
-  }
 
-  #btn-estado.estado-completado {
+  #btn-visto.active {
     background: #00c853;
   }
 
-  #btn-estado.estado-completado::after {
-    content: url('../icons/circle-check-solid.svg');
-    width: 17px;
-    height: 17px;
-    display: block;
-    
-  }
-  #btn-progreso {
-    grid-area: progreso;
-    background: #6c757d;
-    position: relative;
-    --progreso-text: "0%";
-    --progreso: 0;
+#btn-progreso {
+  grid-area: progreso;
+  background: #6c757d;
+  position: relative;
+  --progreso-text: "0%";
+  --progreso: 0;
   }
 #progreso {
     position: absolute;
