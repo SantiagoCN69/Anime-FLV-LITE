@@ -49,12 +49,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 texto.textContent = "Inicia sesión para generar";
             }
         }
-    })
+    });
 
  
     (async () => {
         try {
-            await fetch('https://backend-ia-anime.onrender.com/api/chat');
+            fetch('https://backend-ia-anime.onrender.com/api/chat');
         } catch (error) {
             console.error('Error al iniciar backend:', error);
         }

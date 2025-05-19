@@ -524,17 +524,14 @@ const ESTADOS = {
   viendo: {
     color: '#22cee9',
     texto: 'VIENDO',
-    icono: 'eye-solid.svg'
   },
   pendiente: {
     color: '#ffc107',
     texto: 'PENDIENTE',
-    icono: 'clock-solid.svg'
   },
   visto: {
     color: '#00c853',
     texto: 'VISTO',
-    icono: 'circle-check-solid.svg'
   }
 };
 async function actualizarEstadoFirebase(estado) {
@@ -593,7 +590,7 @@ function manejarEstadoSeleccionado(btnSeleccionado) {
 
   if (estado) {
     btnEstado.style.backgroundColor = estado.color;
-    estadoText.innerHTML = `${estado.texto}<img src="icons/${estado.icono}" style="width: 17px; height: 17px; filter: invert(100%);">`;
+    estadoText.innerHTML = `${estado.texto}`;
   }
 
   actualizarEstadoFirebase(estadoId.toUpperCase());

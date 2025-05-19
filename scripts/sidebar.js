@@ -70,7 +70,7 @@ function inicializarSidebar() {
       document.getElementById('animes-relacionados'),
       document.getElementById('pagination'),
       document.getElementById('recomendaciones-favoritos'),
-      document.getElementById('recomendaciones-ia-genero')
+      document.getElementById('recomendaciones-personalizadas')
     ];
     
     touchStartedOnRestrictedArea = elementosExcluidos.some(elemento => {
