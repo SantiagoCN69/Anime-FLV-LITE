@@ -651,18 +651,18 @@ width: 100%;
   }
 }
 @media screen and (max-width: 480px) {
-  .anime-description { -webkit-line-clamp: 12; line-clamp: 12; }
+  .anime-description { -webkit-line-clamp: 13; line-clamp: 13; }
 }
 @media screen and (max-width: 460px) {
+  .anime-description { -webkit-line-clamp: 12; line-clamp: 12; }
+}
+@media screen and (max-width: 420px) {
   .anime-description { -webkit-line-clamp: 11; line-clamp: 11; }
 }
-@media screen and (max-width: 414px) {
+@media screen and (max-width: 380px) {
   .anime-description { -webkit-line-clamp: 10; line-clamp: 10; }
 }
-@media screen and (max-width: 380px) {
-  .anime-description { -webkit-line-clamp: 9; line-clamp: 9; }
-}
-@media screen and (max-width: 329px) {
+@media screen and (max-width: 330px) {
   .anime-description { -webkit-line-clamp: 8; line-clamp: 8; }
 }
 
