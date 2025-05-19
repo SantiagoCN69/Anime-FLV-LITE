@@ -135,7 +135,18 @@ function crearAnimeCard(anime, isLink = false) {
     }
 
         div.style.setProperty('--cover', `url(${anime.cover || 'img/loading.png'})`);
-        div.innerHTML = `
+        if (isLink) {
+            div.innerHTML = `
+        <div class="container-img">
+            <img src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
+            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="play">
+            ${ratingHtml}
+            <span class="estado">${anime.type}</span>
+        </div>
+        <strong>${anime.title || 'Título del Anime'}</strong>
+        `;
+        } else {
+            div.innerHTML = `
         <div class="container-img">
             <img src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
             <img src="./icons/añadir.svg" class="play-icon" alt="seleccionar">
@@ -144,9 +155,10 @@ function crearAnimeCard(anime, isLink = false) {
         </div>
         <strong>${anime.title || 'Título del Anime'}</strong>
         `;
-        
+        }
         // Evento de clic según el tipo de tarjeta
         if (isLink) {
+
             div.addEventListener('click', () => {
                 window.location.href = `anime.html?id=${animeId}`;
             });
@@ -352,7 +364,7 @@ document.getElementById("generar-personalizadas").addEventListener("click", asyn
     const animesCache2 = cacheActual?.animes || [];
     const nombresCache2 = animesCache2.map(a => a.title || a.id).join(', ');
 
-    const prompt = `Dame 5 nombres de animes de acuerdo a la descricion siguiente: ${busquedaPersonalizada}
+    const prompt = `Dame 5 nombres de animes de acuerdo a la siguiente descripción: ${busquedaPersonalizada}
     Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2}
     Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
 
