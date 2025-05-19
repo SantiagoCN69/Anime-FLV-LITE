@@ -547,6 +547,9 @@ font-size: .8rem;
 .genero button {
 font-size: .7rem;
 }
+.genero {
+  gap: 2px;
+}
 anime-container3 {
 width: 100%;
 max-height: 500px;
