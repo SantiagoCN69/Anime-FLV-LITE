@@ -114,10 +114,40 @@ async function obtenerFavoritosUsuario() {
             };
             favoritos.push(favorito);
         });
+console.log(favoritos);
+        // Mezclcar el array y seleccionar los primeros 5
+        const favoritosMezclados = favoritos
+            .map(value => ({ value, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ value }) => value);
 
-        return favoritos;
+        console.log(favoritosMezclados.slice(0, 5));
+        return favoritosMezclados.slice(0, 5);
     } catch (error) {
         console.error('Error al obtener favoritos:', error);
+        return [];
+    }
+}
+
+async function obtenerAnimesVistos() {
+    try {
+        if (!userid) return [];
+
+        const vistosRef = collection(db, `usuarios/${userid}/visto`);
+        const querySnapshot = await getDocs(vistosRef);
+
+        const vistos = [];
+        querySnapshot.forEach((doc) => {
+            const visto = {
+                id: doc.id,
+                ...doc.data()
+            };
+            vistos.push(visto);
+        });
+        console.log(vistos);
+        return vistos;
+    } catch (error) {
+        console.error('Error al obtener animes vistos:', error);
         return [];
     }
 }
@@ -250,7 +280,10 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
       }
     }, 220);
     
-    const favoritos = await obtenerFavoritosUsuario();
+    const [favoritos, vistos] = await Promise.all([
+        obtenerFavoritosUsuario(),
+        obtenerAnimesVistos()
+    ]);
     const cacheActual = obtenerCacheAnimes();
 
     if (favoritos.length === 0) {
@@ -262,12 +295,16 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
 
     const nombresFavoritos = favoritos.map(f => f.nombre || f.titulo || f.id).join(', ');
     const animesCache = cacheActual?.animes || [];
-    const nombresCache = animesCache.map(a => a.title || a.id).join(', ');
+    const nombresCache = animesCache.map(a => a.title || a.id);
+    const nombresVistos = vistos.map(v => v.nombre || v.titulo || v.id);
+    
+    // Combinar los títulos de cache y vistos para excluirlos
+    const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])].join(', ');
 
     const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos}
-    Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache}
+    Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir}
     Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
-
+    console.log(prompt);
     enviarPrompt(prompt);
 });
 
