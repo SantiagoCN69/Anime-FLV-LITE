@@ -234,7 +234,22 @@ async function limpiarEstadosPrevios(animeId) {
 
 document.getElementById("generar-nuevas").addEventListener("click", async () => {
     const texto = document.getElementById("textbtngenerarfav");
-    texto.textContent = "Cargando...";
+    
+    texto.innerHTML = 'Generando recomendaciones... <span id="contador1">100s</span>';
+
+    const contador = document.getElementById("contador1");
+    
+    let count = 100;
+    const interval = setInterval(() => {
+      count--;
+      contador.textContent = count + 's';
+    
+      if (count === 0) {
+        clearInterval(interval);
+        if (typeof initLoading !== "undefined") initLoading.remove();
+      }
+    }, 220);
+    
     const favoritos = await obtenerFavoritosUsuario();
     const cacheActual = obtenerCacheAnimes();
 
@@ -351,7 +366,20 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
 
 document.getElementById("generar-personalizadas").addEventListener("click", async () => {
     const texto = document.getElementById("textbtngenerarpersonalizada");
-    texto.textContent = "Cargando...";
+    texto.innerHTML = 'Generando recomendaciones... <span id="contador1">100s</span>';
+
+    const contador = document.getElementById("contador1");
+    
+    let count = 100;
+    const interval = setInterval(() => {
+      count--;
+      contador.textContent = count + 's';
+    
+      if (count === 0) {
+        clearInterval(interval);
+        if (typeof initLoading !== "undefined") initLoading.remove();
+      }
+    }, 220);
     const busquedaPersonalizada = document.getElementById("busqueda-personalizada").value;
     const cacheActual = obtenerCacheAnimes();
 
