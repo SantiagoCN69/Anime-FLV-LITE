@@ -89,47 +89,55 @@ async function loginConGoogle() {
 
 // Logout con modal
 function showLogoutModal() {
+  // Crear y configurar el modal
   const modal = document.createElement('div');
-  modal.id = 'logout-modal';
-  modal.classList.add('modal');
+  modal.className = 'logout-modal';
   modal.innerHTML = `
-    <div class='modal-content'>
-      <h2>Cerrar Sesión</h2>
-      <p>¿Estás seguro de que deseas cerrar sesión?</p>
-      <div class='modal-buttons'>
-        <button id='confirm-logout'>Sí, cerrar sesión</button>
-        <button id='cancel-logout'>Cancelar</button>
-      </div>
-    </div>
+    <button id="export-data">Exportar datos</button>
+    <a href="#" id="config">Configuración</a>
+    <button id='confirm-logout'>Cerrar sesión</button>
   `;
-  document.body.appendChild(modal);
-
+  
+  // Insertar el modal en el DOM
+  const loginButton = document.getElementById('btn-login');
+  loginButton.appendChild(modal);
+  
+  // Mostrar con animación
   requestAnimationFrame(() => modal.classList.add('show'));
-  document.body.classList.add('modal-open');
-
+  
+  // Función para cerrar el modal
   const closeModal = () => {
     modal.classList.remove('show');
-    document.body.classList.remove('modal-open');
     setTimeout(() => modal.remove(), 300);
   };
-
-  // Cerrar modal al hacer scroll
+  
+  // Cerrar al hacer scroll
   const handleScroll = () => closeModal();
   window.addEventListener('scroll', handleScroll, { once: true });
-
-  // Cerrar modal al hacer clic fuera del contenido
-  modal.addEventListener('click', (event) => {
-    if (event.target === modal) {
+  
+  // Cerrar al hacer clic fuera
+  const handleClick = (e) => {
+    if (!modal.contains(e.target) && !loginButton.contains(e.target)) {
       closeModal();
+      document.removeEventListener('click', handleClick);
     }
-  });
-
-  document.getElementById('confirm-logout').addEventListener('click', async () => {
+  };
+  
+  // Usar setTimeout para evitar que se cierre inmediatamente
+  setTimeout(() => document.addEventListener('click', handleClick), 0);
+  
+  // Eventos de los botones
+  modal.querySelector('#confirm-logout').addEventListener('click', async (e) => {
+    e.preventDefault();
     await logoutConGoogle();
     closeModal();
   });
-
-  document.getElementById('cancel-logout').addEventListener('click', closeModal);
+  
+  modal.querySelector('#cancel-logout').addEventListener('click', (e) => {
+    e.preventDefault();
+    closeModal();
+    // Aquí podrías agregar la lógica para ir a configuración
+  });
 }
 
 async function logoutConGoogle() {

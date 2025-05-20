@@ -110,9 +110,7 @@ header {
 #busqueda::placeholder {
   color: #fff8
 }
-button:hover {
-  opacity: .8;
-}
+
 #btn-login {
     padding: 8px 16px;
     background-color: transparent;
@@ -123,11 +121,16 @@ button:hover {
     transition: transform 0.2s;
     display: flex;
     align-items: center;
+    position: relative;
 }
 #btn-login img {
   width: 28px;
   height: 28px;
   border-radius: 50%;
+  transition: rotate 0.2s;
+}
+#btn-login:hover img {
+  rotate: -10deg;
 }
 #btn-login span {
   margin-left: 9px;
@@ -258,7 +261,6 @@ button:hover {
   }
 .title,#btn-login,#btn-search,#menu-toggle {
   transition: transform .2s;
-  transform: translateY(0);
 }
 #btn-search {
   background: none;
@@ -639,72 +641,57 @@ main {
 /* style modal */
 
 /* Overlay */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(18, 18, 18, 0.85);
-  display: none;
-  place-items: center;
-  z-index: 1000;
-}
-.modal.show {
-  display: grid;
-}
-
-/* Contenido */
-.modal-content {
+.logout-modal {
+  position: absolute;
+  right: 0;
+  top: 55px;
   background: #1F1F1F;
-  padding: 24px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 360px;
-  text-align: center;
-  color: #eee;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-/* Título */
-.modal-content h2 {
-  margin: 0 0 16px;
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-/* Botones */
-.modal-buttons {
+  padding: 20px;
+  border-radius: 25px;
+  z-index: 3333;
+  transition: opacity .2s;
+  opacity: 0;
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
+  flex-direction: column;
+  gap: 2px;
+}
+.logout-modal.show {
+  opacity: 1;
 }
 
-.modal-buttons button {
-  flex: 1;
-  padding: 10px 0;
-  font-size: 0.95rem;
+.logout-modal button,
+.logout-modal a {
+  display: block;
+  padding: 10px;
+  font-size: 1rem;
   border: 1px solid;
-  border-radius: 6px;
   background: transparent;
   cursor: pointer;
+  width: 150px;
+  border-color: #fff8;
+  border-radius: 20px;
+  color: #fff;
   transition: background 0.2s ease, color 0.2s ease;
 }
-
-/* Confirmar */
+.logout-modal button:hover,
+.logout-modal a:hover {
+background: rgba(255, 248, 248, 0.1);
+}
+#export-data {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+#config {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
 #confirm-logout {
+  margin-top: 10px;
   border-color: #ff4d4d;
   color: #ff4d4d;
 }
 #confirm-logout:hover {
   background: rgba(255, 77, 77, 0.1);
-}
-
-/* Cancelar */
-#cancel-logout {
-  border-color: #555;
-  color: #ccc;
-}
-#cancel-logout:hover {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 
