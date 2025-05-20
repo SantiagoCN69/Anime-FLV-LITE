@@ -49,6 +49,11 @@
 - Node.js 14+
 - npm 6+
 
+## 📷 Capturas
+
+![cap animeflvlite](https://github.com/user-attachments/assets/02d47e0d-40e7-4c09-a8bc-74834eabb898)
+
+
 ## 🌐 Origen de los Contenidos
 
 Los animes de esta plataforma son originalmente recopilados del sitio web [AnimeFlV.net](https://animeflv.net), uno de los repositorios más completos y reconocidos de anime en español.
