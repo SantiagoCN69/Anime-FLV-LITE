@@ -114,14 +114,12 @@ async function obtenerFavoritosUsuario() {
             };
             favoritos.push(favorito);
         });
-console.log(favoritos);
         // Mezclcar el array y seleccionar los primeros 5
         const favoritosMezclados = favoritos
             .map(value => ({ value, sort: Math.random() }))
             .sort((a, b) => a.sort - b.sort)
             .map(({ value }) => value);
 
-        console.log(favoritosMezclados.slice(0, 5));
         return favoritosMezclados.slice(0, 5);
     } catch (error) {
         console.error('Error al obtener favoritos:', error);
@@ -144,7 +142,6 @@ async function obtenerAnimesVistos() {
             };
             vistos.push(visto);
         });
-        console.log(vistos);
         return vistos;
     } catch (error) {
         console.error('Error al obtener animes vistos:', error);
