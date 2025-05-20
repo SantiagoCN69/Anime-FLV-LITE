@@ -138,7 +138,7 @@ nav {
 }
     
 #resultados {
-    flex: 1;
+    margin-bottom: auto;
     position: relative;
     width: 100%;
 }
