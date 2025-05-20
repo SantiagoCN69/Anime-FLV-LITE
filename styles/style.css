@@ -626,15 +626,10 @@ main {
 }
 .anime-card strong {
   color: #fff;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
   margin-top: 0.4rem;
   line-height: 1.05rem;
-  height: 2.2rem;
+  height: 2.1rem;
   display: block;
 }
 
