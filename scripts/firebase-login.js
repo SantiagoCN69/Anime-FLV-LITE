@@ -201,7 +201,6 @@ function showLogoutModal() {
       // Crear objeto con todos los datos
       const userData = {
         usuario: {
-          uid: userId,
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL
