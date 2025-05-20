@@ -8,6 +8,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import {
   getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
   doc,
   getDoc,
   setDoc,
@@ -89,6 +93,14 @@ async function loginConGoogle() {
 
 // Logout con modal
 function showLogoutModal() {
+  // Verificar si ya existe un modal abierto
+  const existingModal = document.querySelector('.logout-modal');
+  if (existingModal) {
+    existingModal.classList.remove('show');
+    setTimeout(() => existingModal.remove(), 300);
+    return;
+  }
+
   // Crear y configurar el modal
   const modal = document.createElement('div');
   modal.className = 'logout-modal';
@@ -108,7 +120,11 @@ function showLogoutModal() {
   // Función para cerrar el modal
   const closeModal = () => {
     modal.classList.remove('show');
-    setTimeout(() => modal.remove(), 300);
+    setTimeout(() => {
+      if (modal.parentNode) {
+        modal.remove();
+      }
+    }, 300);
   };
   
   // Cerrar al hacer scroll
@@ -133,10 +149,98 @@ function showLogoutModal() {
     closeModal();
   });
   
-  modal.querySelector('#cancel-logout').addEventListener('click', (e) => {
+  modal.querySelector('#config').addEventListener('click', (e) => {
     e.preventDefault();
     closeModal();
     // Aquí podrías agregar la lógica para ir a configuración
+  });
+  
+  // Exportar datos
+  const exportButton = modal.querySelector('#export-data');
+  
+  exportButton.addEventListener('click', async (e) => {
+    e.preventDefault();
+    e.stopPropagation(); 
+    const originalText = exportButton.textContent;
+    
+    try {
+      exportButton.textContent = 'Exportando...';
+      exportButton.disabled = true;
+      
+      const user = getAuth().currentUser;
+      if (!user) {
+        throw new Error('No hay usuario autenticado');
+      }
+      
+      const db = getFirestore();
+      const userId = user.uid;
+      
+      // Función para obtener datos de una colección específica
+      const getCollectionData = async (collectionName) => {
+        try {
+          const q = query(
+            collection(db, 'usuarios', userId, collectionName)
+          );
+          const querySnapshot = await getDocs(q);
+          // Solo devolvemos los datos del documento sin el ID
+          return querySnapshot.docs.map(doc => doc.data());
+        } catch (error) {
+          console.error(`Error al obtener ${collectionName}:`, error);
+          return [];
+        }
+      };
+      
+      // Obtener datos de todas las colecciones
+      const [vistos, viendo, completados, favoritos] = await Promise.all([
+        getCollectionData('visto'),
+        getCollectionData('viendo'),
+        getCollectionData('completados'),
+        getCollectionData('favoritos')
+      ]);
+      
+      // Crear objeto con todos los datos
+      const userData = {
+        usuario: {
+          uid: userId,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        },
+        animes: {
+          vistos,
+          viendo,
+          completados,
+          favoritos
+        },
+        fechaExportacion: new Date().toISOString()
+      };
+      
+      // Crear y descargar archivo JSON
+      const dataStr = JSON.stringify(userData, null, 2);
+      const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
+      
+      const exportFileDefaultName = `animeflv-lite-${userId.slice(0, 8)}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+      
+      // Mostrar mensaje de éxito
+      exportButton.textContent = '¡Exportado!';
+      setTimeout(() => {
+        exportButton.textContent = originalText;
+        exportButton.disabled = false;
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error al exportar datos:', error);
+      exportButton.textContent = 'Error al exportar';
+      setTimeout(() => {
+        exportButton.textContent = originalText;
+        exportButton.disabled = false;
+      }, 2000);
+    }
   });
 }
 
