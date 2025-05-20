@@ -357,12 +357,8 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
                     titulo: anime.title || '',
                     portada: anime.cover || '',
                     descripcion: anime.synopsis || '',
-                    generos: anime.genres || [],
                     rating: anime.rating || null,
-                    estado: anime.status || null,
                     episodios: anime.episodes?.map(ep => ({ number: ep.number, url: ep.url })) || [],
-                    relacionados: anime.related?.map(ep => ({ title: ep.title, relation: ep.relation })) || [],
-                    fechaGuardado: serverTimestamp()
                 };
                 
                 await setDoc(doc(db, 'datos-animes', anime.id), animeData, { merge: true });
