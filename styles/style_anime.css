@@ -265,7 +265,6 @@ opacity: 1;
   }
 
   .anime-title {
-    color: #e76f51;
     font-size: 1.8rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -296,7 +295,6 @@ opacity: 1;
   .genero {
     display: flex;
     gap: 5px;
-    overflow: auto;
     flex-wrap: wrap;
     min-height: fit-content;
   }
@@ -310,12 +308,10 @@ opacity: 1;
     font-size: .8rem;
   }
 
-
-
   .anime-description {
     color: #fff;
     font-size: .9rem;
-    overflow-y: auto;
+    overflow: auto;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 5;
@@ -326,7 +322,6 @@ opacity: 1;
     grid-area: container3;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     border-radius: 5px;
     padding: 1rem;
     gap: 1rem;
