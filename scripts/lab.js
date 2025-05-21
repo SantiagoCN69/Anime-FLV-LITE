@@ -204,8 +204,6 @@ function crearAnimeCard(anime, isLink = false) {
     return div;
 }
 
-//IA 
-
 // Función para agregar animes a pendientes
 document.getElementById("agregar-a-pendientes").addEventListener("click", async () => {
   const user = auth.currentUser;
@@ -246,7 +244,6 @@ document.getElementById("agregar-a-pendientes").addEventListener("click", async 
   }
 });
 
-// Función para limpiar estados previos de un anime específico
 async function limpiarEstadosPrevios(animeId) {
   const user = auth.currentUser;
   if (!user) return;
@@ -295,124 +292,13 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     const nombresCache = animesCache.map(a => a.title || a.id);
     const nombresVistos = vistos.map(v => v.nombre || v.titulo || v.id);
     
-    // Combinar los títulos de cache y vistos para excluirlos
     const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])].join(', ');
 
-    const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos}
-    Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir}
-    Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
+    const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
     console.log(prompt);
-    enviarPrompt(prompt);
+    enviarPrompt(prompt, "favoritos");
 });
 
-async function enviarPrompt(prompt) {
-    try {
-        const response = await fetch('https://backend-ia-anime.onrender.com/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: prompt })
-        });
-
-        const data = await response.json();
-        const respuesta = data.response || 'Error en la respuesta';
-
-        console.log('Respuesta IA:', respuesta);
-        window.ultimaRespuesta = respuesta;
-
-        mostrarRelacionadosDesdeRespuesta(respuesta);
-    } catch (error) {
-        console.error('Error al enviar prompt:', error);
-    }
-}
-
-// 👇 Esta función busca y renderiza cada anime sugerido
-async function mostrarRelacionadosDesdeRespuesta(respuesta) {
-    const nombres = respuesta.split(',')
-    .map(t => t.trim().replace(/-/g, ' ').replace(/:/g, '').replace(/\s+/g, ' '));
-
-    const contenedor = document.getElementById('recomendaciones-favoritos');
-    const section = document.getElementById('relacionados');
-
-    if (!contenedor || nombres.length === 0) {
-        if (section) section.style.display = 'none';
-        return;
-    }
-
-    if (section) section.style.display = 'flex';
-    
-    const fragment = document.createDocumentFragment();
-    const animesEncontrados = [];
-
-    for (const nombre of nombres) {
-        if (!nombre) continue; 
-        try {
-            console.log(nombre);
-            const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(nombre)}`);
-            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-
-            const data = await res.json();
-            const animes = data.data;
-
-            let animeSeleccionado = null;
-
-            if (animes && animes.length > 0) {
-                animeSeleccionado = animes.find(anime => 
-                    anime.title.toLowerCase() === nombre.toLowerCase()
-                );
-
-                if (!animeSeleccionado) {
-                    const animesCandidatos = animes.filter(anime => 
-                        anime.title.toLowerCase().includes(nombre.toLowerCase())
-                    );
-
-                    if (animesCandidatos.length > 0) {
-                        animesCandidatos.sort((a, b) => a.title.length - b.title.length);
-                        animeSeleccionado = animesCandidatos[0];
-                    }
-                }
-
-                if (!animeSeleccionado) {
-                    animeSeleccionado = animes[0];
-                }
-            }
-
-
-            if (animeSeleccionado) {
-                const animeData = {
-                    titulo: animeSeleccionado.title || '',
-                    portada: animeSeleccionado.cover || '',
-                    descripcion: animeSeleccionado.synopsis || '',
-                    rating: animeSeleccionado.rating || null,
-                    episodios: animeSeleccionado.episodes?.map(ep => ({ number: ep.number, url: ep.url })) || [],
-                };
-                
-                await setDoc(doc(db, 'datos-animes', animeSeleccionado.id), animeData, { merge: true });
-                
-                const card = crearAnimeCard(animeSeleccionado);
-                fragment.appendChild(card);
-                
-                animesEncontrados.push({
-                    id: animeSeleccionado.id,
-                    title: animeSeleccionado.title,
-                    cover: animeSeleccionado.cover,
-                    rating: animeSeleccionado.rating,
-                    type: animeSeleccionado.type
-                });
-            }
-        } catch (err) {
-            console.error('Error al buscar anime:', nombre, err);
-        }
-    }
-    
-    if (animesEncontrados.length > 0) {
-        guardarCacheAnimes(animesEncontrados, 'favoritos');
-    }
-    
-    contenedor.innerHTML = '';
-    contenedor.appendChild(fragment);
-    const texto = document.getElementById("textbtngenerarfav");
-    texto.textContent = "Regenerar";
-}
 //generar personalizadas
 
 document.getElementById("generar-personalizadas").addEventListener("click", async () => {
@@ -447,10 +333,17 @@ document.getElementById("generar-personalizadas").addEventListener("click", asyn
     Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2}
     Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
 
-    enviarPromptPersonalizado(prompt);
+    enviarPrompt(prompt, "personalizadas");
 });
 
-async function enviarPromptPersonalizado(prompt) {
+
+async function enviarPrompt(prompt, seccion) {
+    const seccionesValidas = ["favoritos", "personalizadas"];
+    if (!seccionesValidas.includes(seccion)) {
+        console.error('Sección no válida:', seccion);
+        return;
+    }
+
     try {
         const response = await fetch('https://backend-ia-anime.onrender.com/api/chat', {
             method: 'POST',
@@ -464,19 +357,39 @@ async function enviarPromptPersonalizado(prompt) {
         console.log('Respuesta IA:', respuesta);
         window.ultimaRespuesta = respuesta;
 
-        mostrarRelacionadosDesdeRespuesta2(respuesta);
+        mostrarRelacionadosDesdeRespuesta(respuesta, seccion);
     } catch (error) {
         console.error('Error al enviar prompt:', error);
     }
 }
-async function mostrarRelacionadosDesdeRespuesta2(respuesta) {
+
+async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
+    const config = {
+        favoritos: {
+            contenedorId: 'recomendaciones-favoritos',
+            sectionId: 'relacionados',
+            textoBtnId: 'textbtngenerarfav',
+            guardarEnCache: true
+        },
+        personalizadas: {
+            contenedorId: 'recomendaciones-personalizadas',
+            sectionId: 'personalizadas',
+            textoBtnId: 'textbtngenerarpersonalizada',
+            guardarEnCache: false
+        }
+    };
+
+    const { contenedorId, sectionId, textoBtnId, guardarEnCache } = config[seccion] || {};
+    if (!contenedorId) return;
+
     const nombres = respuesta.split(',')
-    .map(t => t.trim().replace(/-/g, ' ').replace(/:/g, '').replace(/\s+/g, ' '));
+        .map(t => t.trim().replace(/-/g, ' ').replace(/:/g, '').replace(/\s+/g, ' '))
+        .filter(Boolean);
 
-    const contenedor = document.getElementById('recomendaciones-personalizadas');
-    const section = document.getElementById('personalizadas');
+    const contenedor = document.getElementById(contenedorId);
+    const section = document.getElementById(sectionId);
 
-    if (!contenedor || nombres.length === 0) {
+    if (!contenedor || !nombres.length) {
         if (section) section.style.display = 'none';
         return;
     }
@@ -484,26 +397,76 @@ async function mostrarRelacionadosDesdeRespuesta2(respuesta) {
     if (section) section.style.display = 'flex';
     
     const fragment = document.createDocumentFragment();
-
-    for (const nombre of nombres) {
-        if (!nombre) continue; 
+    const animesEncontrados = [];
+    const buscarAnime = async (nombre) => {
         try {
             const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(nombre)}`);
             if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
             const data = await res.json();
-            const anime = data.data?.[0];
-            if (anime) {
-                // Crear y agregar la card
-                const card = crearAnimeCard(anime, true);
-                fragment.appendChild(card);
+            const animes = data.data || [];
+
+            if (!animes.length) return null;
+
+            let animeSeleccionado = animes.find(a => 
+                a.title.toLowerCase() === nombre.toLowerCase()
+            );
+
+            if (!animeSeleccionado) {
+                const animesCandidatos = animes.filter(a => 
+                    a.title.toLowerCase().includes(nombre.toLowerCase())
+                );
+
+                if (animesCandidatos.length) {
+                    animesCandidatos.sort((a, b) => a.title.length - b.title.length);
+                    animeSeleccionado = animesCandidatos[0];
+                } else {
+                    animeSeleccionado = animes[0];
+                }
             }
+
+            return animeSeleccionado;
         } catch (err) {
             console.error('Error al buscar anime:', nombre, err);
+            return null;
         }
+    };
+
+    for (const nombre of nombres) {
+        const anime = await buscarAnime(nombre);
+        if (!anime) continue;
+        if (guardarEnCache) {
+            const animeData = {
+                titulo: anime.title || '',
+                portada: anime.cover || '',
+                descripcion: anime.synopsis || '',
+                rating: anime.rating || null,
+                episodios: anime.episodes?.map(ep => ({ 
+                    number: ep.number, 
+                    url: ep.url 
+                })) || [],
+            };
+            
+            await setDoc(doc(db, 'datos-animes', anime.id), animeData, { merge: true });
+            animesEncontrados.push({
+                id: anime.id,
+                title: anime.title,
+                cover: anime.cover,
+                rating: anime.rating,
+                type: anime.type
+            });
+        }
+
+        const card = crearAnimeCard(anime, !guardarEnCache);
+        fragment.appendChild(card);
     }
+    if (guardarEnCache && animesEncontrados.length > 0) {
+        guardarCacheAnimes(animesEncontrados, 'favoritos');
+    }
+
     contenedor.innerHTML = '';
     contenedor.appendChild(fragment);
-    const texto = document.getElementById("textbtngenerarpersonalizada");
-    texto.textContent = "Regenerar";
+    
+    const textoBtn = document.getElementById(textoBtnId);
+    if (textoBtn) textoBtn.textContent = "Regenerar";
 }
