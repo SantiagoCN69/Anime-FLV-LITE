@@ -154,6 +154,19 @@ function cargarAnimesConCache() {
     const params = new URLSearchParams(window.location.search);
     if (params.has('genre[]')) {
       const genero = params.get('genre[]');
+      
+        const generoNormalizado = genero.toLowerCase().replace(/\s+/g, '-');
+        const botonGenero = document.getElementById(generoNormalizado);
+        
+        if (botonGenero) {
+          botonGenero.classList.add('active');
+          const generosActivos = Array.from(document.querySelectorAll('#filtro-genero .btn-filtro-opcion.active'));
+          if (generosBtn && generosBtn.querySelector('span')) {
+            generosBtn.querySelector('span').textContent = generosActivos.length > 0 ? `(${generosActivos.length})` : 'Todos';
+          }
+        }
+
+      
       fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default&genre[]=${genero}`)
       .then(response => response.json())
       .then(data => {
@@ -166,7 +179,6 @@ function cargarAnimesConCache() {
         console.error('Error en la petición:', error.message);
         console.error('Stack trace:', error.stack);
       });
-      console.log('Genero:', genero);
     }
     else {
       
@@ -208,7 +220,7 @@ function cargarAnimesConCache() {
   }
   
   // Cargar animes al inicio
-  cargarAnimesConCache();
+  document.addEventListener('DOMContentLoaded', cargarAnimesConCache);
   
 
 
