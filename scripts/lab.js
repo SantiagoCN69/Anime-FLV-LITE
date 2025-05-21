@@ -346,34 +346,57 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
     for (const nombre of nombres) {
         if (!nombre) continue; 
         try {
+            console.log(nombre);
             const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(nombre)}`);
             if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
             const data = await res.json();
-            const anime = data.data?.[0];
-            if (anime) {
-                // Guardar datos en Firestore
+            const animes = data.data;
+
+            let animeSeleccionado = null;
+
+            if (animes && animes.length > 0) {
+                animeSeleccionado = animes.find(anime => 
+                    anime.title.toLowerCase() === nombre.toLowerCase()
+                );
+
+                if (!animeSeleccionado) {
+                    const animesCandidatos = animes.filter(anime => 
+                        anime.title.toLowerCase().includes(nombre.toLowerCase())
+                    );
+
+                    if (animesCandidatos.length > 0) {
+                        animesCandidatos.sort((a, b) => a.title.length - b.title.length);
+                        animeSeleccionado = animesCandidatos[0];
+                    }
+                }
+
+                if (!animeSeleccionado) {
+                    animeSeleccionado = animes[0];
+                }
+            }
+
+
+            if (animeSeleccionado) {
                 const animeData = {
-                    titulo: anime.title || '',
-                    portada: anime.cover || '',
-                    descripcion: anime.synopsis || '',
-                    rating: anime.rating || null,
-                    episodios: anime.episodes?.map(ep => ({ number: ep.number, url: ep.url })) || [],
+                    titulo: animeSeleccionado.title || '',
+                    portada: animeSeleccionado.cover || '',
+                    descripcion: animeSeleccionado.synopsis || '',
+                    rating: animeSeleccionado.rating || null,
+                    episodios: animeSeleccionado.episodes?.map(ep => ({ number: ep.number, url: ep.url })) || [],
                 };
                 
-                await setDoc(doc(db, 'datos-animes', anime.id), animeData, { merge: true });
+                await setDoc(doc(db, 'datos-animes', animeSeleccionado.id), animeData, { merge: true });
                 
-                // Crear y agregar la card
-                const card = crearAnimeCard(anime);
+                const card = crearAnimeCard(animeSeleccionado);
                 fragment.appendChild(card);
                 
-                // Guardar el anime en el array para el caché
                 animesEncontrados.push({
-                    id: anime.id,
-                    title: anime.title,
-                    cover: anime.cover,
-                    rating: anime.rating,
-                    type: anime.type
+                    id: animeSeleccionado.id,
+                    title: animeSeleccionado.title,
+                    cover: animeSeleccionado.cover,
+                    rating: animeSeleccionado.rating,
+                    type: animeSeleccionado.type
                 });
             }
         } catch (err) {
@@ -381,7 +404,6 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
         }
     }
     
-    // Guardar en caché los animes encontrados
     if (animesEncontrados.length > 0) {
         guardarCacheAnimes(animesEncontrados, 'favoritos');
     }
@@ -391,7 +413,6 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta) {
     const texto = document.getElementById("textbtngenerarfav");
     texto.textContent = "Regenerar";
 }
-
 //generar personalizadas
 
 document.getElementById("generar-personalizadas").addEventListener("click", async () => {
