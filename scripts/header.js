@@ -25,6 +25,7 @@ function limpiarVistaAnimePage() {
   if (relacionados) relacionados.style.display = 'flex';
   const verAnime = document.getElementById('main-ver');
   if (verAnime) verAnime.style.display = 'flex';
+  if (mainLab) mainLab.style.display = 'flex';
 }
 
 function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, resultadosContainer) {
@@ -41,8 +42,10 @@ const isVerPage = location.pathname.includes('ver');
 const isDirectorioPage = location.pathname.includes('directorio');
 const isLabPage = location.pathname.includes('lab');
 const isIndexPage = location.pathname === '/' || location.pathname.endsWith('index.html');
-const animeDetails = document.querySelector('.anime-details');
 const mainContainer = document.getElementById('main');
+const animeDetails = document.querySelector('.anime-details');
+const verAnime = document.getElementById('main-ver');
+const mainLab = document.getElementById('main-lab');
 const sidebar = document.querySelector('.sidebar');
 const disqusThread = document.getElementById('disqus_thread');
 const relacionados = document.getElementById('relacionados');
@@ -112,11 +115,10 @@ function mostrarResultados(data) {
   if (mainContainer) mainContainer.style.display = 'grid';
 
   if (isAnimePage || isVerPage || isDirectorioPage || isLabPage) {
-
     if (animeDetails) animeDetails.style.display = resultados.length > 0 ? 'none' : 'grid';
     if (disqusThread) disqusThread.style.display = resultados.length > 0 ? 'none' : 'block';
     if (relacionados) relacionados.style.display = resultados.length > 0 ? 'none' : 'flex';
-    const verAnime = document.getElementById('main-ver');
+    if (mainLab) mainLab.style.display = resultados.length > 0 ? 'none' : 'flex';
     if (verAnime) verAnime.style.display = resultados.length > 0 ? 'none' : 'flex';
     if (resultados.length === 0) return;
   }
