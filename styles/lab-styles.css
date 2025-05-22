@@ -4,159 +4,26 @@ h2 {
 }
 main {
   flex-direction: column;
+  gap: 2rem;
 }
 h1 {
-  margin-bottom: 2rem;
-}
-button:hover {
-  opacity: 1;
-}
-.recomendaciones,
-.favoritos,
-.ia-recomendados {
-  margin-bottom: 2rem;
+  margin-block: 1rem;
 }
 
-.recomendaciones h3,
-.favoritos h3,
-.ia-recomendados h3 {
+h3 {
   color: #fff;
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
-  border-bottom: 2px solid #e76f51;
   padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
 }
-
-.controles-ia {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
-
-.filtro-genero,
-.filtro-estado {
-  position: relative;
-  flex: 1;
-}
-
-.btn-filtro {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e76f51;
-  border-radius: 25px;
-  background: #1F1F1F;
+.favoritos h3{
   color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  position: relative;
-  z-index: 200;
-  min-width: 160px;
+  border-color: #fff;
 }
-
-
-.btn-filtro:hover {
-  opacity: 1;
-}
-
-.btn-filtro.active {
-  border-radius: 25px 25px 0 0;
-  border-bottom: none;
-}
-
-.chevron {
-  width: 15px;
-  height: 15px;
-  transition: transform 0.3s ease;
-}
-
-.btn-filtro.active .chevron {
-  transform: rotate(180deg);
-}
-
-.opciones-filtro {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  background: #1F1F1F;
-  border-radius: 0 0 25px 25px;
-  border: 1px solid #e76f51;
-  border-top: none;
-  z-index: 100;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-40px);
-  transition: opacity .2s ease, transform .2s ease;
-}
-
-.btn-filtro.active ~ .opciones-filtro {
-  opacity: 1;
-  pointer-events: all;
-  transform: translateY(0);
-}
-
-.opcion {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-  height: 40px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  border-radius: 15px;
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
-  cursor: pointer;
-  transition: background-color .2s ease;
-}
-
-.opcion:hover {
-  background: rgba(231, 111, 81, 0.2);
-}
-
-#generar-ia {
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity transform .2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-#generar-ia img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) invert(1);
-}
-
-.recomendaciones h3 {
-  color: #fff;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  border-bottom: 2px solid #2ecc71;
-  padding-bottom: 0.5rem;
-  font-weight: 600;
-  background: linear-gradient(to right, #2ecc71, #27ae60);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+.personalizadas h3 {
+  color: #e76f51;
+  border-color: #e76f51;
 }
 
 .grid-animes {
@@ -185,23 +52,8 @@ button:hover {
 .carga .container-img{
   border: 1px solid #888;
 }
-
 .personalizadas {
   margin-top: 2rem;
-}
-
-.personalizadas h3 {
-  color: #fff;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 0.5rem;
-  font-weight: 600;
-  background: linear-gradient(to right, #3498db, #2980b9);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .search-container {
@@ -214,7 +66,7 @@ button:hover {
 #busqueda-personalizada {
   flex: 1;
   padding: 1rem;
-  border: 1px solid #3498db;
+  border: 1px solid #e76f51;
   border-radius: 25px;
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
@@ -223,11 +75,11 @@ button:hover {
 
 #busqueda-personalizada:focus {
   outline: none;
-  box-shadow: 0 0 0 5px #3498db33;
+  box-shadow: 0 0 10px 5px #e76f5133;
 }
 
 /* Estilos para los botones de acción */
-.acciones {
+.acciones-fav {
   display: flex;
   gap: 1rem;
   justify-content: center;
@@ -285,11 +137,7 @@ button:hover {
     width: 100%;
     justify-content: center;
   }
-  
-
 }
-
-
 #menu-toggle {
   display: block;
 }
@@ -315,7 +163,9 @@ body {
   }
 }
 
-
 .sidebar.active {
   transform: translateX(0);
+}
+footer {
+  margin-top: 2rem;
 }

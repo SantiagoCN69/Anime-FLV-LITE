@@ -349,7 +349,6 @@ header.search-active .search {
 main {
   display: flex;
   color: #fff;
-  font-family: 'Segoe UI', sans-serif;
   margin-inline: auto;
   width: 95%;
   max-width: 1150px;
