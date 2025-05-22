@@ -128,7 +128,7 @@ h3 {
 
 /* Estilos responsive */
 @media (max-width: 768px) {
-  .acciones {
+  .acciones-fav {
     flex-direction: column;
   }
   
