@@ -165,7 +165,7 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, si
 
   btn.append(img, contenedorTexto);
   btn.addEventListener('click', () => {
-    window.location.href = `ver.html?animeId=${animeId}&url=${encodeURIComponent(siguienteEpisodioUrl)}`;
+    window.location.href = `ver.html?animeId=${animeId}&url=${siguienteCapitulo}`;
   });
 
   return btn;
