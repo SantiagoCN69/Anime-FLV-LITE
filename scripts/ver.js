@@ -25,13 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBloquear.classList.add("activo");
         btnBloquear.textContent = "AdBlock: ON";
     }
-
-    // Inicializar estado del botón de Censura y el video
-    if (btnCensura) {
-        btnCensura.classList.toggle("activo", censuraActiva);
-        btnCensura.textContent = `Censura: ${censuraActiva ? "ON" : "OFF"}`;
-        document.querySelector(".reproductor-container").classList.toggle("censure", censuraActiva);
-    } 
 });
 
 btnBloquear.addEventListener("click", () => {
@@ -524,12 +517,6 @@ function mostrarVideo(link, botonSeleccionado) {
       iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
     }
 
-    if (url.toLowerCase().includes("mega")) {
-      const btnCensura = document.getElementById("btn-censura");
-      if (btnCensura && censuraActiva) {
-        btnCensura.click();
-      }
-    }
     videoDiv.appendChild(iframe);
   }
 }
