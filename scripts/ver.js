@@ -407,6 +407,10 @@ async function cargarVideoDesdeEpisodio(index) {
     orderedEmbeds.push(...otherServers);
     embeds = orderedEmbeds;
   }
+  //reasigna los nombres de servidor segun el nuevo orden
+  embeds.forEach((srv, i) => {
+    srv.nombre = `Servidor ${i + 1}`;
+  });
 
   history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${ep.number}`);
 
@@ -548,7 +552,7 @@ btnSiguiente.addEventListener("click", async (e) => {
     }
     await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
     actualizarEstadoBotones();
-    await refrescarUIEstadoCapitulo();
+    refrescarUIEstadoCapitulo();
   }
 });
 
@@ -560,7 +564,7 @@ btnAnterior.addEventListener("click", async (e) => {
       await toggleYGuardarEstadoCapitulo();
     }
     await cargarVideoDesdeEpisodio(episodioActualIndex - 1);
-    await refrescarUIEstadoCapitulo();
+    refrescarUIEstadoCapitulo();
     actualizarEstadoBotones();
   }
 });
