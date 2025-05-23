@@ -184,7 +184,6 @@ document.addEventListener("authStateReady", async (event) => {
 const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
 btnEstadoCapitulo.addEventListener("click", async () => {
   try {
-    await refrescarUIEstadoCapitulo();
     await toggleYGuardarEstadoCapitulo();
   } catch (error) {
     console.error("Error al cambiar y guardar estado del capítulo", error);
@@ -551,8 +550,8 @@ btnSiguiente.addEventListener("click", async (e) => {
       await toggleYGuardarEstadoCapitulo();
     }
     await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
-    actualizarEstadoBotones();
     refrescarUIEstadoCapitulo();
+    actualizarEstadoBotones();
   }
 });
 
