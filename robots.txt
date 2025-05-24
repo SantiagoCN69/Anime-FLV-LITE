@@ -1,0 +1,38 @@
+# robots.txt para AnimeFLV Lite
+# Última actualización: 24 de mayo de 2024
+
+User-agent: *
+Allow: /
+
+# Bloquear directorios específicos
+Disallow: /admin/
+Disallow: /private/
+Disallow: /config/
+
+# Bloquear archivos específicos
+Disallow: /*.json$
+Disallow: /*.js$
+Disallow: /*.css$
+
+# Permitir acceso a recursos importantes
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.webp$
+Allow: /*.svg$
+
+# Sitemap
+Sitemap: https://animeflvlite.netlify.app/sitemap.xml
+
+# Retraso de rastreo (opcional, en segundos)
+Crawl-delay: 10
+
+# Configuración para bots específicos
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
