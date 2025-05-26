@@ -152,7 +152,6 @@ async function toggleYGuardarEstadoCapitulo() {
       fechaAgregado: serverTimestamp(), // O podrías querer actualizar solo si se añade un nuevo anime
       episodiosVistos: Array.from(episodiosActuales)
     });
-    await refrescarUIEstadoCapitulo(); // Refrescar UI después de guardar
   } catch (error) {
     console.error("Error al guardar estado del capítulo en Firestore:", error);
   }
@@ -178,6 +177,7 @@ const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
 btnEstadoCapitulo.addEventListener("click", async () => {
   try {
     await toggleYGuardarEstadoCapitulo();
+    await refrescarUIEstadoCapitulo();
   } catch (error) {
     console.error("Error al cambiar y guardar estado del capítulo", error);
   }
