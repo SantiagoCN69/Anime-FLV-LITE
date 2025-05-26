@@ -14,7 +14,7 @@ let episodios = [];
 let episodioActualIndex = -1;
 let embeds = [];
 let bloquearAnuncios = true;
-let censuraActiva = true;
+let censuraActiva = false;
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 const btnCensura = document.getElementById("btn-censura");

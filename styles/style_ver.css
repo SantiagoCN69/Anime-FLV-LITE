@@ -203,7 +203,7 @@ iframe {
   height: auto;
 }
 .reproductor-container.censure #video {
-  filter: blur(7px);
+  filter: blur(13px);
   z-index: 1;
 }
 #fullscreen {
