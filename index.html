@@ -18,7 +18,7 @@
     <link rel="icon" type="image/png" href="/icons/icon.png">
     <link rel="apple-touch-icon" sizes="256x256" href="/icons/icon.png">
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/style.css" media="all" onload="this.media='all'">
     <script type="module" src="scripts/firebase-login.js" defer></script>
     <script type="module" src="scripts/index.js" defer></script>
     <script type="module" src="scripts/header.js" defer></script>
@@ -27,7 +27,7 @@
 
     <header>
         <h1 class="title"><a href="index.html">AnimeFLV Lite</a></h1>
-        <a href="directorio.html" class="btn-directorio" title="Directorio"><img src="icons/database-solid.svg" alt="Directorio Anime">Directorio Anime</a>
+        <a href="directorio.html" class="btn-directorio" title="Directorio"><img src="icons/database-solid.svg" alt="">Directorio Anime</a>
         <div class="search">
             <input type="text" id="busqueda" placeholder="Buscar anime...">
             <button type="button" id="btn-close-search" title="Cerrar búsqueda">
@@ -55,7 +55,7 @@
           <span id="btn-directorio2"><a href="directorio.html">Directorio Anime ✨</a></span>
           <span id="btn-lab"><a href="lab.html">Lab - Beta</a></span>
           <div class="continuar-viendo">
-            <h3>Continuar viendo</h3>
+            <h2>Continuar viendo</h2>
             <div id="ultimos-caps-viendo">
                 <!-- se agregan los ultimos caps viendo -->
             </div>
