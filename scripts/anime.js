@@ -74,47 +74,74 @@ const renderGeneros = (container, generos) => {
 };
 
 // Renderizar relacionados
+let isRendering = false;
+
 async function renderRelacionados(anime) {
   const relacionadosContainer = document.getElementById('animes-relacionados');
   const relacionadosSection = document.getElementById('relacionados');
   const initLoading = document.getElementById('init-loading-relacionados');
   
-  if (!relacionadosContainer || !anime.relacionados || !anime.relacionados.length) {
+  // Validaciones iniciales
+  if (!relacionadosContainer || !anime?.relacionados?.length) {
     if (relacionadosSection) relacionadosSection.style.display = 'none';
     return;
   }
-  
+
+  // Prevenir múltiples renderizados simultáneos
+  if (isRendering) return;
+  isRendering = true;
+
+  // Mostrar sección y loading
   if (relacionadosSection) relacionadosSection.style.display = 'flex';
-
+  if (initLoading) initLoading.style.display = 'block';
   relacionadosContainer.innerHTML = '';
-  const fragment = document.createDocumentFragment();
 
-  for (const relacionado of anime.relacionados) {
-    try {
-      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`);
-      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-      const data = await res.json();
+  try {
+    // Crear un Set para evitar duplicados
+    const titulosUnicos = new Set();
+    const relacionesUnicas = anime.relacionados.filter(rel => {
+      const esUnico = !titulosUnicos.has(rel.title);
+      if (esUnico) titulosUnicos.add(rel.title);
+      return esUnico;
+    });
 
-      // Tomar solo el primer resultado
-      const primerResultado = data.data?.[0];
-      if (primerResultado) {
-        const card = crearAnimeCard(primerResultado);
+    // Hacer todas las peticiones en paralelo
+    const resultados = await Promise.allSettled(
+      relacionesUnicas.map(relacionado => 
+        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`)
+          .then(res => res.ok ? res.json() : Promise.reject(`HTTP Error: ${res.status}`))
+          .then(data => ({
+            data: data.data?.[0],
+            relation: relacionado.relation
+          }))
+      )
+    );
+
+    // Crear fragmento para mejor rendimiento
+    const fragment = document.createDocumentFragment();
+    const idsAgregados = new Set();
+
+    resultados.forEach(({ status, value }, index) => {
+      if (status === 'fulfilled' && value?.data && !idsAgregados.has(value.data.id)) {
+        idsAgregados.add(value.data.id);
+        const card = crearAnimeCard(value.data);
         
-        // Agregar la relación debajo de la tarjeta
         const relationSpan = document.createElement('span');
         relationSpan.className = 'relation-tag';
-        relationSpan.textContent = relacionado.relation;
+        relationSpan.textContent = value.relation;
         card.appendChild(relationSpan);
         
         fragment.appendChild(card);
       }
-    } catch (err) {
-      console.error('Error al buscar anime relacionado:', relacionado.title, err);
-    }
+    });
+
+    relacionadosContainer.appendChild(fragment);
+  } catch (error) {
+    console.error('Error al cargar animes relacionados:', error);
+  } finally {
+    if (initLoading) initLoading.style.display = 'none';
+    isRendering = false;
   }
-  
-  relacionadosContainer.appendChild(fragment);
-  if (initLoading) initLoading.style.display = 'none';
 }
 
 
