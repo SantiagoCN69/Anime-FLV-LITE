@@ -425,10 +425,14 @@ btnFiltrar.addEventListener('click', async () => {
         history.pushState({}, '', fullUrl);
         
         
-        data.animes.forEach(anime => {
-            const card = crearAnimeCardResultados(anime);
-            resultadosContainer.appendChild(card);
-        });
+        if (data.animes && data.animes.length > 0) {
+            data.animes.forEach(anime => {
+                const card = crearAnimeCardResultados(anime);
+                resultadosContainer.appendChild(card);
+            });
+        } else {
+            resultadosContainer.innerHTML = '<span class="span-carga">No se encontraron resultados</span>';
+        }
         
         // Actualizar la paginación
         currentPage = 1; // Reiniciar a la página 1 cuando se filtra
