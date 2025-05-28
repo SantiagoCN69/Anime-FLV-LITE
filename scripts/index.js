@@ -519,6 +519,8 @@ async function cargarhistorial() {
         animesRecientes.push({
           id: clave.replace('anime_', ''), 
           titulo: datos.titulo || 'Sin título',
+          estado: datos.estado || 'Sin estado',
+          rating: datos.rating || 'Sin rating',
           portada: datos.portada || '',
           _cachedAt: datos._cachedAt
         });
