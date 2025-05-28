@@ -295,7 +295,6 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])].join(', ');
 
     const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
-    console.log(prompt);
     enviarPrompt(prompt, "favoritos");
 });
 
