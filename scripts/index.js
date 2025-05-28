@@ -458,15 +458,23 @@ async function cargarUltimosCapsVistos() {
             const batch = writeBatch(db);
             const ultimosRef = collection(db, 'ultimos-capitulos');
             
-            // Limpiar la colección existente
+            // Obtener documentos existentes
             const querySnapshot = await getDocs(ultimosRef);
+            const existingDocs = {};
+            
+            // Mapear documentos existentes por su título
             querySnapshot.forEach((doc) => {
-                batch.delete(doc.ref);
+                existingDocs[doc.data().title] = doc.id;
             });
             
-            // Agregar nuevos documentos
-            apiData.forEach((item, index) => {
-                const docRef = doc(ultimosRef);
+            // Procesar datos de la API
+            const apiTitles = new Set();
+            
+            // Actualizar o crear documentos
+            for (const [index, item] of apiData.entries()) {
+                const docId = existingDocs[item.title] || doc(ultimosRef).id;
+                const docRef = doc(ultimosRef, docId);
+                
                 const datosFirestore = {
                     title: item.title || '',
                     chapter: item.chapter || 0,
@@ -475,11 +483,21 @@ async function cargarUltimosCapsVistos() {
                     fechaActualizacion: serverTimestamp(),
                     orden: index
                 };
+                
                 batch.set(docRef, datosFirestore);
-            });
+                apiTitles.add(item.title);
+            }
+            
+            // Eliminar documentos que ya no están en la API
+            for (const [title, docId] of Object.entries(existingDocs)) {
+                if (!apiTitles.has(title)) {
+                    const docRef = doc(ultimosRef, docId);
+                    batch.delete(docRef);
+                }
+            }
             
             await batch.commit();
-            console.log('Datos actualizados en Firestore');
+            console.log('Datos sincronizados en Firestore');
         } catch (firestoreError) {
             console.error('Error al actualizar Firestore:', firestoreError);
         }
