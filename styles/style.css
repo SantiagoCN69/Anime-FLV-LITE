@@ -69,6 +69,7 @@ header {
 }
 .btn-directorio:hover {
     color: #fff;
+    filter: brightness(1.2);
 }
 #btn-directorio2 {
   display: none;
@@ -406,6 +407,9 @@ main {
   font-size: 1.7rem;
   padding-bottom: 0.5rem;
 }
+.historialh2 {
+  margin-block: 2rem;
+}
 #Ultimos-Episodios h2::after {
   content: "Hoy";
   position: absolute;
@@ -497,7 +501,7 @@ main {
   font-size: 0.8rem;
 }
 
-#Ultimos-Episodios .anime-card img {
+#ultimos-episodios .anime-card img {
   aspect-ratio: 3/2;
 }
 #main, .grid-animes {

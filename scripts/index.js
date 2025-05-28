@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarPendientes(),
     cargarCompletados(),
     cargarUltimosCapsVistos(),
-    cargarUltimosCapitulos()
+    cargarUltimosCapitulos(),
+    cargarhistorial()
   ])
   
   window.addEventListener('resize', actualizarAlturaMain);
@@ -445,6 +446,53 @@ async function cargarUltimosCapsVistos() {
       }
     }
   }
+
+  async function cargarhistorial() {
+    const historialContainer = document.getElementById('historial');
+    if (!historialContainer) return;
+
+    historialContainer.innerHTML = '';
+    
+    const claves = Object.keys(localStorage);
+    const animesRecientes = [];
+    
+    const clavesAnime = claves.filter(clave => clave.startsWith('anime_'));
+    
+    for (const clave of clavesAnime) {
+      try {
+        const datos = JSON.parse(localStorage.getItem(clave));
+        if (datos && datos._cachedAt) { 
+          animesRecientes.push({
+            id: clave.replace('anime_', ''), 
+            titulo: datos.titulo || 'Sin título',
+            portada: datos.portada || '',
+            _cachedAt: datos._cachedAt
+          });
+        }
+      } catch (e) {
+        console.error('Error al procesar datos del localStorage:', e);
+      }
+    }
+    
+    animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
+    
+    const animesAMostrar = animesRecientes.slice(0, 20);
+    
+    if (animesAMostrar.length === 0) {
+      historialContainer.innerHTML = '<p>No hay animes recientes en tu historial.</p>';
+      return;
+    }
+    
+    const fragment = document.createDocumentFragment();
+    animesAMostrar.forEach(anime => {
+      const card = createAnimeCard(anime);
+      if (card) fragment.appendChild(card);
+    });
+    
+    historialContainer.appendChild(fragment);
+    actualizarAlturaMain();
+  }
+  
   async function cargarFavoritos() {
     const favsContainer = document.getElementById('favs');
     if (!favsContainer) return;
