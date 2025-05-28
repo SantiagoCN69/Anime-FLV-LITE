@@ -418,10 +418,10 @@ const normalizarRelacionados = (relacionados) => {
       relacionados: data.related.map(ep => ({ title: ep.title, relation: ep.relation })) || [],
 
     };
-    await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
     await actualizarCache(id, anime);
     cached = anime;
     if (!compararDatos(cached, anime)) {
+      await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
       console.log("Datos actualizados correctamente de api a firestore");
       renderAnime(anime);
     }
