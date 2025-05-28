@@ -3,7 +3,9 @@ import {
   collection,
   doc,
   getDocs,
-  getDoc 
+  getDoc,
+  writeBatch,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
@@ -374,114 +376,166 @@ async function cargarUltimosCapsVistos() {
       localStorage.setItem(key, JSON.stringify(data));
     }
   }
+
   async function cargarUltimosCapitulos() {
     const mainContainer = document.getElementById('ultimos-episodios');
     if (!mainContainer) return;
-  
+
     const renderizarUltimosEpisodios = (datos) => {
-      document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
-      mainContainer.innerHTML = '';
-      if (!datos || datos.length === 0) {
-        mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';
+        document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
+        mainContainer.innerHTML = '';
+        
+        if (!datos?.length) {
+            mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';
+            actualizarAlturaMain();
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        datos.forEach(anime => {
+            const card = createAnimeCard({
+                id: anime.url ? anime.url.split('/').pop().replace(/-\d+$/, '') : '',
+                title: anime.title || 'Anime sin título',
+                cover: anime.cover || '',
+                link: anime.url || '',
+                chapter: anime.chapter?.toString() || ''
+            });
+            if (card) fragment.appendChild(card);
+        });
+        
+        mainContainer.appendChild(fragment);
         actualizarAlturaMain();
-        return;
-      }
-      const fragment = document.createDocumentFragment();
-      datos.forEach(anime => {
-        const card = createAnimeCard(anime || {});
-        if (card) fragment.appendChild(card);
-      });
-      mainContainer.appendChild(fragment);
-      actualizarAlturaMain();
     };
-  
+
     const cacheKey = 'ultimosEpisodiosGeneralesCache';
+    
+    // 1. Cargar desde caché local
     const cachedData = leerCache(cacheKey);
     if (cachedData) {
-      renderizarUltimosEpisodios(cachedData);
+        console.log('Mostrando datos desde caché local');
+        renderizarUltimosEpisodios(cachedData);
     }
-  
+
+    // 2. Cargar desde Firestore
     try {
-      const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
-      if (!res.ok) throw new Error(`Error de red: ${res.status}`);
-      const data = await res.json();
-  
-      const extraerListaValida = (obj) => {
-        const posibles = ['latestEpisodes', 'animesEnEmision', 'ultimosAnimes', 'data', 'results', 'animes'];
-        for (const key of posibles) {
-          if (Array.isArray(obj[key])) return obj[key];
+        const ultimosRef = collection(db, 'ultimos-capitulos');
+        const querySnapshot = await getDocs(ultimosRef);
+        
+        if (!querySnapshot.empty) {
+            const firestoreData = querySnapshot.docs
+                .sort((a, b) => (a.data().orden || 0) - (b.data().orden || 0))
+                .map(doc => {
+                    const data = doc.data();
+                    return {
+                        title: data.title,
+                        chapter: data.chapter,
+                        cover: data.cover,
+                        url: data.url
+                    };
+                });
+
+            // Actualizar UI y caché si los datos de Firestore son diferentes al caché
+            if (!cachedData || JSON.stringify(firestoreData) !== JSON.stringify(cachedData)) {
+                console.log('Actualizando datos desde Firestore');
+                renderizarUltimosEpisodios(firestoreData);
+                guardarCache(cacheKey, firestoreData);
+            }
         }
-        for (const key in obj) {
-          if (Array.isArray(obj[key])) return obj[key];
+    } catch (firestoreError) {
+        console.error('Error al cargar desde Firestore:', firestoreError);
+    }
+
+    // 3. Cargar desde la API
+    try {
+        const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
+        if (!res.ok) throw new Error(`Error de red: ${res.status}`);
+        
+        const apiData = await res.json();
+        if (!Array.isArray(apiData)) throw new Error('Formato de respuesta inválido');
+
+        // Actualizar Firestore
+        try {
+            const batch = writeBatch(db);
+            const ultimosRef = collection(db, 'ultimos-capitulos');
+            
+            // Limpiar la colección existente
+            const querySnapshot = await getDocs(ultimosRef);
+            querySnapshot.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            
+            // Agregar nuevos documentos
+            apiData.forEach((item, index) => {
+                const docRef = doc(ultimosRef);
+                const datosFirestore = {
+                    title: item.title || '',
+                    chapter: item.chapter || 0,
+                    cover: item.cover || '',
+                    url: item.url || '',
+                    fechaActualizacion: serverTimestamp(),
+                    orden: index
+                };
+                batch.set(docRef, datosFirestore);
+            });
+            
+            await batch.commit();
+            console.log('Datos actualizados en Firestore');
+        } catch (firestoreError) {
+            console.error('Error al actualizar Firestore:', firestoreError);
         }
-        return Array.isArray(obj) ? obj : [];
-      };
-  
-      const rawList = extraerListaValida(data);
-      const freshData = rawList.map(item => ({
-        id: item.id || item.anime_id || (item.url ? item.url.split('/').pop().replace(/-\d+$/, '') : 'id_' + Math.random().toString(16).slice(2)),
-        title: item.title || item.name || item.nombre || 'Anime sin título',
-        cover: item.cover || item.image || item.poster || '',
-        link: item.url || '',
-        chapter: item.chapter || '',
-      })).filter(item => item.title !== 'Anime sin título');
-  
-      const cachedString = JSON.stringify(cachedData);
-      const freshString = JSON.stringify(freshData);
-  
-      if (freshString !== cachedString) {
-        renderizarUltimosEpisodios(freshData);
-        guardarCache(cacheKey, freshData);
-      } else if (!cachedData) {
-        renderizarUltimosEpisodios(freshData);
-        guardarCache(cacheKey, freshData);
-      } else {
-      }
-  
+
+        // Actualizar UI y caché si los datos de la API son diferentes al caché
+        const currentData = leerCache(cacheKey) || [];
+        if (JSON.stringify(apiData) !== JSON.stringify(currentData)) {
+            console.log('Actualizando datos desde la API');
+            renderizarUltimosEpisodios(apiData);
+            guardarCache(cacheKey, apiData);
+        }
+
     } catch (error) {
-      console.error('Error al cargar últimos capítulos desde API:', error);
-      if (!cachedData) {
-        mainContainer.innerHTML = '<p>Error al cargar últimos episodios.</p>';
-        actualizarAlturaMain();
+        console.error('Error al cargar desde la API:', error);
+        if (!cachedData) {
+            actualizarAlturaMain();
+        }
+    }
+}
+
+async function cargarhistorial() {
+  const historialContainer = document.getElementById('historial');
+  const historialh2 = document.getElementById('historialh2');
+  if (!historialContainer) return;
+
+  historialContainer.innerHTML = '';
+  const claves = Object.keys(localStorage);
+  const animesRecientes = [];
+  
+  // Filtrar solo las claves que empiezan con 'anime_'
+  const clavesAnime = claves.filter(clave => clave.startsWith('anime_'));
+  
+  for (const clave of clavesAnime) {
+    try {
+      const datos = JSON.parse(localStorage.getItem(clave));
+      if (datos && datos._cachedAt) { 
+        animesRecientes.push({
+          id: clave.replace('anime_', ''), 
+          titulo: datos.titulo || 'Sin título',
+          portada: datos.portada || '',
+          _cachedAt: datos._cachedAt
+        });
       }
+    } catch (e) {
+      console.error('Error al procesar datos del localStorage:', e);
     }
   }
-
-  async function cargarhistorial() {
-    const historialContainer = document.getElementById('historial');
-    if (!historialContainer) return;
-
-    historialContainer.innerHTML = '';
-    
-    const claves = Object.keys(localStorage);
-    const animesRecientes = [];
-    
-    const clavesAnime = claves.filter(clave => clave.startsWith('anime_'));
-    
-    for (const clave of clavesAnime) {
-      try {
-        const datos = JSON.parse(localStorage.getItem(clave));
-        if (datos && datos._cachedAt) { 
-          animesRecientes.push({
-            id: clave.replace('anime_', ''), 
-            titulo: datos.titulo || 'Sin título',
-            portada: datos.portada || '',
-            _cachedAt: datos._cachedAt
-          });
-        }
-      } catch (e) {
-        console.error('Error al procesar datos del localStorage:', e);
-      }
-    }
-    
-    animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
-    
-    const animesAMostrar = animesRecientes.slice(0, 20);
-    
-    if (animesAMostrar.length === 0) {
-      historialContainer.innerHTML = '<p>No hay animes recientes en tu historial.</p>';
-      return;
-    }
+  
+  // Ordenar por fecha
+  animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
+  const animesAMostrar = animesRecientes.slice(0, 20);
+  
+  // Mostrar u ocultar según si hay animes
+  if (animesAMostrar.length > 0) {
+    historialh2.classList.remove('hidden');
+    historialContainer.classList.remove('hidden');
     
     const fragment = document.createDocumentFragment();
     animesAMostrar.forEach(anime => {
@@ -490,8 +544,13 @@ async function cargarUltimosCapsVistos() {
     });
     
     historialContainer.appendChild(fragment);
-    actualizarAlturaMain();
+  } else {
+    historialh2.classList.add('hidden');
+    historialContainer.classList.add('hidden');
   }
+  
+  actualizarAlturaMain();
+}
   
   async function cargarFavoritos() {
     const favsContainer = document.getElementById('favs');
