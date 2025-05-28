@@ -141,6 +141,7 @@ nav.filtros {
     margin-bottom: auto;
     position: relative;
     width: 100%;
+    min-height: 253px;
 }
 .container-img img {
     aspect-ratio: 3/5;
