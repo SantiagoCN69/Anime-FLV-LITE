@@ -37,7 +37,7 @@ nav.filtros {
     width: fit-content;
     cursor: pointer;
     position: relative;
-    min-width: 156px;
+    min-width: 160px;
     flex:1 1 0;
 }
 .btn-filtro::after {
