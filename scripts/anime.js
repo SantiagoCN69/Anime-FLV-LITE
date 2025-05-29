@@ -394,10 +394,16 @@ const normalizarRelacionados = (relacionados) => {
       const data = docSnap.data();
       if (!compararDatos(cached, data)) {
         console.log("Datos diferentes de cache a firestore, actualizando...");
-        await actualizarCache(id, data);
+        actualizarCache(id, data);
         cached = data;
         renderAnime(data);
       }
+      else {
+        console.log("Datos iguales de cache a firestore");
+      }
+    }
+    else {
+      console.log("No hay datos en firestore");
     }
   } catch (err) {
     console.error('Error al cargar desde Firestore:', err);
@@ -405,6 +411,7 @@ const normalizarRelacionados = (relacionados) => {
 
   // 3. Cargar desde API externa y actualizar todo
   try {
+    console.log("Cargando desde API externa...");
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     const anime = {
@@ -418,12 +425,15 @@ const normalizarRelacionados = (relacionados) => {
       relacionados: data.related.map(ep => ({ title: ep.title, relation: ep.relation })) || [],
 
     };
-    await actualizarCache(id, anime);
-    cached = anime;
+
     if (!compararDatos(cached, anime)) {
       await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
       console.log("Datos actualizados correctamente de api a firestore");
+      actualizarCache(id, anime);
       renderAnime(anime);
+    }
+    else {
+      console.log("Datos iguales de api a firestore");
     }
   } catch (err) {
     console.error('Error carga anime:', err)
