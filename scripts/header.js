@@ -225,11 +225,13 @@ const footer = document.querySelector('footer');
 const footerMessage = document.createElement('p');
 
 const mensajes = [
-  'Este proyecto es una iniciativa completamente independiente, desarrollada con fines educativos y de entretenimiento sin ánimo de lucro.',
-  'Toda la información y el contenido multimedia mostrado son obtenidos desde AnimeFLV, respetando siempre la fuente original.',
+  'Este proyecto es una iniciativa completamente independiente, desarrollada con fines educativos y de entretenimiento.',
+  'Toda la información es obtenida desde AnimeFLV, respetando siempre la fuente original.',
   'Todos los derechos sobre el contenido mostrado pertenecen a sus respectivos creadores y propietarios legales.',
   '⚠️ Los servidores pueden entrar en hibernación tras cierto tiempo de inactividad, lo que podría causar una breve demora al volver a acceder.',
+  "🔁 Tu progreso se sincroniza automáticamente entre dispositivos cuando inicias sesión",
   '🔄 El contenido de la página se almacena temporalmente en caché, lo que mejora significativamente el rendimiento tras la primera carga.',
+  "⭐ Marca tus animes favoritos para acceder a ellos fácilmente",
   '🧠 Algunas funciones de la plataforma están potenciadas por inteligencia artificial, y se actualizan constantemente para ofrecer mejores resultados.',
   '🚀 Esta plataforma ha sido optimizada para ofrecer una experiencia fluida, tanto en computadoras como en dispositivos móviles.',
   '📡 La aplicación realiza conexiones seguras y eficientes con los servidores de anime, garantizando estabilidad y rapidez en el acceso al contenido.',
