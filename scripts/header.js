@@ -219,3 +219,32 @@ busquedaInput.addEventListener('input', () => {
       });
   }, 300);
 });
+
+// MENSAJE FOOTER DINAMICO
+const footer = document.querySelector('footer');
+const footerMessage = document.createElement('p');
+
+const mensajes = [
+  'Este proyecto es una iniciativa completamente independiente, desarrollada con fines educativos y de entretenimiento sin ánimo de lucro.',
+  'Toda la información y el contenido multimedia mostrado son obtenidos desde AnimeFLV, respetando siempre la fuente original.',
+  'Todos los derechos sobre el contenido mostrado pertenecen a sus respectivos creadores y propietarios legales.',
+  '⚠️ Los servidores pueden entrar en hibernación tras cierto tiempo de inactividad, lo que podría causar una breve demora al volver a acceder.',
+  '🔄 El contenido de la página se almacena temporalmente en caché, lo que mejora significativamente el rendimiento tras la primera carga.',
+  '🧠 Algunas funciones de la plataforma están potenciadas por inteligencia artificial, y se actualizan constantemente para ofrecer mejores resultados.',
+  '🚀 Esta plataforma ha sido optimizada para ofrecer una experiencia fluida, tanto en computadoras como en dispositivos móviles.',
+  '📡 La aplicación realiza conexiones seguras y eficientes con los servidores de anime, garantizando estabilidad y rapidez en el acceso al contenido.',
+  ' 🕒 La primera carga de la página puede tardar unos segundos debido al proceso de arranque inicial de los servidores.',
+  '🔐 El sistema utiliza conexión segura HTTPS y autenticación con Firebase para proteger tus datos y asegurar tu experiencia.',
+  '📁 El contenido se carga de forma dinámica para brindar una experiencia de navegación más rápida, fluida y sin interrupciones.',
+  ' 🎥 El sistema de streaming está optimizado para evitar anuncios invasivos, ventanas emergentes o redirecciones molestas.',
+];
+
+// Función para obtener un mensaje aleatorio
+function obtenerMensajeAleatorio() {
+  const indice = Math.floor(Math.random() * mensajes.length);
+  return mensajes[indice];
+}
+
+// Mostrar mensaje inicial
+footerMessage.textContent = obtenerMensajeAleatorio();
+footer.appendChild(footerMessage);

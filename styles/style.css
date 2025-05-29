@@ -712,4 +712,13 @@ footer {
   text-align: center;
   font-size: .8rem;
   margin-top: auto;
+  height: 4rem;
+  position: relative;
 }
+footer p {
+  inset: 0;
+  position: absolute;
+  margin: auto;
+  height: fit-content;
+}
+
