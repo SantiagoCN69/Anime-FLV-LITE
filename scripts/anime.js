@@ -386,6 +386,9 @@ const normalizarRelacionados = (relacionados) => {
     renderAnime(cached);
     console.log("Datos cargados desde cache");
   }
+  else {
+    console.log("No hay datos en cache, cargando desde firestore...");
+  }
 
   // 2. Cargar desde Firestore siempre
   try {
@@ -393,7 +396,7 @@ const normalizarRelacionados = (relacionados) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
       if (!compararDatos(cached, data)) {
-        console.log("Datos diferentes de cache a firestore, actualizando...");
+        console.log("Datos diferentes de cache a firestore, actualizando cache y renderizando...");
         actualizarCache(id, data);
         cached = data;
         renderAnime(data);
@@ -403,7 +406,7 @@ const normalizarRelacionados = (relacionados) => {
       }
     }
     else {
-      console.log("No hay datos en firestore");
+      console.log("No hay datos en firestore, cargando desde api...");
     }
   } catch (err) {
     console.error('Error al cargar desde Firestore:', err);
@@ -426,13 +429,13 @@ const normalizarRelacionados = (relacionados) => {
     };
 
     if (!compararDatos(cached, anime)) {
+      console.log("Datos diferentes de api a firestore, actualizando cache, firestore y renderizando...");
       await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
-      console.log("Datos actualizados correctamente de api a firestore");
       actualizarCache(id, anime);
       renderAnime(anime);
     }
     else {
-      console.log("Datos iguales de api a firestore");
+      console.log("Datos iguales de api a cache");
     }
   } catch (err) {
     console.error('Error carga anime:', err)
