@@ -720,5 +720,6 @@ footer p {
   position: absolute;
   margin: auto;
   height: fit-content;
+  padding: 1rem .5rem;
 }
 
