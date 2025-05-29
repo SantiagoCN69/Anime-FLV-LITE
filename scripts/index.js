@@ -377,145 +377,140 @@ async function cargarUltimosCapsVistos() {
     }
   }
 
-  async function cargarUltimosCapitulos() {
-    const mainContainer = document.getElementById('ultimos-episodios');
-    if (!mainContainer) return;
+async function cargarUltimosCapitulos() {
+  const container = document.getElementById('ultimos-episodios');
+  if (!container) return;
 
-    const renderizarUltimosEpisodios = (datos) => {
-        document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
-        mainContainer.innerHTML = '';
-        
-        if (!datos?.length) {
-            mainContainer.innerHTML = '<p>No se encontraron últimos episodios.</p>';
-            actualizarAlturaMain();
-            return;
-        }
+  const cacheKey = 'ultimosEpisodiosGeneralesCache';
 
-        const fragment = document.createDocumentFragment();
-        datos.forEach(anime => {
-            const card = createAnimeCard({
-                id: anime.url ? anime.url.split('/').pop().replace(/-\d+$/, '') : '',
-                title: anime.title || 'Anime sin título',
-                cover: anime.cover || '',
-                link: anime.url || '',
-                chapter: anime.chapter?.toString() || ''
-            });
-            if (card) fragment.appendChild(card);
-        });
-        
-        mainContainer.appendChild(fragment);
-        actualizarAlturaMain();
-    };
+  const render = (datos) => {
+    document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
+    container.innerHTML = '';
 
-    const cacheKey = 'ultimosEpisodiosGeneralesCache';
+    if (!datos?.length) {
+      container.innerHTML = '<p>No se encontraron últimos episodios.</p>';
+      actualizarAlturaMain();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    datos.forEach(anime => {
+      const card = createAnimeCard({
+        id: anime.url?.split('/').pop()?.replace(/-\d+$/, '') || '',
+        title: anime.title || 'Sin título',
+        cover: anime.cover || '',
+        link: anime.url || '',
+        chapter: anime.chapter?.toString() || ''
+      });
+      if (card) fragment.appendChild(card);
+    });
+    container.appendChild(fragment);
+    actualizarAlturaMain();
+  };
+
+// Función para normalizar objetos
+function normalizarAnime(anime) {
+  return {
+    title: anime.title,
+    chapter: anime.chapter,
+    cover: anime.cover,
+    url: anime.url
+  };
+}
+
+// 1. Cargar desde caché
+let cached = leerCache(cacheKey);
+if (cached) {
+  render(cached);
+  console.log('[CACHE] Datos cargados desde caché local.');
+} else {
+  console.log('[CACHE] No se encontró caché local, buscando en Firestore...');
+}
+
+// 2. Cargar desde Firestore
+try {
+  const snap = await getDocs(collection(db, 'ultimos-capitulos'));
+  if (!snap.empty) {
+    const firestoreData = snap.docs
+      .sort((a, b) => (a.data().orden || 0) - (b.data().orden || 0))
+      .map(doc => normalizarAnime(doc.data()));
+
+    const normalizedCached = cached ? cached.map(anime => normalizarAnime(anime)) : [];
     
-    // 1. Cargar desde caché local
-    const cachedData = leerCache(cacheKey);
-    if (cachedData) {
-        console.log('Mostrando datos desde caché local');
-        renderizarUltimosEpisodios(cachedData);
+    if (!cached || JSON.stringify(firestoreData) !== JSON.stringify(normalizedCached)) {
+      console.log('[FIRESTORE] Datos diferentes a la caché:');
+      console.log('↪️ Caché:', cached);
+      console.log('↪️ Firestore:', firestoreData);
+
+      render(firestoreData);
+      guardarCache(cacheKey, firestoreData);
+      cached = firestoreData;
+      console.log('[FIRESTORE] Caché actualizada y datos renderizados desde Firestore.');
+    } else {
+      console.log('[FIRESTORE] Datos iguales a la caché. No se actualiza nada.');
+    }
+  } else {
+    console.log('[FIRESTORE] Colección vacía. Intentando cargar desde la API...');
+  }
+} catch (err) {
+  console.error('[FIRESTORE] Error al obtener datos:', err);
+}
+
+// 3. Cargar desde API
+try {
+  const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
+  const apiData = await res.json();
+
+  if (!Array.isArray(apiData)) throw new Error('Formato inválido de respuesta API.');
+
+  const apiJSON = JSON.stringify(apiData);
+  const cachedJSON = JSON.stringify(cached);
+
+  if (!cached || apiJSON !== cachedJSON) {
+    console.log('[API] Datos diferentes a la caché:');
+    console.log('↪️ Caché:', cached);
+    console.log('↪️ API:', apiData);
+
+    render(apiData);
+    guardarCache(cacheKey, apiData);
+
+    // Actualizar Firestore
+    const batch = writeBatch(db);
+    const ref = collection(db, 'ultimos-capitulos');
+    const snap = await getDocs(ref);
+    const existentes = {};
+    snap.forEach(doc => existentes[doc.data().title] = doc.id);
+
+    const apiTitles = new Set();
+    apiData.forEach((item, i) => {
+      const id = existentes[item.title] || doc(ref).id;
+      const docRef = doc(ref, id);
+      batch.set(docRef, {
+        title: item.title,
+        chapter: item.chapter,
+        cover: item.cover,
+        url: item.url,
+        fechaActualizacion: serverTimestamp(),
+        orden: i
+      });
+      apiTitles.add(item.title);
+    });
+
+    for (const [title, id] of Object.entries(existentes)) {
+      if (!apiTitles.has(title)) {
+        batch.delete(doc(ref, id));
+      }
     }
 
-    // 2. Cargar desde Firestore
-    try {
-        const ultimosRef = collection(db, 'ultimos-capitulos');
-        const querySnapshot = await getDocs(ultimosRef);
-        
-        if (!querySnapshot.empty) {
-            const firestoreData = querySnapshot.docs
-                .sort((a, b) => (a.data().orden || 0) - (b.data().orden || 0))
-                .map(doc => {
-                    const data = doc.data();
-                    return {
-                        title: data.title,
-                        chapter: data.chapter,
-                        cover: data.cover,
-                        url: data.url
-                    };
-                });
-
-            // Actualizar UI y caché si los datos de Firestore son diferentes al caché
-            if (!cachedData || JSON.stringify(firestoreData) !== JSON.stringify(cachedData)) {
-                console.log('Actualizando datos desde Firestore');
-                renderizarUltimosEpisodios(firestoreData);
-                guardarCache(cacheKey, firestoreData);
-            }
-        }
-    } catch (firestoreError) {
-        console.error('Error al cargar desde Firestore:', firestoreError);
-    }
-
-    // 3. Cargar desde la API
-    try {
-        const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
-        if (!res.ok) throw new Error(`Error de red: ${res.status}`);
-        
-        const apiData = await res.json();
-        if (!Array.isArray(apiData)) throw new Error('Formato de respuesta inválido');
-
-        // Actualizar Firestore
-        try {
-            const batch = writeBatch(db);
-            const ultimosRef = collection(db, 'ultimos-capitulos');
-            
-            // Obtener documentos existentes
-            const querySnapshot = await getDocs(ultimosRef);
-            const existingDocs = {};
-            
-            // Mapear documentos existentes por su título
-            querySnapshot.forEach((doc) => {
-                existingDocs[doc.data().title] = doc.id;
-            });
-            
-            // Procesar datos de la API
-            const apiTitles = new Set();
-            
-            // Actualizar o crear documentos
-            for (const [index, item] of apiData.entries()) {
-                const docId = existingDocs[item.title] || doc(ultimosRef).id;
-                const docRef = doc(ultimosRef, docId);
-                
-                const datosFirestore = {
-                    title: item.title || '',
-                    chapter: item.chapter || 0,
-                    cover: item.cover || '',
-                    url: item.url || '',
-                    fechaActualizacion: serverTimestamp(),
-                    orden: index
-                };
-                
-                batch.set(docRef, datosFirestore);
-                apiTitles.add(item.title);
-            }
-            
-            // Eliminar documentos que ya no están en la API
-            for (const [title, docId] of Object.entries(existingDocs)) {
-                if (!apiTitles.has(title)) {
-                    const docRef = doc(ultimosRef, docId);
-                    batch.delete(docRef);
-                }
-            }
-            
-            await batch.commit();
-            console.log('Datos sincronizados en Firestore');
-        } catch (firestoreError) {
-            console.error('Error al actualizar Firestore:', firestoreError);
-        }
-
-        // Actualizar UI y caché si los datos de la API son diferentes al caché
-        const currentData = leerCache(cacheKey) || [];
-        if (JSON.stringify(apiData) !== JSON.stringify(currentData)) {
-            console.log('Actualizando datos desde la API');
-            renderizarUltimosEpisodios(apiData);
-            guardarCache(cacheKey, apiData);
-        }
-
-    } catch (error) {
-        console.error('Error al cargar desde la API:', error);
-        if (!cachedData) {
-            actualizarAlturaMain();
-        }
-    }
+    await batch.commit();
+    console.log('[API] Firestore actualizado desde API.');
+  } else {
+    console.log('[API] Datos iguales a la caché. No se actualiza nada.');
+  }
+} catch (err) {
+  console.error('[API] Error al obtener datos desde API:', err);
+  if (!cached) actualizarAlturaMain();
+}
 }
 
 async function cargarhistorial() {
@@ -724,7 +719,6 @@ async function cargarViendo() {
   const cachedData = leerCache(cacheKey);
 
   if (cachedData) {
-    console.log("Mostrando 'Viendo' desde caché...");
     renderizarViendo(cachedData, true);
   }
 
