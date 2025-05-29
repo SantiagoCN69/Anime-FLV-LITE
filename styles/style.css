@@ -542,8 +542,7 @@ main {
   }
   .container-img {
     width: 100%;
-    max-height: 194px;
-    height: fit-content;
+    max-height: 240px;
     overflow: hidden;
     border-radius: 4px;
     position: relative;
@@ -583,12 +582,10 @@ main {
     right: 3px;
   }
   .anime-card img {
-    aspect-ratio: 1/2;
+    aspect-ratio: 26/37;
     width: 100%;
-    max-height: 194px;
     object-fit: cover;
     transition: transform .5s ease, filter .4s ease;
-    
   }
   .container-img::after {
     content: '';
