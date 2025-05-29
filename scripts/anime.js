@@ -411,7 +411,6 @@ const normalizarRelacionados = (relacionados) => {
 
   // 3. Cargar desde API externa y actualizar todo
   try {
-    console.log("Cargando desde API externa...");
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     const anime = {
