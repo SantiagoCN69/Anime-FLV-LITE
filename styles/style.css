@@ -244,7 +244,7 @@ header {
     padding: 1.5rem;
     margin: 0;
     border-radius: 0;
-    width: 60%;
+    width: clamp(235px, 60%, 60%);
     height: calc(100dvh - 88px);
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
