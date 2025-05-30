@@ -76,7 +76,7 @@ nav.filtros {
     pointer-events: none;
     transition: opacity .2s ease, transform .3s ease, height .3s ease;
     transform: translateY(-35px) scale(.8);
-    max-height: calc(100dvh - 230px);
+    max-height: calc(100dvh - 190px);
     overflow-y: auto;
     overflow-x: hidden;
     min-width: 100%;
@@ -111,6 +111,7 @@ nav.filtros {
 #filtro-ano ul {
     grid-template-columns: repeat(auto-fill, 62px);
     max-width: min(262px, calc(95vw - 157px));
+    justify-content: center;
 }
 
 .filtro-opciones ul li {
