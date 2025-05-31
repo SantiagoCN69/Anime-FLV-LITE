@@ -202,13 +202,11 @@ async function mostrarNoticiasDesdeFirestore() {
       const noticia = doc.data();
       const tarjetaNoticia = document.createElement('div');
       tarjetaNoticia.classList.add('tarjeta-noticia');
-// Función para obtener la URL de la imagen a través de un proxy
+
 function getProxiedImageUrl(url) {
-  // Usar images.weserv.nl como proxy
   return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
 }
 
-// Luego en tu código:
 tarjetaNoticia.innerHTML = `
   <img src="${getProxiedImageUrl(noticia.image)}" 
        alt="${noticia.title}" 
