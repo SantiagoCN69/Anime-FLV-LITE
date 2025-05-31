@@ -5,6 +5,9 @@ import {
   getDocs,
   getDoc,
   writeBatch,
+  query,
+  orderBy,
+  limit
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
@@ -233,7 +236,8 @@ async function cargarUltimosCapsVistos() {
 
   try {
     const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
-    const snap = await getDocs(ref);
+    const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(6));
+    const snap = await getDocs(q);
     let freshData = [];
 
     if (!snap.empty) {
@@ -247,7 +251,7 @@ async function cargarUltimosCapsVistos() {
           const fechaB = new Date(b.fechaAgregado?.toDate?.() || b.fechaAgregado || 0);
           return fechaB - fechaA; 
         })
-        .slice(0, 10); 
+        .slice(0, 6); 
 
       const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
       const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
