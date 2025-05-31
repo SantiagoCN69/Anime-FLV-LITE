@@ -5,7 +5,7 @@
     "description": "Aplicación web para ver anime",
     "start_url": "/index.html",
     "display": "standalone",
-    "background_color": "#ffffff",
+    "background_color": "#000000",
     "theme_color": "#000000",
     "icons": [
         {
