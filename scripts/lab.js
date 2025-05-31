@@ -153,7 +153,7 @@ async function obtenerAnimesVistos() {
 function crearAnimeCard(anime, isLink = false) {
     const animeId = obtenerAnimeId(anime);
     const div = document.createElement('div');
-    div.className = 'anime-card';
+    div.className = 'anime-card lab-card';
     
     // Mantener el estilo original usando innerHTML
     let ratingHtml = '';
