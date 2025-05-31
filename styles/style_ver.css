@@ -4,8 +4,6 @@ h2 {
   text-overflow: ellipsis;
   white-space: nowrap;
   min-height: fit-content;
-  text-shadow: 2px 2px 10px #000a;
-
 }
 
 main {
