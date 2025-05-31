@@ -123,8 +123,8 @@ window.handleHashChange = function () {
 
 document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
-    cargarUltimosCapitulos(),
     cargarUltimosCapsVistos(),
+    cargarUltimosCapitulos(),
     cargarhistorial()
   ])
 
@@ -214,7 +214,7 @@ async function cargarUltimosCapsVistos() {
     return;
   }
 
-  const cacheKey = `ultimosCapsVistosCache_${user.uid}`;
+  const cacheKey = `ultimosCapsVistosCache_`;
   let cachedData = null;
 
   try {
