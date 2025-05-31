@@ -486,17 +486,14 @@ try {
     render(apiData);
     guardarCache(cacheKey, apiData);
 
-    // Actualizar Firestore
+    // Actualizar Firestore usando los datos de la API
     const batch = writeBatch(db);
     const ref = collection(db, 'ultimos-capitulos');
-    const snap = await getDocs(ref);
-    const existentes = {};
-    snap.forEach(doc => existentes[doc.data().title] = doc.id);
-
+    
+    // Usamos los datos de la API para actualizar Firestore
     const apiTitles = new Set();
     apiData.forEach((item, i) => {
-      const id = existentes[item.title] || doc(ref).id;
-      const docRef = doc(ref, id);
+      const docRef = doc(ref, `item_${i}`); 
       batch.set(docRef, {
         title: item.title,
         chapter: item.chapter,
@@ -507,10 +504,14 @@ try {
       apiTitles.add(item.title);
     });
 
-    for (const [title, id] of Object.entries(existentes)) {
-      if (!apiTitles.has(title)) {
-        batch.delete(doc(ref, id));
-      }
+    // Eliminamos documentos que ya no están en la API
+    if (cached) {
+      cached.forEach((item, i) => {
+        if (item && !apiTitles.has(item.title)) {
+          const docRef = doc(ref, `item_${i}`);
+          batch.delete(docRef);
+        }
+      });
     }
 
     await batch.commit();
