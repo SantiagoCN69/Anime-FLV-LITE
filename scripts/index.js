@@ -5,7 +5,6 @@ import {
   getDocs,
   getDoc,
   writeBatch,
-  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
@@ -37,6 +36,11 @@ function ver(id) {
   window.location.href = `anime.html?id=${id}`;
 }
 
+let favoritosCargados = false;
+let viendoCargado = false;
+let pendientesCargados = false;
+let completadosCargados = false;
+
 function mostrarSeccionDesdeHash() {
   const hash = window.location.hash;
   if (!hash) return;
@@ -45,14 +49,42 @@ function mostrarSeccionDesdeHash() {
   const seccion = document.getElementById(id);
   if (!seccion) return;
 
+  // Ocultar todas las secciones
   document.querySelectorAll(".content-section").forEach(sec => 
     sec.classList.toggle("hidden", sec.id !== id)
   );
 
+  // Actualizar el menú activo
   document.querySelectorAll('.sidebar li').forEach(item => 
     item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
   );
-  actualizarAlturaMain();
+
+switch(id) {
+    case 'Mis-Favoritos':
+      if (!favoritosCargados) {
+        cargarFavoritos();
+        favoritosCargados = true;
+      }
+      break;
+    case 'Viendo':
+      if (!viendoCargado) {
+        cargarViendo();
+        viendoCargado = true;
+      }
+      break;
+    case 'Pendientes':
+      if (!pendientesCargados) {
+        cargarPendientes();
+        pendientesCargados = true;
+      }
+      break;
+    case 'Completados':
+      if (!completadosCargados) {
+        cargarCompletados();
+        completadosCargados = true;
+      }
+      break;
+}
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -75,7 +107,6 @@ window.handleHashChange = function () {
   const targetSection = document.getElementById(hash);
   if (targetSection) {
     targetSection.classList.remove('hidden');
-    actualizarAlturaMain();
 
     const activeMenuItem = document.querySelector(`.sidebar li[data-target="${hash}"]`);
     if (activeMenuItem) {
@@ -88,48 +119,27 @@ window.handleHashChange = function () {
 
 document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
-    cargarFavoritos(),
-    cargarViendo(),
-    cargarPendientes(),
-    cargarCompletados(),
-    cargarUltimosCapsVistos(),
     cargarUltimosCapitulos(),
+    cargarUltimosCapsVistos(),
     cargarhistorial()
   ])
-  
-  window.addEventListener('resize', actualizarAlturaMain);
 
   const sidebarItems = document.querySelectorAll('.sidebar li');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
       const targetId = e.target.getAttribute('data-target');
+      window.location.hash = targetId; 
       const targetSection = document.getElementById(targetId);
       if (targetSection) {
         targetSection.classList.remove('hidden');
         
         history.pushState(null, '', `#${targetId}`);
       }
-      
-      actualizarAlturaMain();
     });
   });
 
-
 });
 
-function actualizarAlturaMain() {
-  const contentSection = document.querySelector('.content-section:not(.hidden)') || 
-                         document.querySelector('.content-section');
-
-  if (!contentSection) return;
-
-  requestAnimationFrame(() => {
-    const alturaFinal = contentSection.offsetHeight;
-    
-    document.documentElement.style.setProperty('--altura-main', `${alturaFinal}px`);
-  });
-}
 
 function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('div');
@@ -168,6 +178,7 @@ function crearElementoSiguienteCapitulo(itemData) {
 }
 
 async function cargarUltimosCapsVistos() {
+  console.log('Ejecutando cargarUltimosCapsVistos');
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
   if (!ultimosCapsContainer) return;
 
@@ -185,7 +196,6 @@ async function cargarUltimosCapsVistos() {
       }
     });
     ultimosCapsContainer.appendChild(fragment);
-    actualizarAlturaMain(); 
   };
 
   const user = await new Promise(resolve => {
@@ -292,7 +302,6 @@ async function cargarUltimosCapsVistos() {
     console.error('Error general al cargar últimos capítulos vistos desde Firestore:', error);
     if (cachedData === null) {
       ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
-      actualizarAlturaMain();
     }
   }
 }
@@ -378,9 +387,8 @@ async function cargarUltimosCapsVistos() {
   }
 
 async function cargarUltimosCapitulos() {
+  console.log('Ejecutando cargarUltimosCapitulos');
   const container = document.getElementById('ultimos-episodios');
-  if (!container) return;
-
   const cacheKey = 'ultimosEpisodiosGeneralesCache';
 
   const render = (datos) => {
@@ -389,7 +397,6 @@ async function cargarUltimosCapitulos() {
 
     if (!datos?.length) {
       container.innerHTML = '<p>No se encontraron últimos episodios.</p>';
-      actualizarAlturaMain();
       return;
     }
 
@@ -405,7 +412,6 @@ async function cargarUltimosCapitulos() {
       if (card) fragment.appendChild(card);
     });
     container.appendChild(fragment);
-    actualizarAlturaMain();
   };
 
 // Función para normalizar objetos
@@ -490,7 +496,6 @@ try {
         chapter: item.chapter,
         cover: item.cover,
         url: item.url,
-        fechaActualizacion: serverTimestamp(),
         orden: i
       });
       apiTitles.add(item.title);
@@ -509,11 +514,11 @@ try {
   }
 } catch (err) {
   console.error('[API] Error al obtener datos desde API:', err);
-  if (!cached) actualizarAlturaMain();
 }
 }
 
 async function cargarhistorial() {
+  console.log('Ejecutando cargarhistorial');
   const historialContainer = document.getElementById('historial');
   const historialh2 = document.getElementById('historialh2');
   if (!historialContainer) return;
@@ -563,23 +568,27 @@ async function cargarhistorial() {
     historialh2.classList.add('hidden');
     historialContainer.classList.add('hidden');
   }
-  
-  actualizarAlturaMain();
 }
   
   async function cargarFavoritos() {
+  console.log('Ejecutando cargarFavoritos');
     const favsContainer = document.getElementById('favs');
     if (!favsContainer) return;
   
     const renderizarFavoritos = (datos, reemplazar = false) => {
       if (reemplazar) favsContainer.innerHTML = '';
+      
+      if (!datos || datos.length === 0) {
+        favsContainer.innerHTML = '<p>No tienes animes en favoritos.</p>';
+        return;
+      }
+      
       const fragment = document.createDocumentFragment();
       datos.forEach(anime => {
         const card = createAnimeCard(anime || {});
         if (card) fragment.appendChild(card);
       });
       favsContainer.appendChild(fragment);
-      actualizarAlturaMain();
     };
   
     const dividirEnBloques = (array, tamaño) => {
@@ -599,7 +608,6 @@ async function cargarhistorial() {
   
     if (!user) {
       favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
-      actualizarAlturaMain();
       return;
     }
   
@@ -620,6 +628,7 @@ async function cargarhistorial() {
         localStorage.removeItem(cacheKey);
         return;
       }
+      
   
       const ids = snap.docs.map(doc => doc.id);
       const bloques = dividirEnBloques(ids, 10);
@@ -672,24 +681,29 @@ async function cargarhistorial() {
       console.error('Error al cargar favoritos desde Firestore:', error);
       if (!cachedData) {
         favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
-        actualizarAlturaMain();
       }
     }
   }
 
 async function cargarViendo() {
+  console.log('Ejecutando cargarViendo');
   const viendoContainer = document.getElementById('viendo');
   if (!viendoContainer) return;
 
   const renderizarViendo = (datos, reemplazar = false) => {
     if (reemplazar) viendoContainer.innerHTML = '';
+    
+    if (!datos || datos.length === 0) {
+      viendoContainer.innerHTML = '<p>No tienes animes viendo.</p>';
+      return;
+    }
+    
     const fragment = document.createDocumentFragment();
     datos.forEach(anime => {
       const card = createAnimeCard(anime || {});
       if (card) fragment.appendChild(card);
     });
     viendoContainer.appendChild(fragment);
-    actualizarAlturaMain();
   };
 
   const dividirEnBloques = (array, tamaño) => {
@@ -710,7 +724,6 @@ async function cargarViendo() {
 
   if (!user) {
     viendoContainer.innerHTML = '<p>Inicia sesión para ver tus animes en curso</p>';
-    actualizarAlturaMain();
     return;
   }
 
@@ -787,13 +800,13 @@ async function cargarViendo() {
     console.error('Error al cargar animes en curso desde Firestore:', error);
     if (!cachedData) {
       viendoContainer.innerHTML = '<p>Error al cargar animes en curso.</p>';
-      actualizarAlturaMain();
     }
   }
 }
 
 // Cargar animes pendientes
 async function cargarPendientes() {
+  console.log('Ejecutando cargarPendientes');
   const cont = document.getElementById('pendientes');
   if (!cont) return;
 
@@ -801,7 +814,7 @@ async function cargarPendientes() {
     if (reset) cont.innerHTML = '';
     if (!animes || !animes.length) {
       cont.innerHTML = '<p>No tienes animes pendientes.</p>';
-      return actualizarAlturaMain();
+      return;
     }
     const frag = document.createDocumentFragment();
     animes.forEach(a => {
@@ -809,7 +822,6 @@ async function cargarPendientes() {
       if (card) frag.appendChild(card);
     });
     cont.appendChild(frag);
-    actualizarAlturaMain();
   };
 
   const user = await new Promise(res => onAuthStateChanged(auth, u => res(u)));
@@ -847,12 +859,12 @@ async function cargarPendientes() {
   } catch {
     if (!cache) {
       cont.innerHTML = '<p>Error al cargar animes pendientes.</p>';
-      actualizarAlturaMain();
     }
   }
 }
 
 async function cargarCompletados() {
+  console.log('Ejecutando cargarCompletados');
   const completadosContainer = document.getElementById('completados');
   if (!completadosContainer) return;
 
@@ -860,7 +872,6 @@ async function cargarCompletados() {
     if (reset) completadosContainer.innerHTML = '';
     if (!datos || datos.length === 0) {
       completadosContainer.innerHTML = '<p>No tienes animes completados.</p>';
-      actualizarAlturaMain();
       return;
     }
     const fragment = document.createDocumentFragment();
@@ -869,7 +880,6 @@ async function cargarCompletados() {
       if (card) fragment.appendChild(card);
     });
     completadosContainer.appendChild(fragment);
-    actualizarAlturaMain();
   };
 
   const user = await new Promise(resolve => {
@@ -881,7 +891,6 @@ async function cargarCompletados() {
 
   if (!user) {
     completadosContainer.innerHTML = '<p>Inicia sesión para ver tus animes completados</p>';
-    actualizarAlturaMain();
     return;
   }
 
@@ -933,7 +942,6 @@ async function cargarCompletados() {
   } catch (error) {
     if (!cache) {
       completadosContainer.innerHTML = '<p>Error al cargar animes completados.</p>';
-      actualizarAlturaMain();
     }
   }
 }
