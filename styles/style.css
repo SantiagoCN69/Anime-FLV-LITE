@@ -518,6 +518,7 @@ main {
 }
 #ultimos-episodios {
   min-height: 672px;
+  position: relative;
 }
 .anime-card {
     position: relative;
