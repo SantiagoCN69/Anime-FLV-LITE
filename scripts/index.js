@@ -85,6 +85,7 @@ switch(id) {
       }
       break;
 }
+
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -128,7 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
       const targetId = e.target.getAttribute('data-target');
-      window.location.hash = targetId; 
+      history.replaceState(null, '', `#${targetId}`);
+      mostrarSeccionDesdeHash(); 
       const targetSection = document.getElementById(targetId);
       if (targetSection) {
         targetSection.classList.remove('hidden');
