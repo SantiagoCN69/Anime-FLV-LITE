@@ -5,6 +5,7 @@ import {
   getDocs,
   getDoc,
   writeBatch,
+  where,
   serverTimestamp,
   setDoc,
   query,
@@ -541,7 +542,7 @@ async function cargarhistorial() {
 }
   
   async function cargarFavoritos() {
-  console.log('Ejecutando cargarFavoritos');
+    console.log('Ejecutando cargarFavoritos');
     const favsContainer = document.getElementById('favs');
     if (!favsContainer) return;
   
@@ -590,63 +591,68 @@ async function cargarhistorial() {
     }
   
     try {
-      const ref = collection(doc(db, "usuarios", userId), "favoritos");
-      const snap = await getDocs(ref);
+      // Obtener el documento de favoritos
+      const favoritosRef = doc(collection(doc(db, "usuarios", userId), "favoritos"), "lista");
+      const favoritosDoc = await getDoc(favoritosRef);
   
-      if (snap.empty) {
+      if (!favoritosDoc.exists() || !favoritosDoc.data().animes || favoritosDoc.data().animes.length === 0) {
         renderizarFavoritos([], true);
         localStorage.removeItem(cacheKey);
         return;
       }
       
-  
-      const ids = snap.docs.map(doc => doc.id);
-      const bloques = dividirEnBloques(ids, 10);
-      const freshData = [];
-  
-      const primerBloque = await Promise.all(
-        bloques[0].map(id =>
-          getDoc(doc(db, "datos-animes", id))
-            .then(docSnap => docSnap.exists() ? {
-              id,
-              titulo: docSnap.data().titulo || 'Título no encontrado',
-              portada: docSnap.data().portada || 'img/background.webp',
-              estado: docSnap.data().estado || 'No disponible',
-              rating: docSnap.data().rating || null
-            } : null)
-            .catch(error => {
-              console.error(`Error al obtener anime ${id}:`, error);
-              return null;
-            })
-        )
-      );
-  
-      freshData.push(...primerBloque.filter(Boolean));
-      renderizarFavoritos(freshData, true);
-  
-      for (let i = 1; i < bloques.length; i++) {
-        const bloque = bloques[i];
-        const resultados = await Promise.all(
-          bloque.map(id =>
-            getDoc(doc(db, "datos-animes", id))
-              .then(docSnap => docSnap.exists() ? {
-                id,
-                titulo: docSnap.data().titulo || 'Título no encontrado',
-                portada: docSnap.data().portada || 'img/background.webp',
-                estado: docSnap.data().estado || 'No disponible'
-              } : null)
-              .catch(error => {
-                console.error(`Error al obtener anime ${id}:`, error);
-                return null;
-              })
-          )
+      const titulosFavoritos = favoritosDoc.data().animes;
+      
+      // Obtener los animes completos desde la colección de datos-animes
+      const animesPromises = [];
+      const animesPorTitulo = new Map();
+      
+      // Primero intentamos obtener los animes de la caché local si existe
+      if (cachedData) {
+        const animesCacheados = cachedData.filter(anime => 
+          titulosFavoritos.includes(anime.titulo)
         );
-        const nuevos = resultados.filter(Boolean);
-        freshData.push(...nuevos);
-        renderizarFavoritos(nuevos);
+        
+        animesCacheados.forEach(anime => {
+          animesPorTitulo.set(anime.titulo, anime);
+        });
       }
-  
-      guardarCache(cacheKey, freshData);
+      
+      // Solo buscar los animes que no están en caché
+      const titulosFaltantes = titulosFavoritos.filter(titulo => !animesPorTitulo.has(titulo));
+      
+      if (titulosFaltantes.length > 0) {
+        // Buscar animes por título en la base de datos
+        const q = query(
+          collection(db, "datos-animes"),
+          where("titulo", "in", titulosFaltantes)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(doc => {
+          animesPorTitulo.set(doc.data().titulo, {
+            id: doc.id,
+            titulo: doc.data().titulo,
+            portada: doc.data().portada || 'img/background.webp',
+            estado: doc.data().estado || 'No disponible',
+            rating: doc.data().rating || null
+          });
+        });
+      }
+      
+      // Ordenar los animes según el orden en favoritos
+      const animesOrdenados = [];
+      titulosFavoritos.forEach(titulo => {
+        const anime = animesPorTitulo.get(titulo);
+        if (anime) {
+          animesOrdenados.push(anime);
+        }
+      });
+
+      // Renderizar los resultados
+      renderizarFavoritos(animesOrdenados, true);
+      guardarCache(cacheKey, animesOrdenados);
+      
     } catch (error) {
       console.error('Error al cargar favoritos desde Firestore:', error);
       if (!cachedData) {

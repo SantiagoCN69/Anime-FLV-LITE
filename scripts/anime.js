@@ -474,11 +474,15 @@ const btnFav = document.getElementById('btn-fav');
 
 // Función para actualizar botón de favorito
 function actualizarEstadoFavorito() {
+  const tituloAnime = document.getElementById("titulo").textContent;
   obtenerFavoritosAnime()
     .then(favoritos => {
-      const esFavorito = favoritos.some(f => f.id === id);
+      const esFavorito = favoritos.includes(tituloAnime);
       btnFav.classList.toggle("favorito", esFavorito);
       btnFav.textContent = esFavorito ? "FAVORITO" : "FAV";
+    })
+    .catch(error => {
+      console.error("Error al obtener favoritos:", error);
     });
 }
 
@@ -491,7 +495,7 @@ btnFav.addEventListener("click", () => {
 
   btnFav.disabled = true;
 
-  toggleFavoritoAnime(id, titulo)
+  toggleFavoritoAnime(titulo)
     .then(res => {
       actualizarEstadoFavorito();
     })
@@ -503,20 +507,32 @@ btnFav.addEventListener("click", () => {
     });
 });
 // Función para alternar favoritos
-async function toggleFavoritoAnime(animeId, titulo) {
+async function toggleFavoritoAnime(titulo) {
   const user = auth.currentUser;
   if (!user) {
     throw "Usuario no autenticado";
   }
 
-  const ref = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), animeId);
-  const docSnap = await getDoc(ref);
+  const favoritosRef = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), "lista");
+  const favoritosDoc = await getDoc(favoritosRef);
+  
+  let favoritos = [];
+  if (favoritosDoc.exists() && favoritosDoc.data().animes) {
+    favoritos = [...favoritosDoc.data().animes];
+  }
 
-  if (docSnap.exists()) {
-    await deleteDoc(ref);
+  // Verificar si el anime ya está en favoritos
+  const index = favoritos.indexOf(titulo);
+  
+  if (index !== -1) {
+    // Eliminar de favoritos
+    favoritos.splice(index, 1);
+    await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
     return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
   } else {
-    await setDoc(ref, { titulo, fechaAgregado: serverTimestamp() });
+    // Agregar a favoritos
+    favoritos.push(titulo);
+    await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
     return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
   }
 }
@@ -526,9 +542,12 @@ async function obtenerFavoritosAnime() {
   const user = auth.currentUser;
   if (!user) return [];
 
-  const ref = collection(doc(db, "usuarios", user.uid), "favoritos");
-  const snap = await getDocs(ref);
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const favoritosRef = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), "lista");
+  const favoritosDoc = await getDoc(favoritosRef);
+  
+  return favoritosDoc.exists() && favoritosDoc.data().animes 
+    ? favoritosDoc.data().animes 
+    : [];
 }
 
 // Detectar cambios de sesión
