@@ -51,7 +51,6 @@ header {
     "container4 container4";
   gap: 25px;
   height: fit-content;
-  overflow: hidden;
   margin-bottom: 25px;
 }
 
