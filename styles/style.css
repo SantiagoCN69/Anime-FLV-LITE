@@ -366,7 +366,6 @@ main {
   border-radius: 3px;
   padding-bottom: 1rem;
   min-height: calc(100dvh - 216px);
-  height: fit-content;
   position: relative;
   margin: 2rem auto;
   width: 100%;
