@@ -33,7 +33,7 @@ h3 {
  overflow: auto;
  padding-block: 7px;
 }
-.anime-card {
+.lab-card {
   flex: 1;
   border: 1px solid transparent;
   min-width: 180px;
@@ -165,7 +165,4 @@ body {
 
 .sidebar.active {
   transform: translateX(0);
-}
-footer {
-  margin-top: 2rem;
 }
