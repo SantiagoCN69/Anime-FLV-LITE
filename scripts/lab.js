@@ -98,29 +98,40 @@ function limpiarCacheAnimes() {
     localStorage.removeItem('cache_animes');
 }
 
-// Función para obtener los favoritos del usuario (sin cambios)
+// Función para obtener los favoritos del usuario
 async function obtenerFavoritosUsuario() {
     try {
         if (!userid) return [];
 
-        const favoritosRef = collection(db, `usuarios/${userid}/favoritos`);
-        const querySnapshot = await getDocs(favoritosRef);
+        // Obtener el documento de favoritos
+        const favoritosRef = doc(db, `usuarios/${userid}/favoritos/lista`);
+        const favoritosDoc = await getDoc(favoritosRef);
+        if (!favoritosDoc.exists() || !favoritosDoc.data().animes || favoritosDoc.data().animes.length === 0) {
+            return [];
+        }
 
-        const favoritos = [];
-        querySnapshot.forEach((doc) => {
-            const favorito = {
-                id: doc.id,
-                ...doc.data()
-            };
-            favoritos.push(favorito);
-        });
-        // Mezclcar el array y seleccionar los primeros 5
-        const favoritosMezclados = favoritos
-            .map(value => ({ value, sort: Math.random() }))
+        // Obtener los títulos de los favoritos
+        const titulosFavoritos = favoritosDoc.data().animes;
+        
+        // Si no hay favoritos, retornar array vacío
+        if (!titulosFavoritos || titulosFavoritos.length === 0) {
+            return [];
+        }
+
+        // Mezclar los favoritos y seleccionar los primeros 5
+        const favoritosMezclados = titulosFavoritos
+            .map(titulo => ({
+                titulo,
+                sort: Math.random()
+            }))
             .sort((a, b) => a.sort - b.sort)
-            .map(({ value }) => value);
+            .map(({ titulo }) => ({
+                titulo,
+                id: titulo.toLowerCase().replace(/\s+/g, '-')
+            }))
+            .slice(0, 5);
 
-        return favoritosMezclados.slice(0, 5);
+        return favoritosMezclados;
     } catch (error) {
         console.error('Error al obtener favoritos:', error);
         return [];
@@ -151,7 +162,7 @@ async function obtenerAnimesVistos() {
 
 
 function crearAnimeCard(anime, isLink = false) {
-    const animeId = obtenerAnimeId(anime);
+    const animeId = anime.id;
     const div = document.createElement('div');
     div.className = 'anime-card lab-card';
     
