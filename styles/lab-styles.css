@@ -5,6 +5,7 @@ h2 {
 main {
   flex-direction: column;
   gap: 2rem;
+  margin-bottom: 2rem;
 }
 h1 {
   margin-block: 1rem;
