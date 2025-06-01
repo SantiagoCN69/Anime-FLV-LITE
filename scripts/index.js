@@ -31,13 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function extraerIdDeLink(link) {
-  if (!link) return '';
-  const partes = link.split('/');
-  let id = partes[partes.length - 1] || '';
-  return id.replace(/(-\d+)$/, '');
-}
-
 function ver(id) {
   window.location.href = `anime.html?id=${id}`;
 }
@@ -359,15 +352,6 @@ async function cargarUltimosCapsVistos() {
     div.addEventListener('click', () => {
       if (animeId) {
         ver(animeId);
-      } else {
-        const extractedId = extraerIdDeLink(link);
-        
-        if (extractedId) {
-          ver(extractedId);
-        } else {
-          console.error('No se pudo extraer ID para:', title, 'Link:', link);
-          alert(`No se pudo encontrar el ID para: ${title}`);
-        }
       }
     });
   

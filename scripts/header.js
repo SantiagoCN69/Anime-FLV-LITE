@@ -3,15 +3,6 @@ function normalizarTexto(texto) {
   return texto.toLowerCase().normalize('NFD').replace(/\u0300-\u036f/g, '');
 }
 
-function extraerIdDeLink(link) {
-  return link ? link.split('/').pop() : '';
-}
-
-function obtenerAnimeId(anime) {
-  if (anime.url) return anime.url.split('/').pop().replace(/-\d+$/, '');
-  if (anime.id) return anime.id.replace(/-\d+$/, '');
-  return extraerIdDeLink(anime.link || '');
-}
 
 function mostrarMensajeError(container, mensaje) {
   container.innerHTML = `<span class=\"no-results\">${mensaje}</span>`;
@@ -66,7 +57,7 @@ document.getElementById('btn-close-search').addEventListener('click', () => {
 
 // === Función para crear tarjeta de anime ===
 function crearAnimeCard(anime) {
-  const animeId = obtenerAnimeId(anime);
+  const animeId = anime.id;
   const div = document.createElement('div');
   let ratingHtml = '';
   if (anime.rating) {
