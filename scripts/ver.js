@@ -183,110 +183,111 @@ btnEstadoCapitulo.addEventListener("click", async () => {
   }
 });
 
-// Función para obtener y mostrar noticias
 
-async function mostrarNoticiasDesdeFirestore() {
+function crearNoticiaHTML(noticia, base64img) {
+  const tarjeta = document.createElement('div');
+  tarjeta.className = 'tarjeta-noticia';
+  
+  // Usar la imagen en base64 si está disponible, si no, usar la URL original
+  const imagenSrc = base64img || noticia.image;
+  
+  tarjeta.innerHTML = `
+    <img src="${imagenSrc}" 
+         alt="${noticia.title}" 
+         class="noticia-imagen"
+         loading="lazy">
+    <h3 class="noticia-titulo">${noticia.title}</h3>
+    <p class="noticia-fecha">${noticia.date}</p>
+  `;
+  
+  tarjeta.onclick = () => window.open(`https://somoskudasai.com/noticias/${noticia.slug}`, '_blank');
+  return tarjeta;
+}
+
+async function manejarNoticias() {
   const contenedorNoticias = document.getElementById('noticias_container');
   const initLoadingNoticias = document.getElementById('init-loading-noticias');
+  let noticiasFirestore = [];
 
+  // 1. Cargar primero de Firestore (caché rápido)
   try {
-    const db = getFirestore();
-    const cacheCollection = collection(db, 'cache');
-
-    contenedorNoticias.innerHTML = '';
-    const nuevasCacheSnapshot = await getDocs(
-      query(cacheCollection, orderBy('date', 'desc'))
-    );
-
-    nuevasCacheSnapshot.forEach(doc => {
-      const noticia = doc.data();
-      const tarjetaNoticia = document.createElement('div');
-      tarjetaNoticia.classList.add('tarjeta-noticia');
-
-function getProxiedImageUrl(url) {
-  return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
-}
-
-tarjetaNoticia.innerHTML = `
-  <img src="${getProxiedImageUrl(noticia.image)}" 
-       alt="${noticia.title}" 
-       class="noticia-imagen"
-       loading="lazy">
-  <h3 class="noticia-titulo">${noticia.title}</h3>
-  <p class="noticia-fecha">${noticia.date}</p>
-`;
-      tarjetaNoticia.addEventListener('click', () => {
-        window.open(`https://somoskudasai.com/noticias/${noticia.slug}`, '_blank');
+    const noticiasRef = doc(db, "noticias", "noticias");
+    const docSnap = await getDoc(noticiasRef);
+    if (docSnap.exists()) {
+      noticiasFirestore = docSnap.data().noticias;
+      // Mostrar noticias desde caché
+      initLoadingNoticias.style.display = 'none';
+      noticiasFirestore.forEach(noticia => {
+        const tarjeta = crearNoticiaHTML(noticia, noticia.image);
+        contenedorNoticias.appendChild(tarjeta);
       });
-      contenedorNoticias.appendChild(tarjetaNoticia);
-    });
-
-    initLoadingNoticias.style.display = 'none';
+    }
   } catch (error) {
-    console.error('❌ Error al mostrar noticias:', error);
-    initLoadingNoticias.textContent = 'Error al mostrar las noticias.';
+    console.error("Error al cargar noticias de Firestore:", error);
   }
-}
 
-async function obtenerNoticias() {
-  const initLoadingNoticias = document.getElementById('init-loading-noticias');
-
+  // 2. Verificar API en segundo plano
   try {
-    if (!getApps().length) {
-      initializeApp(firebaseConfig);
-    }
-    const db = getFirestore();
-    const cacheCollection = collection(db, 'cache');
-
-    // Mostrar primero las noticias ya guardadas
-    await mostrarNoticiasDesdeFirestore();
-
-    // Luego sincronizar con la API
-    const firestoreSnap = await getDocs(cacheCollection);
-    const noticiasFirestore = new Map();
-    firestoreSnap.forEach(doc => {
-      noticiasFirestore.set(doc.id, doc.data());
-    });
-
-    const respuesta = await fetch('https://backend-noticias-anime.onrender.com/api/noticias');
+    const respuesta = await fetch("https://backend-noticias-anime.onrender.com/api/noticias");
     const noticiasAPI = await respuesta.json();
-    const noticiasAPIMap = new Map();
-    noticiasAPI.forEach(noticia => {
-      noticiasAPIMap.set(noticia.title, noticia);
-    });
 
-    for (const [tituloAPI, noticiaAPI] of noticiasAPIMap) {
-      if (!noticiasFirestore.has(tituloAPI)) {
-        const noticiaRef = doc(cacheCollection, tituloAPI);
-        await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
-      } else {
-        const noticiaFirestore = noticiasFirestore.get(tituloAPI);
-        const { timestamp, ...firestoreData } = noticiaFirestore;
-        const { ...apiData } = noticiaAPI;
-        if (JSON.stringify(apiData) !== JSON.stringify(firestoreData)) {
-          const noticiaRef = doc(cacheCollection, tituloAPI);
-          await setDoc(noticiaRef, { ...noticiaAPI, timestamp: serverTimestamp() });
-        }
+    // Función para comparar noticias
+    const sonIguales = (a, b) => {
+      if (a.length !== b.length) return false;
+      return a.every((n, i) => 
+        n.title === b[i].title && 
+        n.slug === b[i].slug && 
+        n.date === b[i].date
+      );
+    };
+
+    // Si son diferentes o no hay en Firestore, actualizar
+    if (!noticiasFirestore.length || !sonIguales(noticiasAPI, noticiasFirestore)) {
+      console.log("Actualizando noticias...");
+      
+      // Procesar imágenes
+      const noticiasActualizadas = await Promise.all(
+        noticiasAPI.map(async noticia => {
+          try {
+            const res = await fetch(`https://backend-noticias-anime.onrender.com/api/imagen-base64?url=${noticia.image}`);
+            initLoadingNoticias.style.display = 'none';
+            const { base64 } = await res.json();
+            return { ...noticia, image: base64 || noticia.image };
+          } catch (error) {
+            console.error('Error al procesar imagen:', error);
+            return noticia;
+          }
+        })
+      );
+
+      // Actualizar UI
+      if (noticiasFirestore.length === 0) {
+        contenedorNoticias.innerHTML = '';
+        noticiasActualizadas.forEach(noticia => {
+          const tarjeta = crearNoticiaHTML(noticia, noticia.image);
+          contenedorNoticias.appendChild(tarjeta);
+        });
       }
-    }
 
-    for (const tituloFirestore of noticiasFirestore.keys()) {
-      if (!noticiasAPIMap.has(tituloFirestore)) {
-        const noticiaRef = doc(cacheCollection, tituloFirestore);
-        await deleteDoc(noticiaRef);
+      // Guardar en Firestore
+      try {
+        const noticiasRef = doc(db, "noticias", "noticias");
+        await setDoc(noticiasRef, { noticias: noticiasActualizadas });
+      } catch (error) {
+        console.error("Error al guardar en Firestore:", error);
       }
+    } else {
+      console.log("Las noticias están actualizadas");
     }
-
-    // Mostrar nuevamente después de sincronizar
-    await mostrarNoticiasDesdeFirestore();
-
   } catch (error) {
-    console.error('❌ Error al sincronizar noticias:', error);
-    initLoadingNoticias.textContent = 'Error al cargar las noticias.';
+    console.error("Error al verificar noticias:", error);
+  } finally {
+    initLoadingNoticias.style.display = 'none';
   }
 }
 
-obtenerNoticias();
+
+manejarNoticias();
 
 
 
@@ -316,7 +317,6 @@ async function cargarEpisodios() {
 
 async function cargarVideoDesdeEpisodio(index) {
   const ep = episodios[index];
-  console.log("episodi actual: ", ep);
   const btnCap = document.getElementById("btn-cap"); 
   if (btnCap && ep) {
     btnCap.textContent = `Episodio ${ep.number || "desconocido"}`;
@@ -336,7 +336,6 @@ async function cargarVideoDesdeEpisodio(index) {
     if (episodioGuardado?.servidores?.length) {
       ep.servidores = episodioGuardado.servidores;
     }
-    console.log("servidores cargados de firestore: ", ep.servidores);
   } catch (error) {
     console.error("Error al cargar datos desde Firestore:", error);
   }
@@ -439,7 +438,6 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Pre-cargar siguiente episodio (si existe)
   const siguiente = episodios[index + 1];
-  console.log("siguiente: ", siguiente);
   if (siguiente && (!siguiente.servidores || !siguiente.servidores.length)) {
     try {
       const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${siguiente.url}`);
