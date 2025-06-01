@@ -142,18 +142,39 @@ async function obtenerAnimesVistos() {
     try {
         if (!userid) return [];
 
-        const vistosRef = collection(db, `usuarios/${userid}/visto`);
-        const querySnapshot = await getDocs(vistosRef);
-
-        const vistos = [];
-        querySnapshot.forEach((doc) => {
-            const visto = {
-                id: doc.id,
-                ...doc.data()
-            };
-            vistos.push(visto);
+        // Obtener el documento de estados
+        const estadosRef = doc(db, `usuarios/${userid}/estados/visto`);
+        const estadosDoc = await getDoc(estadosRef);
+        
+        // Si no existe el documento o no tiene animes, retornar array vacío
+        if (!estadosDoc.exists() || !estadosDoc.data().animes || !Array.isArray(estadosDoc.data().animes)) {
+            return [];
+        }
+        
+        // Obtener los IDs de los animes vistos
+        const ids = estadosDoc.data().animes;
+        
+        // Obtener los datos de cada anime
+        const animesPromises = ids.map(async (id) => {
+            try {
+                const animeDoc = await getDoc(doc(db, 'datos-animes', id));
+                if (animeDoc.exists()) {
+                    return {
+                        id: animeDoc.id,
+                        ...animeDoc.data()
+                    };
+                }
+                return null;
+            } catch (error) {
+                console.error(`Error al obtener anime ${id}:`, error);
+                return null;
+            }
         });
-        return vistos;
+        
+        // Esperar a que todas las promesas se resuelvan y filtrar nulos
+        const animes = await Promise.all(animesPromises);
+        return animes.filter(anime => anime !== null);
+        
     } catch (error) {
         console.error('Error al obtener animes vistos:', error);
         return [];
@@ -234,13 +255,20 @@ document.getElementById("agregar-a-pendientes").addEventListener("click", async 
       await limpiarEstadosPrevios(animeId);
     }
 
-    // Agregar a pendientes
-    for (const animeId of window.seleccionados) {
-      await setDoc(doc(collection(doc(db, "usuarios", user.uid), "pendiente"), animeId), {
-        id: animeId,
-        timestamp: Date.now()
-      });
-    }
+    // Obtener la referencia al documento de pendientes
+    const pendientesRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), "pendiente");
+    const pendientesDoc = await getDoc(pendientesRef);
+    
+    // Obtener los IDs actuales o inicializar array vacío
+    const animesActuales = pendientesDoc.exists() && Array.isArray(pendientesDoc.data().animes) 
+      ? [...pendientesDoc.data().animes] 
+      : [];
+    
+    // Agregar nuevos IDs (sin duplicados)
+    const nuevosAnimes = [...new Set([...animesActuales, ...Array.from(window.seleccionados)])];
+    
+    // Actualizar el documento
+    await setDoc(pendientesRef, { animes: nuevosAnimes }, { merge: true });
 
     // Limpiar selección
     window.seleccionados.clear();
@@ -260,10 +288,20 @@ async function limpiarEstadosPrevios(animeId) {
   if (!user) return;
 
   const estados = ['viendo', 'pendiente', 'visto'];
+  
   for (const estado of estados) {
-    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), animeId);
-    const snap = await getDoc(ref);
-    if (snap.exists()) await deleteDoc(ref);
+    const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estado);
+    const estadoDoc = await getDoc(estadoRef);
+    
+    if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
+      // Filtrar el animeId del array
+      const animesActualizados = estadoDoc.data().animes.filter(id => id !== animeId);
+      
+      // Actualizar solo si hay cambios
+      if (animesActualizados.length !== estadoDoc.data().animes.length) {
+        await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
+      }
+    }
   }
 }
 

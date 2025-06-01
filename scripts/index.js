@@ -696,16 +696,16 @@ async function cargarViendo() {
   }
 
   try {
-    const ref = collection(doc(db, "usuarios", userId), "viendo");
-    const snap = await getDocs(ref);
-
-    if (snap.empty) {
+    const estadosRef = doc(collection(doc(db, "usuarios", userId), "estados"), "viendo");
+    const estadosDoc = await getDoc(estadosRef);
+    
+    if (!estadosDoc.exists() || !estadosDoc.data().animes || estadosDoc.data().animes.length === 0) {
       renderizarViendo([], true);
       localStorage.removeItem(cacheKey);
       return;
     }
 
-    const ids = snap.docs.map(doc => doc.id);
+    const ids = estadosDoc.data().animes;
     const bloques = dividirEnBloques(ids, 10);
     const freshData = [];
 
@@ -764,7 +764,6 @@ async function cargarViendo() {
   }
 }
 
-// Cargar animes pendientes
 async function cargarPendientes() {
   console.log('Ejecutando cargarPendientes');
   const cont = document.getElementById('pendientes');
@@ -792,12 +791,17 @@ async function cargarPendientes() {
   if (cache) render(cache, true);
 
   try {
-    const snap = await getDocs(collection(doc(db, 'usuarios', user.uid), 'pendiente'));
-    if (snap.empty) {
-      return render([], true) && localStorage.removeItem(key);
+    // Obtener el documento de estados
+    const estadosRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), "pendiente");
+    const estadosDoc = await getDoc(estadosRef);
+    
+    if (!estadosDoc.exists() || !estadosDoc.data().animes || estadosDoc.data().animes.length === 0) {
+      render([], true);
+      localStorage.removeItem(key);
+      return;
     }
 
-    const ids = snap.docs.map(d => d.id);
+    const ids = estadosDoc.data().animes;
     const bloques = [];
     for (let i = 0; i < ids.length; i += 10) bloques.push(ids.slice(i, i + 10));
 
@@ -863,42 +867,44 @@ async function cargarCompletados() {
   }
 
   try {
-    const ref = collection(doc(db, "usuarios", userId), "visto");
-    const snap = await getDocs(ref);
+    const estadosRef = doc(collection(doc(db, "usuarios", userId), "estados"), "visto");
+    const estadosDoc = await getDoc(estadosRef);
     
-    let freshData = [];
-    if (!snap.empty) {
-      const promises = snap.docs.map(docSnap => {
-        const animeId = docSnap.id;
-        return getDoc(doc(db, "datos-animes", animeId))
-          .then(animeDetalleSnap => {
-            if (animeDetalleSnap.exists()) {
-              const animeData = animeDetalleSnap.data();
-              return {
-                id: animeId,
-                titulo: animeData.titulo || 'Título no encontrado',
-                portada: animeData.portada || 'img/background.webp',
-                estado: animeData.estado || 'No disponible',
-                rating: animeData.rating || null,
-              };
-            }
-            return null;
-          })
-          .catch(() => null);
-      });
+    if (!estadosDoc.exists() || !estadosDoc.data().animes || estadosDoc.data().animes.length === 0) {
+      renderizarCompletados([], true);
+      localStorage.removeItem(cacheKey);
+      return;
+    }
+    
+    const ids = estadosDoc.data().animes;
+    const bloques = [];
+    for (let i = 0; i < ids.length; i += 10) {
+      bloques.push(ids.slice(i, i + 10));
+    }
+    
+    let all = [];
+    for (let i = 0; i < bloques.length; i++) {
+      const bloque = bloques[i];
+      const datos = await Promise.all(
+        bloque.map(id =>
+          getDoc(doc(db, 'datos-animes', id))
+            .then(ds => ds.exists() ? { 
+              id, 
+              titulo: ds.data().titulo || 'Título no encontrado',
+              portada: ds.data().portada || 'img/background.webp',
+              estado: ds.data().estado || 'No disponible',
+              rating: ds.data().rating || null
+            } : null)
+            .catch(() => null)
+        )
+      );
       
-      freshData = (await Promise.all(promises)).filter(item => item !== null);
+      const valid = datos.filter(Boolean);
+      all = all.concat(valid);
+      renderizarCompletados(valid, i === 0);
     }
-
-    if (JSON.stringify(freshData) !== JSON.stringify(cache)) {
-      renderizarCompletados(freshData, true);
-      guardarCache(cacheKey, freshData);
-    } else if (cache === null && freshData.length > 0) {
-      renderizarCompletados(freshData, true);
-      guardarCache(cacheKey, freshData);
-    } else if (cache === null && freshData.length === 0) {
-      renderizarCompletados([]);
-    }
+    
+    guardarCache(cacheKey, all);
   } catch (error) {
     if (!cache) {
       completadosContainer.innerHTML = '<p>Error al cargar animes completados.</p>';

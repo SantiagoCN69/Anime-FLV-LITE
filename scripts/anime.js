@@ -602,46 +602,94 @@ async function actualizarEstadoFirebase(estado) {
   const user = auth.currentUser;
   if (!user) return;
 
-  await limpiarEstadosPrevios(); 
-
-  // Guarda el anime en la colección correspondiente
-  await setDoc(doc(collection(doc(db, "usuarios", user.uid), estado.toLowerCase()), id), {
-    id: id, 
-    timestamp: Date.now()
-  });
+  // Primero limpiamos cualquier estado previo
+  await limpiarEstadosPrevios();
+  
+  if (!estado) return; // Si no hay estado, no hacemos nada
+  
+  const estadoLower = estado.toLowerCase();
+  // Actualizamos el documento del estado con el nuevo anime
+  const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estadoLower);
+  const estadoDoc = await getDoc(estadoRef);
+  
+  let animes = [];
+  if (estadoDoc.exists()) {
+    animes = [...(estadoDoc.data().animes || [])];
+  }
+  
+  // Si el anime ya está en la lista, lo quitamos
+  const index = animes.indexOf(id);
+  if (index !== -1) {
+    animes.splice(index, 1);
+  } else {
+    // Si no está, lo agregamos
+    animes.push(id);
+  }
+  
+  // Actualizamos el documento
+  await setDoc(estadoRef, { animes }, { merge: true });
 }
 
-// Eliminar el anime de todas las colecciones de estado
+// Eliminar el anime de todos los estados
 async function limpiarEstadosPrevios() {
   const user = auth.currentUser;
   if (!user) return;
 
   const estados = ['viendo', 'pendiente', 'visto'];
+  
+  // Recorremos cada estado
   for (const estado of estados) {
-    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
-    const snap = await getDoc(ref);
-    if (snap.exists()) await deleteDoc(ref);
+    const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estado);
+    const estadoDoc = await getDoc(estadoRef);
+    
+    if (estadoDoc.exists()) {
+      let animes = [...(estadoDoc.data().animes || [])];
+      const index = animes.indexOf(id);
+      
+      // Si encontramos el anime, lo eliminamos
+      if (index !== -1) {
+        animes.splice(index, 1);
+        // Actualizamos el documento del estado
+        await setDoc(estadoRef, { animes }, { merge: true });
+      }
+    }
   }
 }
 
 // Manejar selección de estado
-function manejarEstadoSeleccionado(btnSeleccionado) {
+async function manejarEstadoSeleccionado(btnSeleccionado) {
   const btnEstado = document.getElementById('btn-estado');
   const estadoId = btnSeleccionado.id.replace('btn-', '');
   const estado = ESTADOS[estadoId];
+  const user = auth.currentUser;
+  
+  if (!user) return;
 
   // Si el botón ya está activo, eliminar el estado
   if (btnSeleccionado.classList.contains('active')) {
     btnSeleccionado.classList.remove('active');
     seccionEstados.classList.remove('active');
+    
     if (estado) {
       btnEstado.style.backgroundColor = '#6c757d';
       estadoText.innerHTML = 'ESTADO';
-      // Eliminar el estado de Firebase
-      const user = auth.currentUser;
-      if (user) {
-        const ref = doc(collection(doc(db, "usuarios", user.uid), estadoId), id);
-        deleteDoc(ref);
+      
+      try {
+        // Obtener referencia al documento del estado
+        const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estadoId);
+        const estadoDoc = await getDoc(estadoRef);
+        
+        if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
+          // Filtrar solo el ID del anime actual
+          const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
+          
+          // Actualizar solo si hay cambios
+          if (animesActualizados.length !== estadoDoc.data().animes.length) {
+            await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
+          }
+        }
+      } catch (error) {
+        console.error('Error al eliminar el estado:', error);
       }
     }
     return;
@@ -657,7 +705,7 @@ function manejarEstadoSeleccionado(btnSeleccionado) {
     estadoText.innerHTML = `${estado.texto}`;
   }
 
-  actualizarEstadoFirebase(estadoId.toUpperCase());
+  await actualizarEstadoFirebase(estadoId.toUpperCase());
 }
 
 // Obtener el estado actual
@@ -665,11 +713,18 @@ async function obtenerEstadoActual() {
   const user = auth.currentUser;
   if (!user) return null;
 
-  const estados = ['visto', 'viendo', 'pendiente'];
+  const estados = ['viendo', 'pendiente', 'visto'];
+  
+  // Verificamos en cada estado
   for (const estado of estados) {
-    const ref = doc(collection(doc(db, "usuarios", user.uid), estado), id);
-    const snap = await getDoc(ref);
-    if (snap.exists()) return estado.toUpperCase();
+    const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estado);
+    const estadoDoc = await getDoc(estadoRef);
+    
+    if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
+      if (estadoDoc.data().animes.includes(id)) {
+        return estado.toUpperCase();
+      }
+    }
   }
   return null;
 }
