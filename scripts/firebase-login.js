@@ -257,6 +257,21 @@ async function logoutConGoogle() {
 const cachedDisplayName = localStorage.getItem('cachedUserDisplayName');
 const cachedPhotoURL = localStorage.getItem('cachedUserPhotoURL');
 
+// Verificar sesión al cargar la página
+auth.onAuthStateChanged((user) => {
+  if (!user) {
+    document.getElementById('btn-login').textContent = 'Login';
+    document.getElementById('btn-login').innerHTML = '<img src="icons/user-solid.svg" alt="Foto de perfil"><span>Login</span>';
+    // Limpiar caché si no hay sesión activa
+    try {
+      localStorage.removeItem('cachedUserDisplayName');
+      localStorage.removeItem('cachedUserPhotoURL');
+    } catch (e) {
+      console.warn('No se pudo limpiar localStorage:', e);
+    }
+  }
+});
+
 if (cachedDisplayName || cachedPhotoURL) {
   updateUIForUser({
     displayName: cachedDisplayName,
