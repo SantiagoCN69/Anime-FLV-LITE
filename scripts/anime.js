@@ -342,39 +342,61 @@ async function obtenerCapitulosVistos(animeId) {
 
 //comparar datos antes de jecutar renderAnime
 function compararDatos(a, b) {
-  if (!a || !b) return false;
+  // Validación rápida de nulos/undefined
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') {
+    return a === b;
+  }
 
-  const normalizar = (v) => (typeof v === "string" ? v.trim() : v);
+  // Función de comparación rápida de strings
+  const strEqual = (str1, str2) => 
+    String(str1 || '').trim() === String(str2 || '').trim();
 
-  // Comparación detallada de campos
-  const tituloIgual = normalizar(a.titulo) === normalizar(b.titulo);
-  const portadaIgual = normalizar(a.portada) === normalizar(b.portada);
-  const descripcionIgual = normalizar(a.descripcion) === normalizar(b.descripcion);
-  const ratingIgual = normalizar(a.rating) === normalizar(b.rating);
-  const estadoIgual = normalizar(a.estado) === normalizar(b.estado);
-  const generosIgual = JSON.stringify(a.generos) === JSON.stringify(b.generos);
+  // Comparación de campos básicos (validación temprana)
+  const camposBasicos = [
+    ['titulo', strEqual],
+    ['portada', strEqual],
+    ['descripcion', strEqual],
+    ['rating', strEqual],
+    ['estado', strEqual]
+  ];
 
-  // Normalizar y ordenar episodios
-  const normalizarEpisodios = (episodios) => {
-    return episodios
-      .map(ep => ({ url: ep.url, number: ep.number })) // Asegurarse de que la estructura sea la misma
-      .sort((ep1, ep2) => ep1.number - ep2.number); // Ordenar por número
+  if (camposBasicos.some(([campo, comparar]) => 
+    !comparar(a[campo], b[campo]))
+  ) {
+    return false;
+  }
+
+  // Comparación de arrays de géneros
+  if (a.generos?.length !== b.generos?.length || 
+      !a.generos.every((g, i) => strEqual(g, b.generos[i]))) {
+    return false;
+  }
+
+  // Función para comparar arrays de objetos con claves específicas
+  const compararArrays = (arrA, arrB, keys) => {
+    if (arrA?.length !== arrB?.length) return false;
+    
+    const normalizar = (obj) => 
+      keys.map(k => String(obj?.[k] || '').trim().toLowerCase());
+    
+    const aSorted = [...arrA].sort((x, y) => 
+      normalizar(x).join('|').localeCompare(normalizar(y).join('|'))
+    );
+    
+    const bSorted = [...arrB].sort((x, y) => 
+      normalizar(x).join('|').localeCompare(normalizar(y).join('|'))
+    );
+    
+    return aSorted.every((item, i) => 
+      normalizar(item).join('|') === normalizar(bSorted[i]).join('|')
+    );
   };
-// normalizar y ordenar relacionados
-const normalizarRelacionados = (relacionados) => {
-  return relacionados
-    .map(rel => ({ title: rel.title, relation: rel.relation })) // Asegurarse de que la estructura sea la misma
-    .sort((rel1, rel2) => rel1.title.localeCompare(rel2.title)); // Ordenar alfabéticamente por título
-};
 
-  const episodiosA = JSON.stringify(normalizarEpisodios(a.episodios));
-  const episodiosB = JSON.stringify(normalizarEpisodios(b.episodios));
-
-  const relacionadosA = JSON.stringify(normalizarRelacionados(a.relacionados));
-  const relacionadosB = JSON.stringify(normalizarRelacionados(b.relacionados));
-
-  // Retornamos el resultado final
-  return tituloIgual && portadaIgual && descripcionIgual && ratingIgual && estadoIgual && generosIgual && episodiosA === episodiosB && relacionadosA === relacionadosB;
+  // Comparar episodios y relacionados
+  return (
+    compararArrays(a.episodios || [], b.episodios || [], ['number', 'url']) &&
+    compararArrays(a.relacionados || [], b.relacionados || [], ['title', 'relation'])
+  );
 }
 
 (async () => {
@@ -780,5 +802,4 @@ scrollContainer.addEventListener('wheel', (e) => {
   }
 }, { passive: false });
 
-
-
+//animaciones botnes al orpmir
