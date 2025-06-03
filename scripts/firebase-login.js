@@ -296,6 +296,7 @@ onAuthStateChanged(auth, (user) => {
   }
   // Disparar evento personalizado para indicar que el estado de autenticación está listo
   document.dispatchEvent(new CustomEvent('authStateReady', { detail: { user } }));
+  document.getElementById('btn-login').disabled = false;
 });
 
 // Configurar botón login/logout
