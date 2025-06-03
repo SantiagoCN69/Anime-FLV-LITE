@@ -17,25 +17,28 @@
     <meta name="twitter:description" content="El mejor repositorio de anime sin anuncios.">
     <link rel="canonical" href="https://animeflvlite.netlify.app/index.html">
     <link rel="icon" type="image/png" href="/icons/icon.png">
+    <script>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.documentElement.style.setProperty('--bg', '#f5f5f5');
+        }
+      })();
+    </script>
     <link rel="apple-touch-icon" sizes="256x256" href="/icons/icon.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="styles/style.css">
-    <script type="module" src="scripts/firebase-login.js" defer></script>
-    <script type="module" src="scripts/index.js" defer></script>
-    <script type="module" src="scripts/header.js" defer></script>
 </head>
 <body>
 
     <header>
         <h1 class="title"><a href="index.html">AnimeFLV Lite</a></h1>
-        <a href="directorio.html" class="btn-directorio" title="Directorio"><img src="icons/database-solid.svg" alt="">Directorio Anime</a>
+        <a href="directorio.html" id="btn-directorio" class="btn-header" title="Directorio">Directorio Anime</a>
         <div class="search">
             <input type="text" id="busqueda" placeholder="Buscar anime...">
-            <button type="button" id="btn-close-search" title="Cerrar búsqueda">
-              <img src="icons/xmark-solid.svg" alt="Cerrar búsqueda">
-            </button>
+            <button type="button" id="btn-close-search" title="Cerrar búsqueda"></button>
         </div>
-        <button type="button" id="btn-login" title="Iniciar sesión">
+        <button disabled type="button" id="btn-login" title="Iniciar sesión">
           <img src="icons/user-solid.svg" alt="Foto de perfil">
           <span>Login</span>
         </button>
@@ -104,5 +107,8 @@
       </main>
       <footer>
       </footer>
+      <script type="module" src="scripts/firebase-login.js"></script>
+      <script type="module" src="scripts/index.js"></script>
+      <script type="module" src="scripts/header.js"></script>
 </body>
 </html>

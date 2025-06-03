@@ -90,22 +90,15 @@ async function loginConGoogle() {
   }
 }
 
-// Logout con modal
-function showLogoutModal() {
-  // Verificar si ya existe un modal abierto
-  const existingModal = document.querySelector('.logout-modal');
-  if (existingModal) {
-    existingModal.classList.remove('show');
-    setTimeout(() => existingModal.remove(), 300);
-    return;
-  }
-
-  // Crear y configurar el modal
-  const modal = document.createElement('div');
+//crear modal al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+const existingModal = document.querySelector('.logout-modal');
+const modal = document.createElement('div');
   modal.className = 'logout-modal';
   modal.innerHTML = `
     <button id="export-data">Exportar datos</button>
-    <a href="#" id="config">Configuración</a>
+    <button id="theme-toggle">Cambiar tema</button>
+    <button id="config">Configuración</button>
     <button id='confirm-logout'>Cerrar sesión</button>
   `;
   
@@ -113,139 +106,133 @@ function showLogoutModal() {
   const loginButton = document.getElementById('btn-login');
   loginButton.appendChild(modal);
   
-  // Mostrar con animación
-  requestAnimationFrame(() => modal.classList.add('show'));
+  // Asignar evento al botón de cerrar sesión
+  const logoutButton = modal.querySelector('#confirm-logout');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async () => {
+      await logoutConGoogle();
+    });
+  }
+
+   // Exportar datos
+   const exportButton = document.getElementById('export-data');
   
-  // Función para cerrar el modal
-  const closeModal = () => {
-    modal.classList.remove('show');
-    setTimeout(() => {
-      if (modal.parentNode) {
-        modal.remove();
-      }
-    }, 300);
-  };
+   exportButton.addEventListener('click', async (e) => {
+     e.preventDefault();
+     e.stopPropagation(); 
+     const originalText = exportButton.textContent;
+     
+     try {
+       exportButton.textContent = 'Exportando...';
+       exportButton.disabled = true;
+       
+       const user = getAuth().currentUser;
+       if (!user) {
+         throw new Error('No hay usuario autenticado');
+       }
+       
+       const db = getFirestore();
+       const userId = user.uid;
+       
+       // Función para obtener datos de una colección específica
+       const getCollectionData = async (collectionName) => {
+         try {
+           const q = query(
+             collection(db, 'usuarios', userId, collectionName)
+           );
+           const querySnapshot = await getDocs(q);
+           // Solo devolvemos los datos del documento sin el ID
+           return querySnapshot.docs.map(doc => doc.data());
+         } catch (error) {
+           console.error(`Error al obtener ${collectionName}:`, error);
+           return [];
+         }
+       };
+       
+       // Obtener datos de todas las colecciones
+       const [vistos, viendo, completados, favoritos] = await Promise.all([
+         getCollectionData('visto'),
+         getCollectionData('viendo'),
+         getCollectionData('completados'),
+         getCollectionData('favoritos')
+       ]);
+       
+       // Crear objeto con todos los datos
+       const userData = {
+         usuario: {
+           email: user.email,
+           displayName: user.displayName,
+           photoURL: user.photoURL
+         },
+         animes: {
+           vistos,
+           viendo,
+           completados,
+           favoritos
+         },
+         fechaExportacion: new Date().toISOString()
+       };
+       
+       // Crear y descargar archivo JSON
+       const dataStr = JSON.stringify(userData, null, 2);
+       const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
+       
+       const exportFileDefaultName = `animeflv-lite-${userId.slice(0, 8)}.json`;
+       
+       const linkElement = document.createElement('a');
+       linkElement.setAttribute('href', dataUri);
+       linkElement.setAttribute('download', exportFileDefaultName);
+       linkElement.click();
+       
+       // Mostrar mensaje de éxito
+       exportButton.textContent = '¡Exportado!';
+       setTimeout(() => {
+         exportButton.textContent = originalText;
+         exportButton.disabled = false;
+       }, 2000);
+       
+     } catch (error) {
+       console.error('Error al exportar datos:', error);
+       exportButton.textContent = 'Error al exportar';
+       setTimeout(() => {
+         exportButton.textContent = originalText;
+         exportButton.disabled = false;
+       }, 2000);
+     }
+   });
+});
+
+
+// Logout con modal
+function showLogoutModal() {
+  const modal = document.querySelector('.logout-modal');
+  if (modal) {
+    // Alternar la clase 'show' para mostrar/ocultar el modal
+    const isVisible = modal.classList.contains('show');
+    if (isVisible) {
+      modal.classList.remove('show');
+    } else {
+      modal.classList.add('show');
+    }
+  }
   
-  // Cerrar al hacer scroll
-  const handleScroll = () => closeModal();
+  // Cerrar al hacer scroll y hacer clic fuera
+  const handleScroll = () => modal.classList.remove('show');
+  const btnLogin = document.getElementById('btn-login');
   window.addEventListener('scroll', handleScroll, { once: true });
-  
-  // Cerrar al hacer clic fuera
-  const handleClick = (e) => {
-    if (!modal.contains(e.target) && !loginButton.contains(e.target)) {
-      closeModal();
-      document.removeEventListener('click', handleClick);
+
+  const handleClickOutside = (event) => {
+    if (!modal.contains(event.target) && !btnLogin.contains(event.target)) {
+      modal.classList.remove('show');
     }
   };
-  
-  // Usar setTimeout para evitar que se cierre inmediatamente
-  setTimeout(() => document.addEventListener('click', handleClick), 0);
-  
-  // Eventos de los botones
-  modal.querySelector('#confirm-logout').addEventListener('click', async (e) => {
-    e.preventDefault();
-    await logoutConGoogle();
-    closeModal();
-  });
-  
-  modal.querySelector('#config').addEventListener('click', (e) => {
-    e.preventDefault();
-    closeModal();
-    // Aquí podrías agregar la lógica para ir a configuración
-  });
-  
-  // Exportar datos
-  const exportButton = modal.querySelector('#export-data');
-  
-  exportButton.addEventListener('click', async (e) => {
-    e.preventDefault();
-    e.stopPropagation(); 
-    const originalText = exportButton.textContent;
-    
-    try {
-      exportButton.textContent = 'Exportando...';
-      exportButton.disabled = true;
-      
-      const user = getAuth().currentUser;
-      if (!user) {
-        throw new Error('No hay usuario autenticado');
-      }
-      
-      const db = getFirestore();
-      const userId = user.uid;
-      
-      // Función para obtener datos de una colección específica
-      const getCollectionData = async (collectionName) => {
-        try {
-          const q = query(
-            collection(db, 'usuarios', userId, collectionName)
-          );
-          const querySnapshot = await getDocs(q);
-          // Solo devolvemos los datos del documento sin el ID
-          return querySnapshot.docs.map(doc => doc.data());
-        } catch (error) {
-          console.error(`Error al obtener ${collectionName}:`, error);
-          return [];
-        }
-      };
-      
-      // Obtener datos de todas las colecciones
-      const [vistos, viendo, completados, favoritos] = await Promise.all([
-        getCollectionData('visto'),
-        getCollectionData('viendo'),
-        getCollectionData('completados'),
-        getCollectionData('favoritos')
-      ]);
-      
-      // Crear objeto con todos los datos
-      const userData = {
-        usuario: {
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL
-        },
-        animes: {
-          vistos,
-          viendo,
-          completados,
-          favoritos
-        },
-        fechaExportacion: new Date().toISOString()
-      };
-      
-      // Crear y descargar archivo JSON
-      const dataStr = JSON.stringify(userData, null, 2);
-      const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
-      
-      const exportFileDefaultName = `animeflv-lite-${userId.slice(0, 8)}.json`;
-      
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
-      linkElement.click();
-      
-      // Mostrar mensaje de éxito
-      exportButton.textContent = '¡Exportado!';
-      setTimeout(() => {
-        exportButton.textContent = originalText;
-        exportButton.disabled = false;
-      }, 2000);
-      
-    } catch (error) {
-      console.error('Error al exportar datos:', error);
-      exportButton.textContent = 'Error al exportar';
-      setTimeout(() => {
-        exportButton.textContent = originalText;
-        exportButton.disabled = false;
-      }, 2000);
-    }
-  });
+
+  document.addEventListener('click', handleClickOutside);
 }
 
 async function logoutConGoogle() {
   try {
     await signOut(auth);
-    updateUIForUser(null);
     // Recargar la página actual
     window.location.reload();
   } catch (error) {
@@ -313,3 +300,46 @@ if (btnLogin) {
 }
 
 export { app, auth, db };
+
+//tema 
+
+const themes = {
+  dark: {principal: '#1F1F1F', bg: '#121212', text1: '#fff', text2: '#ddd', border: '#444', button: '#af6dff', filter: 1, bgtransparent: '255, 255, 255'}, //e76f51
+  light: {principal: '#f5f5f5', bg: '#DDDDDD', text1: '#111', text2: '#555555', border: '#ccc', button: '#999', filter: 2, bgtransparent: '0, 0, 0'},
+  nocturno: {principal: '#1B263B', bg: '#0D1B2A', text1: '#ddd', text2: '#AAB0B6', border: '#415A77', button: '#778DA9', filter: 1, bgtransparent: '255, 255, 255'},
+};
+
+
+
+const updateTheme = (theme = 'dark') => {
+  const themeData = themes[theme] || themes.dark;
+  Object.entries(themeData).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(`--${key}`, value);
+  });
+  return theme;
+};
+
+let currentTheme = localStorage.getItem('theme') || 'dark';
+updateTheme(currentTheme);
+
+
+document.addEventListener('DOMContentLoaded', () => {
+const btnThemeToggle = document.getElementById('theme-toggle');
+btnThemeToggle.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const themeKeys = Object.keys(themes);
+  const currentIndex = themeKeys.indexOf(currentTheme);
+  const nextIndex = (currentIndex + 1) % themeKeys.length;
+  currentTheme = themeKeys[nextIndex];
+  
+  localStorage.setItem('theme', currentTheme);
+  updateTheme(currentTheme);
+  
+  window.dispatchEvent(new StorageEvent('storage', {
+    key: 'theme',
+    newValue: currentTheme
+  }));
+});
+});

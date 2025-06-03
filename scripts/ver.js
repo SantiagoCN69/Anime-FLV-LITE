@@ -99,18 +99,9 @@ async function refrescarUIEstadoCapitulo() {
     return;
   }
 
-  if (!iconoVisto) {
-    iconoVisto = document.createElement("img");
-    iconoVisto.id = "icon-estado-capitulo";
-    // Asegurarse de que el ícono se añada solo si btnEstadoCapitulo existe
-    btnEstadoCapitulo.appendChild(iconoVisto); 
-  }
-
   btnEstadoCapitulo.classList.toggle("visto", estaVisto);
   textoEstado.textContent = estaVisto ? "Visto" : "No visto";
   textoEstado.classList.toggle("visto", estaVisto);
-  iconoVisto.classList.toggle("visto", estaVisto);
-  iconoVisto.src = estaVisto ? "/icons/eye-solid.svg" : "/icons/eye-slash-solid.svg";
 }
 
 async function toggleYGuardarEstadoCapitulo() {

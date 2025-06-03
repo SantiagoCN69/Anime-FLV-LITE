@@ -8,8 +8,8 @@ h2 {
     gap: 5px;   
     padding: 10px;
     border-radius: 5px;
-    background-color: #1F1F1F;
-    color: #ccc;
+    background-color: var(--principal);
+    color: var(--text1);
     border: none;
 }
 main {
@@ -44,32 +44,30 @@ nav.filtros {
     content: "▼";
 }
 .btn-filtro.active {
-    background-color: #e76f51;
-    color: #fff;
+    background-color: var(--button);
+    color: var(--text1);
 }
 .btn-filtro.active::after {
     transform: rotate(180deg);
 }
 .btn-filtro span {
-    color: #fff;
+    color: var(--text2);
 }
 .btn-filtro img {
     width: 12px;
 }
 #btn-filtrar {
-    background-color: #e76f51;
-    color: #fff;
+    background-color: var(--button);
+    color: var(--text1);
 }
 .filtro-opciones {
     position: absolute;
     top: 25px;
-    background-color: #1f1f1fbd;
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
     box-shadow: 2px 10px 30px rgba(0, 0, 0, 0.5);
     border-radius: 5px;
     z-index: 1000;
-    overflow-y: auto;
     will-change: transform;
     opacity: 0;
     padding: 10px;
@@ -131,11 +129,11 @@ nav.filtros {
     display: block;
 }
 .btn-filtro-opcion:hover {
-    color: #fff;
+    background-color: rgba(var(--bgtransparent), .3);
     opacity: 1;
 }
 .btn-filtro-opcion.active {
-    background-color: #e76f51;
+    background-color: var(--button);
 }
     
 #resultados {
@@ -194,26 +192,28 @@ nav.filtros {
   #pagination::-webkit-scrollbar {
     height: 8px;
 }
+#pagination::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: var(--button);
+}
 
   .page-button {
     scroll-snap-align: center;
     padding: 8px 16px;
     border-radius: 5px;
-    background-color: #1F1F1F;
-    color: #fff;
+    background-color: var(--principal);
+    color: var(--text1);
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
-    box-shadow: 0 0 10px lab(23.52% 0 0 / 0.26);
   }
 
   .page-button:hover {
-    background-color: #e76f51;
+    background-color: var(--button);
     transform: translateY(-2px);
   }
 
   .page-button.active {
-    background-color: #e76f51;
+    background-color: var(--button);
     font-weight: bold;
-    box-shadow: 0 0 5px rgba(231, 111, 81, 0.5);
   }
