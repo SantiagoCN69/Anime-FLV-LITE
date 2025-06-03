@@ -96,30 +96,47 @@ header {
   max-height: 35px;
   }
 
-  #btn-fav {
-     grid-area: fav;
-    background: #5a131a;
-    transition: background 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-  }
+#btn-fav {
+  grid-area: fav;
+  background: #5a131a;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+  overflow: hidden;
+}
 
-  #btn-fav.favorito {
-    background: #fb3447; 
-  }
-  #btn-fav.favorito::before {
-    content: url('../icons/star-solid.svg');
-    width: 16px;
-    height: 15px;
-    display: block;
-    
-  }
-  #section-estados {
-    grid-area: estado;
-    position: relative;
-  }
+#btn-fav.favorito {
+  background: #fb3447; 
+}
+
+.aparecer::before {animation: aparecer 0.4s}
+.desaparecer::before {animation: desaparecer 0.4s}
+
+@keyframes desaparecer {
+  0% {opacity: 1; transform: translateY(0) scale(1);}
+  100% {opacity: 0; transform: translateY(-20px) scale(3);}
+}
+@keyframes aparecer {
+  0% {opacity: 0; transform: translateY(-20px) scale(3);}
+  100% {opacity: 1; transform: translateY(0) scale(1);}
+}
+
+#btn-fav.favorito::before {
+  content: url('../icons/star-solid.svg');
+  width: 16px;
+  height: 15px;
+  display: block;
+}
+#btn-fav.favorito:hover::before {
+  filter: brightness(.8);
+}
+#section-estados {
+  grid-area: estado;
+  position: relative;
+}
 #btn-estado {
   width: 100%;
   background: #6c757d;

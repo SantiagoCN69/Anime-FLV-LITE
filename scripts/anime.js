@@ -549,11 +549,15 @@ async function toggleFavoritoAnime(titulo) {
   if (index !== -1) {
     // Eliminar de favoritos
     favoritos.splice(index, 1);
+    btnFav.classList.add('desaparecer');
+    setTimeout(() => btnFav.classList.remove('desaparecer'), 500);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
     return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
   } else {
     // Agregar a favoritos
     favoritos.push(titulo);
+    btnFav.classList.add('aparecer');
+    setTimeout(() => btnFav.classList.remove('aparecer'), 500);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
     return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
   }
