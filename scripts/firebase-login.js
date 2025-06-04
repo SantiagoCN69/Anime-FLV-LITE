@@ -287,8 +287,6 @@ onAuthStateChanged(auth, (user) => {
   if (!localStorage.getItem('theme')) {
     console.log('No hay tema en localStorage. Intentando cargar desde Firestore...');
     cargarTemaDesdeFirestore();
-} else {
-    console.log('Tema encontrado en localStorage:', localStorage.getItem('theme'));
 }
 });
 
