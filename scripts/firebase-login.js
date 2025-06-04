@@ -284,6 +284,12 @@ onAuthStateChanged(auth, (user) => {
   // Disparar evento personalizado para indicar que el estado de autenticación está listo
   document.dispatchEvent(new CustomEvent('authStateReady', { detail: { user } }));
   document.getElementById('btn-login').disabled = false;
+  if (!localStorage.getItem('theme')) {
+    console.log('No hay tema en localStorage. Intentando cargar desde Firestore...');
+    cargarTemaDesdeFirestore();
+} else {
+    console.log('Tema encontrado en localStorage:', localStorage.getItem('theme'));
+}
 });
 
 // Configurar botón login/logout
@@ -302,127 +308,88 @@ if (btnLogin) {
 export { app, auth, db };
 
 //tema // Configuración de temas
-
 const THEME_CONFIG = {
-  themes: ['dark', 'light', 'nocturno'],
-  defaultTheme: 'dark',
-  saveDelay: 10000
+    themes: ['dark', 'light', 'nocturno'],
+    defaultTheme: 'dark',
+    saveDelay: 10000
 };
 
-// Manejador del cambio de tema
+// Cargar tema desde Firestore si no está en localStorage
+const cargarTemaDesdeFirestore = async () => {
+    if (!auth.currentUser) {
+        console.log('No hay usuario autenticado. No se carga tema desde Firestore.');
+        return;
+    }
+
+    try {
+        const docRef = doc(db, 'usuarios', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists() && docSnap.data().theme) {
+            const tema = docSnap.data().theme;
+            console.log('Tema cargado desde Firestore:', tema);
+            localStorage.setItem('theme', tema);
+            window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: tema } }));
+        } else {
+            console.log('No hay tema guardado en Firestore.');
+        }
+    } catch (error) {
+        console.error('Error al cargar tema desde Firestore:', error);
+    }
+};
+
 const themeToggle = () => {
-  const btn = document.getElementById('theme-toggle');
-  if (!btn) return;
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) {
+        console.log('Botón de cambio de tema no encontrado.');
+        return;
+    }
 
-  let saveTimeout;
-  let isInitialized = false;
+    let saveTimeout;
 
-  // Cargar tema desde Firestore
-  const loadThemeFromFirestore = async () => {
-      if (!auth.currentUser) return null;
-      try {
-          const userDoc = await getDoc(doc(db, 'usuarios', auth.currentUser.uid));
-          return userDoc.exists() ? userDoc.data().theme : null;
-      } catch (error) {
-          console.error('Error al cargar tema:', error);
-          return null;
-      }
-  };
+    const getNextTheme = (current) => {
+        const idx = THEME_CONFIG.themes.indexOf(current);
+        const next = THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
+        console.log('Tema actual:', current, '→ Siguiente tema:', next);
+        return next;
+    };
 
-  // Obtener el siguiente tema en la secuencia
-  const getNextTheme = (current) => {
-      const idx = THEME_CONFIG.themes.indexOf(current);
-      return THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
-  };
+    const saveThemeToFirestore = async (theme) => {
+        if (!auth.currentUser) {
+            console.log('No hay usuario autenticado. No se guarda en Firestore.');
+            return;
+        }
 
-  // Guardar tema en Firestore con debounce
-  const saveThemeToFirestore = async (theme) => {
-      if (!auth.currentUser) return;
-      
-      if (saveTimeout) clearTimeout(saveTimeout);
-      
-      saveTimeout = setTimeout(async () => {
-          try {
-              await setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
-                  theme: theme,
-                  lastUpdated: serverTimestamp()
-              }, { merge: true });
-              console.log('Tema guardado en Firestore');
-          } catch (error) {
-              console.error('Error al guardar tema:', error);
-          }
-      }, THEME_CONFIG.saveDelay);
-  };
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(async () => {
+            try {
+                await setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
+                    theme,
+                    lastUpdated: serverTimestamp()
+                }, { merge: true });
 
-  // Aplicar tema al documento
-  const applyTheme = (theme) => {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      
-      // Disparar eventos personalizados
-      const themeEvent = new CustomEvent('themeChanged', { detail: { theme } });
-      window.dispatchEvent(themeEvent);
-  };
+                console.log('Tema guardado en Firestore:', theme);
+            } catch (error) {
+                console.error('Error al guardar tema en Firestore:', error);
+            }
+        }, THEME_CONFIG.saveDelay);
+    };
 
-  // Inicializar tema
-  const initTheme = async () => {
-      if (isInitialized) return;
-      
-      let theme = localStorage.getItem('theme');
-      const userTheme = auth.currentUser ? await loadThemeFromFirestore() : null;
-      
-      theme = userTheme || theme || THEME_CONFIG.defaultTheme;
-      applyTheme(theme);
-      
-      // Guardar el tema si viene de Firestore
-      if (userTheme && userTheme !== theme) {
-          saveThemeToFirestore(theme);
-      }
-      
-      isInitialized = true;
-  };
+    const handleThemeToggle = (e) => {
+        e.preventDefault();
 
-  // Manejador de clic del botón
-// Al cambiar el tema
-const handleThemeToggle = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  const current = localStorage.getItem('theme') || 'dark';
-  const next = getNextTheme(current);
-  
-  localStorage.setItem('theme', next);
-  window.dispatchEvent(new CustomEvent('themeChanged', { 
-      detail: { theme: next } 
-  }));
-  
-  if (auth.currentUser) saveThemeToFirestore(next);
-};
+        const current = localStorage.getItem('theme') || THEME_CONFIG.defaultTheme;
+        const next = getNextTheme(current);
 
-  // Inicialización
-  const init = () => {
-      const initWhenReady = () => {
-          if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', initTheme);
-          } else {
-              initTheme();
-          }
-      };
+        localStorage.setItem('theme', next);
+        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
+        console.log('Tema cambiado y almacenado en localStorage:', next);
 
-      if (auth.currentUser !== null) {
-          initWhenReady();
-      } else {
-          const authHandler = () => {
-              initWhenReady();
-              document.removeEventListener('authStateReady', authHandler);
-          };
-          document.addEventListener('authStateReady', authHandler, { once: true });
-      }
+        saveThemeToFirestore(next);
+    };
 
-      btn.addEventListener('click', handleThemeToggle);
-  };
-
-  init();
+    btn.addEventListener('click', handleThemeToggle);
 };
 
 // Inicializar al cargar el DOM
-document.addEventListener('DOMContentLoaded', themeToggle);
+document.addEventListener('DOMContentLoaded', async () => {themeToggle()})
