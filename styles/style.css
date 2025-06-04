@@ -197,7 +197,7 @@ header {
   border-right: 1px solid var(--br);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  
+  scrollbar-width: none;
 }
 
 .sidebar ul {
@@ -275,6 +275,7 @@ header {
     top: 88px;
     left: 0;
     padding: 1.5rem;
+    color: var(--t1);
     margin: 0;
     border-radius: 0;
     width: clamp(235px, 60%, 60%);
@@ -502,7 +503,6 @@ main {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow-y: scroll;
 }
 
 
