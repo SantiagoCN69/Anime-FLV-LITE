@@ -5,20 +5,20 @@
     -webkit-tap-highlight-color: transparent;
 }
 html {
-  --bg: #121212;
-  --principal: #1F1F1F;
-  --border: #888;
-  --text1: #fff;
-  --text2: #ccc;
-  --button: #af6dff;
-  --filter: 1;
-  --bgtransparent: 255, 255, 255;
+  --b: #121212;
+  --p: #1F1F1F;
+  --br: #888;
+  --t1: #fff;
+  --t2: #ccc;
+  --btn: #af6dff;
+  --f: 1;
+  --bt: 255, 255, 255;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0 auto;
-  background-color: var(--bg);
+  background-color: var(--b);
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
@@ -32,8 +32,8 @@ a {
 /* Scrollbar styles */
 ::-webkit-scrollbar {width: 7px;}
 ::-webkit-scrollbar-track {background: transparent;}
-::-webkit-scrollbar-thumb {background-color: var(--principal);}
-::-webkit-scrollbar-thumb:hover {background-color: var(--button);}
+::-webkit-scrollbar-thumb {background-color: var(--p);}
+::-webkit-scrollbar-thumb:hover {background-color: var(--btn);}
 
 header {
   display: flex;
@@ -43,23 +43,23 @@ header {
   margin: 0 auto;
   height:5.5rem;;
   position: relative;
-  background: var(--principal);
+  background: var(--p);
   gap:15px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--br);
 }
 .title {
   margin-right: auto;
   white-space: nowrap;
   overflow: hidden;
-  color: var(--text1);
+  color: var(--t1);
   text-overflow: ellipsis;
 }
 .title a {
-    color: var(--text1);
+    color: var(--t1);
 }
 .btn-header {
     display: block;
-    color: var(--text2);
+    color: var(--t2);
     font-weight: bolder;
     text-transform: uppercase;
     margin-right: 10px;
@@ -73,7 +73,7 @@ header {
     margin-bottom: -2px;
     margin-inline-end: 5px;
     display: inline-block;
-    background-color: var(--text2); 
+    background-color: var(--t2); 
     -webkit-mask-size: contain;
     -webkit-mask: url('../icons/database-solid.svg') no-repeat center;
     mask-size: contain;
@@ -86,17 +86,17 @@ header {
     margin-bottom: -2px;
     margin-inline-end: 5px;
     display: inline-block;
-    background-color: var(--text2); 
+    background-color: var(--t2); 
     -webkit-mask-size: contain;
     -webkit-mask: url('../icons/house-solid.svg') no-repeat center;
     mask-size: contain;
     mask: url('../icons/house-solid.svg') no-repeat center;
 }
 .btn-header:hover {
-  color: var(--text1);
+  color: var(--t1);
 }
 #btn-index:hover::before, #btn-directorio:hover::before {
-  background-color: var(--text1);
+  background-color: var(--t1);
 }
 #btn-directorio2 {
   display: none;
@@ -120,24 +120,24 @@ header {
 }
 #busqueda {
     padding: 13px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--br);
     border-radius: 20px;
     background-color: transparent;
-    color: var(--text1);
+    color: var(--t1);
     font-size: .9rem;
 }
 #busqueda:focus {
     outline: none;
 }
 #busqueda::placeholder {
-  color: var(--text2)
+  color: var(--t2)
 }
 
 #btn-login {
     padding: 8px 16px;
     background-color: transparent;
-    color: var(--text1);
-    border: 1px solid var(--border);
+    color: var(--t1);
+    border: 1px solid var(--br);
     border-radius: 20px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -168,9 +168,8 @@ header {
   font-size: 1.5rem;
   background: none;
   border: none;
-  color: var(--text1);
+  color: var(--t1);
   cursor: pointer;
-  margin-bottom:4px;
 }
 
 #menu-toggle::before {
@@ -178,7 +177,7 @@ header {
   width: 25px;
   height: 25px;
   display: block;
-  background-color: var(--text2); 
+  background-color: var(--t2); 
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/bars-solid.svg') no-repeat center;
   mask-size: contain;
@@ -188,14 +187,14 @@ header {
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
   width: 220px;
-  color: var(--text1);
+  color: var(--t1);
   min-width: 220px;
   padding: 1rem;
   margin: 2rem auto;
   margin-right: 3%;
   height: var(--altura-main);
   overflow-y: auto;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--br);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   
@@ -205,11 +204,11 @@ header {
   list-style: none;
   padding: 0;
   margin: 0;
-  color: var(--text2)
+  color: var(--t2)
 }
 .sidebar a {
   text-decoration: none;
-  color: var(--text2);
+  color: var(--t2);
   width: 100%;
   display: block;
   }
@@ -222,17 +221,17 @@ header {
 }
 
 .sidebar li:hover, #btn-directorio2:hover, #btn-lab:hover {
-  background-color: rgba(var(--bgtransparent), .1);
-  color: var(--text1);
+  background-color: rgba(var(--bgt), .2);
+  color: var(--t1);
 }
 
 .sidebar li.active-menu-item {
-  background-color: rgba(var(--bgtransparent), .2);
-  color: var(--text1);
+  background-color: rgba(var(--bgt), .1);
+  color: var(--t1);
 }
 .sidebar h2 {
   font-size: 1.2rem;
-  color: var(--text1);
+  color: var(--t1);
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
@@ -251,7 +250,7 @@ header {
   transform: translateY(-50%);
   z-index: 20000;
   pointer-events: none;
-  background-color: var(--border); /* Color del SVG */
+  background-color: var(--br); /* Color del SVG */
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
   mask-size: contain;
@@ -313,7 +312,7 @@ header {
   content: "";
   width: 25px;
   height: 25px;
-  background-color: var(--text2); /* Color del SVG */
+  background-color: var(--t2); /* Color del SVG */
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
   mask-size: contain;
@@ -392,7 +391,7 @@ header.search-active .logout-modal {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--border); 
+  background-color: var(--br); 
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center;
   mask-size: contain;
@@ -409,7 +408,7 @@ header.search-active .logout-modal {
       /* Estructura principal */
 main {
   display: flex;
-  color: var(--text1);
+  color: var(--t1);
   margin-inline: auto;
   width: 95%;
   max-width: 1150px;
@@ -433,7 +432,7 @@ main {
 
 .span-carga {
   text-align: center;
-  color: var(--text2);
+  color: var(--t2);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -445,7 +444,7 @@ main {
 .content-section p, .init-loading-servidores, .no-results {
   text-align: center;
   margin-top: 2rem;
-  color: var(--text2);
+  color: var(--t2);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -471,7 +470,7 @@ main {
   position: absolute;
   top: 18px;
   right: 10px;
-  background-color: var(--button);
+  background-color: var(--btn);
   border-radius: 50px;
   padding: 3px 14px;
   font-size: 1rem;
@@ -480,7 +479,7 @@ main {
   content: "";
   width: 20px;
   height: 15px;
-  background-color: var(--button);
+  background-color: var(--btn);
   position: absolute;
   top: 32px;
   rotate: -45deg;
@@ -492,8 +491,8 @@ main {
   margin-top: 2rem;
   padding-bottom: 1rem;
   font-size: 1.1rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text1);
+  border-bottom: 1px solid var(--br);
+  color: var(--t1);
 }
 .continuar-viendo {
   height: auto;
@@ -508,7 +507,7 @@ main {
 
 
 .btn-siguiente-capitulo:hover {
-  background: rgba(var(--bgtransparent), .2);
+  background: rgba(var(--bgt), .2);
 }
 
 .btn-siguiente-capitulo {
@@ -518,7 +517,7 @@ main {
   padding: 8px;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--br);
   font-size: 0.9rem;
   cursor: pointer;
   transition: background .5s;
@@ -553,7 +552,7 @@ main {
 }
 
 .texto-episodio {
-  color: var(--text2);
+  color: var(--t2);
   font-size: 0.8rem;
 }
 
@@ -593,8 +592,8 @@ main {
     position: absolute;
     inset: 0;
     background-image: var(--cover);
-    filter: blur(12px) brightness(calc(0.7 * var(--filter) - 0.4));
-    opacity: calc(-0.3 * var(--filter) + 1.3);
+    filter: blur(12px) brightness(calc(0.7 * var(--f) - 0.4));
+    opacity: calc(-0.3 * var(--f) + 1.3);
     z-index: 0;
     transform: scale(1.4);
   }
@@ -624,7 +623,7 @@ main {
     backdrop-filter: blur(10px);
     transition: transform .4s, opacity .3s;
     opacity: 1;
-    color: var(--text1);
+    color: var(--t1);
   }
   .anime-card span img {
     width: 10px;
@@ -651,7 +650,7 @@ main {
     left: 0;
     width: 100%;
     height: 50%; 
-    background: linear-gradient(to top, rgba(var(--bgtransparent), .6), transparent);
+    background: linear-gradient(to top, rgba(var(--bgt), .4), transparent);
     -webkit-filter: invert(100%);
     filter: invert(100%);
     pointer-events: none;
@@ -690,7 +689,7 @@ main {
   transition: transform .3s, inset .3s, width .3s, height .3s;
 }
 .anime-card strong {
-  color: var(--text1);
+  color: var(--t1);
   overflow: hidden;
   margin-top: 0.4rem;
   line-height: 1.05rem;
@@ -705,8 +704,8 @@ main {
   position: absolute;
   right: 0;
   top: 55px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--b);
+  border: 1px solid var(--br);
   padding: 20px;
   border-radius: 25px;
   z-index: 3333;
@@ -731,9 +730,9 @@ main {
   background: transparent;
   cursor: pointer;
   width: 150px;
-  border-color: var(--border);
+  border-color: var(--br);
   border-radius: 20px;
-  color: var(--text1);
+  color: var(--t1);
   transition: background 0.2s ease, color 0.2s ease;
 }
 .logout-modal button:hover,
@@ -768,10 +767,10 @@ background: rgba(255, 248, 248, 0.1);
   margin-bottom: 1rem;
 }
 footer {
-  border-top: 1px solid var(--border);
-  background-color: var(--principal);
+  border-top: 1px solid var(--br);
+  background-color: var(--p);
   padding: 15px;
-  color: var(--text2);
+  color: var(--t2);
   text-align: center;
   font-size: .8rem;
   margin-top: auto;

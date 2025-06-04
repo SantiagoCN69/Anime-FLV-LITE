@@ -45,7 +45,7 @@ main section:nth-child(2) {
   height: 8px;
 }
 #noticias_container::-webkit-scrollbar-thumb {
-  background-color: var(--button);
+  background-color: var(--btn);
   border-radius: 5px;
 }
 .tarjeta-noticia {
@@ -64,7 +64,7 @@ main section:nth-child(2) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(var(--bgtransparent),.6));
+  background: linear-gradient(to bottom, transparent, rgba(var(--bgt),.6));
   filter: invert(100%);
   z-index: 1;
 }
@@ -83,15 +83,15 @@ main section:nth-child(2) {
 .noticia-titulo {
   display: block;
   font-size: 1rem;
-  color: var(--text1);
+  color: var(--t1);
   bottom: 10px;
   left: 10px;
 }
 
 .noticia-fecha {
   top: 20px;
-  background-color: var(--button);
-  color: var(--text2);
+  background-color: var(--btn);
+  color: var(--t2);
   padding: 3px 8px;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -128,7 +128,7 @@ main section:nth-child(2) {
 .btn-cap, h3 {
   font-weight: bold;
   font-size: 1.5rem;
-  color: var(--button);
+  color: var(--btn);
   margin-right: 10px;
 }
 #btn-estado-capitulo {
@@ -143,12 +143,12 @@ main section:nth-child(2) {
 .texto-estado-capitulo {
   font-size: 0.9rem;
   margin-right: 5px;
-  color: var(--text2);
+  color: var(--t2);
   font-weight: bold;
 }
 
 .texto-estado-capitulo.visto {
-  color: var(--text1);
+  color: var(--t1);
 }
 
 #btn-estado-capitulo::after {
@@ -156,7 +156,7 @@ main section:nth-child(2) {
   width: 16px;
   height: 16px;
   display: inline-block;
-  background-color: var(--text2); 
+  background-color: var(--t2); 
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/eye-slash-solid.svg') no-repeat center;
   mask-size: contain;
@@ -165,7 +165,7 @@ main section:nth-child(2) {
 #btn-estado-capitulo.visto::after {
   content: "";
   -webkit-mask-size: contain;
-  background-color: var(--text1);
+  background-color: var(--t1);
   -webkit-mask: url('../icons/eye-solid.svg') no-repeat center;
   mask-size: contain;
   mask: url('../icons/eye-solid.svg') no-repeat center;
@@ -185,9 +185,9 @@ main section:nth-child(2) {
   padding: 15px 8px;
   flex:1;
   border:none;
-  background-color: var(--principal);
+  background-color: var(--p);
   opacity: .6;
-  color: var(--text1);
+  color: var(--t1);
   font-weight: bolder;
   cursor: pointer;
   z-index: 2;
@@ -198,10 +198,10 @@ main section:nth-child(2) {
   }
 }
 #controles .servidor-activo {
-  color: var(--text1);
+  color: var(--t1);
   opacity: 1;
-  background-color: var(--principal);
-  border-top: 2px solid var(--button);
+  background-color: var(--p);
+  border-top: 2px solid var(--btn);
 }
 #controles button:hover {
   opacity: .9;
@@ -248,8 +248,8 @@ iframe {
   top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--principal);
-  color: var(--text1);
+  background: var(--p);
+  color: var(--t1);
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 12px;
@@ -272,7 +272,7 @@ iframe {
   border: none;
   cursor: pointer;
   font-weight: bold;
-  color: var(--text1);
+  color: var(--t1);
   transition: transform .3s;  
   padding: 15px;
   width: 100%;
@@ -281,10 +281,10 @@ iframe {
   transform: scale(.95);
 }
 .btn-anterior, .btn-siguiente {
-  background-color: var(--button);
+  background-color: var(--btn);
 }
 .btn-anuncios, .btn-censura {
-  background-color: var(--principal);
+  background-color: var(--p);
 }
 .desactivado {
   opacity: 0.5;

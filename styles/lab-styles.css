@@ -12,19 +12,19 @@ h1 {
 }
 
 h3 {
-  color: var(--text1);
+  color: var(--t1);
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid;
 }
 .favoritos h3{
-  color: var(--text1);
-  border-color: var(--text1);
+  color: var(--t1);
+  border-color: var(--t1);
 }
 .personalizadas h3 {
-  color: var(--button);
-  border-color: var(--button);
+  color: var(--btn);
+  border-color: var(--btn);
 }
 
 .grid-animes {
@@ -34,25 +34,32 @@ h3 {
  overflow: auto;
  padding-block: 7px;
 }
+.grid-animes::-webkit-scrollbar {
+  height: 9px;
+}
+.grid-animes::-webkit-scrollbar-thumb {
+  background-color: var(--btn);
+  border-radius: 7px;
+}
 .lab-card {
   flex: 1;
   border: 1px solid transparent;
   min-width: 180px;
   max-width: 180px;
-  background: rgba(var(--bgtransparent), .1);
+  background: rgba(var(--bgt), .1);
 }
 .anime-card.active {
   transform: translateY(-5px);
-  border: 1px solid var(--button);
+  border: 1px solid var(--btn);
 }
 .carga {
-  border: 1px solid var(--border);
+  border: 1px solid var(--br);
 }
 .container-img{
   aspect-ratio: 1/2;
 }
 .carga .container-img{
-  border: 1px solid var(--border);
+  border: 1px solid var(--br);
 }
 .personalizadas {
   margin-top: 2rem;
@@ -68,16 +75,16 @@ h3 {
 #busqueda-personalizada {
   flex: 1;
   padding: 1rem;
-  border: 1px solid var(--button);
+  border: 1px solid var(--btn);
   border-radius: 25px;
-  background: rgba(var(--bgtransparent), .1);
-  color: var(--text1);
+  background: rgba(var(--bgt), .1);
+  color: var(--t1);
   font-size: 1rem;
 }
 
 #busqueda-personalizada:focus {
   outline: none;
-  box-shadow: 0 0 10px 5px rgba(var(--bgtransparent), .1);
+  box-shadow: 0 0 10px 5px rgba(var(--bgt), .1);
 }
 
 /* Estilos para los botones de acción */
@@ -102,18 +109,18 @@ h3 {
 }
 
 .btn-generar {
-  background-color: var(--button);
-  color: var(--text1);
+  background-color: var(--btn);
+  color: var(--t1);
 }
 
 .btn-generar:hover {
-  background-color: rgba(var(--bgtransparent), .1);
+  background-color: rgba(var(--bgt), .1);
   transform: translateY(-2px);
 }
 
 .btn-agregar {
   background-color: #2ecc71;
-  color: var(--text1);
+  color: var(--t1);
 }
 .btn-agregar::before {
 -webkit-mask: url('../icons/plus-solid.svg') no-repeat center;
@@ -136,7 +143,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   width: 20px;
   height: 20px;
   display: inline-block;
-  background-color: var(--text1); 
+  background-color: var(--t1); 
   -webkit-mask-size: contain;
   mask-size: contain;
 }

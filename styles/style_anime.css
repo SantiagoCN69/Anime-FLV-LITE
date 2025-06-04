@@ -29,7 +29,7 @@ body::after {
     left: 0;
     width: 100vw;
     height: 101vh;
-    background: linear-gradient(to bottom, transparent 0%, var(--bg) 80%);
+    background: linear-gradient(to bottom, transparent 0%, var(--b) 80%);
     pointer-events: none;
     z-index: -2;
   }
@@ -39,19 +39,19 @@ header {
 }
 #busqueda {
   background-color: #00000011;
-  border: 1px solid var(--button);
+  border: 1px solid var(--btn);
 }
 .search::after {
-  background-color: var(--button);
+  background-color: var(--btn);
 }
 @media  screen and (min-width: 600px) {
   #btn-login {
-    border: 1px solid var(--button);
+    border: 1px solid var(--btn);
   }
 }
 #btn-close-search::after 
 {
-  background-color: var(--button);
+  background-color: var(--btn);
 }
 .anime-details {
   display: grid;
@@ -69,7 +69,7 @@ header {
 .anime-container1 {
   display: flex;
   flex-direction: column;
-  background-color: var(--principal);
+  background-color: var(--p);
   border-radius: 5px;
   padding: .6rem;
   max-height: fit-content;
@@ -151,8 +151,8 @@ header {
 }
 #btn-estado {
   width: 100%;
-  background: rgba(var(--bgtransparent), .3);
-  color: var(--text1);
+  background: rgba(var(--bgt), .3);
+  color: var(--t1);
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -212,11 +212,11 @@ transform: translateY(0);
   gap: 5px;
   align-items: center;
   transition: background 0.3s ease;
-  background-color: var(--principal);
+  background-color: var(--p);
 }
 
 #Estados button.active {
-  color: var(--text1);
+  color: var(--t1);
   border-radius: 5px;
 }
 
@@ -260,7 +260,7 @@ opacity: 1;
     inset: 0;
     width: calc(var(--progreso) * 1%);
     height: 100%;
-    background-color: var(--button);
+    background-color: var(--btn);
     border-radius: 5px;
     overflow: hidden;
 }
@@ -272,7 +272,7 @@ opacity: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text1);
+    color: var(--t1);
 }
   .anime-container2 {
     display: flex;
@@ -300,7 +300,7 @@ opacity: 1;
     white-space: nowrap;
     width: fit-content;
     max-width: 80%;
-    color:var(--button);
+    color:var(--btn);
     z-index: 1;
   }
   .anime-rating {
@@ -329,8 +329,8 @@ opacity: 1;
   }
   
   .genero a {
-    background-color: var(--principal);
-    color: var(--text1);
+    background-color: var(--p);
+    color: var(--t1);
     padding: 5px 10px;
     border-radius: 5px;
     border: none;
@@ -338,7 +338,7 @@ opacity: 1;
   }
 
   .anime-description {
-    color: var(--text2);
+    color: var(--t2);
     font-size: .9rem;
     overflow: auto;
     display: -webkit-box;
@@ -354,7 +354,7 @@ opacity: 1;
     border-radius: 5px;
     padding: 1rem;
     gap: 1rem;
-    background-color: var(--principal);
+    background-color: var(--p);
     min-height: 166px;
     height: fit-content;
     position: relative;
@@ -368,7 +368,7 @@ opacity: 1;
   }
 
 #titulo-lista-caps {
-  color: var(--button);
+  color: var(--btn);
   font-size: 1.3rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -384,17 +384,17 @@ opacity: 1;
 #filtro-capitulo {
   width: 100%;
   padding: 5%;
-  border: 1px solid var(--button);
+  border: 1px solid var(--btn);
   border-radius: 12px;
   background-color: transparent;
-  color: var(--text1);
+  color: var(--t1);
   font-size: .8rem;
   transition: box-shadow 0.3s;
 }
 
 #filtro-capitulo:focus {
   outline: none;
-  box-shadow: 0px 0px 3px var(--button);
+  box-shadow: 0px 0px 3px var(--btn);
 }
 
 .episodes-list {
@@ -417,7 +417,7 @@ opacity: 1;
   height: 8px;
 }
 .episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb {
-  background-color: var(--button);
+  background-color: var(--btn);
   border-radius: 5px;
 }
 
@@ -429,13 +429,13 @@ opacity: 1;
   min-height: 80px;
 }
 .episode-btn.ep-visto {
-  color: var(--text1);
+  color: var(--t1);
 }
 .episode-btn {
   background-color: transparent;
   border:none;
-  border-top: 1px solid var(--button);
-  color: var(--text2);
+  border-top: 1px solid var(--btn);
+  color: var(--t2);
   font-size: 1rem;
   cursor: pointer;
   transition: transform 0.2s;
@@ -465,18 +465,18 @@ opacity: 1;
 
 }
 .ep-visto::after {
-  background-color: var(--button); 
+  background-color: var(--btn); 
   -webkit-mask: url('../icons/eye-solid.svg') no-repeat center;
   mask: url('../icons/eye-solid.svg') no-repeat center;
  }
 .ep-no-visto::after {
-  background-color: rgb(var(--bgtransparent),.3); 
+  background-color: rgb(var(--bt),.3); 
   -webkit-mask: url('../icons/eye-slash-solid.svg') no-repeat center;
   mask: url('../icons/eye-slash-solid.svg') no-repeat center;
 }
 @media screen and (hover:hover) {
 .episode-btn:hover {
-    color: var(--button);
+    color: var(--btn);
     opacity: .8;
 }
 }
@@ -488,7 +488,7 @@ opacity: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
-  color:var(--button);
+  color:var(--btn);
   font-weight: bold;
   margin-bottom: 1rem;
 }
@@ -518,7 +518,7 @@ min-width: 250px;
 }
 #relacionados span.relation-tag {
   position: absolute;
-  color: var(--text1);
+  color: var(--t1);
   font-size: 0.8rem;
   top: 13px;
   left: 12px;
@@ -667,7 +667,7 @@ width: 100%;
 
   #btn-close-search-capitulo::before {
     content: '✕';
-    color: var(--button);
+    color: var(--btn);
     font-size: 1.8rem;
     font-weight: bold;
   }
@@ -692,7 +692,7 @@ width: 100%;
   width: 24px;
   height: 24px;
   padding-left: 3px;
-  background-color: var(--button); /* Color del SVG */
+  background-color: var(--btn); /* Color del SVG */
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
   mask-size: contain;

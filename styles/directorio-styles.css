@@ -8,8 +8,8 @@ h2 {
     gap: 5px;   
     padding: 10px;
     border-radius: 5px;
-    background-color: var(--principal);
-    color: var(--text1);
+    background-color: var(--p);
+    color: var(--t1);
     border: none;
 }
 main {
@@ -44,21 +44,21 @@ nav.filtros {
     content: "▼";
 }
 .btn-filtro.active {
-    background-color: var(--button);
-    color: var(--text1);
+    background-color: var(--btn);
+    color: var(--t1);
 }
 .btn-filtro.active::after {
     transform: rotate(180deg);
 }
 .btn-filtro span {
-    color: var(--text2);
+    color: var(--t2);
 }
 .btn-filtro img {
     width: 12px;
 }
 #btn-filtrar {
-    background-color: var(--button);
-    color: var(--text1);
+    background-color: var(--btn);
+    color: var(--t1);
 }
 .filtro-opciones {
     position: absolute;
@@ -129,11 +129,11 @@ nav.filtros {
     display: block;
 }
 .btn-filtro-opcion:hover {
-    background-color: rgba(var(--bgtransparent), .3);
+    background-color: rgba(var(--bgt), .3);
     opacity: 1;
 }
 .btn-filtro-opcion.active {
-    background-color: var(--button);
+    background-color: var(--btn);
 }
     
 #resultados {
@@ -194,26 +194,26 @@ nav.filtros {
 }
 #pagination::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    background-color: var(--button);
+    background-color: var(--btn);
 }
 
   .page-button {
     scroll-snap-align: center;
     padding: 8px 16px;
     border-radius: 5px;
-    background-color: var(--principal);
-    color: var(--text1);
+    background-color: var(--p);
+    color: var(--t1);
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
   }
 
   .page-button:hover {
-    background-color: var(--button);
+    background-color: var(--btn);
     transform: translateY(-2px);
   }
 
   .page-button.active {
-    background-color: var(--button);
+    background-color: var(--btn);
     font-weight: bold;
   }
