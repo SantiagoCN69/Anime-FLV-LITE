@@ -40,19 +40,6 @@ header {
 }
 #busqueda {
   background-color: #00000011;
-  border: 1px solid var(--btn);
-}
-.search::after {
-  background-color: var(--btn);
-}
-@media  screen and (min-width: 600px) {
-  #btn-login {
-    border: 1px solid var(--btn);
-  }
-}
-#btn-close-search::after 
-{
-  background-color: var(--btn);
 }
 .anime-details {
   display: grid;
