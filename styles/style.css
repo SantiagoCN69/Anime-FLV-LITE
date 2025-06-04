@@ -22,7 +22,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  scrollbar-gutter: stable;
   overflow-y: scroll;
 }
 a {
@@ -199,6 +198,9 @@ header {
   mask: url('../icons/bars-solid.svg') no-repeat center;
 }
 
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
   width: 220px;
@@ -210,10 +212,11 @@ header {
   height: var(--altura-main);
   overflow-y: auto;
   border-right: 1px solid var(--br);
-  -webkit-overflow-scrolling: touch;
+  -webkit-scrollbar: none;
   overscroll-behavior-y: contain;
   scrollbar-width: none;
 }
+
 
 .sidebar ul {
   list-style: none;
