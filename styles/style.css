@@ -312,7 +312,7 @@ header {
   content: "";
   width: 25px;
   height: 25px;
-  background-color: var(--t2); /* Color del SVG */
+  background-color: var(--t2); 
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
   mask-size: contain;
