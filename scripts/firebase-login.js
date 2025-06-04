@@ -302,44 +302,162 @@ if (btnLogin) {
 export { app, auth, db };
 
 //tema 
+// Manejo del botón de cambio de tema
+const themeToggle = () => {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
 
-const themes = {
-  dark: {principal: '#1F1F1F', bg: '#121212', text1: '#fff', text2: '#ddd', border: '#444', button: '#af6dff', filter: 1, bgtransparent: '255, 255, 255'}, //e76f51
-  light: {principal: '#f5f5f5', bg: '#DDDDDD', text1: '#111', text2: '#555555', border: '#ccc', button: '#999', filter: 2, bgtransparent: '0, 0, 0'},
-  nocturno: {principal: '#1B263B', bg: '#0D1B2A', text1: '#ddd', text2: '#AAB0B6', border: '#415A77', button: '#778DA9', filter: 1, bgtransparent: '255, 255, 255'},
+    let saveTimeout;
+    const THEMES = ['dark', 'light', 'nocturno'];
+    const SAVE_DELAY = 10000;
+    
+    // Cargar tema desde Firestore si no hay en caché
+    const loadThemeFromFirestore = async () => {
+        if (!auth.currentUser) return null;
+        try {
+            const userDoc = await getDoc(doc(db, 'usuarios', auth.currentUser.uid));
+            return userDoc.exists() ? userDoc.data().theme : null;
+        } catch (error) {
+            console.error('Error al cargar tema:', error);
+            return null;
+        }
+    };
+    
+    const getNextTheme = (current) => {
+        const idx = THEMES.indexOf(current);
+        return THEMES[(idx + 1) % THEMES.length];
+    };
+    
+    const saveThemeToFirestore = async (theme) => {
+        if (!auth.currentUser) return;
+        try {
+            await setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
+                theme: theme,
+                lastUpdated: serverTimestamp()
+            }, { merge: true });
+            console.log('Tema guardado en Firestore');
+        } catch (error) {
+            console.error('Error al guardar tema:', error);
+        }
+    };
+    
+    // Inicializar tema al cargar
+    const initTheme = async () => {
+        console.log('Iniciando tema...');
+        let theme = localStorage.getItem('theme');
+        
+        console.log('Tema en localStorage:', theme);
+        console.log('Usuario actual:', auth.currentUser ? 'Autenticado' : 'No autenticado');
+        
+        // Si no hay tema en caché y hay usuario autenticado, intentar cargar de Firestore
+        if (!theme && auth.currentUser) {
+            console.log('Intentando cargar tema desde Firestore...');
+            try {
+                const firestoreTheme = await loadThemeFromFirestore();
+                console.log('Tema desde Firestore:', firestoreTheme);
+                
+                if (firestoreTheme) {
+                    theme = firestoreTheme;
+                    localStorage.setItem('theme', theme);
+                    console.log('Tema actualizado desde Firestore:', theme);
+                } else {
+                    console.log('No se encontró tema en Firestore');
+                }
+            } catch (error) {
+                console.error('Error al cargar tema de Firestore:', error);
+            }
+        }
+        
+        // Aplicar tema por defecto si no hay ninguno
+        if (!theme) {
+            theme = 'dark';
+            localStorage.setItem('theme', theme);
+            console.log('Usando tema por defecto:', theme);
+        }
+        
+        // Aplicar el tema
+        console.log('Aplicando tema:', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        
+        // Disparar eventos para notificar a otros componentes
+        window.dispatchEvent(new CustomEvent('themeChanged', { 
+            detail: { theme: theme } 
+        }));
+        
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'theme',
+            newValue: theme,
+            oldValue: null,
+            storageArea: localStorage
+        }));
+    };
+    
+    // Inicializar tema cuando el estado de autenticación esté listo
+    const initThemeAfterAuth = () => {
+        console.log('Verificando estado de autenticación para tema...');
+        
+        const initWhenReady = () => {
+            console.log('Autenticación lista, verificando usuario...');
+            if (auth.currentUser) {
+                console.log('Usuario autenticado, inicializando tema...');
+                initTheme();
+            } else {
+                console.log('No hay usuario autenticado, usando tema por defecto');
+                initTheme(); // Inicializar igualmente con tema por defecto
+            }
+        };
+        
+        // Si el DOM no está listo, esperar a que lo esté
+        if (document.readyState === 'loading') {
+            console.log('Esperando a que el DOM esté listo...');
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM listo, verificando autenticación...');
+                if (auth.currentUser !== null) {
+                    initWhenReady();
+                } else {
+                    document.addEventListener('authStateReady', initWhenReady, { once: true });
+                }
+            });
+        } else {
+            console.log('DOM ya está listo, verificando autenticación...');
+            if (auth.currentUser !== null) {
+                initWhenReady();
+            } else {
+                document.addEventListener('authStateReady', initWhenReady, { once: true });
+            }
+        }
+    };
+    
+    // Iniciar el proceso
+    initThemeAfterAuth();
+
+    btn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const current = localStorage.getItem('theme') || 'dark';
+        const next = getNextTheme(current);
+        
+        localStorage.setItem('theme', next);
+        
+        // Cancelar el timeout anterior si existe
+        if (saveTimeout) clearTimeout(saveTimeout);
+        
+        // Programar el guardado para dentro de 30 segundos
+        saveTimeout = setTimeout(() => {
+            saveThemeToFirestore(next);
+        }, SAVE_DELAY);
+        
+        // Disparar eventos de cambio de tema
+        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'theme',
+            newValue: next,
+            oldValue: current,
+            storageArea: localStorage
+        }));
+    };
 };
 
-
-
-const updateTheme = (theme = 'dark') => {
-  const themeData = themes[theme] || themes.dark;
-  Object.entries(themeData).forEach(([key, value]) => {
-    document.documentElement.style.setProperty(`--${key}`, value);
-  });
-  return theme;
-};
-
-let currentTheme = localStorage.getItem('theme') || 'dark';
-updateTheme(currentTheme);
-
-
-document.addEventListener('DOMContentLoaded', () => {
-const btnThemeToggle = document.getElementById('theme-toggle');
-btnThemeToggle.addEventListener('click', (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  const themeKeys = Object.keys(themes);
-  const currentIndex = themeKeys.indexOf(currentTheme);
-  const nextIndex = (currentIndex + 1) % themeKeys.length;
-  currentTheme = themeKeys[nextIndex];
-  
-  localStorage.setItem('theme', currentTheme);
-  updateTheme(currentTheme);
-  
-  window.dispatchEvent(new StorageEvent('storage', {
-    key: 'theme',
-    newValue: currentTheme
-  }));
-});
-});
+// Inicializar al cargar el DOM
+document.addEventListener('DOMContentLoaded', themeToggle);
