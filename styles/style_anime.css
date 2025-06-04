@@ -226,7 +226,7 @@ opacity: 1;
 }
   /* Estados del botón */
   #btn-estado.estado-default {
-    background: #6c757d; 
+    background: rgba(var(--bgt), .3);
   }
 
   #Estados img {
@@ -249,7 +249,7 @@ opacity: 1;
 
 #btn-progreso {
   grid-area: progreso;
-  background: #6c757d;
+  background: rgba(var(--bgt), .3);
 
   position: relative;
   --progreso-text: "0%";
