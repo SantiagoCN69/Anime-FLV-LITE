@@ -309,7 +309,7 @@ export { app, auth, db };
 
 //tema // Configuración de temas
 const THEME_CONFIG = {
-    themes: ['dark', 'light', 'nocturno'],
+    themes: ['dark', 'light', 'nocturno', 'pastel', 'verde', 'neon'],
     defaultTheme: 'dark',
     saveDelay: 10000
 };
@@ -377,7 +377,7 @@ const themeToggle = () => {
 
     const handleThemeToggle = (e) => {
         e.preventDefault();
-
+        e.stopPropagation();
         const current = localStorage.getItem('theme') || THEME_CONFIG.defaultTheme;
         const next = getNextTheme(current);
 
