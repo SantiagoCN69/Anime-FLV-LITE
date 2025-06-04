@@ -374,9 +374,10 @@ async function cargarUltimosCapsVistos() {
   function guardarCache(key, data) {
     if (!Array.isArray(data) || data.length === 0) {
       localStorage.removeItem(key);
-    } else {
-      localStorage.setItem(key, JSON.stringify(data));
+      return;
     }
+    const dataToCache = data.slice(0, 20);
+    localStorage.setItem(key, JSON.stringify(dataToCache));
   }
 
   async function cargarUltimosCapitulos() {
@@ -544,14 +545,6 @@ async function cargarhistorial() {
         if (card) fragment.appendChild(card);
       });
       favsContainer.appendChild(fragment);
-    };
-  
-    const dividirEnBloques = (array, tamaño) => {
-      const bloques = [];
-      for (let i = 0; i < array.length; i += tamaño) {
-        bloques.push(array.slice(i, i + tamaño));
-      }
-      return bloques;
     };
   
     const user = await new Promise(resolve => {
@@ -810,7 +803,13 @@ async function cargarPendientes() {
       const datos = await Promise.all(
         bloques[i].map(id =>
           getDoc(doc(db, 'datos-animes', id))
-            .then(ds => ds.exists() ? { id, ...ds.data() } : null)
+            .then(ds => ds.exists() ? {
+              id,
+              titulo: ds.data().titulo || 'Título no encontrado',
+              portada: ds.data().portada || 'img/background.webp',
+              estado: ds.data().estado || 'No disponible',
+              rating: ds.data().rating || null
+            } : null)
             .catch(() => null)
         )
       );
@@ -819,7 +818,13 @@ async function cargarPendientes() {
       render(valid, i === 0);
     }
 
-    guardarCache(key, all);
+    guardarCache(key, all.map(anime => ({
+      id: anime.id,
+      titulo: anime.titulo,
+      portada: anime.portada,
+      estado: anime.estado,
+      rating: anime.rating
+    })));
   } catch {
     if (!cache) {
       cont.innerHTML = '<p>Error al cargar animes pendientes.</p>';
