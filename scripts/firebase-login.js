@@ -328,7 +328,6 @@ const cargarTemaDesdeFirestore = async () => {
 
 const themeToggle = () => {
     const btn = document.getElementById('theme-toggle');
-    console.log(btn);
     if (!btn) {
       console.log('No se encontró el botón de tema');
         return;
