@@ -254,3 +254,21 @@ sidebar.addEventListener('scroll', () => {
   localStorage.setItem('indicador', 'false');
 });
 }
+//INDICADOR funcion cambiar tema
+// Escuchar el evento authStateReady
+document.addEventListener('authStateReady', function() {
+  const btnLogin = document.getElementById('btn-login');
+  // Verificar si hay un tema guardado
+  if (!localStorage.getItem('theme')) {
+    const theme = document.createElement('div');
+    theme.classList.add('theme-indicator');
+    btnLogin.appendChild(theme);
+    btnLogin.addEventListener('click', () => {
+      theme.remove();
+      document.getElementById('theme-toggle').appendChild(theme);
+    });
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      theme.remove();
+    });
+  }
+});

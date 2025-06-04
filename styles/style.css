@@ -158,6 +158,21 @@ header {
 #btn-login span {
   margin-left: 9px;
 }
+#theme-toggle {
+  position: relative;
+}
+.theme-indicator {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--btn); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/circle-exclamation-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/circle-exclamation-solid.svg') no-repeat center;
+}
 #btn-search, #btn-close-search {
   display: none;
 }
