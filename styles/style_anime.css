@@ -471,7 +471,7 @@ opacity: 1;
   mask: url('../icons/eye-solid.svg') no-repeat center;
  }
 .ep-no-visto::after {
-  background-color: rgb(var(--bt),.3); 
+  background-color: rgb(var(--bgt),.3); 
   -webkit-mask: url('../icons/eye-slash-solid.svg') no-repeat center;
   mask: url('../icons/eye-slash-solid.svg') no-repeat center;
 }
