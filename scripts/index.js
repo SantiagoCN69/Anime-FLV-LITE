@@ -13,6 +13,7 @@ import {
   limit
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { observerAnimeCards } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const contadores = document.querySelectorAll('span.contador');
@@ -408,6 +409,7 @@ async function cargarUltimosCapsVistos() {
         if (card) fragment.appendChild(card);
       });
       container.appendChild(fragment);
+      observerAnimeCards();
     };
   
     // 1. Cargar desde caché local
@@ -518,125 +520,108 @@ async function cargarhistorial() {
       const card = createAnimeCard(anime);
       if (card) fragment.appendChild(card);
     });
-    
     historialContainer.appendChild(fragment);
+    observerAnimeCards();
   } else {
     historialh2.classList.add('hidden');
     historialContainer.classList.add('hidden');
   }
 }
   
-  async function cargarFavoritos() {
-    console.log('Ejecutando cargarFavoritos');
-    const favsContainer = document.getElementById('favs');
-    if (!favsContainer) return;
+async function cargarFavoritos() {
+  console.log('Ejecutando cargarFavoritos');
   
-    const renderizarFavoritos = (datos, reemplazar = false) => {
-      if (reemplazar) favsContainer.innerHTML = '';
-      
-      if (!datos || datos.length === 0) {
-        favsContainer.innerHTML = '<p>No tienes animes en favoritos.</p>';
-        return;
-      }
-      
-      const fragment = document.createDocumentFragment();
-      datos.forEach(anime => {
-        const card = createAnimeCard(anime || {});
-        if (card) fragment.appendChild(card);
-      });
-      favsContainer.appendChild(fragment);
-    };
-  
+  const favsContainer = document.getElementById('favs');
+  if (!favsContainer) return;
+
+  const renderizarFavoritos = (datos, reemplazar = false) => {
+    if (reemplazar) favsContainer.innerHTML = '';
+    if (!datos || datos.length === 0) {
+      favsContainer.innerHTML = '<p>No tienes animes en favoritos.</p>';
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    datos.forEach(anime => {
+      const card = createAnimeCard(anime);
+      if (card) fragment.appendChild(card);
+    });
+    favsContainer.appendChild(fragment);
+    observerAnimeCards();
+  };
+
+  try {
     const user = await new Promise(resolve => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
+      const unsubscribe = onAuthStateChanged(auth, user => {
         unsubscribe();
         resolve(user);
       });
     });
-  
+
     if (!user) {
       favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
       return;
     }
-  
+
     const userId = user.uid;
     const cacheKey = `favoritosCache_${userId}`;
     const cachedData = leerCache(cacheKey);
-  
+
+    // Si hay datos en caché y no hay cambios en los favoritos
     if (cachedData) {
-      renderizarFavoritos(cachedData, true);
-    }
-  
-    try {
-      // Obtener el documento de favoritos
-      const favoritosRef = doc(collection(doc(db, "usuarios", userId), "favoritos"), "lista");
-      const favoritosDoc = await getDoc(favoritosRef);
-  
-      if (!favoritosDoc.exists() || !favoritosDoc.data().animes || favoritosDoc.data().animes.length === 0) {
-        renderizarFavoritos([], true);
-        localStorage.removeItem(cacheKey);
+      const favsRef = doc(collection(doc(db, "usuarios", userId), "favoritos"), "lista");
+      const favsDoc = await getDoc(favsRef);
+      
+      if (favsDoc.exists() && 
+          favsDoc.data().animes.length === cachedData.length &&
+          favsDoc.data().animes.every(titulo => cachedData.some(anime => anime.titulo === titulo))) {
+        renderizarFavoritos(cachedData, true);
         return;
       }
-      
-      const titulosFavoritos = favoritosDoc.data().animes;
-      
-      // Obtener los animes completos desde la colección de datos-animes
-      const animesPromises = [];
-      const animesPorTitulo = new Map();
-      
-      // Primero intentamos obtener los animes de la caché local si existe
-      if (cachedData) {
-        const animesCacheados = cachedData.filter(anime => 
-          titulosFavoritos.includes(anime.titulo)
-        );
-        
-        animesCacheados.forEach(anime => {
-          animesPorTitulo.set(anime.titulo, anime);
-        });
-      }
-      
-      // Solo buscar los animes que no están en caché
-      const titulosFaltantes = titulosFavoritos.filter(titulo => !animesPorTitulo.has(titulo));
-      
-      if (titulosFaltantes.length > 0) {
-        // Buscar animes por título en la base de datos
-        const q = query(
-          collection(db, "datos-animes"),
-          where("titulo", "in", titulosFaltantes)
-        );
-        
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(doc => {
-          animesPorTitulo.set(doc.data().titulo, {
-            id: doc.id,
-            titulo: doc.data().titulo,
-            portada: doc.data().portada || 'img/background.webp',
-            estado: doc.data().estado || 'No disponible',
-            rating: doc.data().rating || null
-          });
-        });
-      }
-      
-      // Ordenar los animes según el orden en favoritos
-      const animesOrdenados = [];
-      titulosFavoritos.forEach(titulo => {
-        const anime = animesPorTitulo.get(titulo);
-        if (anime) {
-          animesOrdenados.push(anime);
-        }
-      });
-
-      // Renderizar los resultados
-      renderizarFavoritos(animesOrdenados, true);
-      guardarCache(cacheKey, animesOrdenados);
-      
-    } catch (error) {
-      console.error('Error al cargar favoritos desde Firestore:', error);
-      if (!cachedData) {
-        favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
-      }
     }
+
+    // Obtener los títulos de favoritos
+    const favsRef = doc(collection(doc(db, "usuarios", userId), "favoritos"), "lista");
+    const favsDoc = await getDoc(favsRef);
+
+    if (!favsDoc.exists() || !favsDoc.data().animes || favsDoc.data().animes.length === 0) {
+      renderizarFavoritos([], true);
+      localStorage.removeItem(cacheKey);
+      return;
+    }
+
+    const titulosFavoritos = favsDoc.data().animes;
+    const animesPorTitulo = new Map();
+
+    // Obtener datos completos de animes
+    const q = query(
+      collection(db, "datos-animes"),
+      where("titulo", "in", titulosFavoritos)
+    );
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(doc => {
+      animesPorTitulo.set(doc.data().titulo, {
+        id: doc.id,
+        titulo: doc.data().titulo,
+        portada: doc.data().portada || 'img/background.webp',
+        estado: doc.data().estado || 'No disponible',
+        rating: doc.data().rating || null
+      });
+    });
+
+    // Ordenar según la lista original
+    const animesOrdenados = titulosFavoritos
+      .map(titulo => animesPorTitulo.get(titulo))
+      .filter(Boolean);
+
+    renderizarFavoritos(animesOrdenados, true);
+    guardarCache(cacheKey, animesOrdenados);
+
+  } catch (error) {
+    console.error('Error al cargar favoritos:', error);
+    favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
   }
+}
 
 async function cargarViendo() {
   console.log('Ejecutando cargarViendo');
@@ -645,18 +630,21 @@ async function cargarViendo() {
 
   const renderizarViendo = (datos, reemplazar = false) => {
     if (reemplazar) viendoContainer.innerHTML = '';
-    
+
     if (!datos || datos.length === 0) {
       viendoContainer.innerHTML = '<p>No tienes animes viendo.</p>';
       return;
     }
-    
+
     const fragment = document.createDocumentFragment();
-    datos.forEach(anime => {
+    for (const anime of datos) {
       const card = createAnimeCard(anime || {});
       if (card) fragment.appendChild(card);
-    });
+    }
     viendoContainer.appendChild(fragment);
+    
+    // Solo observamos las cards cuando se reemplaza el contenido inicial
+    if (reemplazar) observerAnimeCards();
   };
 
   const dividirEnBloques = (array, tamaño) => {
@@ -667,7 +655,24 @@ async function cargarViendo() {
     return bloques;
   };
 
-  // Esperar a que el usuario esté autenticado
+  const obtenerDatosAnime = async (id) => {
+    try {
+      const docSnap = await getDoc(doc(db, "datos-animes", id));
+      if (!docSnap.exists()) return null;
+      const data = docSnap.data();
+      return {
+        id,
+        titulo: data.titulo || 'Título no encontrado',
+        portada: data.portada || 'img/background.webp',
+        estado: data.estado || 'No disponible',
+        rating: data.rating || null
+      };
+    } catch (error) {
+      console.error(`Error al obtener anime ${id}:`, error);
+      return null;
+    }
+  };
+
   const user = await new Promise(resolve => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       unsubscribe();
@@ -683,71 +688,36 @@ async function cargarViendo() {
   const userId = user.uid;
   const cacheKey = `viendoCache_${userId}`;
   const cachedData = leerCache(cacheKey);
-
-  if (cachedData) {
-    renderizarViendo(cachedData, true);
-  }
+  if (cachedData) renderizarViendo(cachedData, true);
 
   try {
     const estadosRef = doc(collection(doc(db, "usuarios", userId), "estados"), "viendo");
     const estadosDoc = await getDoc(estadosRef);
-    
-    if (!estadosDoc.exists() || !estadosDoc.data().animes || estadosDoc.data().animes.length === 0) {
+    const ids = estadosDoc.exists() ? estadosDoc.data().animes || [] : [];
+
+    if (ids.length === 0) {
       renderizarViendo([], true);
       localStorage.removeItem(cacheKey);
       return;
     }
 
-    const ids = estadosDoc.data().animes;
     const bloques = dividirEnBloques(ids, 10);
     const freshData = [];
 
-    // Cargar y mostrar el primer bloque inmediatamente
-    const primerBloque = await Promise.all(
-      bloques[0].map(id =>
-        getDoc(doc(db, "datos-animes", id))
-          .then(docSnap => docSnap.exists() ? {
-            id,
-            titulo: docSnap.data().titulo || 'Título no encontrado',
-            portada: docSnap.data().portada || 'img/background.webp',
-            estado: docSnap.data().estado || 'No disponible',
-            rating: docSnap.data().rating || null
-          } : null)
-          .catch(error => {
-            console.error(`Error al obtener anime ${id}:`, error);
-            return null;
-          })
-      )
-    );
+    // Primer bloque (rápido)
+    const primerBloque = await Promise.all(bloques[0].map(obtenerDatosAnime));
+    const primerosValidos = primerBloque.filter(Boolean);
+    freshData.push(...primerosValidos);
+    renderizarViendo(primerosValidos, true);
 
-    freshData.push(...primerBloque.filter(Boolean));
-    renderizarViendo(freshData, true);
-
-    // Cargar bloques restantes en segundo plano
-    for (let i = 1; i < bloques.length; i++) {
-      const bloque = bloques[i];
-      const resultados = await Promise.all(
-        bloque.map(id =>
-          getDoc(doc(db, "datos-animes", id))
-            .then(docSnap => docSnap.exists() ? {
-              id,
-              titulo: docSnap.data().titulo || 'Título no encontrado',
-              portada: docSnap.data().portada || 'img/background.webp',
-              estado: docSnap.data().estado || 'No disponible',
-              rating: docSnap.data().rating || null
-            } : null)
-            .catch(error => {
-              console.error(`Error al obtener anime ${id}:`, error);
-              return null;
-            })
-        )
-      );
+    // Carga diferida de bloques siguientes (mejor rendimiento sin bloquear)
+    bloques.slice(1).forEach(async (bloque) => {
+      const resultados = await Promise.all(bloque.map(obtenerDatosAnime));
       const nuevos = resultados.filter(Boolean);
       freshData.push(...nuevos);
       renderizarViendo(nuevos);
-    }
+    });
 
-    // Guardar en caché todos los datos frescos
     guardarCache(cacheKey, freshData);
   } catch (error) {
     console.error('Error al cargar animes en curso desde Firestore:', error);
@@ -768,12 +738,31 @@ async function cargarPendientes() {
       cont.innerHTML = '<p>No tienes animes pendientes.</p>';
       return;
     }
+
     const frag = document.createDocumentFragment();
-    animes.forEach(a => {
-      const card = createAnimeCard(a);
+    for (const anime of animes) {
+      const card = createAnimeCard(anime || {});
       if (card) frag.appendChild(card);
-    });
+    }
     cont.appendChild(frag);
+    observerAnimeCards();
+  };
+
+  const obtenerDatosAnime = async (id) => {
+    try {
+      const docSnap = await getDoc(doc(db, "datos-animes", id));
+      if (!docSnap.exists()) return null;
+      const data = docSnap.data();
+      return {
+        id,
+        titulo: data.titulo || 'Título no encontrado',
+        portada: data.portada || 'img/background.webp',
+        estado: data.estado || 'No disponible',
+        rating: data.rating || null
+      };
+    } catch {
+      return null;
+    }
   };
 
   const user = await new Promise(res => onAuthStateChanged(auth, u => res(u)));
@@ -784,47 +773,35 @@ async function cargarPendientes() {
   if (cache) render(cache, true);
 
   try {
-    // Obtener el documento de estados
     const estadosRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), "pendiente");
     const estadosDoc = await getDoc(estadosRef);
-    
-    if (!estadosDoc.exists() || !estadosDoc.data().animes || estadosDoc.data().animes.length === 0) {
+    const data = estadosDoc.exists() ? estadosDoc.data() : {};
+    const ids = data.animes || [];
+
+    if (ids.length === 0) {
       render([], true);
       localStorage.removeItem(key);
       return;
     }
 
-    const ids = estadosDoc.data().animes;
     const bloques = [];
     for (let i = 0; i < ids.length; i += 10) bloques.push(ids.slice(i, i + 10));
 
-    let all = [];
-    for (let i = 0; i < bloques.length; i++) {
-      const datos = await Promise.all(
-        bloques[i].map(id =>
-          getDoc(doc(db, 'datos-animes', id))
-            .then(ds => ds.exists() ? {
-              id,
-              titulo: ds.data().titulo || 'Título no encontrado',
-              portada: ds.data().portada || 'img/background.webp',
-              estado: ds.data().estado || 'No disponible',
-              rating: ds.data().rating || null
-            } : null)
-            .catch(() => null)
-        )
-      );
-      const valid = datos.filter(Boolean);
-      all = all.concat(valid);
-      render(valid, i === 0);
-    }
+    const all = [];
 
-    guardarCache(key, all.map(anime => ({
-      id: anime.id,
-      titulo: anime.titulo,
-      portada: anime.portada,
-      estado: anime.estado,
-      rating: anime.rating
-    })));
+    bloques.forEach(async (bloque, index) => {
+      const resultados = await Promise.all(bloque.map(obtenerDatosAnime));
+      const validos = resultados.filter(Boolean);
+      all.push(...validos);
+      render(validos, index === 0);
+
+      // Guardar en caché solo al final
+      if (index === bloques.length - 1) {
+        guardarCache(key, all.map(({ id, titulo, portada, estado, rating }) => ({
+          id, titulo, portada, estado, rating
+        })));
+      }
+    });
   } catch {
     if (!cache) {
       cont.innerHTML = '<p>Error al cargar animes pendientes.</p>';
@@ -849,6 +826,7 @@ async function cargarCompletados() {
       if (card) fragment.appendChild(card);
     });
     completadosContainer.appendChild(fragment);
+    observerAnimeCards();
   };
 
   const user = await new Promise(resolve => {

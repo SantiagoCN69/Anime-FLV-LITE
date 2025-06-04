@@ -621,8 +621,20 @@ main {
   cursor: pointer;
   padding: 10px;
   text-align: center;
-  transition: transform 0.3s;
+  transition: transform .5s, opacity .5s;
 }
+.anime-card {
+  opacity: 0;
+  transform: translateY(30px) scale(.9);
+  transition: opacity .5s ease, transform .5s ease;
+}
+
+.anime-card.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+
 .anime-card:active {
   transform: scale(0.95);
 }

@@ -1,3 +1,4 @@
+import { observerAnimeCards } from './utils.js';
 // constantes botones filtro
 const btnFiltroGenero = document.getElementById('btn-filtro-genero');
 const btnFiltroAno = document.getElementById('btn-filtro-ano');
@@ -83,8 +84,10 @@ function crearAnimeCardResultados(anime) {
     `;
     const urlPart = anime.url.split('/').slice(2).join('/');
     div.addEventListener('click', () => window.location.href = `anime.html?id=${urlPart}`);
+    observerAnimeCards();
     return div;
 }
+
 // Sistema de caché para animes
 const CACHE_KEY = 'animes_cache';
 
@@ -131,7 +134,7 @@ function updatePagination(data) {
 function cambiarPagina(page) {
   currentPage = page;
   const link = window.location.search.substring(1);
-  resultadosContainer.innerHTML = '';
+  resultadosContainer.innerHTML = `<span class="span-carga">Cargando servidores...</span>`;
   fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${link}&page=${currentPage}`)
     .then(response => {
       return response.json();

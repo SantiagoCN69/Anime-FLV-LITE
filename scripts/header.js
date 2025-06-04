@@ -255,7 +255,6 @@ sidebar.addEventListener('scroll', () => {
 });
 }
 //INDICADOR funcion cambiar tema
-// Escuchar el evento authStateReady
 document.addEventListener('authStateReady', function() {
   const btnLogin = document.getElementById('btn-login');
   // Verificar si hay un tema guardado
