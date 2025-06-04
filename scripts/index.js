@@ -311,48 +311,45 @@ async function cargarUltimosCapsVistos() {
 
   // Función para crear tarjeta de anime
   function createAnimeCard(anime) {
-    const cover = anime.cover || anime.image || anime.poster || anime.portada || 'img/background.webp';
-    const title = anime.title || anime.name || anime.nombre || anime.titulo || 'Título no disponible';
-    const link = anime.link || anime.url || '';
-    const animeId = anime.id || anime.anime_id || '';
-    const chapter = anime.chapter || '';
-    const estado = anime.estado || '';
-    const rating = anime.rating || '';
-  
     const div = document.createElement('div');
-    div.className = 'anime-card';
-    div.style.setProperty('--cover', `url(${cover})`);
     let chapterHtml = ''; 
-    if (chapter) {
-      chapterHtml = `<span id="chapter">Episodio ${chapter}</span>`;
-    }
     let estadoHtml = '';
-    if (estado) {
-      if (estado === 'En emision') {
-        estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${estado}">${estado}</span>`;
+    let ratingHtml = '';
+
+    div.className = 'anime-card';
+    div.style.setProperty('--cover', `url(${anime.portada})`);
+    
+    if (anime.siguienteCapitulo) {
+      chapterHtml = `<span id="chapter">Episodio ${anime.siguienteCapitulo}</span>`;
+    }
+    
+    if (anime.estado) {
+      if (anime.estado === 'En emision') {
+        estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;
       }
       else{
-        estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${estado}">${estado}</span>`;
+        estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;
       }
     }
-    let ratingHtml = '';
-    if (rating) {
-      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${rating}">${rating}</span>`;
+    
+    if (anime.rating) {
+      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
     }
+    
     div.innerHTML = `
       <div class="container-img">
-        <img src="${cover}" class="cover" alt="${title}">
+        <img src="${anime.portada}" class="cover" alt="${anime.titulo}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
         ${chapterHtml}
         ${estadoHtml}
         ${ratingHtml}
       </div>
-      <strong>${title}</strong>
+      <strong>${anime.titulo}</strong>
     `;
     
     div.addEventListener('click', () => {
-      if (animeId) {
-        ver(animeId);
+      if (anime.animeId) {
+        ver(anime.animeId);
       }
     });
   
@@ -400,11 +397,10 @@ async function cargarUltimosCapsVistos() {
       const fragment = document.createDocumentFragment();
       datos.forEach(anime => {
         const card = createAnimeCard({
-          id: anime.url?.split('/').pop()?.replace(/-\d+$/, '') || '',
-          title: anime.title || 'Sin título',
-          cover: anime.cover || '',
-          link: anime.url || '',
-          chapter: anime.chapter?.toString() || ''
+          animeId: anime.url?.split('/').pop()?.replace(/-\d+$/, '') || '',
+          portada: anime.cover || '',
+          titulo: anime.title || 'Sin título',
+          siguienteCapitulo: anime.chapter?.toString() || ''
         });
         if (card) fragment.appendChild(card);
       });
