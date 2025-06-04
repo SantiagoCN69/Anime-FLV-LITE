@@ -92,7 +92,6 @@ async function loginConGoogle() {
 
 //crear modal al cargar la página
 function crearmodal(user = false) {
-  console.log(user);
   const modal = document.createElement('div');
   modal.className = 'logout-modal';
   modal.innerHTML = `
@@ -266,9 +265,9 @@ onAuthStateChanged(auth, (user) => {
       }
   }
   // Disparar evento personalizado para indicar que el estado de autenticación está listo
+  crearmodal(user);
   document.dispatchEvent(new CustomEvent('authStateReady', { detail: { user } }));
   document.getElementById('btn-login').disabled = false;
-  crearmodal(user);
   themeToggle();
   if (!localStorage.getItem('theme')) {
     console.log('No hay tema en localStorage. Intentando cargar desde Firestore...');
