@@ -391,6 +391,12 @@ body {
   z-index: 1000;
   height: calc(100% - 88px);
 }
+.sidebar li {
+  padding: 0;
+}
+.sidebar a {
+  padding: 12px 16px;
+}
 @media screen and (max-width: 600px) {
   .sidebar {
       height: calc(100dvh - 88px);
