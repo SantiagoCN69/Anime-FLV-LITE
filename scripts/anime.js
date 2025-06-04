@@ -21,20 +21,55 @@ const cargarDatosDesdeCache = id => {
   try {
     const data = localStorage.getItem(getCacheKey(id));
     if (!data) return null;
-    const parsed = JSON.parse(data);
-    if (parsed._cachedAt && Date.now() - parsed._cachedAt > 24 * 60 * 60 * 1000) {
-      localStorage.removeItem(getCacheKey(id));
-      return null;
-    }
-    return parsed;
+    return JSON.parse(data);
   } catch {
     return null;
   }
 };
 
 const actualizarCache = (id, anime) => {
-  const toCache = { ...anime, _cachedAt: Date.now() };
+  // Primero verificar si el anime ya existe en caché
+  const existingData = localStorage.getItem(getCacheKey(id));
+  const existingAnime = existingData ? JSON.parse(existingData) : null;
+  
+  // Si existe y tiene fecha de caché, usar esa fecha
+  const fechaActualizacion = existingAnime?._cachedAt || Date.now();
+  const toCache = { ...anime, _cachedAt: fechaActualizacion };
   localStorage.setItem(getCacheKey(id), JSON.stringify(toCache));
+  
+  // Verificar y mantener solo los 10 animes más recientes
+  const animes = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('anime_')) {
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+        if (data && data._cachedAt) { // Verificar que el objeto existe y tiene fecha
+          animes.push({ id: key, fecha: data._cachedAt });
+        }
+      } catch (e) {
+        console.error(`Error al procesar anime ${key}:`, e);
+        localStorage.removeItem(key); // Eliminar datos corruptos
+      }
+    }
+  }
+
+  // Si hay más de 5 animes, eliminar los más viejos
+  if (animes.length > 20) {
+    try {
+      // Ordenar animes por fecha (de más nuevo a más viejo)
+      const animesOrdenados = animes.sort((a, b) => b.fecha - a.fecha);
+      // Eliminar todos los animes más allá del límite
+      const animesAEliminar = animesOrdenados.slice(20);
+      
+      animesAEliminar.forEach(anime => {
+        localStorage.removeItem(anime.id);
+        console.log(`Eliminado anime viejo: ${anime.id} (fecha: ${new Date(anime.fecha).toLocaleString()})`);
+      });
+    } catch (e) {
+      console.error('Error al eliminar animes viejos:', e);
+    }
+  }
 };
 
 // DOM references
