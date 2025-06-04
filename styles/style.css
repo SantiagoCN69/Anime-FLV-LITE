@@ -111,7 +111,7 @@ header {
 }
 }
 @media screen and (max-width: 850px) {
-  .btn-directorio {
+  #btn-directorio {
     display: none;
   }
   #btn-directorio2 {
