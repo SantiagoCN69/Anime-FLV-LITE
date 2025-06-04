@@ -241,3 +241,16 @@ function obtenerMensajeAleatorio() {
 // Mostrar mensaje inicial
 footerMessage.textContent = obtenerMensajeAleatorio();
 footer.appendChild(footerMessage);
+
+
+// INDICADOR sidebar scroll
+if (localStorage.getItem('indicador') !== 'false') {
+const indicator = document.createElement('div');
+indicator.classList.add('scroll-indicator');
+sidebar.appendChild(indicator);
+
+sidebar.addEventListener('scroll', () => {
+  indicator.style.opacity = '0';
+  localStorage.setItem('indicador', 'false');
+});
+}
