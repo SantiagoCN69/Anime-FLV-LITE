@@ -91,16 +91,21 @@ async function loginConGoogle() {
 }
 
 //crear modal al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-const existingModal = document.querySelector('.logout-modal');
-const modal = document.createElement('div');
+function crearmodal(user = false) {
+  console.log(user);
+  const modal = document.createElement('div');
   modal.className = 'logout-modal';
   modal.innerHTML = `
     <button id="export-data">Exportar datos</button>
     <button id="theme-toggle">Cambiar tema</button>
     <button id="config">Configuración</button>
-    <button id='confirm-logout'>Cerrar sesión</button>
   `;
+  if (user) {
+    modal.innerHTML += `<button id='confirm-logout' class="modal-btn-b">Cerrar sesión</button>`;
+  }
+  else {
+    modal.innerHTML += `<button id='confirm-login' class="modal-btn-b">Login</button>`;
+  }
   
   // Insertar el modal en el DOM
   const loginButton = document.getElementById('btn-login');
@@ -111,6 +116,12 @@ const modal = document.createElement('div');
   if (logoutButton) {
     logoutButton.addEventListener('click', async () => {
       await logoutConGoogle();
+    });
+  }
+  const loginButtonModal = modal.querySelector('#confirm-login');
+  if (loginButtonModal) {
+    loginButtonModal.addEventListener('click', async () => {
+      await loginConGoogle();
     });
   }
 
@@ -200,35 +211,8 @@ const modal = document.createElement('div');
        }, 2000);
      }
    });
-});
-
-
-// Logout con modal
-function showLogoutModal() {
-  const modal = document.querySelector('.logout-modal');
-  if (modal) {
-    // Alternar la clase 'show' para mostrar/ocultar el modal
-    const isVisible = modal.classList.contains('show');
-    if (isVisible) {
-      modal.classList.remove('show');
-    } else {
-      modal.classList.add('show');
-    }
   }
-  
-  // Cerrar al hacer scroll y hacer clic fuera
-  const handleScroll = () => modal.classList.remove('show');
-  const btnLogin = document.getElementById('btn-login');
-  window.addEventListener('scroll', handleScroll, { once: true });
 
-  const handleClickOutside = (event) => {
-    if (!modal.contains(event.target) && !btnLogin.contains(event.target)) {
-      modal.classList.remove('show');
-    }
-  };
-
-  document.addEventListener('click', handleClickOutside);
-}
 
 async function logoutConGoogle() {
   try {
@@ -284,6 +268,8 @@ onAuthStateChanged(auth, (user) => {
   // Disparar evento personalizado para indicar que el estado de autenticación está listo
   document.dispatchEvent(new CustomEvent('authStateReady', { detail: { user } }));
   document.getElementById('btn-login').disabled = false;
+  crearmodal(user);
+  themeToggle();
   if (!localStorage.getItem('theme')) {
     console.log('No hay tema en localStorage. Intentando cargar desde Firestore...');
     cargarTemaDesdeFirestore();
@@ -294,12 +280,19 @@ onAuthStateChanged(auth, (user) => {
 const btnLogin = document.getElementById('btn-login');
 if (btnLogin) {
   btnLogin.addEventListener('click', () => {
-    const user = auth.currentUser;
-    if (user) {
-      showLogoutModal();
-    } else {
-      loginConGoogle();
-    }
+    const modal = document.querySelector('.logout-modal');
+    modal.classList.toggle('show');
+
+    const handleScroll = () => modal.classList.remove('show');
+    window.addEventListener('scroll', handleScroll, { once: true });
+
+    const handleClickOutside = (event) => {
+      if (!modal.contains(event.target) && !btnLogin.contains(event.target)) {
+        modal.classList.remove('show');
+      }
+    };
+  
+    document.addEventListener('click', handleClickOutside);
   });
 }
 
@@ -335,7 +328,9 @@ const cargarTemaDesdeFirestore = async () => {
 
 const themeToggle = () => {
     const btn = document.getElementById('theme-toggle');
+    console.log(btn);
     if (!btn) {
+      console.log('No se encontró el botón de tema');
         return;
     }
 
@@ -380,4 +375,3 @@ const themeToggle = () => {
 };
 
 // Inicializar al cargar el DOM
-document.addEventListener('DOMContentLoaded', async () => {themeToggle()})
