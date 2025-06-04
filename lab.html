@@ -14,14 +14,17 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AnimeFLV Lite">
   <meta name="twitter:description" content="El mejor repositorio de anime sin anuncios.">
-  <link rel="canonical" href="https://animeflvlite.netlify.app/lab.html">
-  <link rel="icon" type="image/png" href="/icons/icon.png">
-  <link rel="apple-touch-icon" sizes="256x256" href="/icons/icon.png">
-    <title>Lab</title>
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/lab-styles.css">
-    <script src="scripts/header.js" defer></script>
-    <script type="module" src="scripts/sidebar.js" defer></script>
+<link rel="canonical" href="https://animeflvlite.netlify.app/lab.html">
+<link rel="icon" type="image/png" href="/icons/icon.png">
+<link rel="apple-touch-icon" sizes="256x256" href="/icons/icon.png">
+<script src="scripts/tema.js"></script>
+<script type="module" src="scripts/firebase-login.js" defer></script>
+<script type="module" src="scripts/lab.js" defer></script>
+<title>Lab</title>
+<link rel="stylesheet" href="styles/style.css">
+<link rel="stylesheet" href="styles/lab-styles.css">
+<script src="scripts/header.js" defer></script>
+<script type="module" src="scripts/sidebar.js" defer></script>
 </head>
 <body>
     <header>
@@ -32,7 +35,7 @@
             <input type="text" id="busqueda" placeholder="Buscar anime...">
             <button id="btn-close-search" title="Cerrar búsqueda"></button>
         </div>
-        <button type="button" id="btn-login" title="Iniciar sesión">
+        <button disabled type="button" id="btn-login" title="Iniciar sesión">
           <img src="icons/user-solid.svg" alt="Foto de perfil">
           <span>Login</span>
         </button>
@@ -142,7 +145,5 @@
     </main>
     <div id="main"></div>
     <footer></footer>
-    <script type="module" src="scripts/firebase-login.js" defer></script>
-    <script type="module" src="scripts/lab.js" defer></script>
 </body>
 </html>
