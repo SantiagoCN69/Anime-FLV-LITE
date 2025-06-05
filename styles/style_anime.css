@@ -494,7 +494,8 @@ min-height: 261px;
 #relacionados .animes-relacionados {
   display: flex;
   gap: 1rem;
-  overflow: auto;
+  overflow: hidden;
+  overflow-x: auto;
   flex-direction: row;
   padding-bottom: 5px;
 }
