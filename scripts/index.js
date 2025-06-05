@@ -362,7 +362,7 @@ async function cargarUltimosCapsVistos() {
     return div;
   }
 
-  function leerCache(key) {
+function leerCache(key) {
     try {
       const raw = localStorage.getItem(key);
       const data = JSON.parse(raw);
@@ -373,16 +373,16 @@ async function cargarUltimosCapsVistos() {
       localStorage.removeItem(key);
     }
     return null;
-  }
-  
-  function guardarCache(key, data) {
+}
+
+function guardarCache(key, data) {
     if (!Array.isArray(data) || data.length === 0) {
       localStorage.removeItem(key);
       return;
     }
     const dataToCache = data.slice(0, 20);
     localStorage.setItem(key, JSON.stringify(dataToCache));
-  }
+}
 
   async function cargarUltimosCapitulos() {
     console.log('Ejecutando carga de últimos capítulos');
@@ -882,8 +882,6 @@ async function cargarCompletados() {
   }
 }
 
-
-// Sidebar toggle y navegación
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
