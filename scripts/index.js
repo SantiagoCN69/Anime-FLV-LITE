@@ -469,7 +469,7 @@ async function cargarUltimosCapsVistos() {
     } catch (err) {
       console.error('Error al obtener datos de la API:', err);
     }
-  }
+}
 
 async function cargarhistorial() {
   console.log('Ejecutando cargarhistorial');
@@ -523,27 +523,30 @@ async function cargarhistorial() {
     historialContainer.classList.add('hidden');
   }
 }
-  
+
+const renderizarSeccion = (datos, seccionId) => {
+  const seccion = document.getElementById(seccionId);
+  if (!seccion) return;
+
+  if (!datos || datos.length === 0) {
+    seccion.innerHTML = `<p>No tienes animes en ${seccionId}</p>`;
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  datos.forEach(anime => {
+    const card = createAnimeCard(anime);
+    if (card) fragment.appendChild(card);
+  });
+  seccion.appendChild(fragment);
+  observerAnimeCards();
+}
+
 async function cargarFavoritos() {
   console.log('Ejecutando cargarFavoritos');
   
-  const favsContainer = document.getElementById('favs');
+  const favsContainer = document.getElementById('favoritos');
   if (!favsContainer) return;
-
-  const renderizarFavoritos = (datos, reemplazar = false) => {
-    if (reemplazar) favsContainer.innerHTML = '';
-    if (!datos || datos.length === 0) {
-      favsContainer.innerHTML = '<p>No tienes animes en favoritos.</p>';
-      return;
-    }
-    const fragment = document.createDocumentFragment();
-    datos.forEach(anime => {
-      const card = createAnimeCard(anime);
-      if (card) fragment.appendChild(card);
-    });
-    favsContainer.appendChild(fragment);
-    observerAnimeCards();
-  };
 
   try {
     const user = await new Promise(resolve => {
@@ -561,26 +564,23 @@ async function cargarFavoritos() {
     const userId = user.uid;
     const cacheKey = `favoritosCache_${userId}`;
     const cachedData = leerCache(cacheKey);
-
-    // Si hay datos en caché y no hay cambios en los favoritos
-    if (cachedData) {
-      const favsRef = doc(collection(doc(db, "usuarios", userId), "favoritos"), "lista");
-      const favsDoc = await getDoc(favsRef);
-      
-      if (favsDoc.exists() && 
-          favsDoc.data().animes.length === cachedData.length &&
-          favsDoc.data().animes.every(titulo => cachedData.some(anime => anime.titulo === titulo))) {
-        renderizarFavoritos(cachedData, true);
-        return;
-      }
-    }
-
-    // Obtener los títulos de favoritos
     const favsRef = doc(collection(doc(db, "usuarios", userId), "favoritos"), "lista");
     const favsDoc = await getDoc(favsRef);
 
+    // Si hay datos en caché y no hay cambios en los favoritos
+    if (cachedData) {
+      if (favsDoc.exists() && 
+      favsDoc.data().animes.length === cachedData.length &&
+      favsDoc.data().animes.every(titulo => cachedData.some(anime => anime.titulo === titulo))) {
+      console.log('Datos en caché diferentes a la base de datos');
+      renderizarSeccion(cachedData, 'favoritos');
+      return;
+      }
+    }
+
+    // si no hay favorito en firesotre elmina cache y da el mensaje
     if (!favsDoc.exists() || !favsDoc.data().animes || favsDoc.data().animes.length === 0) {
-      renderizarFavoritos([], true);
+      renderizarSeccion([], 'favoritos');
       localStorage.removeItem(cacheKey);
       return;
     }
@@ -610,7 +610,7 @@ async function cargarFavoritos() {
       .map(titulo => animesPorTitulo.get(titulo))
       .filter(Boolean);
 
-    renderizarFavoritos(animesOrdenados, true);
+    renderizarSeccion(animesOrdenados, 'favoritos');
     guardarCache(cacheKey, animesOrdenados);
 
   } catch (error) {
