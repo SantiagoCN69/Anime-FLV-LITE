@@ -2,6 +2,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
+import { observerAnimeCards } from "./utils.js";
 
 // Inicializar Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
@@ -171,6 +172,7 @@ async function renderRelacionados(anime) {
     });
 
     relacionadosContainer.appendChild(fragment);
+    observerAnimeCards();
   } catch (error) {
     console.error('Error al cargar animes relacionados:', error);
   } finally {
