@@ -34,9 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function ver(id) {
-  window.location.href = `anime.html?id=${id}`;
-}
 
 let favoritosCargados = false;
 let viendoCargado = false;
@@ -342,6 +339,7 @@ async function cargarUltimosCapsVistos() {
     }
     
     div.innerHTML = `
+    <a href="anime.html?id=${anime.id}">
       <div class="container-img">
         <img src="${anime.portada}" class="cover" alt="${anime.titulo}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -350,14 +348,8 @@ async function cargarUltimosCapsVistos() {
         ${ratingHtml}
       </div>
       <strong>${anime.titulo}</strong>
-    `;
+    </a>`;
     
-    div.addEventListener('click', () => {
-      if (anime.id) {
-        ver(anime.id);
-      }
-    });
-
     return div;
 }
 
@@ -535,11 +527,14 @@ async function cargarhistorial() {
 }
 
 function guardarCache2(key, data) {
+  console.log('Guardando en caché:', key);
   try {
     if (!data || !data.length) {
       localStorage.removeItem(key);
+      console.log('No hay datos para guardar en caché');
       return;
     }
+    console.log('Datos para guardar en caché:', data);
     // Guardar solo los primeros 3 para depuración
     const dataToCache = data.slice(0, 3);
     localStorage.setItem(key, JSON.stringify(dataToCache));
@@ -664,12 +659,8 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
 
       // Actualizar caché si es primera página
       if (offset === 0) {
-          const cacheAnimes = animes.slice(0, 3);
-          const animesOrdenados = titulos
-              .slice(0, 3)
-              .map(titulo => cacheAnimes.find(a => a.titulo === titulo))
-              .filter(Boolean);
-          guardarCache2(cacheKey, animesOrdenados);
+          guardarCache2(cacheKey, animes);
+          console.log('Datos guardados en caché:', animes);
           container.innerHTML = '';
       }
       agregarAnimesAlContenedor(animes, container);
@@ -683,11 +674,6 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
 
 async function cargarFavoritos() {
   console.log('Ejecutando cargarFavoritos');
-    
-  if (!userID) {
-      container.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
-      return;
-  }
   const DocRef = doc(db, "usuarios", userID, "favoritos", "lista");
   cargarDatos(document.getElementById('favoritos'), DocRef);
 }

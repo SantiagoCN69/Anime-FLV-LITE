@@ -191,6 +191,7 @@ function crearAnimeCard(anime) {
   div.className = 'anime-card';
   div.style.setProperty('--cover', `url(${anime.cover})`);
   div.innerHTML = `
+  <a href="anime.html?id=${anime.id}">
   <div class="container-img">
     <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
     <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -198,9 +199,8 @@ function crearAnimeCard(anime) {
     <span class="estado">${anime.type}</span>
   </div>
   <strong>${anime.title || anime.name}</strong>
-`;
+</a>`;
 
-  div.addEventListener('click', () => ver(animeId));
   return div;
 }
 const renderAnime = anime => {
