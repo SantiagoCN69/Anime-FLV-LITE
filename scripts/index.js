@@ -142,13 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
     item.addEventListener('click', (e) => {
       const targetId = e.target.getAttribute('data-target');
       history.replaceState(null, '', `#${targetId}`);
-      mostrarSeccionDesdeHash(); 
-      const targetSection = document.getElementById(targetId);
-      if (targetSection) {
-        targetSection.classList.remove('hidden');
-        
-        history.pushState(null, '', `#${targetId}`);
-      }
+      mostrarSeccionDesdeHash();
+      document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
+      observerAnimeCards();
     });
   });
 
