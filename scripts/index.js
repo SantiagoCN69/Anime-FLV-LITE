@@ -550,7 +550,6 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   const favsContainer = document.getElementById('favoritos');
   const h2 = document.querySelector('#Mis-Favoritos h2');
 
-
   if (!favsContainer) return;
   
   if (!userID) {
@@ -561,14 +560,12 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   const cacheKey = `favoritosCache_${userID}`;
   const cachedData = leerCache(cacheKey);
 
-  // Si hay datos en caché, mostrarlos primero
   if (cachedData && offset === 0) {
     console.log('Mostrando datos de caché');
     agregarAnimesAlContenedor(cachedData, favsContainer);
     h2.dataset.text = cachedData.length;
   }
 
-  // Leer lista de títulos de favoritos
   const favsRef = doc(db, "usuarios", userID, "favoritos", "lista");
   const favsDoc = await getDoc(favsRef);
 
@@ -582,9 +579,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
     return;
   }
 
-  // Si es la primera carga y hay datos en caché, mostrarlos primero
   if (offset === 0 && cachedData) {
-    // Verificar si los datos del caché están actualizados
     const ultimosTitulosCache = titulosFavoritos.slice(0, 3);
     const titulosCache = cachedData.map(a => a.titulo).slice(0, 3);
     
@@ -594,18 +589,12 @@ async function cargarFavoritos(limite = 3, offset = 0) {
       manejarBotonVerMas(favsContainer, hayMasEnFirestore, limite, offset, cachedData.length);
       return;
     }
-    else {
-      console.log('Datos desactualizados');
-    }
+    else {console.log('Datos desactualizados');}
   }
 
-  // Obtener solo el rango de títulos que necesitamos
   const titulosPaginados = titulosFavoritos.slice(offset, offset + limite);
-  
-  // Verificar si hay más animes por cargar
   const hayMas = offset + limite < titulosFavoritos.length;
   
-  // Obtener datos de Firestore
   const q = query(
     collection(db, "datos-animes"),
     where("titulo", "in", titulosPaginados)
@@ -625,9 +614,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
     });
   });
 
-  // Actualizar caché solo en la primera carga
   if (offset === 0) {
-    // Obtener todos los títulos para la caché
     const qCache = query(
       collection(db, "datos-animes"),
       where("titulo", "in", titulosFavoritos.slice(0, 3)) 
@@ -646,8 +633,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
         rating: data.rating || null
       });
     });
-    
-    // Ordenar según el orden de titulosFavoritos
+
     const animesOrdenados = titulosFavoritos
       .map(titulo => animesParaCache.find(a => a.titulo === titulo))
       .filter(Boolean);
@@ -655,24 +641,19 @@ async function cargarFavoritos(limite = 3, offset = 0) {
     guardarCache2(cacheKey, animesOrdenados);
   }
 
-  // Mostrar animes
   if (offset === 0) {
-    favsContainer.innerHTML = ''; // Limpiar solo en la primera carga
+    favsContainer.innerHTML = ''; 
   }
   agregarAnimesAlContenedor(animes, favsContainer);
-  
-  // Manejar botón "Ver más"
   manejarBotonVerMas(favsContainer, hayMas, limite, offset, animes.length);
 }
 
 function manejarBotonVerMas(contenedor, hayMas, limite, offset, numAnimes) {
-  // Eliminar botón anterior si existe
   const btnAnterior = contenedor.querySelector('.ver-mas-btn');
   if (btnAnterior) {
     contenedor.removeChild(btnAnterior);
   }
 
-  // Agregar nuevo botón si hay más animes
   if (hayMas) {
     const verMasBtn = document.createElement('button');
     verMasBtn.className = 'ver-mas-btn';
