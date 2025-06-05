@@ -314,14 +314,13 @@ async function cargarUltimosCapsVistos() {
     }
   }
 }
-
   // Función para crear tarjeta de anime
   function createAnimeCard(anime) {
     const div = document.createElement('div');
     let chapterHtml = ''; 
     let estadoHtml = '';
     let ratingHtml = '';
-
+  
     div.className = 'anime-card';
     div.style.setProperty('--cover', `url(${anime.portada})`);
     
@@ -333,7 +332,7 @@ async function cargarUltimosCapsVistos() {
       if (anime.estado === 'En emision') {
         estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;
       }
-      else{
+      else {
         estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;
       }
     }
@@ -358,9 +357,9 @@ async function cargarUltimosCapsVistos() {
         ver(anime.id);
       }
     });
-  
+
     return div;
-  }
+}
 
 function leerCache(key) {
     try {
@@ -376,15 +375,20 @@ function leerCache(key) {
 }
 
 function guardarCache(key, data) {
+  try {
     if (!Array.isArray(data) || data.length === 0) {
       localStorage.removeItem(key);
       return;
     }
     const dataToCache = data.slice(0, 20);
     localStorage.setItem(key, JSON.stringify(dataToCache));
+  } catch (e) {
+    console.error(`Error guardando cache (${key}):`, e);
+    localStorage.removeItem(key);
+  }
 }
 
-  async function cargarUltimosCapitulos() {
+async function cargarUltimosCapitulos() {
     console.log('Ejecutando carga de últimos capítulos');
     const container = document.getElementById('ultimos-episodios');
     const cacheKey = 'ultimosEpisodiosGeneralesCache';
@@ -530,26 +534,18 @@ async function cargarhistorial() {
   }
 }
 
-const renderizarSeccion = (datos, seccionId) => {
-  const seccion = document.getElementById(seccionId);
-  if (!seccion) return;
-
-  if (!datos || datos.length === 0) {
-    seccion.innerHTML = `<p>No tienes animes en ${seccionId}</p>`;
-    return;
-  }
-
+function agregarAnimesAlContenedor(animes, contenedor) {
   const fragment = document.createDocumentFragment();
-  datos.forEach(anime => {
-    const card = createAnimeCard(anime);
-    if (card) fragment.appendChild(card);
+  animes.forEach(anime => {
+      const card = createAnimeCard(anime);
+      if (card) fragment.appendChild(card);
   });
-  seccion.appendChild(fragment);
+  contenedor.appendChild(fragment);
   observerAnimeCards();
 }
 
-async function cargarFavoritos() {
-  console.log('Ejecutando cargarFavoritos');
+async function cargarFavoritos(limite = 3, offset = 0) {
+  console.log(`Cargando favoritos - Límite: ${limite}, Offset: ${offset}`);
   
   const favsContainer = document.getElementById('favoritos');
   if (!favsContainer) return;
@@ -566,34 +562,58 @@ async function cargarFavoritos() {
   const favsRef = doc(db, "usuarios", userID, "favoritos", "lista");
   const favsDoc = await getDoc(favsRef);
 
-  const titulosFavoritos = favsDoc.exists() ? favsDoc.data().animes || [] : [];
+  let titulosFavoritos = favsDoc.exists() ? favsDoc.data().animes || [] : [];
   if (titulosFavoritos.length === 0) {
-    renderizarSeccion([], 'favoritos');
+    favsContainer.innerHTML = '<p>No tienes animes en favoritos</p>';
     localStorage.removeItem(cacheKey);
     return;
   }
 
-  // Si hay caché y los títulos coinciden, renderiza directamente
-  if (cachedData) {
-    const cachedTitulos = cachedData.map(a => a.titulo);
-    if (JSON.stringify(titulosFavoritos) === JSON.stringify(cachedTitulos)) {
-      console.log('Datos en caché iguales a la base de datos');
-      renderizarSeccion(cachedData, 'favoritos');
-      return;
-    }
+  // Verificar caché solo en la primera carga (offset = 0)
+  if (offset === 0 && cachedData) {
+    // Tomar solo los primeros 3 títulos para comparar (para depuración)
+    const ultimosTitulosCache = titulosFavoritos.slice(0, 3);
+    const titulosCache = cachedData.map(a => a.titulo).slice(0, 3);
+    
+    // Dentro del if (offset === 0 && cachedData)
+  if (JSON.stringify(ultimosTitulosCache) === JSON.stringify(titulosCache)) {
+  console.log('Usando datos de caché');
+  // Mostrar datos de caché paginados
+  const animesPaginados = cachedData.slice(offset, offset + limite);
+  
+  // Verificar si hay más animes en Firestore (no en caché)
+  const hayMasEnFirestore = offset + limite < titulosFavoritos.length;
+  
+  // Mostrar animes
+  if (offset === 0) {
+    favsContainer.innerHTML = '';
+  }
+  agregarAnimesAlContenedor(animesPaginados, favsContainer);
+  
+  // Usar el total de títulos de Firestore para el botón "Ver más"
+  manejarBotonVerMas(favsContainer, hayMasEnFirestore, limite, offset, animesPaginados.length);
+  return;
+}
   }
 
-  // Obtener datos completos solo si hubo cambio
+  // Obtener solo el rango de títulos que necesitamos
+  const titulosPaginados = titulosFavoritos.slice(offset, offset + limite);
+  
+  // Verificar si hay más animes por cargar
+  const hayMas = offset + limite < titulosFavoritos.length;
+  
+  // Obtener datos de Firestore
   const q = query(
     collection(db, "datos-animes"),
-    where("titulo", "in", titulosFavoritos)
+    where("titulo", "in", titulosPaginados)
   );
+  
   const querySnapshot = await getDocs(q);
-
-  const animesPorTitulo = new Map();
+  const animes = [];
+  
   querySnapshot.forEach(doc => {
     const data = doc.data();
-    animesPorTitulo.set(data.titulo, {
+    animes.push({
       id: doc.id,
       titulo: data.titulo,
       portada: data.portada || 'img/background.webp',
@@ -602,12 +622,75 @@ async function cargarFavoritos() {
     });
   });
 
-  const animesOrdenados = titulosFavoritos
-    .map(t => animesPorTitulo.get(t))
-    .filter(Boolean);
+  // Actualizar caché solo en la primera carga
+  if (offset === 0) {
+    // Obtener todos los títulos para la caché
+    const qCache = query(
+      collection(db, "datos-animes"),
+      where("titulo", "in", titulosFavoritos.slice(0, 3)) // Solo primeros 3 para depuración
+    );
+    
+    const cacheSnapshot = await getDocs(qCache);
+    const animesParaCache = [];
+    
+    cacheSnapshot.forEach(doc => {
+      const data = doc.data();
+      animesParaCache.push({
+        id: doc.id,
+        titulo: data.titulo,
+        portada: data.portada || 'img/background.webp',
+        estado: data.estado || 'No disponible',
+        rating: data.rating || null
+      });
+    });
+    
+    // Ordenar según el orden de titulosFavoritos
+    const animesOrdenados = titulosFavoritos
+      .map(titulo => animesParaCache.find(a => a.titulo === titulo))
+      .filter(Boolean);
+    
+    guardarCache2(cacheKey, animesOrdenados);
+  }
 
-  renderizarSeccion(animesOrdenados, 'favoritos');
-  guardarCache(cacheKey, animesOrdenados);
+  // Mostrar animes
+  if (offset === 0) {
+    favsContainer.innerHTML = ''; // Limpiar solo en la primera carga
+  }
+  agregarAnimesAlContenedor(animes, favsContainer);
+  
+  // Manejar botón "Ver más"
+  manejarBotonVerMas(favsContainer, hayMas, limite, offset, animes.length);
+}
+
+function manejarBotonVerMas(contenedor, hayMas, limite, offset, numAnimes) {
+  // Eliminar botón anterior si existe
+  const btnAnterior = contenedor.querySelector('.ver-mas-btn');
+  if (btnAnterior) {
+    contenedor.removeChild(btnAnterior);
+  }
+
+  // Agregar nuevo botón si hay más animes
+  if (hayMas) {
+    const verMasBtn = document.createElement('button');
+    verMasBtn.className = 'ver-mas-btn';
+    verMasBtn.textContent = 'Ver más';
+    verMasBtn.onclick = () => cargarFavoritos(limite, offset + numAnimes);
+    contenedor.appendChild(verMasBtn);
+  }
+}
+
+function guardarCache2(key, data) {
+  try {
+    if (!data || !data.length) {
+      localStorage.removeItem(key);
+      return;
+    }
+    // Guardar solo los primeros 3 para depuración
+    const dataToCache = data.slice(0, 3);
+    localStorage.setItem(key, JSON.stringify(dataToCache));
+  } catch (e) {
+    console.error('Error al guardar en caché:', e);
+  }
 }
 
 async function cargarViendo() {
