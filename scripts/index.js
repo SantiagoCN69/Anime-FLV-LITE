@@ -609,7 +609,7 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
               return;
           }
       }
-
+      console.log('hola');
       // Cargar datos paginados
       const titulosPaginados = titulos.slice(offset, offset + limite);
       let animes = [];
@@ -632,9 +632,14 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
 
       // Actualizar caché si es primera página
       if (offset === 0) {
-          guardarCache2(cacheKey, animes);
-          console.log('Datos guardados en caché:', animes);
-          container.innerHTML = '';
+        const cacheAnimes = animes.slice(0, 3);
+        const animesOrdenados = titulos
+            .slice(0, 3)
+            .map(titulo => cacheAnimes.find(a => a.titulo === titulo))
+            .filter(Boolean);
+        guardarCache2(cacheKey, animesOrdenados);
+        console.log('Datos guardados en caché:', animesOrdenados);
+        container.innerHTML = '';
       }
       agregarAnimesAlContenedor(animes, container);
       manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animes.length);
