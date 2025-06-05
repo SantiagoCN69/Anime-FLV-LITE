@@ -15,6 +15,8 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { observerAnimeCards } from './utils.js';
 
+let userID = localStorage.getItem('userID');
+
 document.addEventListener('DOMContentLoaded', () => {
   const contadores = document.querySelectorAll('span.contador');
   contadores.forEach(contadorSpan => {
@@ -555,76 +557,61 @@ async function cargarFavoritos() {
   
   const favsContainer = document.getElementById('favoritos');
   if (!favsContainer) return;
+  
+  if (!userID) {
+    favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
+    return;
+  }
 
-  try {
-    const user = await new Promise(resolve => {
-      const unsubscribe = onAuthStateChanged(auth, user => {
-        unsubscribe();
-        resolve(user);
-      });
-    });
+  const cacheKey = `favoritosCache_${userID}`;
+  const cachedData = leerCache(cacheKey);
 
-    if (!user) {
-      favsContainer.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
-      return;
-    }
+  // Leer lista de títulos de favoritos
+  const favsRef = doc(db, "usuarios", userID, "favoritos", "lista");
+  const favsDoc = await getDoc(favsRef);
 
-    const userId = user.uid;
-    const cacheKey = `favoritosCache_${userId}`;
-    const cachedData = leerCache(cacheKey);
-    const favsRef = doc(collection(doc(db, "usuarios", userId), "favoritos"), "lista");
-    const favsDoc = await getDoc(favsRef);
+  const titulosFavoritos = favsDoc.exists() ? favsDoc.data().animes || [] : [];
+  if (titulosFavoritos.length === 0) {
+    renderizarSeccion([], 'favoritos');
+    localStorage.removeItem(cacheKey);
+    return;
+  }
 
-    // Si hay datos en caché y no hay cambios en los favoritos
-    if (cachedData) {
-      if (favsDoc.exists() && 
-      favsDoc.data().animes.length === cachedData.length &&
-      favsDoc.data().animes.every(titulo => cachedData.some(anime => anime.titulo === titulo))) {
-      console.log('Datos en caché diferentes a la base de datos');
+  // Si hay caché y los títulos coinciden, renderiza directamente
+  if (cachedData) {
+    const cachedTitulos = cachedData.map(a => a.titulo);
+    if (JSON.stringify(titulosFavoritos) === JSON.stringify(cachedTitulos)) {
+      console.log('Datos en caché iguales a la base de datos');
       renderizarSeccion(cachedData, 'favoritos');
       return;
-      }
     }
-
-    // si no hay favorito en firesotre elmina cache y da el mensaje
-    if (!favsDoc.exists() || !favsDoc.data().animes || favsDoc.data().animes.length === 0) {
-      renderizarSeccion([], 'favoritos');
-      localStorage.removeItem(cacheKey);
-      return;
-    }
-
-    const titulosFavoritos = favsDoc.data().animes;
-    const animesPorTitulo = new Map();
-
-    // Obtener datos completos de animes
-    const q = query(
-      collection(db, "datos-animes"),
-      where("titulo", "in", titulosFavoritos)
-    );
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach(doc => {
-      animesPorTitulo.set(doc.data().titulo, {
-        id: doc.id,
-        titulo: doc.data().titulo,
-        portada: doc.data().portada || 'img/background.webp',
-        estado: doc.data().estado || 'No disponible',
-        rating: doc.data().rating || null
-      });
-    });
-
-    // Ordenar según la lista original
-    const animesOrdenados = titulosFavoritos
-      .map(titulo => animesPorTitulo.get(titulo))
-      .filter(Boolean);
-
-    renderizarSeccion(animesOrdenados, 'favoritos');
-    guardarCache(cacheKey, animesOrdenados);
-
-  } catch (error) {
-    console.error('Error al cargar favoritos:', error);
-    favsContainer.innerHTML = '<p>Error al cargar favoritos.</p>';
   }
+
+  // Obtener datos completos solo si hubo cambio
+  const q = query(
+    collection(db, "datos-animes"),
+    where("titulo", "in", titulosFavoritos)
+  );
+  const querySnapshot = await getDocs(q);
+
+  const animesPorTitulo = new Map();
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    animesPorTitulo.set(data.titulo, {
+      id: doc.id,
+      titulo: data.titulo,
+      portada: data.portada || 'img/background.webp',
+      estado: data.estado || 'No disponible',
+      rating: data.rating || null
+    });
+  });
+
+  const animesOrdenados = titulosFavoritos
+    .map(t => animesPorTitulo.get(t))
+    .filter(Boolean);
+
+  renderizarSeccion(animesOrdenados, 'favoritos');
+  guardarCache(cacheKey, animesOrdenados);
 }
 
 async function cargarViendo() {
