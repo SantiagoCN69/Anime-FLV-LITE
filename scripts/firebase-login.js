@@ -203,8 +203,9 @@ function crearmodal(user = false) {
 // --- Carga inicial desde caché ---
 const cachedDisplayName = localStorage.getItem('cachedUserDisplayName');
 const cachedPhotoURL = localStorage.getItem('cachedUserPhotoURL');
+const userID = localStorage.getItem('userID');
 
-if (cachedDisplayName || cachedPhotoURL) {
+if (cachedDisplayName || cachedPhotoURL || userID) {
   updateUIForUser({
     displayName: cachedDisplayName,
     photoURL: cachedPhotoURL,
@@ -230,12 +231,17 @@ onAuthStateChanged(auth, (user) => {
       updateUIForUser(null);
   } else if (user && (!currentUsername || currentUsername !== user.displayName)) {
       updateUIForUser(user);
-  } else if (user) {
+      if (!cachedDisplayName || !cachedPhotoURL || !userID) {
+      console.log('Guardando datos en localStorage');
       try {
-          localStorage.setItem('cachedUserDisplayName', user.displayName || '');
-          localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
+      localStorage.setItem('cachedUserDisplayName', user.displayName || '');
+      localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
+      localStorage.setItem('userID', user.uid);
       } catch (e) {
+        console.warn('No se pudo guardar en localStorage:', e);
       }
+      window.location.reload();
+    }
   }
   // Disparar evento personalizado para indicar que el estado de autenticación está listo
   crearmodal(user);
