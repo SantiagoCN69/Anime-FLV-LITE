@@ -233,7 +233,6 @@ function crearAnimeCard(anime, isLink = false) {
                 }
             });
         }
-    observerAnimeCards();
     return div;
 }
 
@@ -515,7 +514,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
 
     contenedor.innerHTML = '';
     contenedor.appendChild(fragment);
-    
+    observerAnimeCards();
     const textoBtn = document.getElementById(textoBtnId);
     if (textoBtn) textoBtn.textContent = "Regenerar";
 }
