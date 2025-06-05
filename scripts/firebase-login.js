@@ -1,21 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut
-} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import {getFirestore,collection,getDocs,query,doc,getDoc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 const app = initializeApp(firebaseConfig);
@@ -32,37 +17,17 @@ function updateUIForUser(user) {
   if (!btnLogin || !btnLoginImg || !btnLoginSpan) return;
 
   if (user) {
-    // Obtener solo el primer nombre
     const nombres = (user.displayName || '').split(' ');
     const primerNombre = nombres[0] || '';
 
-    // Actualizar UI
     btnLoginImg.src = user.photoURL || 'icons/user-solid.svg';
     btnLoginSpan.textContent = primerNombre;
-    
-    // Guardar en caché
-    try {
-      localStorage.setItem('cachedUserDisplayName', primerNombre);
-      localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
-    } catch (e) {
-      console.warn('No se pudo guardar en localStorage:', e);
-    }
   } else {
-    // Actualizar UI
     btnLoginImg.src = 'icons/user-solid.svg';
     btnLoginSpan.textContent = '';
-    
-    // Limpiar caché
-    try {
-      localStorage.removeItem('cachedUserDisplayName');
-      localStorage.removeItem('cachedUserPhotoURL');
-    } catch (e) {
-      console.warn('No se pudo limpiar localStorage:', e);
-    }
   }
 }
 
-// Login con Google
 async function loginConGoogle() {
   try {
     const result = await signInWithPopup(auth, provider);
@@ -78,6 +43,13 @@ async function loginConGoogle() {
         creado: serverTimestamp()
       });
     }
+    try {
+      localStorage.setItem('cachedUserDisplayName', user.displayName);
+      localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
+      localStorage.setItem('userID', user.uid);
+    } catch (e) {
+      console.warn('No se pudo guardar en localStorage:', e);
+    }
 
     updateUIForUser(user);
     
@@ -87,6 +59,22 @@ async function loginConGoogle() {
     if (error.code === 'auth/popup-closed-by-user') {
     } else {
     }
+  }
+}
+
+async function logoutConGoogle() {
+  try {
+    try {
+      localStorage.removeItem('cachedUserDisplayName');
+      localStorage.removeItem('cachedUserPhotoURL');
+      localStorage.removeItem('userID');
+    } catch (e) {
+      console.warn('No se pudo limpiar localStorage:', e);
+    }
+    await signOut(auth);
+    window.location.reload();
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
   }
 }
 
@@ -212,35 +200,9 @@ function crearmodal(user = false) {
    });
   }
 
-
-async function logoutConGoogle() {
-  try {
-    await signOut(auth);
-    // Recargar la página actual
-    window.location.reload();
-  } catch (error) {
-    console.error('Error al cerrar sesión:', error);
-  }
-}
-
 // --- Carga inicial desde caché ---
 const cachedDisplayName = localStorage.getItem('cachedUserDisplayName');
 const cachedPhotoURL = localStorage.getItem('cachedUserPhotoURL');
-
-// Verificar sesión al cargar la página
-auth.onAuthStateChanged((user) => {
-  if (!user) {
-    document.getElementById('btn-login').textContent = 'Login';
-    document.getElementById('btn-login').innerHTML = '<img src="icons/user-solid.svg" alt="Foto de perfil"><span>Login</span>';
-    // Limpiar caché si no hay sesión activa
-    try {
-      localStorage.removeItem('cachedUserDisplayName');
-      localStorage.removeItem('cachedUserPhotoURL');
-    } catch (e) {
-      console.warn('No se pudo limpiar localStorage:', e);
-    }
-  }
-});
 
 if (cachedDisplayName || cachedPhotoURL) {
   updateUIForUser({
@@ -248,9 +210,20 @@ if (cachedDisplayName || cachedPhotoURL) {
     photoURL: cachedPhotoURL,
   });
 }
-// --- Fin carga inicial desde caché ---
+auth.onAuthStateChanged((user) => {
+  if (!user) {
+    document.getElementById('btn-login').textContent = 'Login';
+    document.getElementById('btn-login').innerHTML = '<img src="icons/user-solid.svg" alt="Foto de perfil"><span>Login</span>';
+    try {
+      localStorage.removeItem('cachedUserDisplayName');
+      localStorage.removeItem('cachedUserPhotoURL');
+      localStorage.removeItem('userID');
+    } catch (e) {
+      console.warn('No se pudo limpiar localStorage:', e);
+    }
+  }
+});
 
-// Estado real del usuario (verifica y actualiza si es necesario)
 onAuthStateChanged(auth, (user) => {
   const currentUsername = document.getElementById('btn-login')?.getAttribute('data-username');
   if (!user && currentUsername) {
@@ -274,7 +247,6 @@ onAuthStateChanged(auth, (user) => {
 }
 });
 
-// Configurar botón login/logout
 const btnLogin = document.getElementById('btn-login');
 if (btnLogin) {
   btnLogin.addEventListener('click', () => {
@@ -371,4 +343,3 @@ const themeToggle = () => {
     btn.addEventListener('click', handleThemeToggle);
 };
 
-// Inicializar al cargar el DOM
