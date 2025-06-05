@@ -40,10 +40,18 @@ let favoritosCargados = false;
 let viendoCargado = false;
 let pendientesCargados = false;
 let completadosCargados = false;
+let ultimosCapsCargados = false;
 
 function mostrarSeccionDesdeHash() {
-  const hash = window.location.hash;
-  if (!hash) return;
+  let hash = window.location.hash;
+  if (!hash) {
+    if (!ultimosCapsCargados) {
+      cargarUltimosCapitulos();
+      cargarhistorial();
+      ultimosCapsCargados = true;
+    }
+    return;
+  }
 
   const id = decodeURIComponent(hash.substring(1));
   const seccion = document.getElementById(id);
@@ -84,8 +92,14 @@ switch(id) {
         completadosCargados = true;
       }
       break;
+    case 'Ultimos-Episodios':
+      if (!ultimosCapsCargados) {
+        cargarUltimosCapitulos();
+        cargarhistorial();
+        ultimosCapsCargados = true;
+      }
+      break;
 }
-
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -121,8 +135,6 @@ window.handleHashChange = function () {
 document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
-    cargarUltimosCapitulos(),
-    cargarhistorial()
   ])
 
   const sidebarItems = document.querySelectorAll('.sidebar li');
