@@ -270,8 +270,7 @@ onAuthStateChanged(auth, (user) => {
   document.getElementById('btn-login').disabled = false;
   themeToggle();
   if (!localStorage.getItem('theme')) {
-    console.log('No hay tema en localStorage. Intentando cargar desde Firestore...');
-    cargarTemaDesdeFirestore();
+   cargarTemaDesdeFirestore();
 }
 });
 
