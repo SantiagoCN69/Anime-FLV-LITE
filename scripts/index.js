@@ -15,7 +15,7 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { observerAnimeCards } from './utils.js';
 
-let userID = localStorage.getItem('userID');
+let userID = localStorage.getItem('userID') || "null";
 
 document.addEventListener('DOMContentLoaded', () => {
   const contadores = document.querySelectorAll('span.contador');
@@ -212,7 +212,7 @@ async function cargarUltimosCapsVistos() {
 
 
 
-  if (!userID) {
+  if (!userID || userID === "null") {
     ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tus últimos capítulos</p>';
     return;
   }
@@ -577,12 +577,10 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
   console.log(`Cargando ${container.id} - Límite: ${limite}, Offset: ${offset}`);
   
   const h2 = document.querySelector('#' + container.id + 'h2');
-  if (!container) return;
-  
-  if (!userID) {
-      container.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
-      return;
-  }
+  if (!userID || userID === "null") {
+    container.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
+    return;
+}
 
   const cacheKey = `${container.id}Cache_${userID}`;
   const cachedData = leerCache(cacheKey);
@@ -619,20 +617,50 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
 
       // Cargar datos paginados
       const titulosPaginados = titulos.slice(offset, offset + limite);
+      let animes = [];
+      
+      // Primero intentamos buscar por título
       const q = query(collection(db, "datos-animes"), where("titulo", "in", titulosPaginados));
-
       const querySnapshot = await getDocs(q);
-      const animes = [];
-      querySnapshot.forEach(doc => {
-          const data = doc.data();
-          animes.push({
-              id: doc.id,
-              titulo: data.titulo,
-              portada: data.portada || 'img/background.webp',
-              estado: data.estado || 'No disponible',
-              rating: data.rating || null
+      
+      // Si no encontramos resultados, intentamos buscar por ID del documento
+      if (querySnapshot.empty) {
+          // Buscar cada título como si fuera un ID de documento
+          const promesas = titulosPaginados.map(async (titulo) => {
+              try {
+                  const docRef = doc(db, "datos-animes", titulo);
+                  const docSnap = await getDoc(docRef);
+                  if (docSnap.exists()) {
+                      const data = docSnap.data();
+                      return {
+                          id: docSnap.id,
+                          titulo: data.titulo || titulo, // Usar el título del documento si no hay campo título
+                          portada: data.portada || 'img/background.webp',
+                          estado: data.estado || 'No disponible',
+                          rating: data.rating || null
+                      };
+                  }
+              } catch (error) {
+                  console.error("Error al buscar documento:", titulo, error);
+              }
+              return null;
           });
-      });
+          
+          const resultados = await Promise.all(promesas);
+          animes = resultados.filter(Boolean);
+      } else {
+          // Si encontramos por título, procesamos normalmente
+          querySnapshot.forEach(doc => {
+              const data = doc.data();
+              animes.push({
+                  id: doc.id,
+                  titulo: data.titulo,
+                  portada: data.portada || 'img/background.webp',
+                  estado: data.estado || 'No disponible',
+                  rating: data.rating || null
+              });
+          });
+      }
 
       // Actualizar caché si es primera página
       if (offset === 0) {
@@ -655,6 +683,11 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
 
 async function cargarFavoritos() {
   console.log('Ejecutando cargarFavoritos');
+    
+  if (!userID) {
+      container.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
+      return;
+  }
   const DocRef = doc(db, "usuarios", userID, "favoritos", "lista");
   cargarDatos(document.getElementById('favoritos'), DocRef);
 }
