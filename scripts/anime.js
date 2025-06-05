@@ -678,6 +678,8 @@ const ESTADOS = {
     texto: 'VISTO',
   }
 };
+const titulo = document.getElementById("titulo").textContent;
+
 async function actualizarEstadoFirebase(estado) {
   const user = auth.currentUser;
   if (!user) return;
@@ -698,12 +700,12 @@ async function actualizarEstadoFirebase(estado) {
   }
   
   // Si el anime ya está en la lista, lo quitamos
-  const index = animes.indexOf(id);
+  const index = animes.indexOf(titulo);
   if (index !== -1) {
     animes.splice(index, 1);
   } else {
     // Si no está, lo agregamos
-    animes.push(id);
+    animes.push(titulo);
   }
   
   // Actualizamos el documento
@@ -724,7 +726,7 @@ async function limpiarEstadosPrevios() {
     
     if (estadoDoc.exists()) {
       let animes = [...(estadoDoc.data().animes || [])];
-      const index = animes.indexOf(id);
+      const index = animes.indexOf(titulo);
       
       // Si encontramos el anime, lo eliminamos
       if (index !== -1) {
@@ -761,7 +763,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
         
         if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
           // Filtrar solo el ID del anime actual
-          const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
+          const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== titulo);
           
           // Actualizar solo si hay cambios
           if (animesActualizados.length !== estadoDoc.data().animes.length) {
@@ -801,7 +803,7 @@ async function obtenerEstadoActual() {
     const estadoDoc = await getDoc(estadoRef);
     
     if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
-      if (estadoDoc.data().animes.includes(id)) {
+      if (estadoDoc.data().animes.includes(titulo)) {
         return estado.toUpperCase();
       }
     }
@@ -859,5 +861,3 @@ scrollContainer.addEventListener('wheel', (e) => {
     scrollContainer.scrollLeft += e.deltaY;
   }
 }, { passive: false });
-
-//animaciones botnes al orpmir
