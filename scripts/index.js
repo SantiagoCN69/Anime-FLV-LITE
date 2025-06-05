@@ -563,6 +563,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   const favsDoc = await getDoc(favsRef);
 
   let titulosFavoritos = favsDoc.exists() ? favsDoc.data().animes || [] : [];
+  titulosFavoritos = [...titulosFavoritos].reverse();
   if (titulosFavoritos.length === 0) {
     favsContainer.innerHTML = '<p>No tienes animes en favoritos</p>';
     localStorage.removeItem(cacheKey);
