@@ -548,6 +548,9 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   console.log(`Cargando favoritos - Límite: ${limite}, Offset: ${offset}`);
   
   const favsContainer = document.getElementById('favoritos');
+  const h2 = document.querySelector('#Mis-Favoritos h2');
+
+
   if (!favsContainer) return;
   
   if (!userID) {
@@ -567,6 +570,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   if (titulosFavoritos.length === 0) {
     favsContainer.innerHTML = '<p>No tienes animes en favoritos</p>';
     localStorage.removeItem(cacheKey);
+    h2.classList.add('hidden');
     return;
   }
 
@@ -588,6 +592,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   // Mostrar animes
   if (offset === 0) {
     favsContainer.innerHTML = '';
+    h2.dataset.text = titulosFavoritos.length;
   }
   agregarAnimesAlContenedor(animesPaginados, favsContainer);
   
