@@ -534,6 +534,35 @@ async function cargarhistorial() {
   }
 }
 
+function manejarBotonVerMas(contenedor, hayMas, limite, offset, numAnimes) {
+  const btnAnterior = contenedor.querySelector('.ver-mas-btn');
+  if (btnAnterior) {
+    contenedor.removeChild(btnAnterior);
+  }
+
+  if (hayMas) {
+    const verMasBtn = document.createElement('button');
+    verMasBtn.className = 'ver-mas-btn';
+    verMasBtn.textContent = 'Ver más';
+    verMasBtn.onclick = () => cargarFavoritos(limite, offset + numAnimes);
+    contenedor.appendChild(verMasBtn);
+  }
+}
+
+function guardarCache2(key, data) {
+  try {
+    if (!data || !data.length) {
+      localStorage.removeItem(key);
+      return;
+    }
+    // Guardar solo los primeros 3 para depuración
+    const dataToCache = data.slice(0, 3);
+    localStorage.setItem(key, JSON.stringify(dataToCache));
+  } catch (e) {
+    console.error('Error al guardar en caché:', e);
+  }
+}
+
 function agregarAnimesAlContenedor(animes, contenedor) {
   const fragment = document.createDocumentFragment();
   animes.forEach(anime => {
@@ -646,35 +675,6 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   }
   agregarAnimesAlContenedor(animes, favsContainer);
   manejarBotonVerMas(favsContainer, hayMas, limite, offset, animes.length);
-}
-
-function manejarBotonVerMas(contenedor, hayMas, limite, offset, numAnimes) {
-  const btnAnterior = contenedor.querySelector('.ver-mas-btn');
-  if (btnAnterior) {
-    contenedor.removeChild(btnAnterior);
-  }
-
-  if (hayMas) {
-    const verMasBtn = document.createElement('button');
-    verMasBtn.className = 'ver-mas-btn';
-    verMasBtn.textContent = 'Ver más';
-    verMasBtn.onclick = () => cargarFavoritos(limite, offset + numAnimes);
-    contenedor.appendChild(verMasBtn);
-  }
-}
-
-function guardarCache2(key, data) {
-  try {
-    if (!data || !data.length) {
-      localStorage.removeItem(key);
-      return;
-    }
-    // Guardar solo los primeros 3 para depuración
-    const dataToCache = data.slice(0, 3);
-    localStorage.setItem(key, JSON.stringify(dataToCache));
-  } catch (e) {
-    console.error('Error al guardar en caché:', e);
-  }
 }
 
 async function cargarViendo() {
