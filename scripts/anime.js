@@ -189,6 +189,7 @@ const renderAnime = anime => {
   crearBotonesEpisodios(anime);
   ratingEl.textContent = anime.rating + "/5";
   renderRelacionados(anime);
+  actualizarEstadoFavorito()
 };
 
 const getAnchoColumna = () => {
@@ -611,12 +612,7 @@ async function obtenerFavoritosAnime() {
     : [];
 }
 
-// Detectar cambios de sesión
-onAuthStateChanged(auth, user => {
-  if (user) {
-    actualizarEstadoFavorito();
-  }
-});
+
 
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
   const progreso = (episodiosVistos.length / totalEpisodios) * 100;
