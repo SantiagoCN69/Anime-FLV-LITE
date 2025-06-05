@@ -618,44 +618,17 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
       const q = query(collection(db, "datos-animes"), where("titulo", "in", titulosPaginados));
       const querySnapshot = await getDocs(q);
       
-      // Si no encontramos resultados, intentamos buscar por ID del documento
-      if (querySnapshot.empty) {
-          // Buscar cada título como si fuera un ID de documento
-          const promesas = titulosPaginados.map(async (titulo) => {
-              try {
-                  const docRef = doc(db, "datos-animes", titulo);
-                  const docSnap = await getDoc(docRef);
-                  if (docSnap.exists()) {
-                      const data = docSnap.data();
-                      return {
-                          id: docSnap.id,
-                          titulo: data.titulo || titulo, // Usar el título del documento si no hay campo título
-                          portada: data.portada || 'img/background.webp',
-                          estado: data.estado || 'No disponible',
-                          rating: data.rating || null
-                      };
-                  }
-              } catch (error) {
-                  console.error("Error al buscar documento:", titulo, error);
-              }
-              return null;
-          });
-          
-          const resultados = await Promise.all(promesas);
-          animes = resultados.filter(Boolean);
-      } else {
-          // Si encontramos por título, procesamos normalmente
-          querySnapshot.forEach(doc => {
-              const data = doc.data();
-              animes.push({
-                  id: doc.id,
-                  titulo: data.titulo,
-                  portada: data.portada || 'img/background.webp',
-                  estado: data.estado || 'No disponible',
-                  rating: data.rating || null
-              });
-          });
-      }
+      // Si encontramos por título, procesamos normalmente
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        animes.push({
+          id: doc.id,
+          titulo: data.titulo,
+          portada: data.portada || 'img/background.webp',
+          estado: data.estado || 'No disponible',
+          rating: data.rating || null
+        });
+      });
 
       // Actualizar caché si es primera página
       if (offset === 0) {
