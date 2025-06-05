@@ -210,13 +210,9 @@ async function cargarUltimosCapsVistos() {
     ultimosCapsContainer.appendChild(fragment);
   };
 
-  const user = await new Promise(resolve => {
-    onAuthStateChanged(auth, (user) => {
-      resolve(user);
-    });
-  });
 
-  if (!user) {
+
+  if (!userID) {
     ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tus últimos capítulos</p>';
     return;
   }
@@ -242,7 +238,7 @@ async function cargarUltimosCapsVistos() {
   }
 
   try {
-    const ref = collection(doc(db, "usuarios", user.uid), "caps-vistos");
+    const ref = collection(doc(db, "usuarios", userID), "caps-vistos");
     const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(6));
     const snap = await getDocs(q);
     let freshData = [];
