@@ -348,8 +348,8 @@ async function cargarUltimosCapsVistos() {
     `;
     
     div.addEventListener('click', () => {
-      if (anime.animeId) {
-        ver(anime.animeId);
+      if (anime.id) {
+        ver(anime.id);
       }
     });
   
