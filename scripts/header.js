@@ -77,7 +77,6 @@ function crearAnimeCard(anime) {
 `;
 
   div.addEventListener('click', () => ver(animeId));
-  observerAnimeCards();
   return div;
 }
 
@@ -96,6 +95,7 @@ function mostrarResultados(data) {
     if (resultados.length > 0) {
       seccionResultados.classList.remove('hidden');
       resultados.forEach(anime => resultadosContainer.appendChild(crearAnimeCard(anime)));
+      observerAnimeCards();
     } else {
       seccionResultados.classList.remove('hidden');
       mostrarMensajeError(resultadosContainer, 'No hay resultados');
@@ -117,6 +117,7 @@ function mostrarResultados(data) {
   }
 
   resultados.forEach(anime => mainContainer.appendChild(crearAnimeCard(anime)));
+  observerAnimeCards();
 }
 
 // === Redirección ===
