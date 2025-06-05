@@ -74,17 +74,16 @@ function crearAnimeCardResultados(anime) {
     const div = document.createElement('div');
     div.className = 'anime-card';
     div.style.setProperty('--cover', `url(${anime.cover})`);
+    const urlPart = anime.url.split('/').slice(2).join('/');
     div.innerHTML = `
+    <a href="anime.html?id=${urlPart}">
     <div class="container-img">
       <img src="${anime.cover}" class="cover" alt="${anime.title}">
       <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
       <span class="estado">${anime.type}</span>
     </div>
     <strong>${anime.title}</strong>
-    `;
-    const urlPart = anime.url.split('/').slice(2).join('/');
-    div.addEventListener('click', () => window.location.href = `anime.html?id=${urlPart}`);
-    observerAnimeCards();
+    </a>`;
     return div;
 }
 
@@ -141,7 +140,11 @@ function cambiarPagina(page) {
     })
     .then(data => {
       resultadosContainer.innerHTML = '';
-      data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+      data.animes.forEach(anime => {
+        const card = crearAnimeCardResultados(anime);
+        resultadosContainer.appendChild(card);
+        observerAnimeCards();
+      });
       updatePagination(data);
     })
     .catch(error => {
@@ -174,7 +177,11 @@ function cargarAnimesConCache() {
       .then(response => response.json())
       .then(data => {
         resultadosContainer.innerHTML = '';
-        data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+        data.animes.forEach(anime => {
+          const card = crearAnimeCardResultados(anime);
+          resultadosContainer.appendChild(card);
+        });
+        observerAnimeCards();
         updatePagination(data);
       })
       .catch(error => {
@@ -192,7 +199,11 @@ function cargarAnimesConCache() {
       if (page === currentPage) {
         console.log('Usando caché para página:', currentPage);
         resultadosContainer.innerHTML = '';
-        data.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+        data.forEach(anime => {
+          const card = crearAnimeCardResultados(anime);
+          resultadosContainer.appendChild(card);
+        });
+        observerAnimeCards();
         updatePagination({ animes: data, PaginasTotales });
         return;
       }
@@ -211,7 +222,11 @@ function cargarAnimesConCache() {
   
         // Mostrar los datos
         resultadosContainer.innerHTML = '';
-        data.animes.forEach(anime => resultadosContainer.appendChild(crearAnimeCardResultados(anime)));
+        data.animes.forEach(anime => {
+          const card = crearAnimeCardResultados(anime);
+          resultadosContainer.appendChild(card);
+        });
+        observerAnimeCards();
         updatePagination(data);
       })
       .catch(error => {
