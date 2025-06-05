@@ -562,7 +562,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   const cachedData = leerCache(cacheKey);
 
   // Si hay datos en caché, mostrarlos primero
-  if (cachedData) {
+  if (cachedData && offset === 0) {
     console.log('Mostrando datos de caché');
     agregarAnimesAlContenedor(cachedData, favsContainer);
     h2.dataset.text = cachedData.length;
@@ -574,7 +574,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
 
   let titulosFavoritos = favsDoc.exists() ? favsDoc.data().animes || [] : [];
   titulosFavoritos = [...titulosFavoritos].reverse();
-
+  h2.dataset.text = titulosFavoritos.length;
   if (titulosFavoritos.length === 0) {
     favsContainer.innerHTML = '<p>No tienes animes en favoritos</p>';
     localStorage.removeItem(cacheKey);
@@ -584,7 +584,6 @@ async function cargarFavoritos(limite = 3, offset = 0) {
 
   // Si es la primera carga y hay datos en caché, mostrarlos primero
   if (offset === 0 && cachedData) {
-    
     // Verificar si los datos del caché están actualizados
     const ultimosTitulosCache = titulosFavoritos.slice(0, 3);
     const titulosCache = cachedData.map(a => a.titulo).slice(0, 3);
