@@ -1,3 +1,4 @@
+import { observerAnimeCards } from './utils.js';
 // === Utilidades ===
 function normalizarTexto(texto) {
   return texto.toLowerCase().normalize('NFD').replace(/\u0300-\u036f/g, '');
@@ -76,6 +77,7 @@ function crearAnimeCard(anime) {
 `;
 
   div.addEventListener('click', () => ver(animeId));
+  observerAnimeCards();
   return div;
 }
 

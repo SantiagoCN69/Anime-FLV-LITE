@@ -3,6 +3,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
+import { observerAnimeCards } from "./utils.js";
 
 
 // Inicialización de Firebase
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error al iniciar backend:', error);
         }
     })();
-
+    observerAnimeCards();
 });
 
 // Funciones para manejar el caché de animes
@@ -232,7 +233,7 @@ function crearAnimeCard(anime, isLink = false) {
                 }
             });
         }
-    
+    observerAnimeCards();
     return div;
 }
 
