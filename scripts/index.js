@@ -397,7 +397,7 @@ async function cargarUltimosCapsVistos() {
       const fragment = document.createDocumentFragment();
       datos.forEach(anime => {
         const card = createAnimeCard({
-          animeId: anime.url?.split('/').pop()?.replace(/-\d+$/, '') || '',
+          id: anime.url?.split('/').pop()?.replace(/-\d+$/, '') || '',
           portada: anime.cover || '',
           titulo: anime.title || 'Sin título',
           siguienteCapitulo: anime.chapter?.toString() || ''
