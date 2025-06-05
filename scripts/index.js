@@ -561,12 +561,20 @@ async function cargarFavoritos(limite = 3, offset = 0) {
   const cacheKey = `favoritosCache_${userID}`;
   const cachedData = leerCache(cacheKey);
 
+  // Si hay datos en caché, mostrarlos primero
+  if (cachedData) {
+    console.log('Mostrando datos de caché');
+    agregarAnimesAlContenedor(cachedData, favsContainer);
+    h2.dataset.text = cachedData.length;
+  }
+
   // Leer lista de títulos de favoritos
   const favsRef = doc(db, "usuarios", userID, "favoritos", "lista");
   const favsDoc = await getDoc(favsRef);
 
   let titulosFavoritos = favsDoc.exists() ? favsDoc.data().animes || [] : [];
   titulosFavoritos = [...titulosFavoritos].reverse();
+
   if (titulosFavoritos.length === 0) {
     favsContainer.innerHTML = '<p>No tienes animes en favoritos</p>';
     localStorage.removeItem(cacheKey);
@@ -574,32 +582,22 @@ async function cargarFavoritos(limite = 3, offset = 0) {
     return;
   }
 
-  // Verificar caché solo en la primera carga (offset = 0)
+  // Si es la primera carga y hay datos en caché, mostrarlos primero
   if (offset === 0 && cachedData) {
-    // Tomar solo los primeros 3 títulos para comparar (para depuración)
+    
+    // Verificar si los datos del caché están actualizados
     const ultimosTitulosCache = titulosFavoritos.slice(0, 3);
     const titulosCache = cachedData.map(a => a.titulo).slice(0, 3);
     
-    // Dentro del if (offset === 0 && cachedData)
-  if (JSON.stringify(ultimosTitulosCache) === JSON.stringify(titulosCache)) {
-  console.log('Usando datos de caché');
-  // Mostrar datos de caché paginados
-  const animesPaginados = cachedData.slice(offset, offset + limite);
-  
-  // Verificar si hay más animes en Firestore (no en caché)
-  const hayMasEnFirestore = offset + limite < titulosFavoritos.length;
-  
-  // Mostrar animes
-  if (offset === 0) {
-    favsContainer.innerHTML = '';
-    h2.dataset.text = titulosFavoritos.length;
-  }
-  agregarAnimesAlContenedor(animesPaginados, favsContainer);
-  
-  // Usar el total de títulos de Firestore para el botón "Ver más"
-  manejarBotonVerMas(favsContainer, hayMasEnFirestore, limite, offset, animesPaginados.length);
-  return;
-}
+    if (JSON.stringify(ultimosTitulosCache) === JSON.stringify(titulosCache)) {
+      console.log('Datos iguales');
+      const hayMasEnFirestore = offset + limite < titulosFavoritos.length;
+      manejarBotonVerMas(favsContainer, hayMasEnFirestore, limite, offset, cachedData.length);
+      return;
+    }
+    else {
+      console.log('Datos desactualizados');
+    }
   }
 
   // Obtener solo el rango de títulos que necesitamos
@@ -633,7 +631,7 @@ async function cargarFavoritos(limite = 3, offset = 0) {
     // Obtener todos los títulos para la caché
     const qCache = query(
       collection(db, "datos-animes"),
-      where("titulo", "in", titulosFavoritos.slice(0, 3)) // Solo primeros 3 para depuración
+      where("titulo", "in", titulosFavoritos.slice(0, 3)) 
     );
     
     const cacheSnapshot = await getDocs(qCache);
