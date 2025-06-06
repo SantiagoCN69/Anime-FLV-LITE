@@ -61,6 +61,22 @@ function inicializarSidebar() {
     }
   });
 
+  // Manejo de scroll en el sidebar
+  sidebar.addEventListener('touchstart', function(e) {
+    this._startY = e.touches[0].pageY;
+    this._startScroll = this.scrollTop;
+  }, { passive: false });
+
+  sidebar.addEventListener('touchmove', function(e) {
+    const y = e.touches[0].pageY;
+    const dy = this._startY - y;
+    const atTop = this.scrollTop === 0;
+    const atBottom = this.scrollTop + this.clientHeight >= this.scrollHeight;
+    if ((atTop && dy < 0) || (atBottom && dy > 0)) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
   // Configuración de gestos táctiles
   document.addEventListener('touchstart', (event) => {
     touchStartX = event.changedTouches[0].screenX;

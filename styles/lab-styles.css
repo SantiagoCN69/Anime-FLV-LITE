@@ -175,7 +175,6 @@ body {
   left: 0;
   padding: 1rem;
   z-index: 1000;
-  height: calc(100% - 88px);
 }
 .sidebar li {
   padding: 0;

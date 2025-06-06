@@ -21,8 +21,15 @@
   #menu-toggle {
     display: none;
   }
-  @media screen and (max-width: 600px) {
+
+.sidebar {
+  height: var(--altura-main);
+}
+@media screen and (max-width: 600px) {
     #menu-toggle {
       display: inline-block;
+    }
+    .sidebar {
+      height: calc(100vh - 88px);
     }
   }
