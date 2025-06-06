@@ -584,14 +584,14 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   if (cachedData && offset === 0) {
       console.log('Mostrando datos de caché');
       agregarAnimesAlContenedor(cachedData, container);
-      h2.dataset.text = cachedData.length;
+      h2.dataset.text = "Disponibles: " + cachedData.length;
   }
 
   try {
       // Obtener lista de favoritos
       const Doc = await getDoc(DocRef);
       let titulos = Doc.exists() ? [...Doc.data().animes || []].reverse() : [];
-      h2.dataset.text = titulos.length;
+      h2.dataset.text = "Disponibles: " + titulos.length;
 
       if (titulos.length === 0) {
           container.innerHTML = '<p>No tienes animes en ' + container.id + '</p>';
