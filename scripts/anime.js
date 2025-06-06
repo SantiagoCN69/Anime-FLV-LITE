@@ -153,9 +153,6 @@ async function renderRelacionados(anime) {
           }))
       )
     );
-    if (resultados.some(resultado => resultado.status === "rejected")) {
-      if (relacionadosSection) relacionadosSection.style.display = 'none';
-    }
 
     // Crear fragmento para mejor rendimiento
     const fragment = document.createDocumentFragment();
@@ -169,13 +166,19 @@ async function renderRelacionados(anime) {
         relationSpan.className = 'relation-tag';
         relationSpan.textContent = value.relation;
         card.appendChild(relationSpan);
-        
+        if (card) {
         fragment.appendChild(card);
+        }
       }
     });
-    console.log(fragment);
+    
+    if (fragment.children.length > 0) {
     relacionadosContainer.appendChild(fragment);
     observerAnimeCards();
+    }
+    else {
+      if (relacionadosSection) relacionadosSection.style.display = 'none';
+    }
   } catch (error) {
     
     if (relacionadosSection) relacionadosSection.style.display = 'none';
