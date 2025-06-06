@@ -214,8 +214,8 @@ header {
   -webkit-scrollbar: none;
   scrollbar-width: none;
   overscroll-behavior: contain;
-  -webkit-backdrop-filter: blur(30px) contrast(1.2);
-  backdrop-filter: blur(30px) contrast(1.2);
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px) brightness(1);
   will-change: transform;
 }
 
@@ -227,11 +227,11 @@ header {
   list-style: none;
   padding: 0;
   margin: 0;
-  color: var(--t1)
+  color: var(--t2)
 }
 .sidebar a {
   text-decoration: none;
-  color: var(--t1);
+  color: var(--t2);
   width: 100%;
   display: block;
   }
@@ -241,6 +241,7 @@ header {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color .5s;
+  text-shadow: 0 0 4px var(--br);
 }
 
 .sidebar li:hover, .sidebar > a:hover {
