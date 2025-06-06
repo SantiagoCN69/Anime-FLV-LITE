@@ -45,6 +45,7 @@ footer.appendChild(footerMessage);
 
 
 // INDICADOR sidebar scroll
+const sidebar = document.querySelector('.sidebar');
 if (localStorage.getItem('indicador') !== 'false' && window.innerWidth < 600) {
 const indicator = document.createElement('div');
 indicator.classList.add('scroll-indicator');
