@@ -729,14 +729,9 @@ width: 100%;
 .sidebar {
     position: absolute;
     top: 0;
-    margin: 0;
     transform: translateX(-100%);
-    left: 0;
-    padding: 1rem;
     padding-top: 88px;
-    z-index: 1000;
     height: 100%;
-    overscroll-behavior: contain;
 }
 .sidebar li {
   padding: 0;

@@ -24,6 +24,8 @@
 
 .sidebar {
   height: var(--altura-main);
+  margin: 2rem auto;
+  margin-right: 3%;
 }
 @media screen and (max-width: 600px) {
     #menu-toggle {

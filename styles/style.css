@@ -206,8 +206,8 @@ header {
   color: var(--t1);
   min-width: 220px;
   padding: 1rem;
-  margin: 2rem auto;
-  margin-right: 3%;
+  z-index: 1000;
+  left: 0;
   height: calc(100% - 88px);
   overflow-y: auto;
   border-right: 1px solid var(--br);

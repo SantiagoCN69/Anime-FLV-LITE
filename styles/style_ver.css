@@ -381,11 +381,7 @@ body {
 .sidebar {
   position: absolute;
   top: 88px;
-  margin: 0;
   transform: translateX(-100%);
-  left: 0;
-  padding: 1rem;
-  z-index: 1000;
 }
 .sidebar li {
   padding: 0;
