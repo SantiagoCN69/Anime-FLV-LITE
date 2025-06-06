@@ -40,8 +40,7 @@ header {
   padding: 2rem;
   width: 100%;
   margin: 0 auto;
-  height:5.5rem;;
-  position: relative;
+  height:5.5rem;
   background: var(--p);
   gap:15px;
   border-bottom: 1px solid var(--br);
@@ -310,7 +309,16 @@ header {
   header {
     padding-inline: 1rem;
   }
-
+  .search-active {
+    position: sticky;
+    top: 0;
+   z-index: 10;
+  }
+  .search-active .search {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
   .sidebar {
     position: absolute;
     top: 88px;
