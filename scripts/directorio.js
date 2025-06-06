@@ -448,6 +448,7 @@ btnFiltrar.addEventListener('click', async () => {
                 const card = crearAnimeCardResultados(anime);
                 resultadosContainer.appendChild(card);
             });
+            observerAnimeCards()
         } else {
             resultadosContainer.innerHTML = '<span class="span-carga">No se encontraron resultados</span>';
         }
