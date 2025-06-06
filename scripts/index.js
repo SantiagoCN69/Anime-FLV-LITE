@@ -573,7 +573,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   
   const h2 = document.querySelector('#' + container.id + 'h2');
   if (!userID || userID === "null") {
-    container.innerHTML = '<p>Inicia sesión para ver tus favoritos</p>';
+    container.innerHTML = '<p>Inicia sesión para ver tus animes en ' + container.id + '</p>';
     return;
 }
 
