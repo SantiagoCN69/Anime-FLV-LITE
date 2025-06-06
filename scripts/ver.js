@@ -71,7 +71,7 @@ async function refrescarUIEstadoCapitulo() {
     return;
   }
 
-  const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
+  const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
   const docSnap = await getDoc(animeRef);
   const capitulosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
 
@@ -111,7 +111,7 @@ async function toggleYGuardarEstadoCapitulo() {
     return;
   }
 
-  const animeRef = doc(db, "usuarios", user.uid, "caps-vistos", animeId);
+  const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
   const docSnap = await getDoc(animeRef);
   const capitulosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
 
