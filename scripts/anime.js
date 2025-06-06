@@ -824,11 +824,6 @@ async function actualizarEstadoActual() {
   }
 }
 
-// Escuchar cambios en la autenticación
-onAuthStateChanged(auth, async (user) => {
-  if (user) await actualizarEstadoActual();
-});
-
 // Eventos para los botones
 btnViendo.addEventListener('click', () => manejarEstadoSeleccionado(btnViendo));
 btnPendiente.addEventListener('click', () => manejarEstadoSeleccionado(btnPendiente));
