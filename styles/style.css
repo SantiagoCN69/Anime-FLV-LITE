@@ -186,17 +186,17 @@ header {
   cursor: pointer;
 }
 
-#menu-toggle::before {
-  content: "";
-  width: 25px;
-  height: 25px;
+#menu-toggle span {
   display: block;
-  background-color: var(--t2); 
-  -webkit-mask-size: contain;
-  -webkit-mask: url('../icons/bars-solid.svg') no-repeat center;
-  mask-size: contain;
-  mask: url('../icons/bars-solid.svg') no-repeat center;
+  width: 25px;
+  height: 3px;
+  background-color: var(--t2);
+  margin: 5px 0;
+  transition: transform .2s, opacity .2s;
 }
+#menu-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+#menu-toggle.active span:nth-child(2) { opacity: 0; }
+#menu-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
 .sidebar::-webkit-scrollbar {
   display: none;

@@ -683,21 +683,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const sections = document.querySelectorAll(".content-section");
   const menuItems = [...document.querySelectorAll(".sidebar li")];
 
-  const toggleSidebar = () => sidebar.classList.toggle("active");
-  const closeSidebar = () => sidebar.classList.remove("active");
   const isMobile = () => window.innerWidth <= 600;
 
   menuBtn.addEventListener("click", () => {
-    if (!sidebar.classList.contains("active") && window.scrollY > 0) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      toggleSidebar();
-    }
+    sidebar.classList.toggle("active");
+    menuBtn.classList.toggle("active");
   });
 
   window.addEventListener("scroll", () => {
     if (isMobile() && sidebar.classList.contains("active")) {
-      closeSidebar();
+      sidebar.classList.remove("active")
+      menuBtn.classList.remove("active")
     }
   });
 
@@ -706,7 +702,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const handleSwipe = () => {
     if (sidebar.classList.contains("active")) {
       const dist = touchStartX - touchEndX;
-      if (dist > 50) closeSidebar();
+      if (dist > 50) {
+        sidebar.classList.remove("active")
+        menuBtn.classList.remove("active")
+      }
     }
   };
   document.addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
@@ -733,6 +732,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const checkScroll = () => {
             if (window.scrollY === 0) {
               sidebar.classList.add("active");
+              menuBtn.classList.add("active");
             } else {
               requestAnimationFrame(checkScroll);
             }
@@ -740,6 +740,7 @@ document.addEventListener("DOMContentLoaded", () => {
           checkScroll(); 
         } else {
           sidebar.classList.add("active");
+          menuBtn.classList.add("active");
         }
       }
     }, { passive: true });

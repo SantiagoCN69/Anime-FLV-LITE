@@ -37,6 +37,7 @@ function inicializarSidebar() {
   // Alternar el estado del sidebar al hacer clic en el botón de toggle
   menuToggle.addEventListener('click', () => {
     sidebar.classList.toggle('active');
+    menuToggle.classList.toggle('active');
   });
 
   // Oculta el sidebar al hacer scroll en dispositivos móviles
@@ -44,6 +45,7 @@ function inicializarSidebar() {
     if (window.innerWidth < 600) {
       if (sidebar.classList.contains('active')) {
         sidebar.classList.remove('active');
+        menuToggle.classList.remove('active');
       }
     }
   });
@@ -55,6 +57,7 @@ function inicializarSidebar() {
 
     if (!isClickInsideSidebar && !isClickOnMenuToggle && sidebar.classList.contains('active')) {
       sidebar.classList.remove('active');
+      menuToggle.classList.remove('active');
     }
   });
 
@@ -102,6 +105,7 @@ function onMouseMove(event) {
     requestAnimationFrame(() => {
       if (event.clientX < THRESHOLD) {
         sidebar.classList.add('active');
+        menuToggle.classList.add("active")
       }
       rafPending = false;
     });
@@ -110,6 +114,7 @@ function onMouseMove(event) {
 
 function onSidebarMouseLeave() {
   sidebar.classList.remove('active');
+  menuToggle.classList.remove("active")
 }
 
 function handleSwipeGesture() {
@@ -126,6 +131,7 @@ function handleSwipeGesture() {
         function checkScrollAndOpen() {
           if (window.scrollY === 0) {
             sidebar.classList.add('active');
+            menuToggle.classList.add('active');
           } else {
             requestAnimationFrame(checkScrollAndOpen);
           }
@@ -133,12 +139,15 @@ function handleSwipeGesture() {
         requestAnimationFrame(checkScrollAndOpen);
       } else {
         sidebar.classList.add('active');
+        menuToggle.classList.add('active');
       }
     } else {
       sidebar.classList.add('active');
+      menuToggle.classList.add('active');
     }
   } else if (isSwipeLeft && sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold) {
     sidebar.classList.remove('active');
+    menuToggle.classList.remove('active');
   }
 }
 
