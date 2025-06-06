@@ -11,7 +11,7 @@ const db = getFirestore(app);
 
 const id = new URLSearchParams(location.search).get("id");
 
-let user = localStorage.getItem("userID");
+const userID = localStorage.getItem("userID");
 
 // Cargar información del anime
 document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
@@ -182,7 +182,6 @@ async function renderRelacionados(anime) {
 }
 
 function crearAnimeCard(anime) {
-  const animeId = anime.id;
   const div = document.createElement('div');
   let ratingHtml = '';
   if (anime.rating) {
@@ -555,10 +554,9 @@ const btnFav = document.getElementById('btn-fav');
 
 // Función para actualizar botón de favorito
 function actualizarEstadoFavorito() {
-  const tituloAnime = document.getElementById("titulo").textContent;
   obtenerFavoritosAnime()
     .then(favoritos => {
-      const esFavorito = favoritos.includes(tituloAnime);
+      const esFavorito = favoritos.includes(id);
       btnFav.classList.toggle("favorito", esFavorito);
       btnFav.textContent = esFavorito ? "FAVORITO" : "FAV";
     })
@@ -603,7 +601,7 @@ async function toggleFavoritoAnime(titulo) {
   }
 
   // Verificar si el anime ya está en favoritos
-  const index = favoritos.indexOf(titulo);
+  const index = favoritos.indexOf(id);
   
   if (index !== -1) {
     // Eliminar de favoritos
@@ -614,7 +612,7 @@ async function toggleFavoritoAnime(titulo) {
     return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
   } else {
     // Agregar a favoritos
-    favoritos.push(titulo);
+    favoritos.push(id);
     btnFav.classList.add('aparecer');
     setTimeout(() => btnFav.classList.remove('aparecer'), 500);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
@@ -678,7 +676,6 @@ const ESTADOS = {
     texto: 'VISTO',
   }
 };
-const titulo = document.getElementById("titulo").textContent;
 
 async function actualizarEstadoFirebase(estado) {
   const user = localStorage.getItem("userID");
@@ -691,7 +688,7 @@ async function actualizarEstadoFirebase(estado) {
   
   const estadoLower = estado.toLowerCase();
   // Actualizamos el documento del estado con el nuevo anime
-  const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estadoLower);
+  const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoLower);
   const estadoDoc = await getDoc(estadoRef);
   
   let animes = [];
@@ -700,12 +697,12 @@ async function actualizarEstadoFirebase(estado) {
   }
   
   // Si el anime ya está en la lista, lo quitamos
-  const index = animes.indexOf(titulo);
+  const index = animes.indexOf(id);
   if (index !== -1) {
     animes.splice(index, 1);
   } else {
     // Si no está, lo agregamos
-    animes.push(titulo);
+    animes.push(id);
   }
   
   // Actualizamos el documento
@@ -721,12 +718,12 @@ async function limpiarEstadosPrevios() {
   
   // Recorremos cada estado
   for (const estado of estados) {
-    const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estado);
+    const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estado);
     const estadoDoc = await getDoc(estadoRef);
     
     if (estadoDoc.exists()) {
       let animes = [...(estadoDoc.data().animes || [])];
-      const index = animes.indexOf(titulo);
+      const index = animes.indexOf(id);
       
       // Si encontramos el anime, lo eliminamos
       if (index !== -1) {
@@ -763,7 +760,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
         
         if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
           // Filtrar solo el ID del anime actual
-          const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== titulo);
+          const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
           
           // Actualizar solo si hay cambios
           if (animesActualizados.length !== estadoDoc.data().animes.length) {
@@ -803,7 +800,7 @@ async function obtenerEstadoActual() {
     const estadoDoc = await getDoc(estadoRef);
     
     if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
-      if (estadoDoc.data().animes.includes(titulo)) {
+      if (estadoDoc.data().animes.includes(id)) {
         return estado.toUpperCase();
       }
     }
