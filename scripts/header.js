@@ -87,6 +87,7 @@ function mostrarResultados(data) {
   if (isIndexPage) {
     const resultadosContainer = document.getElementById('resultados-busqueda');
     const seccionResultados = document.getElementById('Busqueda-Resultados');
+    const busquedaH2 = document.getElementById('busqueda-h2');
     document.querySelectorAll('.content-section').forEach(sec => {
       if (!sec.classList.contains('hidden')) sec.classList.add('hidden');
     });
@@ -95,10 +96,12 @@ function mostrarResultados(data) {
     if (resultados.length > 0) {
       seccionResultados.classList.remove('hidden');
       resultados.forEach(anime => resultadosContainer.appendChild(crearAnimeCard(anime)));
+      busquedaH2.dataset.text = 'Resultados: ' + resultados.length;
       observerAnimeCards();
     } else {
       seccionResultados.classList.remove('hidden');
       mostrarMensajeError(resultadosContainer, 'No hay resultados');
+      busquedaH2.dataset.text = 'No hay resultados';
     }
     return;
   }
