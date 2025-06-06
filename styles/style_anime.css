@@ -99,7 +99,7 @@ header {
 
 #btn-fav {
   grid-area: fav;
-  background: #5a131a;
+  background: #5a131aad;
   transition: background 0.3s ease;
   display: flex;
   align-items: center;
