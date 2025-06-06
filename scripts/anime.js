@@ -11,7 +11,7 @@ const db = getFirestore(app);
 
 const id = new URLSearchParams(location.search).get("id");
 
-
+let user = localStorage.getItem("userID");
 
 // Cargar información del anime
 document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
@@ -344,9 +344,9 @@ async function manejarEstadoEpisodio(btn, icon, ep) {
 }
 
 async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) throw 'No autenticado';
-  const ref = doc(db, 'usuarios', user.uid, 'caps-vistos', animeId);
+  const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
   const snap = await getDoc(ref);
   let arr = snap.exists() ? snap.data().episodiosVistos || [] : [];
   arr = esVisto ? Array.from(new Set([...arr, episodio.toString()])) : arr.filter(x => x !== episodio.toString());
@@ -589,12 +589,12 @@ btnFav.addEventListener("click", () => {
 });
 // Función para alternar favoritos
 async function toggleFavoritoAnime(titulo) {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) {
     throw "Usuario no autenticado";
   }
 
-  const favoritosRef = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), "lista");
+  const favoritosRef = doc(collection(doc(db, "usuarios", user), "favoritos"), "lista");
   const favoritosDoc = await getDoc(favoritosRef);
   
   let favoritos = [];
@@ -624,10 +624,10 @@ async function toggleFavoritoAnime(titulo) {
 
 // Obtener lista de favoritos
 async function obtenerFavoritosAnime() {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) return [];
 
-  const favoritosRef = doc(collection(doc(db, "usuarios", user.uid), "favoritos"), "lista");
+  const favoritosRef = doc(collection(doc(db, "usuarios", user), "favoritos"), "lista");
   const favoritosDoc = await getDoc(favoritosRef);
   
   return favoritosDoc.exists() && favoritosDoc.data().animes 
@@ -681,7 +681,7 @@ const ESTADOS = {
 const titulo = document.getElementById("titulo").textContent;
 
 async function actualizarEstadoFirebase(estado) {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) return;
 
   // Primero limpiamos cualquier estado previo
@@ -714,7 +714,7 @@ async function actualizarEstadoFirebase(estado) {
 
 // Eliminar el anime de todos los estados
 async function limpiarEstadosPrevios() {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) return;
 
   const estados = ['viendo', 'pendiente', 'visto'];
@@ -743,7 +743,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
   const btnEstado = document.getElementById('btn-estado');
   const estadoId = btnSeleccionado.id.replace('btn-', '');
   const estado = ESTADOS[estadoId];
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   
   if (!user) return;
 
@@ -792,7 +792,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
 
 // Obtener el estado actual
 async function obtenerEstadoActual() {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) return null;
 
   const estados = ['viendo', 'pendiente', 'visto'];
@@ -813,7 +813,7 @@ async function obtenerEstadoActual() {
 
 // Cargar el estado actual en la UI
 async function actualizarEstadoActual() {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) return;
 
   const estadoActual = await obtenerEstadoActual();

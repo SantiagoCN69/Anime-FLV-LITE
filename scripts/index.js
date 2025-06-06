@@ -536,7 +536,7 @@ function guardarCache2(key, data) {
     }
     console.log('Datos para guardar en caché:', data);
     // Guardar solo los primeros 3 para depuración
-    const dataToCache = data.slice(0, 3);
+    const dataToCache = data.slice(0, 10);
     localStorage.setItem(key, JSON.stringify(dataToCache));
   } catch (e) {
     console.error('Error al guardar en caché:', e);
@@ -568,7 +568,7 @@ function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes
   }
 }
 
-async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
+async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   console.log(`Cargando ${container.id} - Límite: ${limite}, Offset: ${offset}`);
   
   const h2 = document.querySelector('#' + container.id + 'h2');
@@ -601,8 +601,8 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
 
       // Verificar caché solo si es primera página
       if (offset === 0 && cachedData) {
-          const ultimosTitulos = titulos.slice(0, 3).toString();
-          const titulosCache = cachedData.map(a => a.titulo).slice(0, 3).toString();
+          const ultimosTitulos = titulos.slice(0, limite).toString();
+          const titulosCache = cachedData.map(a => a.titulo).slice(0, limite).toString();
           if (ultimosTitulos === titulosCache) {
               const hayMas = offset + limite < titulos.length;
               manejarBotonVerMas(container, DocRef, hayMas, limite, offset, cachedData.length);
@@ -632,9 +632,9 @@ async function cargarDatos(container, DocRef, limite = 3, offset = 0) {
 
       // Actualizar caché si es primera página
       if (offset === 0) {
-        const cacheAnimes = animes.slice(0, 3);
+        const cacheAnimes = animes.slice(0, limite);
         const animesOrdenados = titulos
-            .slice(0, 3)
+            .slice(0, limite)
             .map(titulo => cacheAnimes.find(a => a.titulo === titulo))
             .filter(Boolean);
         guardarCache2(cacheKey, animesOrdenados);

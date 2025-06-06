@@ -65,7 +65,7 @@ function ponerTitulo(id) {
 ponerTitulo(animeId);
 
 async function refrescarUIEstadoCapitulo() {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) {
     console.warn('refrescarUIEstadoCapitulo: No hay usuario autenticado, no se actualiza UI de estado del capítulo.');
     return;
@@ -105,7 +105,7 @@ async function refrescarUIEstadoCapitulo() {
 }
 
 async function toggleYGuardarEstadoCapitulo() {
-  const user = auth.currentUser;
+  const user = localStorage.getItem("userID");
   if (!user) {
     console.warn('toggleYGuardarEstadoCapitulo: No hay usuario autenticado.');
     return;
