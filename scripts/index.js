@@ -612,33 +612,31 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
               return;
           }
       }
-      console.log('hola');
-      // Cargar datos paginados
-      const titulosPaginados = titulos.slice(offset, offset + limite);
+      // Obtener los IDs de los animes a buscar
+      const idsABuscar = titulos.slice(offset, offset + limite);
       let animes = [];
       
-      // Primero intentamos buscar por título
-      const q = query(collection(db, "datos-animes"), where("titulo", "in", titulosPaginados));
-      const querySnapshot = await getDocs(q);
-      
-      // Si encontramos por título, procesamos normalmente
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        animes.push({
-          id: doc.id,
-          titulo: data.titulo,
-          portada: data.portada || 'img/background.webp',
-          estado: data.estado || 'No disponible',
-          rating: data.rating || null
-        });
-      });
-
+      // Obtener cada documento por su ID
+      for (const id of idsABuscar) {
+        const docSnap = await getDoc(doc(db, "datos-animes", id));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          animes.push({
+            id: docSnap.id,
+            titulo: data.titulo,
+            portada: data.portada || 'img/background.webp',
+            estado: data.estado || 'No disponible',
+            rating: data.rating || null
+          });
+        }
+      }
+      console.log(animes);
       // Actualizar caché si es primera página
       if (offset === 0) {
         const cacheAnimes = animes.slice(0, limite);
         const animesOrdenados = titulos
             .slice(0, limite)
-            .map(titulo => cacheAnimes.find(a => a.titulo === titulo))
+            .map(id => cacheAnimes.find(a => a.id === id))
             .filter(Boolean);
         guardarCache2(cacheKey, animesOrdenados);
         container.innerHTML = '';
