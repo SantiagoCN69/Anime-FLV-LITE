@@ -214,8 +214,8 @@ header {
   -webkit-scrollbar: none;
   scrollbar-width: none;
   overscroll-behavior: contain;
-  -webkit-backdrop-filter: blur(30px);
-  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px) contrast(1.2);
+  backdrop-filter: blur(30px) contrast(1.2);
   will-change: transform;
 }
 
@@ -227,11 +227,11 @@ header {
   list-style: none;
   padding: 0;
   margin: 0;
-  color: var(--t2)
+  color: var(--t1)
 }
 .sidebar a {
   text-decoration: none;
-  color: var(--t2);
+  color: var(--t1);
   width: 100%;
   display: block;
   }
@@ -329,7 +329,6 @@ header {
     height: calc(100vh - 88px);
     transform: translateX(-120%);
     overflow-y: auto;
-    filter: contrast(1.2) ;
   }
 
   #btn-login span{
