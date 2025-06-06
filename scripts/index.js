@@ -567,6 +567,10 @@ function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes
 }
 
 async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
+  const btnAnterior = container.querySelector('.ver-mas-btn');
+  if (btnAnterior) {
+    btnAnterior.textContent = "cargando...";
+  }
   console.log(`Cargando ${container.id} - Límite: ${limite}, Offset: ${offset}`);
   
   const h2 = document.querySelector('#' + container.id + 'h2');
