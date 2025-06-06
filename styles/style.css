@@ -208,7 +208,7 @@ header {
   padding: 1rem;
   margin: 2rem auto;
   margin-right: 3%;
-  height: 100%;
+  height: calc(100% - 88px);
   overflow-y: auto;
   border-right: 1px solid var(--br);
   -webkit-scrollbar: none;

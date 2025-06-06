@@ -735,7 +735,7 @@ width: 100%;
     padding: 1rem;
     padding-top: 88px;
     z-index: 1000;
-    height: 100vh;
+    height: 100%;
     overscroll-behavior: contain;
 }
 .sidebar li {
