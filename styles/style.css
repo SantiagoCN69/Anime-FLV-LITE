@@ -313,6 +313,7 @@ header {
     position: sticky;
     top: 0;
    z-index: 10;
+   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   }
   .search-active .search {
     opacity: 1;
@@ -390,10 +391,10 @@ header.search-active #menu-toggle {
 
 .search {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  margin: 0 auto;
-  inset: 0;
-  height: 100%;
+  margin: 22px auto;
   z-index: 10;
   display: flex;
   align-items: center;
