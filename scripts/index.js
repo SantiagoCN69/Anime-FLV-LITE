@@ -527,14 +527,12 @@ async function cargarhistorial() {
 }
 
 function guardarCache2(key, data) {
-  console.log('Guardando en caché:', key);
   try {
     if (!data || !data.length) {
       localStorage.removeItem(key);
       console.log('No hay datos para guardar en caché');
       return;
     }
-    console.log('Datos para guardar en caché:', data);
     // Guardar solo los primeros 3 para depuración
     const dataToCache = data.slice(0, 10);
     localStorage.setItem(key, JSON.stringify(dataToCache));
@@ -606,6 +604,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           if (ultimosTitulos === titulosCache) {
               const hayMas = offset + limite < titulos.length;
               manejarBotonVerMas(container, DocRef, hayMas, limite, offset, cachedData.length);
+              console.log("iguales, fin");
               return;
           }
       }
@@ -638,8 +637,10 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
             .map(titulo => cacheAnimes.find(a => a.titulo === titulo))
             .filter(Boolean);
         guardarCache2(cacheKey, animesOrdenados);
-        console.log('Datos guardados en caché:', animesOrdenados);
         container.innerHTML = '';
+        agregarAnimesAlContenedor(animesOrdenados, container);
+        manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length);
+        return;
       }
       agregarAnimesAlContenedor(animes, container);
       manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animes.length);
