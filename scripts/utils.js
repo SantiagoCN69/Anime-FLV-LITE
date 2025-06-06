@@ -45,17 +45,20 @@ footer.appendChild(footerMessage);
 
 
 // INDICADOR sidebar scroll
+document.addEventListener('DOMContentLoaded', () => {
 const sidebar = document.querySelector('.sidebar');
-if (localStorage.getItem('indicador') !== 'false' && window.innerWidth < 600) {
+if (!localStorage.key("indicador") && window.innerWidth < 600 && localStorage.key('userID')) {
+  console.log('indicador');
 const indicator = document.createElement('div');
 indicator.classList.add('scroll-indicator');
 sidebar.appendChild(indicator);
 
 sidebar.addEventListener('scroll', () => {
   indicator.style.opacity = '0';
-  localStorage.setItem('indicador', 'false');
+  localStorage.setItem('indicador', 'true');
 });
 }
+});
 //INDICADOR funcion cambiar tema
 document.addEventListener('authStateReady', function() {
   const btnLogin = document.getElementById('btn-login');
