@@ -202,6 +202,7 @@ transform: translateY(0);
   align-items: center;
   transition: background 0.3s ease;
   background-color: var(--p);
+  box-shadow: 3px 3px 20px rgb(var(--bgt),.2);
 }
 
 #Estados button.active {
@@ -209,32 +210,51 @@ transform: translateY(0);
   border-radius: 5px;
 }
 
-
-#btn-estado:hover {
-opacity: 1;
+#Estados button:hover::after {
+transform: translateY(-20%);
 }
   /* Estados del botón */
-  #btn-estado.estado-default {
-    background: rgba(var(--bgt), .3);
-  }
+#btn-estado.estado-default {
+  background: rgba(var(--bgt), .3);
+}
 
-  #Estados img {
-    width: 17px;
-    height: 17px;
-    display: inline-block;
-    filter: invert(100%);
-  }
-  #btn-viendo.active {
-    background: #22cee9;
-  }
+#Estados button::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: var(--t1);
+  pointer-events: none;
+  transition: transform .2s;
+}
 
-  #btn-pendiente.active {
-    background: #ffc107;
-  }
+#btn-viendo.active {
+  background: #22cee9;
+}
 
-  #btn-visto.active {
-    background: #00c853;
-  }
+#btn-viendo::after {
+  -webkit-mask: url('../icons/eye-solid.svg') no-repeat center;
+  mask: url('../icons/eye-solid.svg') no-repeat center;
+}
+
+#btn-pendiente.active {
+  background: #ffc107;
+}
+
+#btn-pendiente::after {
+  background-color: var(--t1);
+  -webkit-mask: url('../icons/clock-solid.svg') no-repeat center;
+  mask: url('../icons/clock-solid.svg') no-repeat center;
+}
+
+#btn-visto.active {
+  background: #00c853;
+}
+
+#btn-visto::after {
+  background-color: var(--t1);
+  -webkit-mask: url('../icons/circle-check-solid.svg') no-repeat center;
+  mask: url('../icons/circle-check-solid.svg') no-repeat center;
+}
 
 #btn-progreso {
   grid-area: progreso;
