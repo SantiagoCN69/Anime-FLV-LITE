@@ -705,9 +705,7 @@ width: 100%;
   .anime-description { -webkit-line-clamp: 8; line-clamp: 8; }
 }
 
-#menu-toggle {
-    display: block;
-}
+
 .sidebar {
     position: absolute;
     top: 0;

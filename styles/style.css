@@ -178,7 +178,7 @@ header {
 
 /* Esconde el botón de menú en PC */
 #menu-toggle {
-  display: none;
+  display: block;
   font-size: 1.5rem;
   background: none;
   border: none;
@@ -230,7 +230,7 @@ header {
   width: 100%;
   display: block;
   }
-.sidebar li, #btn-lab, #btn-directorio2 {
+.sidebar li, .sidebar a {
   padding: 12px 16px;
   margin-bottom: 8px;
   border-radius: 8px;
@@ -238,7 +238,7 @@ header {
   transition: background-color .5s;
 }
 
-.sidebar li:hover, #btn-directorio2:hover, #btn-lab:hover {
+.sidebar li:hover, .sidebar > a:hover {
   background-color: rgba(var(--bgt), .2);
   color: var(--t1);
 }
@@ -305,18 +305,13 @@ header {
   header {
     padding-inline: 1rem;
   }
-  #menu-toggle {
-    display: inline-block;
-  }
 
   .sidebar {
     position: absolute;
     top: 88px;
     left: 0;
     padding: 1.5rem;
-    color: var(--t1);
     margin: 0;
-    border-radius: 0;
     width: clamp(235px, 60%, 60%);
     height: calc(100dvh - 88px);
     -webkit-backdrop-filter: blur(30px);
