@@ -214,6 +214,7 @@ header {
   border-right: 1px solid var(--br);
   -webkit-scrollbar: none;
   scrollbar-width: none;
+  overscroll-behavior: contain;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
 }
