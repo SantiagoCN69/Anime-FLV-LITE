@@ -213,7 +213,6 @@ header {
   overflow-y: auto;
   border-right: 1px solid var(--br);
   -webkit-scrollbar: none;
-  overscroll-behavior-y: contain;
   scrollbar-width: none;
 }
 
