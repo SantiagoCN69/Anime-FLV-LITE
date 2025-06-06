@@ -11,6 +11,8 @@ const db = getFirestore(app);
 
 const id = new URLSearchParams(location.search).get("id");
 
+document.title = "Anime - " + id;
+
 const userID = localStorage.getItem("userID");
 
 // Cargar información del anime
@@ -140,7 +142,6 @@ async function renderRelacionados(anime) {
       if (esUnico) titulosUnicos.add(rel.title);
       return esUnico;
     });
-
     // Hacer todas las peticiones en paralelo
     const resultados = await Promise.allSettled(
       relacionesUnicas.map(relacionado => 
@@ -152,6 +153,9 @@ async function renderRelacionados(anime) {
           }))
       )
     );
+    if (resultados.some(resultado => resultado.status === "rejected")) {
+      if (relacionadosSection) relacionadosSection.style.display = 'none';
+    }
 
     // Crear fragmento para mejor rendimiento
     const fragment = document.createDocumentFragment();
@@ -161,7 +165,6 @@ async function renderRelacionados(anime) {
       if (status === 'fulfilled' && value?.data && !idsAgregados.has(value.data.id)) {
         idsAgregados.add(value.data.id);
         const card = crearAnimeCard(value.data);
-        
         const relationSpan = document.createElement('span');
         relationSpan.className = 'relation-tag';
         relationSpan.textContent = value.relation;
@@ -170,10 +173,12 @@ async function renderRelacionados(anime) {
         fragment.appendChild(card);
       }
     });
-
+    console.log(fragment);
     relacionadosContainer.appendChild(fragment);
     observerAnimeCards();
   } catch (error) {
+    
+    if (relacionadosSection) relacionadosSection.style.display = 'none';
     console.error('Error al cargar animes relacionados:', error);
   } finally {
     if (initLoading) initLoading.style.display = 'none';
