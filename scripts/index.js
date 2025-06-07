@@ -604,14 +604,14 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
       // Verificar caché solo si es primera página
       if (offset === 0 && cachedData) {
           const ultimosTitulos = titulos.slice(0, limite).toString();
-          const titulosCache = cachedData.map(a => a.titulo).slice(0, limite).toString();
+          const titulosCache = cachedData.map(a => a.id).slice(0, limite).toString();
           if (ultimosTitulos === titulosCache) {
               const hayMas = offset + limite < titulos.length;
               manejarBotonVerMas(container, DocRef, hayMas, limite, offset, cachedData.length);
               console.log("iguales, fin");
               return;
-          }
-      }
+          } 
+        }
       // Obtener los IDs de los animes a buscar
       const idsABuscar = titulos.slice(offset, offset + limite);
       let animes = [];
@@ -630,7 +630,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           });
         }
       }
-      console.log(animes);
       // Actualizar caché si es primera página
       if (offset === 0) {
         const cacheAnimes = animes.slice(0, limite);
