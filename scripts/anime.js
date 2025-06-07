@@ -762,15 +762,11 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
       estadoText.innerHTML = 'ESTADO';
       
       try {
-        // Obtener referencia al documento del estado
         const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estadoId);
         const estadoDoc = await getDoc(estadoRef);
         
         if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
-          // Filtrar solo el ID del anime actual
           const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
-          
-          // Actualizar solo si hay cambios
           if (animesActualizados.length !== estadoDoc.data().animes.length) {
             await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
           }
@@ -782,7 +778,6 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
     return;
   }
 
-  // Si el botón no estaba activo, proceder normalmente
   [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
   btnSeleccionado.classList.add('active');
   seccionEstados.classList.remove('active');
@@ -795,14 +790,12 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
   await actualizarEstadoFirebase(estadoId.toUpperCase());
 }
 
-// Obtener el estado actual
 async function obtenerEstadoActual() {
   const user = localStorage.getItem("userID");
   if (!user) return null;
 
   const estados = ['viendo', 'pendiente', 'visto'];
   
-  // Verificamos en cada estado
   for (const estado of estados) {
     const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estado);
     const estadoDoc = await getDoc(estadoRef);
@@ -816,7 +809,6 @@ async function obtenerEstadoActual() {
   return null;
 }
 
-// Cargar el estado actual en la UI
 async function actualizarEstadoActual() {
   const user = localStorage.getItem("userID");
   if (!user) return;
@@ -829,17 +821,13 @@ async function actualizarEstadoActual() {
   }
 }
 
-// Eventos para los botones
 btnViendo.addEventListener('click', () => manejarEstadoSeleccionado(btnViendo));
 btnPendiente.addEventListener('click', () => manejarEstadoSeleccionado(btnPendiente));
 btnVisto.addEventListener('click', () => manejarEstadoSeleccionado(btnVisto));
 
-// Mostrar/ocultar sección
 document.getElementById("btn-estado").addEventListener("click", () => {
   seccionEstados.classList.toggle("active");
 });
-
-// Cerrar la sección cuando se haga clic fuera
 document.addEventListener("click", (e) => {
   const seccion = document.getElementById("Estados");
   const btnEstado = document.getElementById("btn-estado");
@@ -850,14 +838,11 @@ document.addEventListener("click", (e) => {
   }
 });
 
-
-
-// dezplazamiento relacioandos
 const scrollContainer = document.querySelector('#animes-relacionados');
 
 scrollContainer.addEventListener('wheel', (e) => {
   if (e.deltaY !== 0) {
-    e.preventDefault(); // evita el scroll vertical
+    e.preventDefault(); 
     scrollContainer.scrollLeft += e.deltaY;
   }
 }, { passive: false });
