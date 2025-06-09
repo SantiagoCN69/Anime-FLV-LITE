@@ -41,7 +41,11 @@ const mainLab = document.getElementById('main-lab');
 const sidebar = document.querySelector('.sidebar');
 const disqusThread = document.getElementById('disqus_thread');
 const relacionados = document.getElementById('relacionados');
+const EsMovil = window.innerWidth < 530;
 
+if(EsMovil){
+  document.getElementById('busqueda-h2').dataset.text = '...';
+}
 // === UI: eventos de búsqueda ===
 document.getElementById('btn-search').addEventListener('click', () => {
   document.querySelector('header').classList.add('search-active');
@@ -88,20 +92,31 @@ function mostrarResultados(data) {
     const resultadosContainer = document.getElementById('resultados-busqueda');
     const seccionResultados = document.getElementById('Busqueda-Resultados');
     const busquedaH2 = document.getElementById('busqueda-h2');
+
+    
     document.querySelectorAll('.content-section').forEach(sec => {
       if (!sec.classList.contains('hidden')) sec.classList.add('hidden');
     });
     resultadosContainer.innerHTML = '';
-
     if (resultados.length > 0) {
       seccionResultados.classList.remove('hidden');
       resultados.forEach(anime => resultadosContainer.appendChild(crearAnimeCard(anime)));
-      busquedaH2.dataset.text = 'Resultados: ' + resultados.length;
+      if(EsMovil){
+        busquedaH2.dataset.text = resultados.length;
+      }
+      else {
+        busquedaH2.dataset.text = 'Resultados: ' + resultados.length;
+      }
       observerAnimeCards();
     } else {
       seccionResultados.classList.remove('hidden');
       mostrarMensajeError(resultadosContainer, 'No hay resultados');
-      busquedaH2.dataset.text = 'No hay resultados';
+      if(EsMovil){
+        busquedaH2.dataset.text = '0';
+      }
+      else {
+        busquedaH2.dataset.text = 'No hay resultados';
+      }
     }
     return;
   }

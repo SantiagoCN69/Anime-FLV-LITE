@@ -635,7 +635,9 @@ section.content-section h2:first-of-type::after {
   transform: translateY(30px) scale(.9);
   transition: opacity .5s ease, transform .5s ease;
 }
-
+.anime-card:hover{
+  box-shadow: 0 0 10px rgba(var(--r), .5);
+}
 .anime-card.show {
   opacity: 1;
   transform: translateY(0) scale(1);
