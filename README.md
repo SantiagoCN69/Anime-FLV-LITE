@@ -17,7 +17,8 @@
 - **Firebase**: Almacena datos de usuarios
 - **Censura**: Censura los anuncios
 - **AdBlock**: Bloquea los anuncios
-- **IA**: IA para buscar animes
+- **IA**: IA para buscar y sugerir animes
+
 
 ## 🛠 Tecnologías
 
