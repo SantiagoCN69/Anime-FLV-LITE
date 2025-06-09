@@ -11,7 +11,7 @@ const db = getFirestore(app);
 
 const id = new URLSearchParams(location.search).get("id");
 
-document.title = "Anime - " + id;
+document.title = "AniZen - " + id;
 
 const userID = localStorage.getItem("userID");
 

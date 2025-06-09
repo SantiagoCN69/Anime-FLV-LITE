@@ -5,7 +5,7 @@ const btnVolver = document.getElementById("btn-volver-anime");
 const tituloAnime = document.getElementById("titulo-anime");
 btnVolver.href = `anime.html?id=${animeId}`;
 
-
+document.title = "AniZen - " + animeId + " - " + episodioUrl;
 
 const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
 const btnAnterior = document.getElementById("btn-anterior-capitulo");
