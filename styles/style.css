@@ -623,7 +623,7 @@ section.content-section h2:first-of-type::after {
 }
 .anime-card {
   position: relative;
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
   cursor: pointer;
   padding: 10px;
@@ -659,7 +659,7 @@ section.content-section h2:first-of-type::after {
   width: 100%;
   max-height: 240px;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 10px;
   position: relative;
   display: flex;
 }
