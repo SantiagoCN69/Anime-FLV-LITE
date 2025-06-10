@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-
 let favoritosCargados = false;
 let viendoCargado = false;
 let pendientesCargados = false;
@@ -187,7 +186,6 @@ function crearElementoSiguienteCapitulo(itemData) {
 }
 
 async function cargarUltimosCapsVistos() {
-  console.log('Ejecutando cargarUltimosCapsVistos');
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
   if (!ultimosCapsContainer) return;
 
@@ -381,7 +379,6 @@ function guardarCache(key, data) {
 }
 
 async function cargarUltimosCapitulos() {
-    console.log('Ejecutando carga de últimos capítulos');
     const container = document.getElementById('ultimos-episodios');
     const cacheKey = 'ultimosEpisodiosGeneralesCache';
     const docId = 'ultimosCapitulos'; 
@@ -434,7 +431,6 @@ async function cargarUltimosCapitulos() {
         const firestoreData = docSnap.data().items || [];
   
         if (JSON.stringify(normalizar(cached)) !== JSON.stringify(normalizar(firestoreData))) {
-          console.log('Datos diferentes, actualizando desde Firestore');
           render(firestoreData);
           guardarCache(cacheKey, firestoreData);
           cached = firestoreData;
@@ -454,7 +450,6 @@ async function cargarUltimosCapitulos() {
       }
   
       if (JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(cached))) {
-        console.log('Datos diferentes a la caché, actualizando desde API');
         render(apiData);
         guardarCache(cacheKey, apiData);
         cached = apiData;
@@ -474,7 +469,6 @@ async function cargarUltimosCapitulos() {
 }
 
 async function cargarhistorial() {
-  console.log('Ejecutando cargarhistorial');
   const historialContainer = document.getElementById('historial');
   const historialh2 = document.getElementById('historialh2');
   if (!historialContainer) return;
@@ -575,7 +569,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   if (btnAnterior) {
     btnAnterior.textContent = "cargando...";
   }
-  console.log(`Cargando ${container.id} - Límite: ${limite}, Offset: ${offset}`);
   
   const h2 = document.querySelector('#' + container.id + 'h2');
   if (!userID || userID === "null") {
@@ -588,7 +581,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
 
   // Mostrar caché si es la primera carga
   if (cachedData && offset === 0) {
-      console.log('Mostrando datos de caché');
       agregarAnimesAlContenedor(cachedData, container);
       h2.dataset.text = "Disponibles: " + cachedData.length;
   }
@@ -612,7 +604,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           if (ultimosTitulos === titulosCache) {
               const hayMas = offset + limite < titulos.length;
               manejarBotonVerMas(container, DocRef, hayMas, limite, offset, cachedData.length);
-              console.log("iguales, fin");
               return;
           } 
         }
@@ -657,25 +648,21 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
 }
 
 async function cargarFavoritos() {
-  console.log('Ejecutando cargarFavoritos');
   const DocRef = doc(db, "usuarios", userID, "favoritos", "lista");
   cargarDatos(document.getElementById('favoritos'), DocRef);
 }
 
 async function cargarViendo() {
-  console.log('Ejecutando cargarViendo');
   const DocRef = doc(db, "usuarios", userID, "estados", "viendo");
   cargarDatos(document.getElementById('viendo'), DocRef);
 }
 
 async function cargarPendientes() {
-  console.log('Ejecutando cargarPendientes');
   const DocRef = doc(db, "usuarios", userID, "estados", "pendiente");
   cargarDatos(document.getElementById('pendientes'), DocRef);
 }
 
 async function cargarCompletados() {
-  console.log('Ejecutando cargarCompletados');
   const DocRef = doc(db, "usuarios", userID, "estados", "visto");
   cargarDatos(document.getElementById('completados'), DocRef);
 }

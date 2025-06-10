@@ -1,6 +1,5 @@
 // utils.js
 export function observerAnimeCards() {
-    console.log('observerAnimeCards');
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -48,7 +47,6 @@ footer.appendChild(footerMessage);
 document.addEventListener('DOMContentLoaded', () => {
 const sidebar = document.querySelector('.sidebar');
 if (!localStorage.key("indicador") && window.innerWidth < 600 && localStorage.key('userID')) {
-  console.log('indicador');
 const indicator = document.createElement('div');
 indicator.classList.add('scroll-indicator');
 sidebar.appendChild(indicator);

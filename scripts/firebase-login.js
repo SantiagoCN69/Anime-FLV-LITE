@@ -232,7 +232,6 @@ onAuthStateChanged(auth, (user) => {
   } else if (user && (!currentUsername || currentUsername !== user.displayName)) {
       updateUIForUser(user);
       if (!cachedDisplayName || !cachedPhotoURL || !userID) {
-      console.log('Guardando datos en localStorage');
       try {
       localStorage.setItem('cachedUserDisplayName', user.displayName || '');
       localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
@@ -305,7 +304,6 @@ const cargarTemaDesdeFirestore = async () => {
 const themeToggle = () => {
     const btn = document.getElementById('theme-toggle');
     if (!btn) {
-      console.log('No se encontró el botón de tema');
         return;
     }
 

@@ -287,15 +287,12 @@ onAuthStateChanged(auth, async (user) => {
   
 // si no hay valor de tema en cache buscar en firestore
 if (!localStorage.getItem('theme') && user) {
-  console.log('user', user);
-  console.log('no hay valor de tema en cache');
   try {
     const refUsuario = doc(db, 'usuarios', user.uid);
     const docSnap = await getDoc(refUsuario);
     
     if (docSnap.exists()) {
       const data = docSnap.data();
-      console.log('valor de tema en firestore', data.theme);
       if (data.theme) {
         localStorage.setItem('theme', data.theme);
       }

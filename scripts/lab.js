@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } else {
             userid = null;
-            console.log('Usuario no autenticado');
             if (botonGenerar) {
                 botonGenerar.disabled = true;
                 botonGenerar.style.opacity = '0.5';
@@ -402,7 +401,6 @@ async function enviarPrompt(prompt, seccion) {
         const data = await response.json();
         const respuesta = data.response || 'Error en la respuesta';
 
-        console.log('Respuesta IA:', respuesta);
         window.ultimaRespuesta = respuesta;
 
         mostrarRelacionadosDesdeRespuesta(respuesta, seccion);

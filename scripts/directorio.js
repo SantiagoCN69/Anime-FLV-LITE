@@ -197,7 +197,6 @@ function cargarAnimesConCache() {
   
       // Verificar si la caché corresponde a la página actual
       if (page === currentPage) {
-        console.log('Usando caché para página:', currentPage);
         resultadosContainer.innerHTML = '';
         data.forEach(anime => {
           const card = crearAnimeCardResultados(anime);

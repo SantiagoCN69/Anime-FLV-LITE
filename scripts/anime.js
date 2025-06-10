@@ -67,7 +67,6 @@ const actualizarCache = (id, anime) => {
       
       animesAEliminar.forEach(anime => {
         localStorage.removeItem(anime.id);
-        console.log(`Eliminado anime viejo: ${anime.id} (fecha: ${new Date(anime.fecha).toLocaleString()})`);
       });
     } catch (e) {
       console.error('Error al eliminar animes viejos:', e);
@@ -472,29 +471,17 @@ function compararDatos(a, b) {
   let cached = cargarDatosDesdeCache(id);
   if (cached) {
     renderAnime(cached);
-    console.log("Datos cargados desde cache");
   }
-  else {
-    console.log("No hay datos en cache, cargando desde firestore...");
-  }
-
   // 2. Cargar desde Firestore siempre
   try {
     const docSnap = await getDoc(doc(db, 'datos-animes', id));
     if (docSnap.exists()) {
       const data = docSnap.data();
       if (!compararDatos(cached, data)) {
-        console.log("Datos diferentes de cache a firestore, actualizando cache y renderizando...");
         actualizarCache(id, data);
         cached = data;
         renderAnime(data);
       }
-      else {
-        console.log("Datos iguales de cache a firestore");
-      }
-    }
-    else {
-      console.log("No hay datos en firestore, cargando desde api...");
     }
   } catch (err) {
     console.error('Error al cargar desde Firestore:', err);
@@ -517,13 +504,9 @@ function compararDatos(a, b) {
     };
 
     if (!compararDatos(cached, anime)) {
-      console.log("Datos diferentes de api a firestore, actualizando cache, firestore y renderizando...");
       await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
       actualizarCache(id, anime);
       renderAnime(anime);
-    }
-    else {
-      console.log("Datos iguales de api a cache");
     }
   } catch (err) {
     console.error('Error carga anime:', err)

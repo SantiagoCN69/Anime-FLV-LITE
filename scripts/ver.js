@@ -234,7 +234,6 @@ async function manejarNoticias() {
 
     // Si son diferentes o no hay en Firestore, actualizar
     if (!noticiasFirestore.length || !sonIguales(noticiasAPI, noticiasFirestore)) {
-      console.log("Actualizando noticias...");
       
       // Procesar imágenes
       const noticiasActualizadas = await Promise.all(
@@ -267,8 +266,6 @@ async function manejarNoticias() {
       } catch (error) {
         console.error("Error al guardar en Firestore:", error);
       }
-    } else {
-      console.log("Las noticias están actualizadas");
     }
   } catch (error) {
     console.error("Error al verificar noticias:", error);
@@ -333,7 +330,6 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // 2. Si no hay servidores, usar el backend
   if (!ep.servidores || !ep.servidores.length) {
-    console.log("No se encontraron servidores en Firestore, cargando desde el backend.");
     try {
       const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=https://www3.animeflv.net/ver/${animeId}-${episodioUrl}`);
       const data = await res.json();
@@ -453,7 +449,6 @@ async function cargarVideoDesdeEpisodio(index) {
         }
 
         await setDoc(ref, { episodios: datos.episodios }, { merge: true });
-        console.log(`Pre-cargado episodio ${siguiente.number}`);
       }
     } catch (err) {
       console.warn("No se pudo pre-cargar el siguiente episodio:", err);
