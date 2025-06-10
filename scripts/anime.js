@@ -219,6 +219,7 @@ const renderAnime = anime => {
   ratingEl.textContent = anime.rating + "/5";
   renderRelacionados(anime);
   actualizarEstadoFavorito()
+  actualizarEstadoActual();
 };
 
 const getAnchoColumna = () => {
@@ -780,7 +781,7 @@ async function obtenerEstadoActual() {
   const estados = ['viendo', 'pendiente', 'visto'];
   
   for (const estado of estados) {
-    const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estado);
+    const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estado);
     const estadoDoc = await getDoc(estadoRef);
     
     if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
