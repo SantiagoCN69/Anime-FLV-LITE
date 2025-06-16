@@ -49,6 +49,7 @@ main section:nth-child(2) {
   border-radius: 5px;
 }
 .tarjeta-noticia {
+  cursor: pointer;
   margin-inline: auto;
   width: 250px;
   height: 137px;
