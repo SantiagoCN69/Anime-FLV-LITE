@@ -117,7 +117,7 @@ header {
   }
 }
 #busqueda {
-    padding: 13px;
+    padding: 14px;
     border: 1px solid var(--br);
     border-radius: 20px;
     background-color: transparent;
@@ -310,12 +310,13 @@ header {
   }
   header {
     padding-inline: 1rem;
-  }
-  .search-active {
     position: sticky;
     top: 0;
+    z-index: 10;
+  }
+  .search-active {
+    top: 0;
    z-index: 10;
-   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   }
   .search-active .search {
     opacity: 1;
@@ -323,7 +324,7 @@ header {
     pointer-events: auto;
   }
   .sidebar {
-    position: absolute;
+    position: fixed;
     top: 88px;
     padding: 1.5rem;
     width: clamp(235px, 60%, 60%);

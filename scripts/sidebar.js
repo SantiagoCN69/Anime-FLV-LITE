@@ -40,16 +40,6 @@ function inicializarSidebar() {
     menuToggle.classList.toggle('active');
   });
 
-  // Oculta el sidebar al hacer scroll en dispositivos móviles
-  window.addEventListener('scroll', () => {
-    if (window.innerWidth < 600) {
-      if (sidebar.classList.contains('active')) {
-        sidebar.classList.remove('active');
-        menuToggle.classList.remove('active');
-      }
-    }
-  });
-
   // Oculta el sidebar al hacer clic fuera de él
   document.addEventListener('click', (event) => {
     const isClickInsideSidebar = sidebar.contains(event.target);
@@ -140,27 +130,8 @@ function handleSwipeGesture() {
   const isSwipeLeft = swipeDistanceX < -swipeThreshold;
 
   if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnRestrictedArea) {
-    if (window.innerWidth <= 600) {
-      if (window.scrollY > 0) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        function checkScrollAndOpen() {
-          if (window.scrollY === 0) {
-            sidebar.classList.add('active');
-            menuToggle.classList.add('active');
-          } else {
-            requestAnimationFrame(checkScrollAndOpen);
-          }
-        }
-        requestAnimationFrame(checkScrollAndOpen);
-      } else {
-        sidebar.classList.add('active');
-        menuToggle.classList.add('active');
-      }
-    } else {
-      sidebar.classList.add('active');
-      menuToggle.classList.add('active');
-    }
+    sidebar.classList.add('active');
+    menuToggle.classList.add('active');
   } else if (isSwipeLeft && sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold) {
     sidebar.classList.remove('active');
     menuToggle.classList.remove('active');

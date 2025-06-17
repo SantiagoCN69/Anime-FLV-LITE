@@ -44,7 +44,7 @@ const relacionados = document.getElementById('relacionados');
 const EsMovil = window.innerWidth < 530;
 
 if(EsMovil){
-  document.getElementById('busqueda-h2').dataset.text = '...';
+  document.getElementById('busqueda-h2').dataset.text = '..';
 }
 // === UI: eventos de búsqueda ===
 document.getElementById('btn-search').addEventListener('click', () => {

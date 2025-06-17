@@ -622,6 +622,9 @@ width: 100%;
   display: none;
 }
 @media screen and (max-width: 600px) {
+  header {
+    position: relative;
+  }
   /* Mostrar botones en móvil */
   #btn-search-capitulo,
   #btn-close-search-capitulo {
@@ -727,7 +730,7 @@ width: 100%;
 
 
 .sidebar {
-    position: absolute;
+    position: fixed;
     top: 0;
     transform: translateX(-100%);
     padding-top: 88px;

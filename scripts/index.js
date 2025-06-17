@@ -680,13 +680,6 @@ document.addEventListener("DOMContentLoaded", () => {
     menuBtn.classList.toggle("active");
   });
 
-  window.addEventListener("scroll", () => {
-    if (isMobile() && sidebar.classList.contains("active")) {
-      sidebar.classList.remove("active")
-      menuBtn.classList.remove("active")
-    }
-  });
-
   let touchStartX = 0;
   let touchEndX = 0;
   const handleSwipe = () => {
@@ -717,21 +710,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const dy = Math.abs(ey - sy);
   
       if (dx > 50 && dy < 35 && !sidebar.classList.contains("active") && isMobile()) {
-        if (window.scrollY > 0) {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          const checkScroll = () => {
-            if (window.scrollY === 0) {
-              sidebar.classList.add("active");
-              menuBtn.classList.add("active");
-            } else {
-              requestAnimationFrame(checkScroll);
-            }
-          };
-          checkScroll(); 
-        } else {
-          sidebar.classList.add("active");
-          menuBtn.classList.add("active");
-        }
+        sidebar.classList.add("active");
+        menuBtn.classList.add("active");
       }
     }, { passive: true });
   });
