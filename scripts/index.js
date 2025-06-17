@@ -450,15 +450,21 @@ async function cargarUltimosCapitulos() {
       }
   
       if (JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(cached))) {
+        if(apiData.length > 0) {
         render(apiData);
         guardarCache(cacheKey, apiData);
         cached = apiData;
+        }
         // Actualizar Firestore con los nuevos datos
         try {
-          const docRef = doc(db, 'ultimos-capitulos', docId);
-          await setDoc(docRef, { 
-            items: apiData
-          }, { merge: true });
+          // Solo guardar en Firestore si hay datos
+          if (apiData && apiData.length > 0) {
+            const docRef = doc(db, 'ultimos-capitulos', docId);
+            await setDoc(docRef, { 
+              items: apiData,
+              lastUpdated: new Date().toISOString()
+            }, { merge: true });
+          }
         } catch (firestoreError) {
           console.error('Error al actualizar Firestore:', firestoreError);
         }
