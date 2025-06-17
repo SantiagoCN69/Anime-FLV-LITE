@@ -667,6 +667,24 @@ async function cargarCompletados() {
   cargarDatos(document.getElementById('completados'), DocRef);
 }
 
+// Manejar el scroll para el efecto del header
+const header = document.querySelector('header');
+const scrollOffset = 88;
+
+const handleScroll = () => {
+  if (window.scrollY > scrollOffset) {
+    header.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+  }
+};
+
+// Aplicar el efecto al cargar la página
+window.addEventListener('load', handleScroll);
+
+// Escuchar el evento de scroll
+window.addEventListener('scroll', handleScroll);
+
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");

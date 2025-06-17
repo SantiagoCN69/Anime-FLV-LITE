@@ -43,7 +43,7 @@ const disqusThread = document.getElementById('disqus_thread');
 const relacionados = document.getElementById('relacionados');
 const EsMovil = window.innerWidth < 530;
 
-if(EsMovil){
+if(EsMovil && isIndexPage){
   document.getElementById('busqueda-h2').dataset.text = '..';
 }
 // === UI: eventos de búsqueda ===

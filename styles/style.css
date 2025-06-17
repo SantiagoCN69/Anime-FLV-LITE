@@ -44,6 +44,15 @@ header {
   background: var(--p);
   gap:15px;
   border-bottom: 1px solid var(--br);
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
+  z-index: 1000;
+}
+
+header.scrolled {
+  z-index: 1000;
+  background: transparent;
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
 }
 .title {
   margin-right: auto;
