@@ -11,20 +11,16 @@ const provider = new GoogleAuthProvider();
 // Función para actualizar UI y gestionar caché
 function updateUIForUser(user) {
   const btnLogin = document.getElementById('btn-login');
-  const btnLoginImg = btnLogin.querySelector('img');
-  const btnLoginSpan = btnLogin.querySelector('span');
   
-  if (!btnLogin || !btnLoginImg || !btnLoginSpan) return;
-
   if (user) {
     const nombres = (user.displayName || '').split(' ');
     const primerNombre = nombres[0] || '';
-
-    btnLoginImg.src = user.photoURL || 'icons/user-solid.svg';
-    btnLoginSpan.textContent = primerNombre;
+    
+    btnLogin.innerHTML = `<img src="${user.photoURL || 'icons/user-solid.svg'}" alt="Foto de perfil"><span>${primerNombre}</span>`;
+    btnLogin.classList.remove('nouser');
   } else {
-    btnLoginImg.src = 'icons/user-solid.svg';
-    btnLoginSpan.textContent = '';
+    btnLogin.innerHTML = '<span>Login</span>';
+    btnLogin.classList.add('nouser');
   }
 }
 
@@ -214,7 +210,8 @@ if (cachedDisplayName || cachedPhotoURL || userID) {
 auth.onAuthStateChanged((user) => {
   if (!user) {
     document.getElementById('btn-login').textContent = 'Login';
-    document.getElementById('btn-login').innerHTML = '<img src="icons/user-solid.svg" alt="Foto de perfil"><span>Login</span>';
+    document.getElementById('btn-login').innerHTML = '<span>Login</span>';
+    document.getElementById('btn-login').classList.add('nouser');
     try {
       localStorage.removeItem('cachedUserDisplayName');
       localStorage.removeItem('cachedUserPhotoURL');
@@ -231,6 +228,7 @@ onAuthStateChanged(auth, (user) => {
       updateUIForUser(null);
   } else if (user && (!currentUsername || currentUsername !== user.displayName)) {
       updateUIForUser(user);
+      document.getElementById('btn-login').classList.remove('nouser');
       if (!cachedDisplayName || !cachedPhotoURL || !userID) {
       try {
       localStorage.setItem('cachedUserDisplayName', user.displayName || '');
