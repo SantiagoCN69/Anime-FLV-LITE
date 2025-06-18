@@ -561,7 +561,7 @@ section.content-section h2:first-of-type::after {
   position: absolute;
   top: 20px;
   rotate: -45deg;
-  right: 27px;
+  right: 32px;
 }
 /* Estilos para el bloque "Continuar viendo" */
 .sidebar h3 {
