@@ -728,12 +728,35 @@ width: 100%;
 
 
 .sidebar {
-    position: fixed;
-    top: 0;
-    transform: translateX(-100%);
-    padding-top: 88px;
-    height: 100vh;
+  position: fixed;
+  top: 0;
+  transform: translateX(-100%);
+  height: 100vh;
+  padding-top: calc(88px + 1rem);
 }
+
+#titleanime2 {
+  width: calc(clamp(259px, 60%, 60%) - 1px);
+  height: 88px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--br);
+  padding-inline-start: 16px;
+  position: fixed;
+  inset: 0;
+  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: blur(30px);
+  opacity: 0;
+  transition: opacity .4s;
+}
+.sidebar.active + #titleanime2 {
+  opacity: 1;
+}
+header.scrolled ~ #titleanime2 {
+  opacity: 0 !important;
+}
+
 .sidebar li {
   padding: 0;
 }
