@@ -60,6 +60,7 @@ header.scrolled {
   overflow: hidden;
   color: var(--t1);
   text-overflow: ellipsis;
+  font-size: 2rem;
 }
 .title a {
     color: var(--t1);
@@ -207,6 +208,7 @@ header.scrolled {
 }
 
 #menu-toggle span {
+  border-radius: 5px;
   display: block;
   width: 25px;
   height: 3px;
@@ -227,7 +229,6 @@ header.scrolled {
   color: var(--t1);
   min-width: 220px;
   padding: 1rem;
-  z-index: 1000;
   left: 0;
   height: calc(100% - 88px);
   overflow-y: auto;
@@ -238,6 +239,7 @@ header.scrolled {
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px) brightness(1);
   will-change: transform;
+  z-index: 9;
 }
 
 .sidebar.active {
@@ -262,7 +264,7 @@ header.scrolled {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color .5s;
-  text-shadow: 0 0 4px var(--br);
+  text-shadow: 1px 1px 1px var(--br);
 }
 
 .sidebar li:hover, .sidebar > a:hover {
@@ -283,6 +285,7 @@ header.scrolled {
   margin-inline-end: 4px;
   width: 20px;
   height: 20px;
+  filter: drop-shadow(0 0 5px var(--br));
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
@@ -354,7 +357,7 @@ header.scrolled {
     position: fixed;
     top: 88px;
     padding: 1.5rem;
-    width: clamp(235px, 60%, 60%);
+    width: clamp(259px, 60%, 60%);
     height: calc(100vh - 88px);
     transform: translateX(-120%);
     overflow-y: auto;
@@ -794,7 +797,6 @@ section.content-section h2:first-of-type::after {
   border: 1px solid var(--br);
   padding: 20px;
   border-radius: 25px;
-  z-index: 3333;
   transition: opacity .2s;
   opacity: 0;
   display: flex;
@@ -804,6 +806,7 @@ section.content-section h2:first-of-type::after {
 }
 .logout-modal.show {
   opacity: 1;
+  z-index: 30;
   pointer-events: auto;
 }
 
