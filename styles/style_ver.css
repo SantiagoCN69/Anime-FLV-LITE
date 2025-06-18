@@ -372,6 +372,9 @@ iframe {
   "btn-anterior btn-siguiente";
   gap: 15px;
 }
+.sidebar {
+  position: fixed !important;
+}
 }
 #menu-toggle {
   display: block;
@@ -380,7 +383,7 @@ body {
   position: relative;
 }
 .sidebar {
-  position: fixed;
+  position: absolute;
   top: 88px;
   transform: translateX(-100%);
 }

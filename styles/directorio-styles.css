@@ -156,9 +156,14 @@ nav.filtros {
     position: relative;
   }
   .sidebar {
-    position: fixed;
+    position: absolute;
     top: 88px;
     transform: translateX(-100%);
+  }
+  @media screen and (max-width: 600px) {
+    .sidebar {
+      position: fixed;
+    }
   }
   .sidebar li {
     padding: 0;
