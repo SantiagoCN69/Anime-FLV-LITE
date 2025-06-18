@@ -45,7 +45,6 @@ header {
   gap:15px;
   border-bottom: 1px solid var(--br);
   transition: background 0.3s ease, backdrop-filter 0.3s ease;
-  z-index: 1000;
 }
 
 header.scrolled {
@@ -53,6 +52,7 @@ header.scrolled {
   background: transparent;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
+  border-bottom: 1px solid var(--br);
 }
 .title {
   margin-right: auto;
