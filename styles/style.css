@@ -159,6 +159,18 @@ header.scrolled {
   border-radius: 50%;
   transition: rotate 0.2s;
 }
+#btn-login.nouser::before {
+  content: "";
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: var(--t2); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/user-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/user-solid.svg') no-repeat center;
+}
 #btn-login:hover img {
   rotate: -10deg;
 }
@@ -265,6 +277,12 @@ header.scrolled {
 .sidebar h2 {
   font-size: 1.2rem;
   color: var(--t1);
+}
+.sidebar svg {
+  margin-bottom: -4px;
+  margin-inline-end: 4px;
+  width: 20px;
+  height: 20px;
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
