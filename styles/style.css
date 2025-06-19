@@ -130,7 +130,7 @@ header.scrolled {
 }
 #busqueda {
     padding: 14px;
-    border: 1px solid var(--br);
+    border: 1px solid var(--t2);
     border-radius: 20px;
     background-color: transparent;
     color: var(--t1);
@@ -147,7 +147,7 @@ header.scrolled {
     padding: 8px 16px;
     background-color: transparent;
     color: var(--t1);
-    border: 1px solid var(--br);
+    border: 1px solid var(--t2);
     border-radius: 20px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -330,7 +330,7 @@ header.scrolled {
   transform: translateY(-50%);
   z-index: 20000;
   pointer-events: none;
-  background-color: var(--br); /* Color del SVG */
+  background-color: var(--t2);
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
   mask-size: contain;
@@ -469,7 +469,7 @@ header.search-active .logout-modal {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--br); 
+  background-color: var(--t2); 
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center;
   mask-size: contain;

@@ -38,9 +38,6 @@ header {
   background: transparent;
   border-color: transparent;
 }
-#busqueda {
-  background-color: #00000011;
-}
 
 .anime-details {
   display: grid;
