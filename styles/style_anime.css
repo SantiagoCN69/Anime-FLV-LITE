@@ -726,26 +726,10 @@ width: 100%;
   .anime-description { -webkit-line-clamp: 8; line-clamp: 8; }
 }
 
-
-.sidebar {
-  position: absolute;
-  top: 88px;
-  transform: translateX(-100%);
-}
 @media screen and (max-width: 600px) {
   .sidebar.active ~ header {
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
     border-bottom: 1px solid var(--br);
   }
-  .sidebar {
-    position: fixed;
-    height: 100vh;
-  }
-}
-.sidebar li {
-  padding: 0;
-}
-.sidebar a {
-  padding: 12px 16px;
 }

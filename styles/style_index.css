@@ -23,6 +23,8 @@
   }
 
 .sidebar {
+  position: static;
+  transform: translateX(0);
   height: var(--altura-main);
   margin: 2rem auto;
   margin-right: 3%;
@@ -32,6 +34,8 @@
       display: inline-block;
     }
     .sidebar {
+      transform: translateX(-100%);
+      position: fixed;
       margin: 0;
       height: calc(100vh - 88px);
     }

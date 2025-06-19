@@ -372,24 +372,7 @@ iframe {
   "btn-anterior btn-siguiente";
   gap: 15px;
 }
-.sidebar {
-  position: fixed !important;
-}
 }
 #menu-toggle {
   display: block;
-}
-body {
-  position: relative;
-}
-.sidebar {
-  position: absolute;
-  top: 88px;
-  transform: translateX(-100%);
-}
-.sidebar li {
-  padding: 0;
-}
-.sidebar a {
-  padding: 12px 16px;
 }

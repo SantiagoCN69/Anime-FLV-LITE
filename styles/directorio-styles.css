@@ -152,25 +152,6 @@ nav.filtros {
 #menu-toggle {
     display: block;
   }
-  body {
-    position: relative;
-  }
-  .sidebar {
-    position: absolute;
-    top: 88px;
-    transform: translateX(-100%);
-  }
-  @media screen and (max-width: 600px) {
-    .sidebar {
-      position: fixed;
-    }
-  }
-  .sidebar li {
-    padding: 0;
-  }
-  .sidebar a {
-    padding: 12px 16px;
-  }
 
 
   #pagination {
