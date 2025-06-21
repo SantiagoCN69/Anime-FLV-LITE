@@ -39,6 +39,7 @@ const animeDetails = document.querySelector('.anime-details');
 const verAnime = document.getElementById('main-ver');
 const mainLab = document.getElementById('main-lab');
 const sidebar = document.querySelector('.sidebar');
+const menuBtn = document.getElementById("menu-toggle");
 const disqusThread = document.getElementById('disqus_thread');
 const relacionados = document.getElementById('relacionados');
 const EsMovil = window.innerWidth < 530;
@@ -51,6 +52,7 @@ document.getElementById('btn-search').addEventListener('click', () => {
   document.querySelector('header').classList.add('search-active');
   document.getElementById('busqueda').focus();
   sidebar.classList.remove('active');
+  menuBtn.classList.remove("active");
 });
 
 document.getElementById('btn-close-search').addEventListener('click', () => {
