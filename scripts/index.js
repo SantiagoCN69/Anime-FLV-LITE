@@ -223,7 +223,7 @@ async function cargarUltimosCapsVistos() {
 
   try {
     const ref = collection(doc(db, "usuarios", userID), "caps-vistos");
-    const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(6));
+    const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(7));
     const snap = await getDocs(q);
     let freshData = [];
 
@@ -238,7 +238,7 @@ async function cargarUltimosCapsVistos() {
           const fechaB = new Date(b.fechaAgregado?.toDate?.() || b.fechaAgregado || 0);
           return fechaB - fechaA; 
         })
-        .slice(0, 6); 
+        .slice(0, 7); 
 
       const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
       const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
