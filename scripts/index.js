@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarUltimosCapsVistos(),
   ])
   if(localStorage.getItem("ultimosCapsVistosCache_" + userID) === null) {
-    document.getElementById("btn-continuarviendo").style.display = "none";
+    document.getElementById("Continuar-viendo").innerHTML = '<span class="span-carga">Inicia sesión para ver los animes que estás viendo actualmente</span>'
   }
   const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
