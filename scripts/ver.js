@@ -108,6 +108,7 @@ async function toggleYGuardarEstadoCapitulo() {
   const user = localStorage.getItem("userID");
   if (!user) {
     console.warn('toggleYGuardarEstadoCapitulo: No hay usuario autenticado.');
+    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
     return;
   }
 

@@ -338,6 +338,12 @@ filtroCapitulo.addEventListener('input', debounce(() => {
 }));
 
 async function manejarEstadoEpisodio(btn, icon, ep) {
+  const user = localStorage.getItem("userID");
+  if (!user) {
+    console.warn('manejarEstadoEpisodio: No hay usuario autenticado.');
+    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
+    return;
+  }
   const nuevo = !btn.classList.contains('ep-visto');
   btn.classList.toggle('ep-visto', nuevo);
   btn.classList.toggle('ep-no-visto', !nuevo);
@@ -352,7 +358,6 @@ async function manejarEstadoEpisodio(btn, icon, ep) {
 
 async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
   const user = localStorage.getItem("userID");
-  if (!user) throw 'No autenticado';
   const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
   const snap = await getDoc(ref);
   let arr = snap.exists() ? snap.data().episodiosVistos || [] : [];
@@ -734,7 +739,11 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
   const estado = ESTADOS[estadoId];
   const user = localStorage.getItem("userID");
   
-  if (!user) return;
+  if (!user) {
+    console.warn('manejarEstadoSeleccionado: No hay usuario autenticado.');
+    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
+    return;
+  }
 
   // Si el botón ya está activo, eliminar el estado
   if (btnSeleccionado.classList.contains('active')) {
