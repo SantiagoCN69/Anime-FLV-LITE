@@ -110,12 +110,12 @@ h3 {
   background-color: var(--btn);
   color: var(--t1);
 }
-
+@media (hover: hover) {
 .btn-generar:hover {
   background-color: rgba(var(--bgt), .1);
   transform: translateY(-2px);
 }
-
+}
 .btn-agregar {
   background-color: #2ecc71;
   color: var(--t1);
