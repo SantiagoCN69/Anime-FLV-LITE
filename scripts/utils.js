@@ -1,3 +1,22 @@
+// Manejar el scroll para el efecto del header
+const header = document.querySelector('header');
+const scrollOffset = 50;
+
+const handleScroll = () => {
+  if (window.scrollY > scrollOffset) {
+    header.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+  }
+};
+
+// Aplicar el efecto al cargar la página
+window.addEventListener('load', handleScroll);
+
+// Escuchar el evento de scroll
+window.addEventListener('scroll', handleScroll);
+
+
 // utils.js
 export function observerAnimeCards() {
     const observer = new IntersectionObserver((entries) => {

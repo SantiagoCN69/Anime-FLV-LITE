@@ -1,19 +1,3 @@
-const header = document.querySelector('header');
-const scrollOffset = 30;
-
-const handleScroll = () => {
-  if (window.scrollY > scrollOffset) {
-    header.classList.add('scrolled');
-  } else {
-    header.classList.remove('scrolled');
-  }
-};
-
-// Aplicar el efecto al cargar la página
-window.addEventListener('load', handleScroll);
-
-// Escuchar el evento de scroll
-window.addEventListener('scroll', handleScroll);
 
 const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.querySelector('.sidebar');
