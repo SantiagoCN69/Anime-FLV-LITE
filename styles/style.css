@@ -632,6 +632,7 @@ section.content-section h2:first-of-type::after {
 }
 .continuar-viendo {
   height: auto;
+  margin-top: 1rem;
 }
 #ultimos-caps-viendo {
   margin-top: 1rem;
