@@ -28,6 +28,9 @@ a {
   text-decoration: none;
   color: inherit;
 }
+svg {
+  pointer-events: none;
+}
 /* Scrollbar styles */
 ::-webkit-scrollbar {width: 7px;}
 ::-webkit-scrollbar-track {background: transparent;}
@@ -503,16 +506,19 @@ header.search-active .logout-modal {
 &::-webkit-scrollbar {
   display: none;
 }
-  a, span {
+  a, button {
+    border: none;
+    font-size: 1rem;
     background-color: var(--p);
     display: flex;
+    align-items: center;
     gap: 5px;
     color: var(--t1);
     padding: 10px;
     text-wrap: nowrap;
     border-radius: 18px;
     transition: transform .2s;
-    &.active {
+    &.active-menu-item {
       color: var(--btn);
     }
     &:active {
@@ -544,6 +550,7 @@ main {
   min-height: calc(100vh - 250px);
   position: relative;
   margin: 2rem auto;
+  margin-left: 3%;
   width: 100%;
 }
 #init-loading-servidores-busqueda {
@@ -603,6 +610,7 @@ section.content-section h2:first-of-type::after {
   font-size: 1rem;
   z-index: 1;
 }
+#busqueda-h2::after {display: none;}
 #Ultimos-Episodios h2:first-of-type::before {
   content: "";
   width: 15px;

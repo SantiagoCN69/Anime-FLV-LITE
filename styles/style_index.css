@@ -26,10 +26,12 @@
   position: static;
   transform: translateX(0);
   height: var(--altura-main);
-  margin: 2rem auto;
-  margin-right: 3%;
+  margin-block: 2rem;
 }
 @media screen and (max-width: 600px) {
+  .content-section {
+    margin-left: unset;
+  }
     #menu-toggle {
       display: inline-block;
     }

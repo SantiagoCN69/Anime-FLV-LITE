@@ -29,16 +29,8 @@ let ultimosCapsCargados = false;
 
 function mostrarSeccionDesdeHash() {
   let hash = window.location.hash;
-  if (!hash) {
-    if (!ultimosCapsCargados) {
-      cargarUltimosCapitulos();
-      cargarhistorial();
-      ultimosCapsCargados = true;
-    }
-    return;
-  }
 
-  const id = decodeURIComponent(hash.substring(1));
+  const id = decodeURIComponent(hash.substring(1)) || 'Ultimos-Episodios';
   const seccion = document.getElementById(id);
   if (!seccion) return;
 
@@ -48,7 +40,7 @@ function mostrarSeccionDesdeHash() {
   );
 
   // Actualizar el menú activo
-  document.querySelectorAll('.sidebar li').forEach(item => 
+  document.querySelectorAll('.menu-item').forEach(item => 
     item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
   );
 
@@ -108,9 +100,9 @@ window.handleHashChange = function () {
   if (targetSection) {
     targetSection.classList.remove('hidden');
 
-    const activeMenuItem = document.querySelector(`.sidebar li[data-target="${hash}"]`);
+    const activeMenuItem = document.querySelector(`.menu-item[data-target="${hash}"]`);
     if (activeMenuItem) {
-      document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+      document.querySelectorAll('.menu-item').forEach(li => li.classList.remove('active'));
       activeMenuItem.classList.add('active');
     }
   }
@@ -122,9 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarUltimosCapsVistos(),
   ])
 
-  const sidebarItems = document.querySelectorAll('.sidebar li');
+  const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
+      console.log("targetId: " + e.target.getAttribute('data-target'));
       const targetId = e.target.getAttribute('data-target');
       history.replaceState(null, '', `#${targetId}`);
       mostrarSeccionDesdeHash();
@@ -660,7 +653,6 @@ async function cargarCompletados() {
   cargarDatos(document.getElementById('completados'), DocRef);
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
@@ -724,3 +716,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, { passive: false });
 });
+
