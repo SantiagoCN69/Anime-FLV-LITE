@@ -26,6 +26,7 @@ let viendoCargado = false;
 let pendientesCargados = false;
 let completadosCargados = false;
 let ultimosCapsCargados = false;
+let continuarViendoCargado = false;
 
 function mostrarSeccionDesdeHash() {
   let hash = window.location.hash;
@@ -76,6 +77,12 @@ switch(id) {
         ultimosCapsCargados = true;
       }
       break;
+    case 'Continuar-viendo':
+      if (!continuarViendoCargado) {
+        cargarContinuarViendo();
+        continuarViendoCargado = true;
+      }
+      break;
 }
 }
 
@@ -113,7 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
   ])
-
+  if(localStorage.getItem("ultimosCapsVistosCache_" + userID) === "null") {
+    console.log("no hay datos en el cache");
+    document.getElementById("btn-continuarviendo").style.display = "none";
+  }
   const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
@@ -192,7 +202,7 @@ async function cargarUltimosCapsVistos() {
     return;
   }
 
-  const cacheKey = `ultimosCapsVistosCache_`;
+  const cacheKey = `ultimosCapsVistosCache_` + userID;
   let cachedData = null;
 
   try {
@@ -651,6 +661,24 @@ async function cargarPendientes() {
 async function cargarCompletados() {
   const DocRef = doc(db, "usuarios", userID, "estados", "visto");
   cargarDatos(document.getElementById('completados'), DocRef);
+}
+
+async function cargarContinuarViendo() {
+  const container = document.getElementById('continuar-viendo');
+  const cachekey = "ultimosCapsVistosCache_" + userID;
+  if (!container) return;
+  container.innerHTML = '';
+  if(localStorage.getItem(cachekey) === "null") {
+    console.log("no hay datos en el cache");
+    return;
+  }
+   let datos = JSON.parse(localStorage.getItem(cachekey));
+   datos.forEach(data => {
+    container.appendChild(createAnimeCard(data));
+    observerAnimeCards();
+   })
+
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
