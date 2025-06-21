@@ -14,7 +14,7 @@ h2 {
 }
 main {
     flex-direction: column;
-    margin-block: 1rem;
+    margin-block: 2rem;
     flex: 1;
 }
 
@@ -157,7 +157,7 @@ nav.filtros {
   #pagination {
     display: flex;
     gap: 10px;
-    margin-block: 30px;
+    margin-top: 2rem;
     padding: 5px;
     width: 100%;
     max-width: 614px;

@@ -482,7 +482,39 @@ header.search-active .logout-modal {
 }
 }
 
-      /* Estructura principal */
+#indexpagination {display: none;}
+
+@media screen and (max-width: 600px) {
+  #indexpagination {display: flex;}
+  #btn-directorio2#index {display: none;}
+  #btn-lab#index {display: none;}
+}
+
+#indexpagination {
+  gap: 10px;
+  margin: 1.2rem auto -.8rem auto;
+  a {
+    background-color: var(--p);
+    display: flex;
+    gap: 5px;
+    color: var(--t1);
+    padding: 10px 12px;
+    border-radius: 18px;
+    &.active {
+      color: var(--btn);
+    }
+    &:hover {
+      color: var(--btn);
+    }
+  }
+  svg {
+    margin-bottom: -5px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Estructura principal */
 main {
   display: flex;
   color: var(--t1);
