@@ -44,8 +44,7 @@ header {
   background: var(--p);
   gap:15px;
   border-bottom: 1px solid var(--br);
-  transition: background 0.3s ease, backdrop-filter 0.3s ease;
-  z-index: 1000;
+  transition: backdrop-filter 0.3s ease;
 }
 @media screen and (max-width: 600px) {
 
