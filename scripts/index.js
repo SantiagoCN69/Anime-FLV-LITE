@@ -120,8 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
   ])
-  if(localStorage.getItem("ultimosCapsVistosCache_" + userID) === "null") {
-    console.log("no hay datos en el cache");
+  if(localStorage.getItem("ultimosCapsVistosCache_" + userID) === null) {
     document.getElementById("btn-continuarviendo").style.display = "none";
   }
   const sidebarItems = document.querySelectorAll('.menu-item');
@@ -669,8 +668,7 @@ async function cargarContinuarViendo() {
   const cachekey = "ultimosCapsVistosCache_" + userID;
   if (!container) return;
   container.innerHTML = '';
-  if(localStorage.getItem(cachekey) === "null") {
-    console.log("no hay datos en el cache");
+  if(localStorage.getItem(cachekey) === null) {
     return;
   }
    let datos = JSON.parse(localStorage.getItem(cachekey));
