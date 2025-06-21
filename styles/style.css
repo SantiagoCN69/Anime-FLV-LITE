@@ -498,7 +498,7 @@ header.search-active .logout-modal {
 
 #indexpagination {
   gap: 10px;
-  margin: 1rem auto;
+  margin: 1.5rem auto;
   width: 95%;
   overflow-x: auto;
   -ms-overflow-style: none; 
