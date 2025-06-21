@@ -578,13 +578,15 @@ main {
 
 /* Títulos */
 .content-section h2 {
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
   font-size: 1.7rem;
-  padding-bottom: 0.5rem;
   position: relative;
 }
 .historialh2 {
   margin-block: 2rem;
+}
+.section-title {
+    font-size: 1.7rem
 }
 section.content-section h2:first-of-type::after {
   content: attr(data-text);

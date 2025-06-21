@@ -1,10 +1,8 @@
 /* Estilos para el laboratorio de recomendaciones */
-h2 {
-  font-size: 2rem;
-}
+
 main {
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
