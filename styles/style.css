@@ -21,7 +21,7 @@ body {
   background-color: var(--b);
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: 100vh;
   overflow-y: scroll;
 }
 a {
@@ -237,13 +237,16 @@ header.scrolled {
   height: calc(100% - 88px);
   overflow-y: auto;
   border-right: 1px solid var(--br);
-  -webkit-scrollbar: none;
-  scrollbar-width: none;
   overscroll-behavior: contain;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px) brightness(1);
   will-change: transform;
   z-index: 9;
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+&::-webkit-scrollbar {
+  display: none;
+}
 }
 
 .sidebar.active {
@@ -485,32 +488,40 @@ header.search-active .logout-modal {
 #indexpagination {display: none;}
 
 @media screen and (max-width: 600px) {
+  .content-section {margin: 0 !important;margin-bottom: 1rem;}
   #indexpagination {display: flex;}
-  #btn-directorio2#index {display: none;}
-  #btn-lab#index {display: none;}
+  .indexbtnmovil {display: none !important;}
 }
 
 #indexpagination {
   gap: 10px;
-  margin: 1.2rem auto -.8rem auto;
-  a {
+  margin: 1rem auto;
+  width: 95%;
+  overflow-x: auto;
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+&::-webkit-scrollbar {
+  display: none;
+}
+  a, span {
     background-color: var(--p);
     display: flex;
     gap: 5px;
     color: var(--t1);
-    padding: 10px 12px;
+    padding: 10px;
+    text-wrap: nowrap;
     border-radius: 18px;
+    transition: transform .2s;
     &.active {
       color: var(--btn);
     }
-    &:hover {
-      color: var(--btn);
+    &:active {
+      transform: scale(.95);
     }
-  }
-  svg {
-    margin-bottom: -5px;
+    svg {
     width: 20px;
     height: 20px;
+    }
   }
 }
 
@@ -530,7 +541,7 @@ main {
   display: block;
   border-radius: 3px;
   padding-bottom: 1rem;
-  min-height: calc(100vh - 216px);
+  min-height: calc(100vh - 250px);
   position: relative;
   margin: 2rem auto;
   width: 100%;
