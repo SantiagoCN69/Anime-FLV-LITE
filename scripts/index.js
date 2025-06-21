@@ -665,6 +665,7 @@ async function cargarCompletados() {
 
 async function cargarContinuarViendo() {
   const container = document.getElementById('continuar-viendo');
+  const h2 = document.getElementById('continuarviendoh2');
   const cachekey = "ultimosCapsVistosCache_" + userID;
   if (!container) return;
   container.innerHTML = '';
@@ -677,8 +678,7 @@ async function cargarContinuarViendo() {
     container.appendChild(createAnimeCard(data));
     observerAnimeCards();
    })
-
-
+   h2.dataset.text = "Disponibles: " + datos.length;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
