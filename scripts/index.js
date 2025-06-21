@@ -1,18 +1,5 @@
 import { db, auth } from './firebase-login.js';
-import {
-  collection,
-  doc,
-  getDocs,
-  getDoc,
-  writeBatch,
-  where,
-  serverTimestamp,
-  setDoc,
-  query,
-  orderBy,
-  limit
-} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import {collection, doc, getDocs, getDoc, setDoc, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { observerAnimeCards } from './utils.js';
 
 let userID = localStorage.getItem('userID') || "null";
@@ -678,7 +665,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
   const sections = document.querySelectorAll(".content-section");
-  const menuItems = [...document.querySelectorAll(".sidebar li")];
 
   const isMobile = () => window.innerWidth <= 600;
 
@@ -737,21 +723,4 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
     }
   }, { passive: false });
-
-  const firstItem = menuItems[0];
-  firstItem.classList.add("active-menu-item");
-  const firstSectionId = firstItem.getAttribute("data-target");
-  sections.forEach(s => s.classList.add("hidden"));
-  document.getElementById(firstSectionId).classList.remove("hidden");
-
-  menuItems.forEach(item => {
-    item.addEventListener("click", () => {
-      const id = item.getAttribute("data-target");
-      menuItems.forEach(i => i.classList.remove("active-menu-item"));
-      item.classList.add("active-menu-item");
-      sections.forEach(s => s.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-      if (isMobile()) closeSidebar();
-    });
-  });
 });
