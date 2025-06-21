@@ -42,11 +42,7 @@ const sidebar = document.querySelector('.sidebar');
 const menuBtn = document.getElementById("menu-toggle");
 const disqusThread = document.getElementById('disqus_thread');
 const relacionados = document.getElementById('relacionados');
-const EsMovil = window.innerWidth < 530;
 
-if(EsMovil && isIndexPage){
-  document.getElementById('busqueda-h2').dataset.text = '..';
-}
 // === UI: eventos de búsqueda ===
 document.getElementById('btn-search').addEventListener('click', () => {
   document.querySelector('header').classList.add('search-active');
@@ -103,22 +99,12 @@ function mostrarResultados(data) {
     if (resultados.length > 0) {
       seccionResultados.classList.remove('hidden');
       resultados.forEach(anime => resultadosContainer.appendChild(crearAnimeCard(anime)));
-      if(EsMovil){
-        busquedaH2.dataset.text = resultados.length;
-      }
-      else {
-        busquedaH2.dataset.text = 'Resultados: ' + resultados.length;
-      }
+      busquedaH2.textContent = 'Resultados de busqueda: ' + resultados.length;
       observerAnimeCards();
     } else {
       seccionResultados.classList.remove('hidden');
       mostrarMensajeError(resultadosContainer, 'No hay resultados');
-      if(EsMovil){
-        busquedaH2.dataset.text = '0';
-      }
-      else {
-        busquedaH2.dataset.text = 'No hay resultados';
-      }
+      busquedaH2.textContent = 'No hay resultados';
     }
     return;
   }
