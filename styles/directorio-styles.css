@@ -67,7 +67,7 @@ nav.filtros {
     backdrop-filter: blur(30px);
     box-shadow: 2px 10px 30px rgba(0, 0, 0, 0.5);
     border-radius: 5px;
-    z-index: 1000;
+    z-index: 9;
     will-change: transform;
     opacity: 0;
     padding: 10px;
