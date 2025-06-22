@@ -275,6 +275,7 @@ header.scrolled {
   cursor: pointer;
   transition: background-color .5s;
   text-shadow: 1px 1px 1px var(--br);
+  white-space: nowrap;
 }
 
 .sidebar li:not(:has(> a)):hover, .sidebar a:hover {
