@@ -707,13 +707,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sections.forEach(section => {
     let sx = 0, sy = 0, ex = 0, ey = 0;
+    let touchStartedOnPagination = false;
   
     section.addEventListener("touchstart", e => {
-      sx = e.changedTouches[0].screenX;
-      sy = e.changedTouches[0].screenY;
+      // Verificar si el toque comenzó en el elemento #indexpagination
+      const clickedElement = document.elementFromPoint(
+        e.touches[0].clientX, 
+        e.touches[0].clientY
+      );
+      touchStartedOnPagination = clickedElement.closest('#indexpagination') !== null;
+      
+      if (!touchStartedOnPagination) {
+        sx = e.changedTouches[0].screenX;
+        sy = e.changedTouches[0].screenY;
+      }
     }, { passive: true });
   
     section.addEventListener("touchend", e => {
+      if (touchStartedOnPagination) return;
+      
       ex = e.changedTouches[0].screenX;
       ey = e.changedTouches[0].screenY;
   

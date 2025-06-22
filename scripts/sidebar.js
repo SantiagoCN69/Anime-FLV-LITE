@@ -80,7 +80,8 @@ function inicializarSidebar() {
       document.getElementById('animes-relacionados'),
       document.getElementById('pagination'),
       document.getElementById('recomendaciones-favoritos'),
-      document.getElementById('recomendaciones-personalizadas')
+      document.getElementById('recomendaciones-personalizadas'),
+      document.getElementById('indexpagination')
     ];
     
     touchStartedOnRestrictedArea = elementosExcluidos.some(elemento => {
@@ -140,7 +141,7 @@ function handleSwipeGesture() {
 }
 
 // Funciones para el componente de capítulos
-function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, siguienteEpisodioUrl, id }) {
+function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id }) {
   const btn = document.createElement('div');
   btn.className = 'btn-siguiente-capitulo';
 
