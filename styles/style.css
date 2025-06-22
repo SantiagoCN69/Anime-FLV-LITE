@@ -548,7 +548,7 @@ main {
   display: block;
   border-radius: 3px;
   padding-bottom: 1rem;
-  min-height: calc(100vh - 250px);
+  min-height: calc(100vh - 267px);
   position: relative;
   margin: 2rem auto;
   margin-left: 3%;
