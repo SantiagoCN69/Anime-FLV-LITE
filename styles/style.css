@@ -597,6 +597,11 @@ main {
     font-size: 1.7rem;
     margin-bottom: .3rem;
 }
+@media screen and (min-width: 600px) {
+  .section-title {
+    margin-top: 1.3rem;
+}
+}
 section.content-section h2:first-of-type::after {
   content: attr(data-text);
   position: absolute;
