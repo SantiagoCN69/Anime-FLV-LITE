@@ -1,5 +1,5 @@
 const params = new URLSearchParams(location.search);
-const animeId = params.get("animeId");
+const animeId = params.get("id");
 const episodioUrl = params.get("url");
 const btnVolver = document.getElementById("btn-volver-anime");
 const tituloAnime = document.getElementById("titulo-anime");

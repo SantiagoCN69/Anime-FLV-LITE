@@ -140,7 +140,7 @@ function handleSwipeGesture() {
 }
 
 // Funciones para el componente de capítulos
-function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, siguienteEpisodioUrl, animeId }) {
+function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, siguienteEpisodioUrl, id }) {
   const btn = document.createElement('div');
   btn.className = 'btn-siguiente-capitulo';
 
@@ -162,7 +162,7 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, si
 
   btn.append(img, contenedorTexto);
   btn.addEventListener('click', () => {
-    window.location.href = `ver.html?animeId=${animeId}&url=${siguienteCapitulo}`;
+    window.location.href = `ver.html?id=${id}&url=${siguienteCapitulo}`;
   });
 
   return btn;
@@ -190,8 +190,8 @@ async function cargarUltimosCapsVistos() {
   };
 
 
-
-  const cacheKey = `ultimosCapsVistosCache_`;
+  const userID = localStorage.getItem('userID') || "null";
+  const cacheKey = `ultimosCapsVistosCache_` + userID;
   
   try {
     const cache = localStorage.getItem(cacheKey);
