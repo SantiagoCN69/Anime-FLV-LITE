@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-login.js';
-import {collection, doc, getDocs, getDoc, setDoc, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { observerAnimeCards } from './utils.js';
 
 let userID = localStorage.getItem('userID') || "null";
@@ -583,7 +583,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   try {
       // Obtener lista de favoritos
       const Doc = await getDoc(DocRef);
-      let titulos = Doc.exists() ? [...Doc.data().animes || []].reverse() : [];
+      let titulos = Doc.exists() ? [...(Doc.data().animes || [])].filter(titulo => titulo != null).reverse() : [];
       h2.dataset.text = "Disponibles: " + titulos.length;
 
       if (titulos.length === 0) {
@@ -605,6 +605,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
       // Obtener los IDs de los animes a buscar
       const idsABuscar = titulos.slice(offset, offset + limite);
       let animes = [];
+      const idsNoEncontrados = [];
       
       // Obtener cada documento por su ID
       for (const id of idsABuscar) {
@@ -618,6 +619,22 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
             estado: data.estado || 'No disponible',
             rating: data.rating || null
           });
+        } else {
+          console.log(`No se encontró el anime con ID: ${id} en datos-animes, se eliminará de la lista`);
+          idsNoEncontrados.push(id);
+        }
+      }
+      
+      // Si hay IDs no encontrados, actualizar la lista del usuario
+      if (idsNoEncontrados.length > 0) {
+        const nuevosTitulos = titulos.filter(id => !idsNoEncontrados.includes(id));
+        if (nuevosTitulos.length !== titulos.length) {
+          try {
+            await updateDoc(DocRef, { animes: nuevosTitulos });
+            console.log(`Se eliminaron ${idsNoEncontrados.length} animes no encontrados de ${container.id}`);
+          } catch (error) {
+            console.error('Error al actualizar la lista de animes:', error);
+          }
         }
       }
       // Actualizar caché si es primera página
