@@ -28,10 +28,11 @@ let completadosCargados = false;
 let ultimosCapsCargados = false;
 let continuarViendoCargado = false;
 
-function mostrarSeccionDesdeHash() {
-  let hash = window.location.hash;
+function mostrarSeccionDesdesearch() {
+  console.log(window.location.search);
+  let search = window.location.search;
 
-  const id = decodeURIComponent(hash.substring(1)) || 'Ultimos-Episodios';
+  const id = decodeURIComponent(search.substring(1)) || 'Ultimos-Episodios';
   const seccion = document.getElementById(id);
   if (!seccion) return;
 
@@ -87,27 +88,27 @@ switch(id) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  mostrarSeccionDesdeHash();
+  mostrarSeccionDesdesearch();
 });
-window.addEventListener("hashchange", () => {
-  mostrarSeccionDesdeHash();
+window.addEventListener("searchchange", () => {
+  mostrarSeccionDesdesearch();
 });
 
-window.handleHashChange = function () {
-  let hash = window.location.hash.substring(1);
+window.handlesearchChange = function () {
+  let search = window.location.search.substring(1);
 
-  if (!hash) {
-    hash = 'Ultimos-Episodios';
-    history.replaceState(null, '', '#' + hash);
+  if (!search) {
+    search = 'Ultimos-Episodios';
+    history.replaceState(null, '', '?' + search);
   }
 
   document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
 
-  const targetSection = document.getElementById(hash);
+  const targetSection = document.getElementById(search);
   if (targetSection) {
     targetSection.classList.remove('hidden');
 
-    const activeMenuItem = document.querySelector(`.menu-item[data-target="${hash}"]`);
+    const activeMenuItem = document.querySelector(`.menu-item[data-target="${search}"]`);
     if (activeMenuItem) {
       document.querySelectorAll('.menu-item').forEach(li => li.classList.remove('active'));
       activeMenuItem.classList.add('active');
@@ -127,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
       const targetId = e.target.getAttribute('data-target');
-      history.replaceState(null, '', `#${targetId}`);
-      mostrarSeccionDesdeHash();
+      history.replaceState(null, '', `?${targetId}`);
+      mostrarSeccionDesdesearch();
       document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
       observerAnimeCards();
     });
@@ -222,7 +223,7 @@ async function cargarUltimosCapsVistos() {
 
   try {
     const ref = collection(doc(db, "usuarios", userID), "caps-vistos");
-    const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(7));
+    const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(8));
     const snap = await getDocs(q);
     let freshData = [];
 
@@ -237,7 +238,7 @@ async function cargarUltimosCapsVistos() {
           const fechaB = new Date(b.fechaAgregado?.toDate?.() || b.fechaAgregado || 0);
           return fechaB - fechaA; 
         })
-        .slice(0, 7); 
+        .slice(0, 8); 
 
       const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
       const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));

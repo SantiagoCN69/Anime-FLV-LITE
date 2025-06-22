@@ -25,7 +25,7 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
   if (contadorSpan) contadorSpan.textContent = '';
   if (seccionResultados) seccionResultados.classList.add('hidden');
   if (resultadosContainer) resultadosContainer.innerHTML = '';
-  handleHashChange();
+  handlesearchChange();
 }
 
 // === Variables de página ===
