@@ -167,7 +167,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   btn.appendChild(contenedorTexto);
   
   btn.addEventListener('click', () => {
-    window.location.href = `ver.html?animeId=${itemData.animeId}&url=${itemData.siguienteCapitulo}`;
+    window.location.href = `ver.html?id=${itemData.id}&url=${itemData.siguienteCapitulo}`;
   });
 
   return btn;
