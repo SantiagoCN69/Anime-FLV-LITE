@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      console.log("targetId: " + e.target.getAttribute('data-target'));
       const targetId = e.target.getAttribute('data-target');
       history.replaceState(null, '', `#${targetId}`);
       mostrarSeccionDesdeHash();
@@ -266,7 +265,7 @@ async function cargarUltimosCapsVistos() {
 
         if (siguienteEpisodio?.url) {
           return {
-            animeId: cap.animeId,
+            id: cap.animeId,
             portada: animeDetails.portada,
             titulo: animeDetails.titulo,
             siguienteCapitulo,
