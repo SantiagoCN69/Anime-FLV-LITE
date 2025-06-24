@@ -28,6 +28,7 @@ let completadosCargados = false;
 let ultimosCapsCargados = false;
 let continuarViendoCargado = false;
 let directorioCargado = false;
+let labCargado = false;
 
 function mostrarSeccionDesdesearch() {
   console.log(window.location.search);
@@ -50,25 +51,29 @@ function mostrarSeccionDesdesearch() {
 switch(id) {
     case 'Mis-Favoritos':
       if (!favoritosCargados) {
-        cargarFavoritos();
+        const DocRef = doc(db, "usuarios", userID, "favoritos", "lista");
+        cargarDatos(document.getElementById('favoritos'), DocRef);
         favoritosCargados = true;
       }
       break;
     case 'Viendo':
       if (!viendoCargado) {
-        cargarViendo();
+        const DocRef = doc(db, "usuarios", userID, "estados", "viendo");
+        cargarDatos(document.getElementById('viendo'), DocRef);
         viendoCargado = true;
       }
       break;
     case 'Pendientes':
       if (!pendientesCargados) {
-        cargarPendientes();
+        const DocRef = doc(db, "usuarios", userID, "estados", "pendientes");
+        cargarDatos(document.getElementById('pendientes'), DocRef);
         pendientesCargados = true;
       }
       break;
     case 'Completados':
       if (!completadosCargados) {
-        cargarCompletados();
+        const DocRef = doc(db, "usuarios", userID, "estados", "completados");
+        cargarDatos(document.getElementById('completados'), DocRef);
         completadosCargados = true;
       }
       break;
@@ -87,8 +92,14 @@ switch(id) {
       break;
     case 'Directorio':
       if (!directorioCargado) {
-        cargarDirectorio();
+        cargarFetch("directorio");
         directorioCargado = true;
+      }
+      break;
+    case 'Lab':
+      if (!labCargado) {
+        cargarFetch("lab");
+        labCargado = true;
       }
       break;
 }
@@ -655,26 +666,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   }
 }
 
-async function cargarFavoritos() {
-  const DocRef = doc(db, "usuarios", userID, "favoritos", "lista");
-  cargarDatos(document.getElementById('favoritos'), DocRef);
-}
-
-async function cargarViendo() {
-  const DocRef = doc(db, "usuarios", userID, "estados", "viendo");
-  cargarDatos(document.getElementById('viendo'), DocRef);
-}
-
-async function cargarPendientes() {
-  const DocRef = doc(db, "usuarios", userID, "estados", "pendiente");
-  cargarDatos(document.getElementById('pendientes'), DocRef);
-}
-
-async function cargarCompletados() {
-  const DocRef = doc(db, "usuarios", userID, "estados", "visto");
-  cargarDatos(document.getElementById('completados'), DocRef);
-}
-
 async function cargarContinuarViendo() {
   const container = document.getElementById('continuar-viendo');
   const h2 = document.getElementById('continuarviendoh2');
@@ -692,11 +683,11 @@ async function cargarContinuarViendo() {
    h2.dataset.text = "Disponibles: " + datos.length;
 }
 
-function cargarDirectorio() {
-  const mainDirector = document.getElementById('maindirector');
-  if (!mainDirector) return;
+function cargarFetch(direccion) {
+  const main = document.getElementById('main-' + direccion);
+  if (!main) return;
 
-  fetch('directorio.html')
+  fetch(direccion + '.html')
     .then(res => res.text())
     .then(html => {
       const temp = document.createElement('div');
@@ -704,11 +695,11 @@ function cargarDirectorio() {
 
       const nuevoMain = temp.querySelector('main');
       if (nuevoMain) {
-        mainDirector.innerHTML = nuevoMain.innerHTML;
+        main.innerHTML = nuevoMain.innerHTML;
       }
 
       const script = document.createElement('script');
-      script.src = '/scripts/directorio.js';
+      script.src = '/scripts/' + direccion + '.js';
       script.type = 'module';
       document.body.appendChild(script);
     });
