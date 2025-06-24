@@ -42,12 +42,6 @@
 
  /*Directorio*/
 
- #main-directorio, #main-lab {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .btn-filtro, #btn-filtrar, .btn-filtro-opcion {
   display: flex;
   align-items: center;
@@ -278,8 +272,8 @@ h3 {
 .grid-animes.lab .carga .container-img{
   border: 1px solid var(--br);
 }
-.personalizadas {
-  margin-top: 2rem;
+.acciones-fav {
+  margin-block: 1.5rem;
 }
 
 .search-container {
