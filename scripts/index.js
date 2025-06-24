@@ -722,22 +722,49 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
   document.addEventListener("touchend", e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
 
+  // Mapeo de navegación por gestos
+  const navigationMap = {
+    'Ultimos-Episodios': {
+      left: 'Populares',
+      right: null
+    },
+    'Populares': {
+      left: 'Continuar-viendo',
+      right: 'Ultimos-Episodios'
+    },
+    'Continuar-viendo': {
+      left: null,
+      right: 'Populares'
+    }
+  };
+
+  // Función para manejar la navegación por gestos
+  function handleSectionNavigation(sectionId, direction) {
+    const targetSection = navigationMap[sectionId]?.[direction];
+    if (targetSection) {
+      history.replaceState(null, '', `?${targetSection}`);
+      mostrarSeccionDesdesearch();
+      return true;
+    }
+    return false;
+  }
+
   sections.forEach(section => {
+    const sectionId = section.id;
     let sx = 0, sy = 0, ex = 0, ey = 0;
     let touchStartedOnPagination = false;
   
     section.addEventListener("touchstart", e => {
+      // Registrar la posición inicial del toque
+      sx = e.changedTouches[0].screenX;
+      sy = e.changedTouches[0].screenY;
+      
       // Verificar si el toque comenzó en el elemento #indexpagination
       const clickedElement = document.elementFromPoint(
         e.touches[0].clientX, 
         e.touches[0].clientY
       );
       touchStartedOnPagination = clickedElement.closest('#indexpagination') !== null;
-      
-      if (!touchStartedOnPagination) {
-        sx = e.changedTouches[0].screenX;
-        sy = e.changedTouches[0].screenY;
-      }
     }, { passive: true });
   
     section.addEventListener("touchend", e => {
@@ -748,10 +775,31 @@ document.addEventListener("DOMContentLoaded", () => {
   
       const dx = ex - sx;
       const dy = Math.abs(ey - sy);
-  
-      if (dx > 50 && dy < 35 && !sidebar.classList.contains("active") && isMobile()) {
-        sidebar.classList.add("active");
-        menuBtn.classList.add("active");
+
+      // Determinar la dirección del deslizamiento
+      let direction = null;
+      if (dx < -50 && dy < 35) direction = 'left';
+      else if (dx > 50 && dy < 35) direction = 'right';
+      
+      // Intentar navegar entre secciones
+      if (direction) {
+        // No navegar si la barra lateral está activa y estamos en Ultimos-Episodios
+        if (sidebar.classList.contains('active') && sectionId === 'Ultimos-Episodios' && direction === 'left') {
+          return;
+        }
+        
+        // Si estamos en una sección con navegación por gestos
+        if (navigationMap[sectionId]) {
+          if (handleSectionNavigation(sectionId, direction)) {
+            return;
+          }
+        }
+        
+        // Si no se manejó la navegación y es un deslizamiento a la derecha, abrir el menú
+        if (direction === 'right' && !sidebar.classList.contains("active") && isMobile()) {
+          sidebar.classList.add("active");
+          menuBtn.classList.add("active");
+        }
       }
     }, { passive: true });
   });
