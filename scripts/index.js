@@ -29,6 +29,7 @@ let ultimosCapsCargados = false;
 let continuarViendoCargado = false;
 let directorioCargado = false;
 let labCargado = false;
+let popularesCargados = false;
 
 function mostrarSeccionDesdesearch() {
   console.log(window.location.search);
@@ -103,6 +104,12 @@ switch(id) {
       if (!labCargado) {
         cargarFetch("lab");
         labCargado = true;
+      }
+      break;
+    case "Populares" :
+      if (!popularesCargados) {
+        cargarFetch("populares");
+        popularesCargados = true;
       }
       break;
 }
@@ -689,7 +696,6 @@ async function cargarContinuarViendo() {
 function cargarFetch(direccion) {
   const main = document.getElementById('main-' + direccion);
   if (!main) return;
-
   fetch(direccion + '.html')
     .then(res => res.text())
     .then(html => {
