@@ -692,6 +692,28 @@ async function cargarContinuarViendo() {
    h2.dataset.text = "Disponibles: " + datos.length;
 }
 
+function cargarDirectorio() {
+  const mainDirector = document.getElementById('maindirector');
+  if (!mainDirector) return;
+
+  fetch('directorio.html')
+    .then(res => res.text())
+    .then(html => {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      const nuevoMain = temp.querySelector('main');
+      if (nuevoMain) {
+        mainDirector.innerHTML = nuevoMain.innerHTML;
+      }
+
+      const script = document.createElement('script');
+      script.src = '/scripts/directorio.js';
+      script.type = 'module';
+      document.body.appendChild(script);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
@@ -730,6 +752,10 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     'Continuar-viendo': {
       left: 'Directorio',
+      right: 'Populares'
+    },
+    'Directorio': {
+      left: 'null',
       right: 'Populares'
     }
   };
@@ -816,27 +842,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { passive: false });
 });
 
-// Función para cargar el directorio
-function cargarDirectorio() {
-  const mainDirector = document.getElementById('maindirector');
-  if (!mainDirector) return;
-
-  fetch('directorio.html')
-    .then(res => res.text())
-    .then(html => {
-      const temp = document.createElement('div');
-      temp.innerHTML = html;
-
-      const nuevoMain = temp.querySelector('main');
-      if (nuevoMain) {
-        mainDirector.innerHTML = nuevoMain.innerHTML;
-      }
-
-      // Ejecutar script externo manualmente
-      const script = document.createElement('script');
-      script.src = '/scripts/directorio.js';
-      script.type = 'module';
-      document.body.appendChild(script);
-    });
-}
 
