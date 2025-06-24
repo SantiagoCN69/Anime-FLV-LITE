@@ -828,7 +828,6 @@ section.content-section h2:first-of-type::after {
 .anime-card:active .cover, .anime-card.active .cover {filter: blur(10px);}
 .anime-card:active .play-icon, .anime-card.active .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 40px;height: 40px;}
 
-
 .anime-card img,
 .anime-card strong {
   position: relative;
