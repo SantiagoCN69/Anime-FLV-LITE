@@ -499,6 +499,8 @@ header.search-active .logout-modal {
   .content-section {margin: 0 !important;margin-bottom: 1rem;}
   #indexpagination {display: flex;}
   .indexbtnmovil {display: none !important;}
+  #btn-lab {display: none;}
+  #btn-directorio2 {display: none;}
 }
 
 #indexpagination {
