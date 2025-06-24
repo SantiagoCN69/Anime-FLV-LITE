@@ -92,6 +92,8 @@ switch(id) {
       }
       break;
 }
+document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
+observerAnimeCards();
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -137,8 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetId = e.target.getAttribute('data-target');
       history.replaceState(null, '', `?${targetId}`);
       mostrarSeccionDesdesearch();
-      document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
-      observerAnimeCards();
     });
   });
 
@@ -755,14 +755,19 @@ document.addEventListener("DOMContentLoaded", () => {
       right: 'Populares'
     },
     'Directorio': {
-      left: 'null',
+      left: 'Lab',
       right: 'Populares'
+    },
+    'Lab': {
+      left: null,
+      right: 'Directorio'
     }
   };
 
   // Función para manejar la navegación por gestos
   function handleSectionNavigation(sectionId, direction) {
     const targetSection = navigationMap[sectionId]?.[direction];
+    
     if (targetSection) {
       history.replaceState(null, '', `?${targetSection}`);
       mostrarSeccionDesdesearch();
@@ -771,59 +776,58 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
-  sections.forEach(section => {
-    const sectionId = section.id;
-    let sx = 0, sy = 0, ex = 0, ey = 0;
-    let touchStartedOnPagination = false;
-  
-    section.addEventListener("touchstart", e => {
-      // Registrar la posición inicial del toque
-      sx = e.changedTouches[0].screenX;
-      sy = e.changedTouches[0].screenY;
-      
-      // Verificar si el toque comenzó en el elemento #indexpagination
-      const clickedElement = document.elementFromPoint(
+  // Función para manejar el inicio del toque
+  function handleTouchStart(e) {
+    this._touchData = {
+      startX: e.changedTouches[0].screenX,
+      startY: e.changedTouches[0].screenY,
+      isPagination: document.elementFromPoint(
         e.touches[0].clientX, 
         e.touches[0].clientY
-      );
-      touchStartedOnPagination = clickedElement.closest('#indexpagination') !== null;
-    }, { passive: true });
-  
-    section.addEventListener("touchend", e => {
-      if (touchStartedOnPagination) return;
-      
-      ex = e.changedTouches[0].screenX;
-      ey = e.changedTouches[0].screenY;
-  
-      const dx = ex - sx;
-      const dy = Math.abs(ey - sy);
+      )?.closest('#indexpagination') !== null
+    };
+  }
 
-      // Determinar la dirección del deslizamiento
-      let direction = null;
-      if (dx < -50 && dy < 35) direction = 'left';
-      else if (dx > 50 && dy < 35) direction = 'right';
-      
-      // Intentar navegar entre secciones
-      if (direction) {
-        // No navegar si la barra lateral está activa y estamos en Ultimos-Episodios
-        if (sidebar.classList.contains('active') && sectionId === 'Ultimos-Episodios' && direction === 'left') {
-          return;
-        }
-        
-        // Si estamos en una sección con navegación por gestos
-        if (navigationMap[sectionId]) {
-          if (handleSectionNavigation(sectionId, direction)) {
-            return;
-          }
-        }
-        
-        // Si no se manejó la navegación y es un deslizamiento a la derecha, abrir el menú
-        if (direction === 'right' && !sidebar.classList.contains("active") && isMobile()) {
-          sidebar.classList.add("active");
-          menuBtn.classList.add("active");
-        }
-      }
-    }, { passive: true });
+  // Función para manejar el fin del toque
+  function handleTouchEnd(e) {
+    if (this._touchData?.isPagination) return;
+    
+    const endX = e.changedTouches[0].screenX;
+    const endY = e.changedTouches[0].screenY;
+    const dx = endX - this._touchData.startX;
+    const dy = Math.abs(endY - this._touchData.startY);
+    
+    // Determinar dirección del deslizamiento
+    const direction = Math.abs(dx) > 50 && dy < 35 
+      ? dx < 0 ? 'left' : 'right' 
+      : null;
+    
+    if (!direction) return;
+    
+    const sectionId = this.id;
+    
+    // No navegar si la barra lateral está activa en ciertas condiciones
+    if (sidebar.classList.contains('active') && 
+        sectionId === 'Ultimos-Episodios' && 
+        direction === 'left') return;
+    
+    // Manejar navegación o apertura de menú
+    if (navigationMap[sectionId] && handleSectionNavigation(sectionId, direction)) {
+      return;
+    }
+    
+    // Abrir menú al deslizar a la derecha si no hay otra acción
+    if (direction === 'right' && !sidebar.classList.contains('active') && isMobile()) {
+      sidebar.classList.add('active');
+      menuBtn.classList.add('active');
+    }
+  }
+
+  // Configurar event listeners para cada sección
+  sections.forEach(section => {
+    section._touchData = {};
+    section.addEventListener('touchstart', handleTouchStart, { passive: true });
+    section.addEventListener('touchend', handleTouchEnd, { passive: true });
   });
 
   sidebar.addEventListener("touchstart", function(e) {
