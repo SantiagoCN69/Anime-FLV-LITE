@@ -754,11 +754,14 @@ document.addEventListener("DOMContentLoaded", () => {
       right: 'Directorio'
     }
   };
-
+ const excepciones = [
+  '#pagination',
+  '#recomendaciones-favoritos',
+  '#recomendaciones-personalizadas',
+ ]
   // Función para manejar la navegación por gestos
   function handleSectionNavigation(sectionId, direction) {
     const targetSection = navigationMap[sectionId]?.[direction];
-    
     if (targetSection) {
       history.replaceState(null, '', `?${targetSection}`);
       mostrarSeccionDesdesearch();
@@ -767,21 +770,32 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
+  // Función para verificar si un elemento está en las excepciones
+  function isElementInExceptions(element) {
+    if (!element) return false;
+    return excepciones.some(selector => 
+      element.closest && element.closest(selector) !== null
+    );
+  }
+
   // Función para manejar el inicio del toque
   function handleTouchStart(e) {
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    const targetElement = document.elementFromPoint(touchX, touchY);
+    
     this._touchData = {
       startX: e.changedTouches[0].screenX,
       startY: e.changedTouches[0].screenY,
-      isPagination: document.elementFromPoint(
-        e.touches[0].clientX, 
-        e.touches[0].clientY
-      )?.closest('#indexpagination') !== null
+      isPagination: targetElement?.closest('#indexpagination') !== null,
+      isException: isElementInExceptions(targetElement)
     };
   }
 
   // Función para manejar el fin del toque
   function handleTouchEnd(e) {
-    if (this._touchData?.isPagination) return;
+    // No hacer nada si es parte de la paginación o está en las excepciones
+    if (this._touchData?.isPagination || this._touchData?.isException) return;
     
     const endX = e.changedTouches[0].screenX;
     const endY = e.changedTouches[0].screenY;
