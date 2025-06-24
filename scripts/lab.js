@@ -1,7 +1,7 @@
 // Importaciones de Firebase y otras dependencias
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards } from "./utils.js";
 
@@ -13,7 +13,7 @@ const db = getFirestore(app);
 let userid = null;
 
 
-document.addEventListener('DOMContentLoaded', async () => {
+(async () => {
     // Cargar caché inicial
     const cache = obtenerCacheAnimes();
     if (cache) {
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     })();
     observerAnimeCards();
-});
+})()
 
 // Funciones para manejar el caché de animes
 
