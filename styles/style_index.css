@@ -29,9 +29,6 @@
   margin-block: 2rem;
 }
 @media screen and (max-width: 600px) {
-  .content-section {
-    margin-left: unset;
-  }
     #menu-toggle {
       display: inline-block;
     }

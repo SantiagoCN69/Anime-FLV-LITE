@@ -539,6 +539,7 @@ main {
   margin-inline: auto;
   width: 95%;
   max-width: 1150px;
+  gap: 1rem;
 }
 
 
