@@ -516,7 +516,7 @@ header.search-active .logout-modal {
     gap: 5px;
     color: var(--t1);
     padding: 10px;
-    text-wrap: nowrap;
+    white-space: nowrap;
     border-radius: 18px;
     transition: transform .2s;
     &.active-menu-item {
