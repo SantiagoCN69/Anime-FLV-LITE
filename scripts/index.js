@@ -65,14 +65,14 @@ switch(id) {
       break;
     case 'Pendientes':
       if (!pendientesCargados) {
-        const DocRef = doc(db, "usuarios", userID, "estados", "pendientes");
+        const DocRef = doc(db, "usuarios", userID, "estados", "pendiente");
         cargarDatos(document.getElementById('pendientes'), DocRef);
         pendientesCargados = true;
       }
       break;
     case 'Completados':
       if (!completadosCargados) {
-        const DocRef = doc(db, "usuarios", userID, "estados", "completados");
+        const DocRef = doc(db, "usuarios", userID, "estados", "visto");
         cargarDatos(document.getElementById('completados'), DocRef);
         completadosCargados = true;
       }
