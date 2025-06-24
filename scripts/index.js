@@ -747,7 +747,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     'Directorio': {
       left: 'Lab',
-      right: 'Populares'
+      right: 'Continuar-viendo'
     },
     'Lab': {
       left: null,
