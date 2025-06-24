@@ -34,9 +34,12 @@ function mostrarSeccionDesdesearch() {
   console.log(window.location.search);
   let search = window.location.search;
 
-  const id = decodeURIComponent(search.substring(1)) || 'Ultimos-Episodios';
+  let id = decodeURIComponent(search.substring(1)) || 'Ultimos-Episodios';
   const seccion = document.getElementById(id);
-  if (!seccion) return;
+  if (!seccion) {
+    id = 'Ultimos-Episodios';
+    history.replaceState(null, '', '?Ultimos-Episodios');
+  };
 
   // Ocultar todas las secciones
   document.querySelectorAll(".content-section").forEach(sec => 
