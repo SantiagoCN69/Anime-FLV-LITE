@@ -12,10 +12,20 @@
 <main>
     <h2 id="popularesh2" data-text="cargando..">Populares</h2>
     <nav id="nav-populares">
-        <button data-type="" type="button" id="btn-populares-normal" class="active">Normal</button>
-        <button data-type="tv" type="button" id="btn-populares-tv">TV</button>
-        <button data-type="movie" type="button" id="btn-populares-movie">Movie</button>
-        <button data-type="ova" type="button" id="btn-populares-ova">OVA</button>
+        <button type="button" id="btn-populares-filtro-type" class="btn-filtro" title="Filtro">Tipo: <span>Todos</span></button>
+        <div id="nav-populares-type-section" class="filtro-opciones">
+            <button data-type="" type="button" id="btn-populares-normal" class="btn-filtro-opcion active">Normal</button>
+            <button data-type="tv" type="button" id="btn-populares-tv" class="btn-filtro-opcion">TV</button>
+            <button data-type="movie" type="button" id="btn-populares-movie" class="btn-filtro-opcion">Movie</button>
+            <button data-type="ova" type="button" id="btn-populares-ova" class="btn-filtro-opcion">OVA</button>
+        </div>
+        <button type="button" id="btn-populares-filtro-filters" class="btn-filtro" title="Filtro">Filtros: <span>Todos</span></button>
+        <div id="nav-populares-filtro-section" class="filtro-opciones">
+            <button data-type="airing" type="button" id="btn-populares-airing" class="btn-filtro-opcion">Airing</button>
+            <button data-type="upcoming" type="button" id="btn-populares-upcoming" class="btn-filtro-opcion">Upcoming</button>
+            <button data-type="bypopularity" type="button" id="btn-populares-bypopularity" class="btn-filtro-opcion">Bypopularity</button>
+            <button data-type="favorite" type="button" id="btn-populares-favorite" class="btn-filtro-opcion">Favorite</button>
+        </div>
     </nav>
     <div id="populares" class="grid-animes"></div>
 
