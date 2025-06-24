@@ -212,14 +212,12 @@ function cargarAnimesConCache() {
     fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
       .then(response => response.json())
       .then(data => {
-        // Guardar en caché
         localStorage.setItem(CACHE_KEY, JSON.stringify({
           data: data.animes,
           page: currentPage,
           PaginasTotales: data.PaginasTotales
         }));
   
-        // Mostrar los datos
         resultadosContainer.innerHTML = '';
         data.animes.forEach(anime => {
           const card = crearAnimeCardResultados(anime);
@@ -237,7 +235,7 @@ function cargarAnimesConCache() {
   }
   
   // Cargar animes al inicio
-  document.addEventListener('DOMContentLoaded', cargarAnimesConCache);
+cargarAnimesConCache();
   
 
 
@@ -315,7 +313,6 @@ function actualizarLinkBusqueda() {
         link += 'status%5B%5D=' + estadosActivos.join('&status%5B%5D=');
     }
 
-    // Agregar orden al final
     const orden = ordenesActivos.length > 0 ? ordenesActivos[0] : 'default';
     
     link += '&order=' + orden;
@@ -323,13 +320,9 @@ function actualizarLinkBusqueda() {
     return link;
 }
 
-// Event listeners para los botones de género
 generosOpciones.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Alternar clase active
         btn.classList.toggle('active');
-        
-        // Actualizar el texto del botón principal
         const generosActivos = Array.from(generosOpciones)
             .filter(btn => btn.classList.contains('active'));
         
@@ -339,18 +332,13 @@ generosOpciones.forEach(btn => {
             generosBtn.querySelector('span').textContent = 'Todos';
         }
         
-        // Actualizar el link
         actualizarLinkBusqueda();
     });
 });
 
-// Event listeners para los botones de año
 anosOpciones.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Alternar clase active
         btn.classList.toggle('active');
-        
-        // Actualizar el texto del botón principal
         const anosActivos = Array.from(anosOpciones)
             .filter(btn => btn.classList.contains('active'));
         
@@ -360,18 +348,12 @@ anosOpciones.forEach(btn => {
             anoBtn.querySelector('span').textContent = 'Todos';
         }
         
-        // Actualizar el link
         actualizarLinkBusqueda();
     });
 });
-
-// Event listeners para los botones de tipo
 tiposOpciones.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Alternar clase active
         btn.classList.toggle('active');
-        
-        // Actualizar el texto del botón principal
         const tiposActivos = Array.from(tiposOpciones)
             .filter(btn => btn.classList.contains('active'));
         
@@ -381,18 +363,13 @@ tiposOpciones.forEach(btn => {
             tipoBtn.querySelector('span').textContent = 'Todos';
         }
         
-        // Actualizar el link
         actualizarLinkBusqueda();
     });
 });
 
-// Event listeners para los botones de estado
 estadosOpciones.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Alternar clase active
         btn.classList.toggle('active');
-        
-        // Actualizar el texto del botón principal
         const estadosActivos = Array.from(estadosOpciones)
             .filter(btn => btn.classList.contains('active'));
         
@@ -402,39 +379,25 @@ estadosOpciones.forEach(btn => {
             estadoBtn.querySelector('span').textContent = 'Todos';
         }
         
-        // Actualizar el link
         actualizarLinkBusqueda();
     });
 });
-// Event listeners para los botones de orden
 ordenesOpciones.forEach(btn => {
   btn.addEventListener('click', () => {
-      // Desactivar todos los botones de orden
       ordenesOpciones.forEach(b => b.classList.remove('active'));
-      
-      // Activar solo el botón clickeado
       btn.classList.add('active');
-      
-      // Actualizar el texto del botón principal
       ordenBtn.querySelector('span').textContent = btn.textContent;
-      
-      // Actualizar el link
       actualizarLinkBusqueda();
   });
 });
-
-// Event listener para el botón filtrar
 btnFiltrar.addEventListener('click', async () => {
-    // Obtener el link actualizado
     const link = actualizarLinkBusqueda();
-    // Limpiar el contenedor de resultados
     resultadosContainer.innerHTML = '';
     
     try {
         const response = await fetch(link);
         const data = await response.json();
         
-        // Mostrar los resultados
         resultadosContainer.innerHTML = '';
         
         const linkSolo = link.split('/browse?')[1]; 
@@ -452,8 +415,7 @@ btnFiltrar.addEventListener('click', async () => {
             resultadosContainer.innerHTML = '<span class="span-carga">No se encontraron resultados</span>';
         }
         
-        // Actualizar la paginación
-        currentPage = 1; // Reiniciar a la página 1 cuando se filtra
+        currentPage = 1; 
         updatePagination(data);
     } catch (error) {
         console.error('Error al cargar animes:', error);
@@ -464,7 +426,7 @@ const scrollContainer = document.querySelector('#pagination');
 
 scrollContainer.addEventListener('wheel', (e) => {
   if (e.deltaY !== 0) {
-    e.preventDefault(); // evita el scroll vertical
+    e.preventDefault();
     scrollContainer.scrollLeft += e.deltaY;
   }
 }, { passive: false });
