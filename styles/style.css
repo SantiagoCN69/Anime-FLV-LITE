@@ -617,7 +617,7 @@ section.content-section h2:first-of-type::after {
   font-size: 1rem;
   z-index: 1;
 }
-#busqueda-h2::after {display: none;}
+#busqueda-h2::after, #directorioh2::after {display: none;}
 #Ultimos-Episodios h2:first-of-type::before {
   content: "";
   width: 15px;

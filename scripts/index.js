@@ -27,6 +27,7 @@ let pendientesCargados = false;
 let completadosCargados = false;
 let ultimosCapsCargados = false;
 let continuarViendoCargado = false;
+let directorioCargado = false;
 
 function mostrarSeccionDesdesearch() {
   console.log(window.location.search);
@@ -82,6 +83,12 @@ switch(id) {
       if (!continuarViendoCargado) {
         cargarContinuarViendo();
         continuarViendoCargado = true;
+      }
+      break;
+    case 'Directorio':
+      if (!directorioCargado) {
+        cargarDirectorio();
+        directorioCargado = true;
       }
       break;
 }
@@ -308,22 +315,11 @@ async function cargarUltimosCapsVistos() {
     div.className = 'anime-card';
     div.style.setProperty('--cover', `url(${anime.portada})`);
     
-    if (anime.siguienteCapitulo) {
-      chapterHtml = `<span id="chapter">Episodio ${anime.siguienteCapitulo}</span>`;
+    if (anime.siguienteCapitulo) {chapterHtml = `<span id="chapter">Episodio ${anime.siguienteCapitulo}</span>`;}
+    if (anime.estado) {if (anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
+      else {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;}
     }
-    
-    if (anime.estado) {
-      if (anime.estado === 'En emision') {
-        estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;
-      }
-      else {
-        estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;
-      }
-    }
-    
-    if (anime.rating) {
-      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
-    }
+    if (anime.rating) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;}
     
     div.innerHTML = `
     <a href="anime.html?id=${anime.id}">
@@ -733,7 +729,7 @@ document.addEventListener("DOMContentLoaded", () => {
       right: 'Ultimos-Episodios'
     },
     'Continuar-viendo': {
-      left: null,
+      left: 'Directorio',
       right: 'Populares'
     }
   };
@@ -819,4 +815,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, { passive: false });
 });
+
+// Función para cargar el directorio
+function cargarDirectorio() {
+  const mainDirector = document.getElementById('maindirector');
+  if (!mainDirector) return;
+
+  fetch('directorio.html')
+    .then(res => res.text())
+    .then(html => {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      const nuevoMain = temp.querySelector('main');
+      if (nuevoMain) {
+        mainDirector.innerHTML = nuevoMain.innerHTML;
+      }
+
+      // Ejecutar script externo manualmente
+      const script = document.createElement('script');
+      script.src = '/scripts/directorio.js';
+      script.type = 'module';
+      document.body.appendChild(script);
+    });
+}
 
