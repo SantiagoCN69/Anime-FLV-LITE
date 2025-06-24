@@ -72,7 +72,11 @@ header.scrolled {
 .btn-header {
     display: block;
     color: var(--t2);
-    font-weight: bolder;
+    font-weight: 800;
+    font-size: .9rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
     text-transform: uppercase;
     margin-right: 10px;
     white-space: nowrap;
@@ -596,12 +600,7 @@ main {
 }
 .section-title {
     font-size: 1.7rem;
-    margin-bottom: .3rem;
-}
-@media screen and (min-width: 600px) {
-  .section-title {
-    margin-top: 1.3rem;
-}
+    margin-bottom: 1.3rem;
 }
 section.content-section h2:first-of-type::after {
   content: attr(data-text);
