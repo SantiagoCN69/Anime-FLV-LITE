@@ -91,7 +91,7 @@ function crearAnimeCardResultados(anime) {
 const CACHE_KEY = 'animes_cache';
 
 // Inicializar elementos del DOM
-const paginationContainer = document.getElementById('pagination');
+const paginationContainer = document.getElementById('pagination-directorio');
 
 let currentPage = 1;
 let totalPages = 1;
@@ -422,7 +422,7 @@ btnFiltrar.addEventListener('click', async () => {
         resultadosContainer.innerHTML = '<p>Error al cargar los animes</p>';
     }
 });
-const scrollContainer = document.querySelector('#pagination');
+const scrollContainer = document.querySelector('#pagination-directorio');
 
 scrollContainer.addEventListener('wheel', (e) => {
   if (e.deltaY !== 0) {

@@ -179,7 +179,7 @@ nav.filtros {
   aspect-ratio: 26/37;
 }
 
-#pagination {
+.pagination {
   display: flex;
   gap: 10px;
   margin-top: 1rem;
@@ -190,10 +190,10 @@ nav.filtros {
   overflow-y: auto;
   scroll-snap-type: x mandatory;
 }
-#pagination::-webkit-scrollbar {
+.pagination::-webkit-scrollbar {
   height: 8px;
 }
-#pagination::-webkit-scrollbar-thumb {
+.pagination::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: var(--btn);
 }
