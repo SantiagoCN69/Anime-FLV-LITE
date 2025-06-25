@@ -146,12 +146,29 @@ function setupFilterButtons(buttonsSelector, targetButtonId) {
         cargarPopulares();
     });
 });
-const btnfilters = document.querySelectorAll('#nav-populares-filtro-section > button');
-btnfilters.forEach(btn => {
-    btn.addEventListener('click', () => {
-        filters = btn.dataset.type;
-				btnfilters.forEach(b => b.classList.remove('active'));
-				btn.classList.add('active');
-        cargarPopulares();
-    });
+}
+
+setupFilterButtons('#nav-populares-type-section > button', 'btn-populares-filtro-type');
+setupFilterButtons('#nav-populares-filtro-section > button', 'btn-populares-filtro-filters');
+
+const btnAlert = document.getElementById('btn-populares-alert');
+const modal = document.getElementById('modal-populares');
+btnAlert.addEventListener('click', () => {
+    modal.classList.add('active');
 });
+modal.addEventListener('click', () => {
+    modal.classList.remove('active');
+});
+window.addEventListener('scroll', () => {
+    modal.classList.remove('active');
+});
+
+
+const scrollContainer = document.querySelector('#pagination-populares');
+
+scrollContainer.addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
+    e.preventDefault();
+    scrollContainer.scrollLeft += e.deltaY;
+  }
+}, { passive: false });
