@@ -120,15 +120,10 @@ async function cargarPopulares() {
 cargarPopulares();
 
 
-const btns = document.querySelectorAll('#nav-populares .filtro-section button');
+const btns = document.querySelectorAll('#nav-populares .filtro-section > button');
 btns.forEach(btn => {
     btn.addEventListener('click', () => {
-        if (btn.classList.contains('active')) {
-            btn.classList.remove('active');
-        } else {
-            btns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+        btn.classList.toggle('active');
         });
     });
 
@@ -139,7 +134,10 @@ function setupFilterButtons(buttonsSelector, targetButtonId) {
     
     buttons.forEach(btn => {
         btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             if (targetButton) {
+                targetButton.classList.remove('active');
                 const span = targetButton.querySelector('span');
                 if (span) {
                     span.textContent = btn.textContent.trim();
