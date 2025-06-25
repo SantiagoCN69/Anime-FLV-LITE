@@ -66,27 +66,23 @@ function createAnimeCard(anime, eslink) {
     return div;
 }
 async function cargarPopulares() {
-    console.log(type, filters);
     type = type || null;
     filters = filters || null;
   try {
     const container = document.getElementById('populares');
-    const h2 = document.getElementById('popularesh2');
     
-    if (!container || !h2) return;
+    if (!container) return;
     
     container.innerHTML = '<span class="span-carga">Cargando animes populares...</div>';
 		let url = `https://api.jikan.moe/v4/top/anime?limit=24&page=${currentPage}`;
 
 		if (type) url += `&type=${type}`;
 		if (filters) url += `&filter=${filters}`;
-		console.log(url);
 		const response = await fetch(url);
 		if (!response.ok) {
 			console.error("Error al cargar los datos:", response.status);
 		}
 		const data = await response.json();
-		console.log(data);
 		
     const animes = data.data || [];
 
@@ -106,7 +102,6 @@ async function cargarPopulares() {
 
     updatePagination(data.pagination);
     
-    h2.dataset.text = `Disponibles: ${animes.length}`;
     
   } catch (error) {
     console.error('Error al cargar populares:', error);
