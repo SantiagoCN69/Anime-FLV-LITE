@@ -29,7 +29,7 @@ function cambiarPagina(page) {
   currentPage = page;
   cargarPopulares();
 }
-function createAnimeCard(anime) {
+function createAnimeCard(anime, eslink) {
     const div = document.createElement('div');
     let typeHtml = '';
     let estadoHtml = '';
@@ -39,14 +39,18 @@ function createAnimeCard(anime) {
     div.style.setProperty('--cover', `url(${anime.images.webp.image_url})`);
     
 
-    if (anime.status) {if (anime.status === 'Currently Airing') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="Finalizado">Finalizado</span>`;}
-      else {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.status}">${anime.status}</span>`;}
+    if (!eslink) {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="No disponible">Proximamente</span>`;}
+    else {
+    if (anime.status) {if (anime.status === 'Currently Airing') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="En emision">En emision</span>`;}
+      else {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="Finalizado">Finalizado</span>`;}
+    }
     }
     if (anime.score) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.score}">${anime.score}/10</span>`;}
     if (anime.type) {typeHtml = `<span class="type supder">${anime.type}</span>`;}
     
     div.innerHTML = `
-    <a href="anime.html?id=${formatAnimeId(anime.title)}">
+<a href="${eslink ? 'anime.html?id=' + formatAnimeId(anime.title) : '#'}">
+
       <div class="container-img">
         <img src="${anime.images.webp.image_url}" class="cover" alt="${anime.title}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -56,7 +60,9 @@ function createAnimeCard(anime) {
       </div>
       <strong>${anime.title}</strong>
     </a>`;
-    
+    if (!eslink) {
+      div.style.pointerEvents = 'none';
+    }
     return div;
 }
 async function cargarPopulares() {
