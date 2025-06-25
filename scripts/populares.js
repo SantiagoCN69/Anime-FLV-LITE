@@ -113,7 +113,7 @@ async function cargarPopulares() {
 cargarPopulares();
 
 
-const btns = document.querySelectorAll('#nav-populares > button');
+const btns = document.querySelectorAll('#nav-populares .filtro-section button');
 btns.forEach(btn => {
     btn.addEventListener('click', () => {
         if (btn.classList.contains('active')) {
