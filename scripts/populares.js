@@ -91,11 +91,19 @@ async function cargarPopulares() {
     const animes = data.data || [];
 
     container.innerHTML = '';
+    
     animes.forEach(anime => {
-      const card = createAnimeCard(anime);
+      if (filters === 'upcoming') {
+      const card = createAnimeCard(anime, false);
       if (card) container.appendChild(card);
       observerAnimeCards();
-    });
+    }
+    else {
+      const card = createAnimeCard(anime, true);
+      if (card) container.appendChild(card);
+      observerAnimeCards();
+    }    });
+
     updatePagination(data.pagination);
     
     h2.dataset.text = `Disponibles: ${animes.length}`;
