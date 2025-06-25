@@ -135,9 +135,22 @@ function setupFilterButtons(buttonsSelector, targetButtonId) {
     
     buttons.forEach(btn => {
     btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (targetButton) {
+                const span = targetButton.querySelector('span');
+                if (span) {
+                    span.textContent = btn.textContent.trim();
+                }
+            }
+            
+            if (buttonsSelector.includes('type-section')) {
         type = btn.dataset.type;
-				btnstypes.forEach(b => b.classList.remove('active'));
-				btn.classList.add('active');
+            } else {
+                filters = btn.dataset.type;
+            }
+            
         cargarPopulares();
     });
 });
