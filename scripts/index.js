@@ -764,7 +764,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
  const excepciones = [
-  '#pagination',
+  '.pagination',
   '#recomendaciones-favoritos',
   '#recomendaciones-personalizadas',
  ]
