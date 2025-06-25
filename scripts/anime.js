@@ -516,6 +516,23 @@ function compararDatos(a, b) {
     }
   } catch (err) {
     console.error('Error carga anime:', err)
+    const target = document.getElementById("disqus_thread");
+    target.style.display = "none";
+    const observer = new MutationObserver(() => {
+      target.style.display = "none";
+    });
+    observer.observe(target, { attributes: true, attributeFilter: ['style'] });
+
+    const container = document.querySelector('.anime-details');
+    container.style.display = "flex";
+    const observer2 = new MutationObserver(() => {
+      container.style.display = "flex";
+    });
+    observer2.observe(container, { attributes: true, attributeFilter: ['style'] });
+    container.innerHTML = '<img id="cat" src="img/cat.png" alt="cat"><span id="catspan"> No se encontro el anime, prueba buscando de otra manera.</span>';
+    const search = document.getElementById("busqueda"); 
+    search.classList.add("active");
+    search.focus();
   }
 })();
 
