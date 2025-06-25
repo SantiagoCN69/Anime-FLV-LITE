@@ -125,8 +125,12 @@ btns.forEach(btn => {
         });
     });
 
-const btnstypes = document.querySelectorAll('#nav-populares-type-section > button');
-btnstypes.forEach(btn => {
+// Función para manejar los botones de filtro
+function setupFilterButtons(buttonsSelector, targetButtonId) {
+    const buttons = document.querySelectorAll(buttonsSelector);
+    const targetButton = document.getElementById(targetButtonId);
+    
+    buttons.forEach(btn => {
     btn.addEventListener('click', () => {
         type = btn.dataset.type;
 				btnstypes.forEach(b => b.classList.remove('active'));
