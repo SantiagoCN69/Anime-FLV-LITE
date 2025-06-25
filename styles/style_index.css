@@ -419,7 +419,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
     div {
       z-index: 10;
       position: absolute;
-      top: 50px;
+      top: 56px;
       left: 50%;
       transform: translateX(-50%) scale(.9);
       opacity: 0;
