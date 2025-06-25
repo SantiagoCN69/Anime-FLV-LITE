@@ -14,8 +14,7 @@ function formatAnimeId(title) {
     .replace(/^-+|-+$/g, '');
 }
 function updatePagination(pagination) {
-    console.log(pagination);
-  const paginationContainer = document.getElementById('pagination');
+  const paginationContainer = document.getElementById('pagination-populares');
   paginationContainer.innerHTML = '';
   for (let i = 1; i <= pagination.last_visible_page; i++) {
     const button = document.createElement('button');
