@@ -84,7 +84,11 @@ async function cargarPopulares() {
 		}
 		const data = await response.json();
 		
-    const animes = data.data || [];
+    const animesFiltrados = data.data.filter(anime =>
+      anime.type.toLowerCase() !== 'ona' && anime.type.toLowerCase() !== 'music'
+    );
+    
+    const animes = animesFiltrados || [];
 
     container.innerHTML = '';
     
@@ -135,9 +139,6 @@ function setupFilterButtons(buttonsSelector, targetButtonId) {
     
     buttons.forEach(btn => {
         btn.addEventListener('click', () => {
-            buttons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
             if (targetButton) {
                 const span = targetButton.querySelector('span');
                 if (span) {
