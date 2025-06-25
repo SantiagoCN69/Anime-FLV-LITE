@@ -134,7 +134,7 @@ function setupFilterButtons(buttonsSelector, targetButtonId) {
     const targetButton = document.getElementById(targetButtonId);
     
     buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
+        btn.addEventListener('click', () => {
             buttons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
@@ -146,14 +146,14 @@ function setupFilterButtons(buttonsSelector, targetButtonId) {
             }
             
             if (buttonsSelector.includes('type-section')) {
-        type = btn.dataset.type;
+                type = btn.dataset.type;
             } else {
                 filters = btn.dataset.type;
             }
             
-        cargarPopulares();
+            cargarPopulares();
+        });
     });
-});
 }
 
 setupFilterButtons('#nav-populares-type-section > button', 'btn-populares-filtro-type');
