@@ -431,3 +431,61 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
       transition: opacity .2s, transform .2s;
     }
 }
+#popularesh2 {
+  display: inline-block;
+}
+#btn-populares-alert {
+background-color: transparent;
+cursor: pointer;
+border: none;
+margin-left: 3px;
+color: var(--br);
+
+svg {
+  width: 20px;
+  height: 20px;
+}
+}
+#modal-populares {
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(5);
+  transition: opacity .2s, transform .3s;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99999;
+  padding: 3rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  h3 {
+    color: var(--t1);
+    width: fit-content;
+    margin-inline: auto;
+    font-size: 2rem
+  }
+  p {
+    color: var(--t2);
+  }
+  .close-modal {
+    background-color: var(--btn);
+    color: var(--t1);
+    border: none;
+    padding: 18px;
+    cursor: pointer;
+    border-radius: 25px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10rem;
+  }
+}
+#modal-populares.active {
+  pointer-events: auto;
+  opacity: 1;
+  transform: scale(1);
+}
+
