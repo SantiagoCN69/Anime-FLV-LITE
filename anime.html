@@ -103,13 +103,19 @@
 
     <section class="anime-container2">
       <div class="info1">
-        <h1 id="titulo" class="anime-title"></h1>
+        <h1 id="titulo" class="anime-title">
+          <span id="titulocargando"></span>
+        </h1>
         <script>
           document.getElementById('titulo').style.setProperty('view-transition-name', "title" + urlPart);
         </script>
-        <p id="rating" class="anime-rating"></p>
+        <p id="rating" class="anime-rating">?/?</p>
       </div>
-      <div class="genero"></div>
+      <div class="genero">
+        <a href="" style="width: 100px;" class="genre-link">....</a>
+        <a href="" style="width: 60px;" class="genre-link">....</a>
+        <a href="" style="width: 120px;" class="genre-link">....</a>
+      </div>
       <p id="descripcion" class="anime-description">Cargando información del anime...</p>
     </section>
 
