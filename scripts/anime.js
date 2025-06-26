@@ -588,6 +588,7 @@ async function cargarSugerenciasSinResultados(id) {
         const animeGrid = document.getElementById('anime-grid-sin-resultados');
         animeData.data.forEach(anime => {
           const animeCard = crearAnimeCard(anime);
+          animeGrid.innerHTML = '';
           animeGrid.appendChild(animeCard);
           observerAnimeCards()
         });
