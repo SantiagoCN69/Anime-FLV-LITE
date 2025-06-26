@@ -555,6 +555,7 @@ function compararDatos(a, b) {
 
 
 async function cargarSugerenciasSinResultados(id) {
+  document.title = "AniZen - " + "Sin Resultados";
       console.log(id);
       try {
         const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${id}`);
