@@ -542,7 +542,8 @@ async function cargarAnime(idauxiliar) {
     </div>
     <div id="sugerencias-sin-resultados">
       <h2>Sugerencias</h2>
-      <div id="anime-grid-sin-resultados"></div>
+      <div id="anime-grid-sin-resultados">
+      <span class="span-carga">cargando...</span></div>
     </div>
   `;
   document.getElementById("img-sin-resultados").addEventListener("click", () => {
