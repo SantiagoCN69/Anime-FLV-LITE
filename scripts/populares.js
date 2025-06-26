@@ -75,17 +75,16 @@ async function cargarPopulares() {
     
     container.innerHTML = '<span class="span-carga">Cargando animes populares...</div>';
 		let url = `https://api.jikan.moe/v4/top/anime?limit=24&page=${currentPage}`;
-
 		if (type) url += `&type=${type}`;
 		if (filters) url += `&filter=${filters}`;
 		const response = await fetch(url);
 		if (!response.ok) {
-			console.error("Error al cargar los datos:", response.status);
+      console.error("Error al cargar los datos:", response.status);
 		}
 		const data = await response.json();
-		
+    console.log(data.data);
     const animesFiltrados = data.data.filter(anime =>
-      anime.type.toLowerCase() !== 'ona' && anime.type.toLowerCase() !== 'music'
+      (anime.type ?? '').toLowerCase() !== 'ona' && (anime.type ?? '').toLowerCase() !== 'music'
     );
     
     const animes = animesFiltrados || [];
