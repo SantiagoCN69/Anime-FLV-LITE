@@ -471,7 +471,7 @@ function compararDatos(a, b) {
 }
 
 (async () => {
-  if (!id) return console.error('ID inválido');
+  if (!id) return cargarSugerenciasSinResultados();
 
   // 1. Cargar desde caché (si existe)
   let cached = cargarDatosDesdeCache(id);
@@ -524,17 +524,56 @@ function compararDatos(a, b) {
     observer.observe(target, { attributes: true, attributeFilter: ['style'] });
 
     const container = document.querySelector('.anime-details');
-    container.style.display = "flex";
-    const observer2 = new MutationObserver(() => {
-      container.style.display = "flex";
-    });
-    observer2.observe(container, { attributes: true, attributeFilter: ['style'] });
-    container.innerHTML = '<img id="cat" src="img/cat.png" alt="cat"><span id="catspan"> No se encontro el anime, prueba buscando de otra manera.</span>';
+    container.classList.add('sin-resultados');
+    
+    container.innerHTML = `
+    <img src="/img/cat.png" id="img-sin-resultados" alt="sin resultados">
+    <div id="text-sin-resultados">
+      <span id="span-sin-resultados">No se encontraron resultados</span>
+      <span id="span-sin-resultados2">Prueba buscando de otra manera.</span>
+    </div>
+    <div id="sugerencias-sin-resultados">
+      <h2>Sugerencias</h2>
+      <div id="anime-grid-sin-resultados"></div>
+    </div>
+  `;
+
     const search = document.getElementById("busqueda"); 
     search.classList.add("active");
+    document.querySelector('header').classList.add('search-active');
     search.focus();
   }
+  cargarSugerenciasSinResultados(id);
 })();
+
+
+async function cargarSugerenciasSinResultados(id) {
+      
+      if (!id) {
+        console.log('No se encontró ID en la URL');
+        return;
+      }
+      console.log(id);
+      try {
+        const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${id}`);
+        if (!response.ok) throw new Error('Error al cargar el anime');
+        
+        const animeData = await response.json();
+        if (animeData.data.length === 0) {
+          const recortado = id.slice(0, -2);
+          cargarSugerenciasSinResultados(recortado);
+          return;
+        }
+        const animeGrid = document.getElementById('anime-grid-sin-resultados');
+        animeData.data.forEach(anime => {
+          const animeCard = crearAnimeCard(anime);
+          animeGrid.appendChild(animeCard);
+          observerAnimeCards()
+        });
+      } catch (error) {
+            console.error('Error al cargar el anime:', error);
+        }
+    }
 
   
 // Toggle búsqueda de capítulos

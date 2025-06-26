@@ -419,10 +419,10 @@ transform: translateY(-20%);
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
-.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar, .anime-description::-webkit-scrollbar {
+.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar, .anime-description::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar {
   height: 8px;
 }
-.episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb {
+.episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb {
   background-color: var(--btn);
   border-radius: 5px;
 }
@@ -730,20 +730,70 @@ width: 100%;
     border-bottom: 1px solid var(--br);
   }
 }
-#cat {
-  margin: auto;
-  height: calc(100vh - 200px);
+.anime-details.sin-resultados {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  grid-template-rows: 177px auto;
+  grid-template-areas: 
+    "container1 container2"
+    "container1 container3"
+    ;
+}
+@media screen and (max-width: 800px) {
+  .anime-details.sin-resultados {
+    grid-template-columns:1fr;
+    grid-template-rows: auto auto auto;
+    gap: 1.7rem;
+    grid-template-areas: 
+      "container1"
+      "container2"
+      "container3"
+  }
+}
+#img-sin-resultados {
   width: auto;
+  height: 100%;
+  max-height: 300px;
+  margin: auto;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+  grid-area: container1;
+}
+#text-sin-resultados {
+  grid-area: container2;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  #span-sin-resultados {
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+  }
+  #span-sin-resultados2 {
+      font-size: 1rem;
+  }
+}
+#sugerencias-sin-resultados {
+  grid-area: container3;
+  overflow: hidden;
+}
+#anime-grid-sin-resultados {
+  overflow: hidden;
+  overflow-x: auto;
   position: relative;
-}
-#catspan {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
-  color: var(--t1);
-  text-align: center;
-  bottom: 5rem;
-}
-#busqueda.active {
-  box-shadow: 0px 0px 25px var(--br);
+  display: flex;
+  height: fit-content;
+  padding: 8px;
+  gap: 1rem;
+  min-height: 170px;
+  .anime-card {
+      min-width: 250px;
+      height: fit-content;
+  }
+  .anime-card div > img:first-of-type {
+      height: 130px;
+    }
+    
 }
