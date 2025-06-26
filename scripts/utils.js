@@ -1,6 +1,6 @@
 // Manejar el scroll para el efecto del header
 const header = document.querySelector('header');
-const scrollOffset = 50;
+const scrollOffset = 30;
 
 const handleScroll = () => {
   if (window.scrollY > scrollOffset) {

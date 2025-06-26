@@ -731,6 +731,8 @@ width: 100%;
   }
 }
 .anime-details.sin-resultados {
+  height: calc(100vh - 200px);
+  min-height: calc(645px + 1.7rem*2);
   display: grid;
   grid-template-columns: 35% 65%;
   grid-template-rows: 177px auto;
@@ -742,7 +744,7 @@ width: 100%;
 @media screen and (max-width: 800px) {
   .anime-details.sin-resultados {
     grid-template-columns:1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: minmax(300px, 1fr) minmax(100px, 1fr) minmax(245px, 1fr);
     gap: 1.7rem;
     grid-template-areas: 
       "container1"
@@ -778,6 +780,7 @@ width: 100%;
 #sugerencias-sin-resultados {
   grid-area: container3;
   overflow: hidden;
+  min-height: fit-content;
 }
 #anime-grid-sin-resultados {
   overflow: hidden;

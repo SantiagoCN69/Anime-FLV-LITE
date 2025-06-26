@@ -470,14 +470,12 @@ function compararDatos(a, b) {
   );
 }
 
-(async function cargarInicial(idrespuesto) {
-  if (idrespuesto) {
-    id = idrespuesto;
-  }
+(async () => {
+
   if (!id) {
     const letras = "abcdefghijklmnopqrstuvwxyz";
     const letraRandom = letras[Math.floor(Math.random() * letras.length)];
-    return cargarInicial(letraRandom);
+    return cargarSugerenciasSinResultados(letraRandom);
   }
 
   // 1. Cargar desde caché (si existe)
@@ -523,7 +521,13 @@ function compararDatos(a, b) {
     }
   } catch (err) {
     console.error('Error carga anime:', err)
-    const target = document.getElementById("disqus_thread");
+    cargarSugerenciasSinResultados(id);
+  }
+})();
+
+
+async function cargarSugerenciasSinResultados(id) {
+  const target = document.getElementById("disqus_thread");
     target.style.display = "none";
     const observer = new MutationObserver(() => {
       target.style.display = "none";
@@ -549,12 +553,7 @@ function compararDatos(a, b) {
     search.classList.add("active");
     document.querySelector('header').classList.add('search-active');
     search.focus();
-  }
-  cargarSugerenciasSinResultados(id);
-})();
 
-
-async function cargarSugerenciasSinResultados(id) {
   document.title = "AniZen - " + "Sin Resultados";
       console.log(id);
       try {
