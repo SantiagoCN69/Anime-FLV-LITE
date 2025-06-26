@@ -773,7 +773,7 @@ document.addEventListener("DOMContentLoaded", () => {
   '#recomendaciones-favoritos',
   '#recomendaciones-personalizadas',
  ]
-  // Función para manejar la navegación por gestos
+
   function handleSectionNavigation(sectionId, direction) {
     const targetSection = navigationMap[sectionId]?.[direction];
     if (!targetSection) return false;
@@ -781,9 +781,8 @@ document.addEventListener("DOMContentLoaded", () => {
     history.replaceState(null, '', `?${targetSection}`);
     mostrarSeccionDesdesearch();
   
-    const targetId = navigationMap[targetSection]?.targetId;
     const contenedor = document.getElementById("indexpagination");
-    const elemento = document.getElementById(targetId);
+    const elemento = contenedor?.querySelector(`[data-target="${targetSection}"]`);
   
     if (contenedor && elemento) {
       const contRect = contenedor.getBoundingClientRect();
@@ -799,7 +798,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return true;
   }
-
+  
   // Función para verificar si un elemento está en las excepciones
   function isElementInExceptions(element) {
     if (!element) return false;
