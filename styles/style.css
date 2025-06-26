@@ -559,7 +559,7 @@ main {
   min-height: calc(100vh - 267px);
   position: relative;
   margin: 2rem auto;
-  margin-left: 3%;
+  margin-left: 2%;
   width: 100%;
 }
 #init-loading-servidores-busqueda {
