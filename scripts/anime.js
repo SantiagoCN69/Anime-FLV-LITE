@@ -881,6 +881,7 @@ document.getElementById("btn-estado").addEventListener("click", () => {
 });
 document.addEventListener("click", (e) => {
   const seccion = document.getElementById("Estados");
+  if (!seccion) return;
   const btnEstado = document.getElementById("btn-estado");
   if (seccion.classList.contains("active") && 
       !seccion.contains(e.target) && 
