@@ -345,7 +345,7 @@ async function cargarUltimosCapsVistos() {
     div.innerHTML = `
     <a href="anime.html?id=${anime.id}">
       <div class="container-img">
-        <img src="${anime.portada}" class="cover" alt="${anime.titulo}">
+        <img style="view-transition-name: ${anime.id}" src="${anime.portada}" class="cover" alt="${anime.titulo}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
         ${chapterHtml}
         ${estadoHtml}

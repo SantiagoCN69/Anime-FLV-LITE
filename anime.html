@@ -74,7 +74,11 @@
   <main class="anime-details">
     <section class="anime-container1">
       <img src="img/loading.png" id="portada" alt="Portada del Anime" class="anime-cover" />
-      
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlPart = urlParams.get('id');
+        document.getElementById('portada').style.setProperty('view-transition-name', urlPart);
+      </script>
       <div class="botones">
         <button type="button" id="btn-fav">FAV</button>
         <div id="section-estados">
