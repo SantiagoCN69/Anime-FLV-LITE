@@ -100,7 +100,7 @@ const renderGeneros = (container, generos) => {
       a.className = 'genre-link';
       // Convertir 'aventuras' a 'aventura' para la URL
       const generoUrl = g.toLowerCase() === 'aventuras' ? 'aventura' : g;
-      a.href = `directorio.html?genre%5B%5D=${quitarTildesYEspacios(generoUrl)}`;
+      a.href = `index.html?Directorio&genre[]=${quitarTildesYEspacios(generoUrl)}`;
 
 
       container.appendChild(a);
