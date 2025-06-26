@@ -34,8 +34,11 @@ let popularesCargados = false;
 function mostrarSeccionDesdesearch() {
   console.log(window.location.search);
   let search = window.location.search;
-
-  let id = decodeURIComponent(search.substring(1)) || 'Ultimos-Episodios';
+  
+  // Obtener solo el primer parámetro antes de & o ?
+  let id = search.split(/[?&]/)[1] || 'Ultimos-Episodios';
+  id = decodeURIComponent(id);
+  
   const seccion = document.getElementById(id);
   if (!seccion) {
     id = 'Ultimos-Episodios';
