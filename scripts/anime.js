@@ -470,12 +470,15 @@ function compararDatos(a, b) {
   );
 }
 
-(async () => {
-
+async function cargarAnime(idauxiliar) {
+  if (idauxiliar) {
+    console.log(idauxiliar);
+    id = idauxiliar;
+  }
   if (!id) {
     const letras = "abcdefghijklmnopqrstuvwxyz";
     const letraRandom = letras[Math.floor(Math.random() * letras.length)];
-    return cargarSugerenciasSinResultados(letraRandom);
+    return cargarAnime(letraRandom);
   }
 
   // 1. Cargar desde caché (si existe)
@@ -521,13 +524,7 @@ function compararDatos(a, b) {
     }
   } catch (err) {
     console.error('Error carga anime:', err)
-    cargarSugerenciasSinResultados(id);
-  }
-})();
-
-
-async function cargarSugerenciasSinResultados(id) {
-  const target = document.getElementById("disqus_thread");
+    const target = document.getElementById("disqus_thread");
     target.style.display = "none";
     const observer = new MutationObserver(() => {
       target.style.display = "none";
@@ -548,11 +545,22 @@ async function cargarSugerenciasSinResultados(id) {
       <div id="anime-grid-sin-resultados"></div>
     </div>
   `;
-
+  document.getElementById("img-sin-resultados").addEventListener("click", () => {
+    document.getElementById("meow-audio").play();
+  });
+  
     const search = document.getElementById("busqueda"); 
     search.classList.add("active");
     document.querySelector('header').classList.add('search-active');
     search.focus();
+
+    cargarSugerenciasSinResultados(id);
+  }
+};
+cargarAnime();
+
+
+async function cargarSugerenciasSinResultados(id) {
 
   document.title = "AniZen - " + "Sin Resultados";
       console.log(id);
@@ -573,7 +581,7 @@ async function cargarSugerenciasSinResultados(id) {
           observerAnimeCards()
         });
       } catch (error) {
-            console.error('Error al cargar el anime:', error);
+            console.error('Error al cargar sugerencias:', error);
         }
     }
 
