@@ -354,7 +354,7 @@ async function cargarUltimosCapsVistos() {
         ${estadoHtml}
         ${ratingHtml}
       </div>
-      <strong>${anime.titulo}</strong>
+      <strong style="view-transition-name: title${anime.id}">${anime.titulo}</strong>
     </a>`;
     
     return div;
