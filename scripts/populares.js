@@ -52,7 +52,7 @@ function createAnimeCard(anime, eslink) {
 <a href="${eslink ? 'anime.html?id=' + formatAnimeId(anime.title) : '#'}">
 
       <div class="container-img">
-        <img src="${anime.images.webp.image_url}" class="cover" alt="${anime.title}">
+        <img  style="view-transition-name: ${formatAnimeId(anime.title)}"  src="${anime.images.webp.image_url}" class="cover" alt="${anime.title}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
         ${estadoHtml}
         ${ratingHtml}
