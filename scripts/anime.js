@@ -16,7 +16,7 @@ document.title = "AniZen - " + id;
 const userID = localStorage.getItem("userID");
 
 // Cargar información del anime
-document.getElementById("descripcion").innerHTML = '<div class="loading">Cargando información...</div>';
+document.getElementById("descripcion").innerHTML = '<span class="span-carga">Cargando descripción...</span>';
 
 const getCacheKey = id => `anime_${id}`;
 
@@ -586,9 +586,9 @@ async function cargarSugerenciasSinResultados(id) {
           return;
         }
         const animeGrid = document.getElementById('anime-grid-sin-resultados');
+        animeGrid.innerHTML = '';
         animeData.data.forEach(anime => {
           const animeCard = crearAnimeCard(anime);
-          animeGrid.innerHTML = '';
           animeGrid.appendChild(animeCard);
           observerAnimeCards()
         });

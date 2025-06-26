@@ -109,14 +109,16 @@
         <script>
           document.getElementById('titulo').style.setProperty('view-transition-name', "title" + urlPart);
         </script>
-        <p id="rating" class="anime-rating">?/?</p>
+        <p id="rating" class="anime-rating">
+          <span id="ratingcargando"></span>
+        </p>
       </div>
       <div class="genero">
-        <a href="" style="width: 100px;" class="genre-link">....</a>
-        <a href="" style="width: 60px;" class="genre-link">....</a>
-        <a href="" style="width: 120px;" class="genre-link">....</a>
+        <a href="" style="width: 100px;" class="genre-link genre-link-cargando">....</a>
+        <a href="" style="width: 60px;" class="genre-link genre-link-cargando">....</a>
+        <a href="" style="width: 120px;" class="genre-link genre-link-cargando">....</a>
       </div>
-      <p id="descripcion" class="anime-description">Cargando información del anime...</p>
+      <p id="descripcion" class="anime-description"><span class="span-carga">Cargando descripción...</span></p>
     </section>
 
     <section class="anime-container3">
