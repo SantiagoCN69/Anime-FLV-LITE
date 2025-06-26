@@ -262,115 +262,118 @@ transform: translateY(-20%);
   --progreso: 0;
   }
 #progreso {
-    position: absolute;
-    inset: 0;
-    width: calc(var(--progreso) * 1%);
-    height: 100%;
-    background-color: var(--btn);
-    border-radius: 5px;
-    overflow: hidden;
+  position: absolute;
+  inset: 0;
+  width: calc(var(--progreso) * 1%);
+  height: 100%;
+  background-color: var(--btn);
+  border-radius: 5px;
+  overflow: hidden;
 }
 #progreso-text::before {
   content: var(--progreso-text);
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--t1);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t1);
 }
-  .anime-container2 {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    grid-area: container2;
-    gap: 7px;
-    height: fit-content;
-  }
 
-  .info1 {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: space-between;
-    position: relative;
-    gap: 10px;
-  }
+.anime-container2 {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  grid-area: container2;
+  gap: 7px;
+  height: fit-content;
+}
 
-  .anime-title {
-    font-size: 1.8rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: fit-content;
-    max-width: 80%;
-    color:var(--btn);
-    z-index: 1;
-  }
-  .anime-rating {
-    font-size: 1.2rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+.info1 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+  position: relative;
+  gap: 10px;
+}
+
+.anime-title {
+  font-size: 1.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: fit-content;
+  max-width: 80%;
+  color:var(--btn);
+  z-index: 1;
+}
+
+.anime-rating {
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   }
   
-  .anime-rating::before {
-    content: "";
-    background-image: url('../icons/star-solid.svg');
-    background-size: cover;
-    width: 19px;
-    height: 17px;
-    display: inline-block;
-  }
+.anime-rating::before {
+  content: "";
+  background-image: url('../icons/star-solid.svg');
+  background-size: cover;
+  width: 19px;
+  height: 17px;
+  display: inline-block;
+}
 
-  .genero {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    min-height: fit-content;
-  }
+.genero {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  min-height: fit-content;
+}
   
-  .genero a {
-    background-color: var(--p);
-    color: var(--t1);
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: none;
-    font-size: .8rem;
+.genero a {
+  background-color: var(--p);
+  color: var(--t1);
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: .8rem;
   }
 
-  .anime-description {
-    color: var(--t2);
-    font-size: .9rem;
-    overflow: auto;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
-    line-clamp: 5;
+.anime-description {
+  color: var(--t2);
+  font-size: .9rem;
+  overflow: auto;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
 }
     
-  .anime-container3 {
-    grid-area: container3;
-    display: flex;
-    flex-direction: column;
-    border-radius: 5px;
-    padding: 1rem;
-    gap: 1rem;
-    background-color: var(--p);
-    min-height: 166px;
-    height: fit-content;
-    position: relative;
-  }
-  .header-caps {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: fit-content;
-    overflow: hidden;
+.anime-container3 {
+  grid-area: container3;
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  padding: 1rem;
+  gap: 1rem;
+  background-color: var(--p);
+  min-height: 166px;
+  height: fit-content;
+  position: relative;
+}
+
+.header-caps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: fit-content;
+  overflow: hidden;
   }
 
 #titulo-lista-caps {
