@@ -78,6 +78,7 @@ function inicializarSidebar() {
       document.getElementById('noticias_container'),
       document.getElementById('capitulos'),
       document.getElementById('animes-relacionados'),
+      document.getElementById('anime-grid-sin-resultados'),
     ];
     
     touchStartedOnRestrictedArea = elementosExcluidos.some(elemento => {
