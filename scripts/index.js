@@ -772,30 +772,37 @@ document.addEventListener("DOMContentLoaded", () => {
   '#recomendaciones-personalizadas',
  ]
 
-  function handleSectionNavigation(sectionId, direction) {
-    const targetSection = navigationMap[sectionId]?.[direction];
-    if (!targetSection) return false;
-  
-    history.replaceState(null, '', `?${targetSection}`);
-    mostrarSeccionDesdesearch();
-  
-    const contenedor = document.getElementById("indexpagination");
-    const elemento = contenedor?.querySelector(`[data-target="${targetSection}"]`);
-  
-    if (contenedor && elemento) {
-      const contRect = contenedor.getBoundingClientRect();
-      const elRect = elemento.getBoundingClientRect();
-  
-      const scrollLeftActual = contenedor.scrollLeft;
-      const distanciaCentro = (elRect.left - contRect.left) - (contRect.width / 2 - elRect.width / 2);
-  
-      contenedor.scrollTo({
-        left: scrollLeftActual + distanciaCentro,
-        behavior: 'smooth'
-      });
-    }
-    return true;
-  }
+ function centrarElementoEnVista(seccionId) {
+  const contenedor = document.getElementById("indexpagination");
+  const elemento = contenedor?.querySelector(`[data-target="${seccionId}"]`);
+  if (!contenedor || !elemento) return;
+
+  const { left: contLeft, width: contWidth } = contenedor.getBoundingClientRect();
+  const { left: elLeft, width: elWidth } = elemento.getBoundingClientRect();
+  const distanciaCentro = (elLeft - contLeft) - (contWidth / 2 - elWidth / 2);
+
+  contenedor.scrollTo({
+    left: contenedor.scrollLeft + distanciaCentro,
+    behavior: 'smooth'
+  });
+}
+
+function handleSectionNavigation(sectionId, direction) {
+  const targetSection = navigationMap[sectionId]?.[direction];
+  if (!targetSection) return false;
+
+  history.replaceState(null, '', `?${targetSection}`);
+  mostrarSeccionDesdesearch();
+  return true;
+}
+
+const originalMostrarSeccion = mostrarSeccionDesdesearch;
+mostrarSeccionDesdesearch = function() {
+  originalMostrarSeccion.apply(this, arguments);
+  const id = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
+  centrarElementoEnVista(id);
+};
+
   
   // Función para verificar si un elemento está en las excepciones
   function isElementInExceptions(element) {
