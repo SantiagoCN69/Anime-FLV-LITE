@@ -748,27 +748,22 @@ document.addEventListener("DOMContentLoaded", () => {
     'Ultimos-Episodios': {
       left: 'Populares',
       right: null,
-      targetId: 'navscroll1'
     },
     'Populares': {
       left: 'Continuar-viendo',
       right: 'Ultimos-Episodios',
-      targetId: 'navscroll2'
     },
     'Continuar-viendo': {
       left: 'Directorio',
       right: 'Populares',
-      targetId: 'navscroll3'
     },
     'Directorio': {
       left: 'Lab',
       right: 'Continuar-viendo',
-      targetId: 'navscroll4'
     },
     'Lab': {
       left: null,
       right: 'Directorio',
-      targetId: 'navscroll5'
     }
   };
  const excepciones = [
