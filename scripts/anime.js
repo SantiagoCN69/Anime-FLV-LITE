@@ -546,6 +546,16 @@ async function cargarAnime(idauxiliar) {
       <span class="span-carga">cargando...</span></div>
     </div>
   `;
+  const scrollHorizontal = document.querySelector('#anime-grid-sin-resultados');
+
+scrollHorizontal.addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
+    e.preventDefault();
+    scrollHorizontal.scrollLeft += e.deltaY;
+  }
+});
+
+
   document.getElementById("img-sin-resultados").addEventListener("click", () => {
     document.getElementById("meow-audio").play();
   });
