@@ -744,23 +744,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const navigationMap = {
     'Ultimos-Episodios': {
       left: 'Populares',
-      right: null
+      right: null,
+      targetId: 'navscroll1'
     },
     'Populares': {
       left: 'Continuar-viendo',
-      right: 'Ultimos-Episodios'
+      right: 'Ultimos-Episodios',
+      targetId: 'navscroll2'
     },
     'Continuar-viendo': {
       left: 'Directorio',
-      right: 'Populares'
+      right: 'Populares',
+      targetId: 'navscroll3'
     },
     'Directorio': {
       left: 'Lab',
-      right: 'Continuar-viendo'
+      right: 'Continuar-viendo',
+      targetId: 'navscroll4'
     },
     'Lab': {
       left: null,
-      right: 'Directorio'
+      right: 'Directorio',
+      targetId: 'navscroll5'
     }
   };
  const excepciones = [
@@ -771,12 +776,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // Función para manejar la navegación por gestos
   function handleSectionNavigation(sectionId, direction) {
     const targetSection = navigationMap[sectionId]?.[direction];
-    if (targetSection) {
-      history.replaceState(null, '', `?${targetSection}`);
-      mostrarSeccionDesdesearch();
-      return true;
+    if (!targetSection) return false;
+  
+    history.replaceState(null, '', `?${targetSection}`);
+    mostrarSeccionDesdesearch();
+  
+    const targetId = navigationMap[targetSection]?.targetId;
+    const contenedor = document.getElementById("indexpagination");
+    const elemento = document.getElementById(targetId);
+  
+    if (contenedor && elemento) {
+      const contRect = contenedor.getBoundingClientRect();
+      const elRect = elemento.getBoundingClientRect();
+  
+      const scrollLeftActual = contenedor.scrollLeft;
+      const distanciaCentro = (elRect.left - contRect.left) - (contRect.width / 2 - elRect.width / 2);
+  
+      contenedor.scrollTo({
+        left: scrollLeftActual + distanciaCentro,
+        behavior: 'smooth'
+      });
     }
-    return false;
+    return true;
   }
 
   // Función para verificar si un elemento está en las excepciones
