@@ -9,7 +9,7 @@ const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const id = new URLSearchParams(location.search).get("id");
+let id = new URLSearchParams(location.search).get("id");
 
 document.title = "AniZen - " + id;
 
@@ -470,8 +470,15 @@ function compararDatos(a, b) {
   );
 }
 
-(async () => {
-  if (!id) return cargarSugerenciasSinResultados();
+(async function cargarInicial(idrespuesto) {
+  if (idrespuesto) {
+    id = idrespuesto;
+  }
+  if (!id) {
+    const letras = "abcdefghijklmnopqrstuvwxyz";
+    const letraRandom = letras[Math.floor(Math.random() * letras.length)];
+    return cargarInicial(letraRandom);
+  }
 
   // 1. Cargar desde caché (si existe)
   let cached = cargarDatosDesdeCache(id);
@@ -548,11 +555,6 @@ function compararDatos(a, b) {
 
 
 async function cargarSugerenciasSinResultados(id) {
-      
-      if (!id) {
-        console.log('No se encontró ID en la URL');
-        return;
-      }
       console.log(id);
       try {
         const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${id}`);
