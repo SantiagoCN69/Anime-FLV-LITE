@@ -234,9 +234,6 @@ function cargarAnimesConCache() {
     }
   }
   
-  // Cargar animes al inicio
-cargarAnimesConCache();
-  
 
 
 // Sistema de filtros de género
@@ -430,3 +427,6 @@ scrollContainer.addEventListener('wheel', (e) => {
     scrollContainer.scrollLeft += e.deltaY;
   }
 }, { passive: false });
+
+
+cargarAnimesConCache();
