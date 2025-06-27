@@ -27,6 +27,7 @@
   transform: translateX(0);
   height: var(--altura-main);
   margin-block: 2rem;
+  margin-bottom: 1.8rem;
 }
 @media screen and (max-width: 600px) {
   #menu-toggle {

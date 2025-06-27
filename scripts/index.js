@@ -32,7 +32,6 @@ let labCargado = false;
 let popularesCargados = false;
 
 function mostrarSeccionDesdesearch() {
-  console.log(window.location.search);
   let search = window.location.search;
   
   // Obtener solo el primer parámetro antes de & o ?

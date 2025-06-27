@@ -82,7 +82,6 @@ async function cargarPopulares() {
       console.error("Error al cargar los datos:", response.status);
 		}
 		const data = await response.json();
-    console.log(data.data);
     const animesFiltrados = data.data.filter(anime =>
       (anime.type ?? '').toLowerCase() !== 'ona' && (anime.type ?? '').toLowerCase() !== 'music'
     );
