@@ -82,8 +82,12 @@ function crearAnimeCardResultados(anime) {
       <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
       <span class="estado">${anime.type}</span>
     </div>
-    <strong style="view-transition-name: ${urlPart}">${anime.title}</strong>
+    <strong>${anime.title}</strong>
     </a>`;
+    div.addEventListener('click', () => {
+      div.querySelector('strong').style.setProperty('view-transition-name', 'title' + urlPart);
+      div.querySelector('.container-img').style.setProperty('view-transition-name', urlPart);
+    });
     return div;
 }
 

@@ -194,7 +194,7 @@ function crearAnimeCard(anime, isLink = false) {
     }
 
         div.style.setProperty('--cover', `url(${anime.cover || 'img/loading.png'})`);
-        if (isLink) {
+        
             div.innerHTML = `
         <div class="container-img">
             <img src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
@@ -202,19 +202,15 @@ function crearAnimeCard(anime, isLink = false) {
             ${ratingHtml}
             <span class="estado">${anime.type}</span>
         </div>
-        <strong style="view-transition-name: ${animeId}">${anime.title || 'Título del Anime'}</strong>
-        `;
-        } else {
-            div.innerHTML = `
-        <div class="container-img">
-            <img src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
-            <img src="./icons/añadir.svg" class="play-icon" alt="seleccionar">
-            ${ratingHtml}
-            <span class="estado">${anime.type}</span>
-        </div>
         <strong>${anime.title || 'Título del Anime'}</strong>
         `;
-        }
+        div.addEventListener('click', () => {
+            if (ratingHtml){
+            div.querySelector('.rating').style.setProperty('view-transition-name', 'rating' + anime.id);
+            }
+            div.querySelector('strong').style.setProperty('view-transition-name', 'title' + anime.id);
+            div.querySelector('.container-img').style.setProperty('view-transition-name', anime.id);
+          });
         // Evento de clic según el tipo de tarjeta
         if (isLink) {
 

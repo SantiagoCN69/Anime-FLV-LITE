@@ -34,7 +34,7 @@ function createAnimeCard(anime, eslink) {
     let typeHtml = '';
     let estadoHtml = '';
     let ratingHtml = '';
-  
+    const animeId = formatAnimeId(anime.title);  
     div.className = 'anime-card';
     div.style.setProperty('--cover', `url(${anime.images.webp.image_url})`);
     
@@ -60,6 +60,13 @@ function createAnimeCard(anime, eslink) {
       </div>
       <strong>${anime.title}</strong>
     </a>`;
+    div.addEventListener('click', () => {
+      if (ratingHtml){
+      div.querySelector('.rating').style.setProperty('view-transition-name', 'rating' + animeId);
+      }
+      div.querySelector('strong').style.setProperty('view-transition-name', 'title' + animeId);
+      div.querySelector('.container-img').style.setProperty('view-transition-name', animeId);
+    });
     if (!eslink) {
       div.style.pointerEvents = 'none';
     }

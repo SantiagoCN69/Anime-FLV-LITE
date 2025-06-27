@@ -69,16 +69,22 @@ function crearAnimeCard(anime) {
   div.className = 'anime-card';
   div.style.setProperty('--cover', `url(${anime.cover})`);
   div.innerHTML = `
+  <a href="anime.html?id=${animeId}">
   <div class="container-img">
     <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
     <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
     ${ratingHtml}
     <span class="estado">${anime.type}</span>
   </div>
-  <strong style="view-transition-name: ${animeId}">${anime.title || anime.name}</strong>
-`;
-
-  div.addEventListener('click', () => ver(animeId));
+  <strong>${anime.title || anime.name}</strong>
+</a>`;
+div.addEventListener('click', () => {
+  if (ratingHtml){
+  div.querySelector(".rating").style.setProperty('view-transition-name', 'rating' + animeId);
+  }
+  div.querySelector('strong').style.setProperty('view-transition-name', 'title' + animeId);
+  div.querySelector('.container-img').style.setProperty('view-transition-name', animeId);
+});
   return div;
 }
 
