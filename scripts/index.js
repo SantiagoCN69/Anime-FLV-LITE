@@ -353,8 +353,15 @@ async function cargarUltimosCapsVistos() {
         ${estadoHtml}
         ${ratingHtml}
       </div>
-      <strong style="view-transition-name: ${anime.id}">${anime.titulo}</strong>
+      <strong>${anime.titulo}</strong>
     </a>`;
+    div.addEventListener('click', () => {
+      if (ratingHtml){
+      div.querySelector('.rating').style.setProperty('view-transition-name', 'rating' + anime.id);
+      }
+      div.querySelector('strong').style.setProperty('view-transition-name', 'title' + anime.id);
+      div.querySelector('.container-img').style.setProperty('view-transition-name', anime.id);
+    });
     
     return div;
 }
