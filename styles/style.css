@@ -2,22 +2,11 @@
   navigation: auto;
 }
 ::view-transition-group(*) {
-  animation-duration: 0.5s;
+  animation-duration: .5s;
+  z-index: 1;
+  border-radius: 10px;
 }
-::view-transition-old(root) {
-  animation-name: fade-out .5s forwards;
-}
-::view-transition-new(root) {
-  animation-name: fade-in .5s forwards;
-}
-@keyframes fade-out {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
-}
-@keyframes fade-in {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
+
 * {
     margin: 0;
     padding: 0;
@@ -823,6 +812,7 @@ section.content-section h2:first-of-type::after {
   width: 100%;
   object-fit: cover;
   transition: transform .5s ease, filter .4s ease;
+  border-radius: 10px;
 }
 .container-img::after {
   content: '';
