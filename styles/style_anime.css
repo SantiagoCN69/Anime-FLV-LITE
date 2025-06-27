@@ -387,7 +387,7 @@ transform: translateY(-20%);
   }
 
 .anime-description {
-  min-height: calc(var(--altura-container-1) - 75px);
+  min-height: 1lh;
   position: relative;
   color: var(--t2);
   font-size: .9rem;
