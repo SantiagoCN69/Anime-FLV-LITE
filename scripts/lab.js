@@ -518,6 +518,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
         "Terror cortico pero que asuste de verdad.",
         "Romance que haga llorar.",
         "Comedia absurda para reír sin parar.",
+        "erotico de otro nivel",
         "Viajes en el tiempo con plot twist.",
         "Drama escolar que rompa el kokoro.",
         "Fantasía épica con magia y espadas.",
