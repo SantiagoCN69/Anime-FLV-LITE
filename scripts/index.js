@@ -198,6 +198,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   btn.appendChild(contenedorTexto);
   
   btn.addEventListener('click', () => {
+    btn.style.setProperty('view-transition-name', 'title' + itemData.id);
     window.location.href = `ver.html?id=${itemData.id}&url=${itemData.siguienteCapitulo}`;
   });
 
