@@ -1,10 +1,10 @@
 @view-transition {
   navigation: auto;
 }
+
 ::view-transition-group(*) {
   animation-duration: .5s;
   z-index: 1;
-  border-radius: 10px;
 }
 
 * {
@@ -364,9 +364,12 @@ header.scrolled {
   }
   header {
     padding-inline: 1rem;
-    position: sticky;
+    position: fixed;
     top: 0;
     z-index: 10;
+  }
+  body {
+    padding-top: 88px;
   }
   .search-active {
     top: 0;

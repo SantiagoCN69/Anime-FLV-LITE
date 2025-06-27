@@ -340,7 +340,7 @@ transform: translateY(-20%);
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(var(--bgt), .3) 50%,
+    rgba(var(--bgt), .2) 50%,
     transparent 70%
   );
   animation: shimmer 1.5s infinite;
