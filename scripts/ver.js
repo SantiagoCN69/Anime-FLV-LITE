@@ -399,7 +399,7 @@ async function cargarVideoDesdeEpisodio(index) {
     srv.nombre = `Servidor ${i + 1}`;
   });
 
-  history.replaceState({}, "", `ver.html?animeId=${animeId}&url=${ep.number}`);
+  history.replaceState({}, "", `ver.html?id=${animeId}&url=${ep.number}`);
 
   const controles = document.getElementById("controles");
   controles.innerHTML = "";
