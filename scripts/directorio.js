@@ -78,11 +78,11 @@ function crearAnimeCardResultados(anime) {
     div.innerHTML = `
     <a href="anime.html?id=${urlPart}">
     <div class="container-img">
-      <img style="view-transition-name: ${urlPart}" src="${anime.cover}" class="cover" alt="${anime.title}">
+      <img src="${anime.cover}" class="cover" alt="${anime.title}">
       <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
       <span class="estado">${anime.type}</span>
     </div>
-    <strong>${anime.title}</strong>
+    <strong style="view-transition-name: ${urlPart}">${anime.title}</strong>
     </a>`;
     return div;
 }

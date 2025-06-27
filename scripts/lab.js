@@ -197,12 +197,12 @@ function crearAnimeCard(anime, isLink = false) {
         if (isLink) {
             div.innerHTML = `
         <div class="container-img">
-            <img style="view-transition-name: ${animeId}" src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
+            <img src="${anime.cover || 'img/loading.png'}" class="cover" alt="${anime.title || 'Título del Anime'}">
             <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="play">
             ${ratingHtml}
             <span class="estado">${anime.type}</span>
         </div>
-        <strong>${anime.title || 'Título del Anime'}</strong>
+        <strong style="view-transition-name: ${animeId}">${anime.title || 'Título del Anime'}</strong>
         `;
         } else {
             div.innerHTML = `
