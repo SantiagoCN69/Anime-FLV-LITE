@@ -564,6 +564,7 @@ main {
 
 /* Contenido principal */
 .content-section {
+  overflow: hidden;
   flex-grow: 1;
   display: block;
   border-radius: 3px;
