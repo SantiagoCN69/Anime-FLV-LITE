@@ -792,6 +792,7 @@ width: 100%;
   }
 }
 .anime-details.sin-resultados {
+  min-height: calc(100dvh - 88px);
   overflow: hidden;
   display: grid;
   grid-template-columns: 35% 65%;
