@@ -1,4 +1,4 @@
-import { observerAnimeCards } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition } from './utils.js';
 // constantes botones filtro
 const btnFiltroGenero = document.getElementById('btn-filtro-genero');
 const btnFiltroAno = document.getElementById('btn-filtro-ano');
@@ -76,7 +76,7 @@ function crearAnimeCardResultados(anime) {
     div.style.setProperty('--cover', `url(${anime.cover})`);
     const urlPart = anime.url.split('/').slice(2).join('/');
     div.innerHTML = `
-    <a href="anime.html?id=${urlPart}">
+    <a href="anime.html?id=${urlPart}" id="anime-${urlPart}">
     <div class="container-img">
       <img src="${anime.cover}" class="cover" alt="${anime.title}">
       <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -85,8 +85,7 @@ function crearAnimeCardResultados(anime) {
     <strong>${anime.title}</strong>
     </a>`;
     div.addEventListener('click', () => {
-      div.querySelector('strong').style.setProperty('view-transition-name', 'title' + urlPart);
-      div.querySelector('.container-img').style.setProperty('view-transition-name', urlPart);
+      aplicarViewTransition(urlPart);
     });
     return div;
 }

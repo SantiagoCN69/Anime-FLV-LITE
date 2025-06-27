@@ -2,7 +2,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
-import { observerAnimeCards } from "./utils.js";
+import { observerAnimeCards, aplicarViewTransition } from "./utils.js";
 
 // Inicializar Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
@@ -194,7 +194,7 @@ function crearAnimeCard(anime) {
   div.className = 'anime-card';
   div.style.setProperty('--cover', `url(${anime.cover})`);
   div.innerHTML = `
-  <a href="anime.html?id=${anime.id}">
+  <a href="anime.html?id=${anime.id}" id="anime-${anime.id}">
   <div class="container-img">
     <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
     <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -203,7 +203,9 @@ function crearAnimeCard(anime) {
   </div>
   <strong>${anime.title || anime.name}</strong>
 </a>`;
-
+  div.addEventListener('click', () => {
+    aplicarViewTransition(anime.id, ratingHtml);
+  });
   return div;
 }
 const renderAnime = anime => {

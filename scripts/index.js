@@ -1,6 +1,6 @@
 import { db, auth } from './firebase-login.js';
 import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-import { observerAnimeCards } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition } from './utils.js';
 
 let userID = localStorage.getItem('userID') || "null";
 
@@ -346,7 +346,7 @@ async function cargarUltimosCapsVistos() {
     if (anime.rating) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;}
     
     div.innerHTML = `
-    <a href="anime.html?id=${anime.id}">
+    <a href="anime.html?id=${anime.id}" id="anime-${anime.id}">
       <div class="container-img">
         <img src="${anime.portada}" class="cover" alt="${anime.titulo}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -357,11 +357,7 @@ async function cargarUltimosCapsVistos() {
       <strong>${anime.titulo}</strong>
     </a>`;
     div.addEventListener('click', () => {
-      if (ratingHtml){
-      div.querySelector('.rating').style.setProperty('view-transition-name', 'rating' + anime.id);
-      }
-      div.querySelector('strong').style.setProperty('view-transition-name', 'title' + anime.id);
-      div.querySelector('.container-img').style.setProperty('view-transition-name', anime.id);
+      aplicarViewTransition(anime.id, ratingHtml);
     });
     
     return div;
