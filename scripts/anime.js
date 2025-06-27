@@ -211,6 +211,7 @@ function crearAnimeCard(anime) {
 }
 const renderAnime = anime => {
   tituloEl.textContent = anime.titulo;
+  document.getElementById("portadacarga").classList.add("cargado");
   portadaEl.src = anime.portada;
   document.body.style.backgroundImage = `url(${anime.portada})`;
   descripcionEl.textContent = anime.descripcion;
