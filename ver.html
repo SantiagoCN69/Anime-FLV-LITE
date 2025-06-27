@@ -71,7 +71,11 @@
 </nav>
 <main id="main-ver">
   <section>
-    <a title="Volver al anime" href="#" id="btn-volver-anime" class="btn-volver"><span id="titulo-anime"></span></a>
+    <a title="Volver al anime" href="#" id="btn-volver-anime" class="btn-volver">Volver a <span id="titulo-anime"></span></a>
+    <script>
+      const animeId = new URLSearchParams(location.search).get("id");
+      document.getElementById('titulo-anime').style.setProperty('view-transition-name', "title" + animeId);
+    </script>
     <div class="contenedor-btn-cap">
       <h3 id="btn-cap" class="btn-cap">Episodio</h3>
       <button type="button" id="btn-estado-capitulo" title="Marcar capítulo como visto">

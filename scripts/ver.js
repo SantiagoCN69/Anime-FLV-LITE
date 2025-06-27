@@ -58,11 +58,8 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-function ponerTitulo(id) {
-  const tituloAnime = document.getElementById('titulo-anime');
-  tituloAnime.textContent = "Volver a " + id;
-}
-ponerTitulo(animeId);
+
+tituloAnime.textContent = animeId;
 
 async function refrescarUIEstadoCapitulo() {
   const user = localStorage.getItem("userID");
