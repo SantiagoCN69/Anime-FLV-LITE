@@ -15,9 +15,6 @@ document.title = "AniZen - " + id;
 
 const userID = localStorage.getItem("userID");
 
-// Cargar información del anime
-document.getElementById("descripcion").innerHTML = '<span class="span-carga">Cargando descripción...</span>';
-
 const getCacheKey = id => `anime_${id}`;
 
 const cargarDatosDesdeCache = id => {
