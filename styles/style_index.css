@@ -108,10 +108,12 @@ nav.filtros {
   pointer-events: none;
   transition: opacity .2s ease, transform .3s ease, height .3s ease;
   transform: translateY(-35px) scale(.8);
-  max-height: calc(100vh - 190px);
+  max-height: calc(100vh - 130px);
   overflow-y: auto;
   overflow-x: hidden;
   min-width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 @media screen and (max-width: 688px) {
@@ -119,7 +121,7 @@ nav.filtros {
     right: 0;
   }
 }
-@media screen and (max-width: 513px) {
+@media screen and (max-width: 790px) {
    #filtro-ano {
     right: 0;
   }
@@ -134,16 +136,19 @@ nav.filtros {
   gap: 5px;
   min-width: 110px;
   width: 100%;
+  justify-content: center;
+  max-width: min(500px, calc(100vw - 310px));
 }
-
+@media  (max-width: 600px) {
+  .filtro-opciones ul {
+    max-width: 90vw;
+  }
+}
 #filtro-genero ul {
   grid-template-columns: repeat(auto-fill, 120px);
-  max-width: min(500px, calc(95vw - 20px));
 }
 #filtro-ano ul {
   grid-template-columns: repeat(auto-fill, 62px);
-  max-width: min(262px, calc(95vw - 157px));
-  justify-content: center;
 }
 
 .filtro-opciones ul li {
