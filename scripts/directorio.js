@@ -392,7 +392,7 @@ ordenesOpciones.forEach(btn => {
 });
 btnFiltrar.addEventListener('click', async () => {
     const link = actualizarLinkBusqueda();
-    resultadosContainer.innerHTML = '';
+    resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
     
     try {
         const response = await fetch(link);
