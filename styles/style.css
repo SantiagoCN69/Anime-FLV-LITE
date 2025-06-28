@@ -544,6 +544,9 @@ button {
     &.active-menu-item {
       background: none;
     }
+    &:active {
+      transform: scale(.95);
+    }
     svg {
     width: 20px;
     height: 20px;
