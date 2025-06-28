@@ -338,8 +338,8 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
 });
 
 //generar personalizadas
-
-document.getElementById("generar-personalizadas").addEventListener("click", async () => {
+const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas")
+btnGenerarPersonalizadas.addEventListener("click", async () => {
     const texto = document.getElementById("textbtngenerarpersonalizada");
     texto.innerHTML = 'Generando recomendaciones... <span id="contador1">100s</span>';
 
@@ -508,30 +508,36 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     if (textoBtn) textoBtn.textContent = "Regenerar";
 }
 /*text random en input */
-
-    const textos = [
-        "Terror cortico pero que asuste de verdad.",
-        "Romance que haga llorar.",
-        "Comedia absurda para reír sin parar.",
-        "erotico de otro nivel",
-        "Viajes en el tiempo con plot twist.",
-        "Drama escolar que rompa el kokoro.",
-        "Fantasía épica con magia y espadas.",
-        "Acción sin descanso y buena animación.",
-        "Cosas tiernas con animalitos kawaii.",
-        "Peleas épicas estilo shonen.",
-        "Sobrenatural con romance.",
-        "Historia trágica que duela y marque.",
-        "Música buena con temática de bandas.",
-        "Filosofía o existencialismo que haga pensar.",
-        "Misterio con buen desarrollo.",
-        "Slice of life relajante para ver con café.",
-        "Samuráis o época histórica emocionante.",
-        "Ciencia ficción intensa y futurista.",
-        "Ninjas o espías con estilo.",
-        "Visuales hermosos, como una obra de arte.",
-        "Villanos tan buenos que casi los apoyes."
-      ];
+const textos = [
+    "Terror cortico pero que asuste de verdad.",
+    "Romance que haga llorar.",
+    "Comedia absurda para reír sin parar.",
+    "erotico de otro nivel",
+    "Viajes en el tiempo con plot twist.",
+    "Drama escolar que rompa el kokoro.",
+    "Fantasía épica con magia y espadas.",
+    "Acción sin descanso y buena animación.",
+    "Cosas tiernas con animalitos kawaii.",
+    "Peleas épicas estilo shonen.",
+    "Sobrenatural con romance.",
+    "Historia trágica que duela y marque.",
+    "Música buena con temática de bandas.",
+    "Filosofía o existencialismo que haga pensar.",
+    "Misterio con buen desarrollo.",
+    "Slice of life relajante para ver con café.",
+    "Samuráis o época histórica emocionante.",
+    "Ciencia ficción intensa y futurista.",
+    "Ninjas o espías con estilo.",
+    "Visuales hermosos, como una obra de arte.",
+    "Villanos tan buenos que casi los apoyes."
+];    
       
+const random = Math.floor(Math.random() * textos.length);
+document.getElementById("busqueda-personalizada").value = textos[random];
+
+document.getElementById("text-random").addEventListener("click", () => {
     const random = Math.floor(Math.random() * textos.length);
     document.getElementById("busqueda-personalizada").value = textos[random];
+});
+
+btnGenerarPersonalizadas.click()

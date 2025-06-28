@@ -290,7 +290,7 @@ h3 {
 }
 
 #busqueda-personalizada {
-  flex: 1;
+  min-width: 100%;
   padding: 1rem;
   border: 1px solid var(--btn);
   border-radius: 25px;
@@ -313,6 +313,8 @@ h3 {
 
 .btn-generar,
 .btn-agregar {
+  flex: 1;
+  justify-content: center;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -339,11 +341,15 @@ h3 {
   background-color: #2ecc71;
   color: var(--t1);
 }
-.btn-agregar::before {
--webkit-mask: url('../icons/plus-solid.svg') no-repeat center;
-mask: url('../icons/plus-solid.svg') no-repeat center;
-}
 
+.btn-agregar::before {
+  -webkit-mask: url('../icons/plus-solid.svg') no-repeat center;
+  mask: url('../icons/plus-solid.svg') no-repeat center;
+}
+#text-random::before {
+  -webkit-mask: url('../icons/arrows-counter-clockwise-bold.svg') no-repeat center;
+  mask: url('../icons/arrows-counter-clockwise-bold.svg') no-repeat center;
+}
 .btn-generar::before {
 -webkit-mask: url('../icons/robot-solid.svg') no-repeat center;
 mask: url('../icons/robot-solid.svg') no-repeat center;
@@ -355,7 +361,8 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
 }
 
 .btn-generar::before,
-.btn-agregar::before {
+.btn-agregar::before,
+#text-random::before {
   content: "";
   width: 20px;
   height: 20px;
