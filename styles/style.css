@@ -518,7 +518,9 @@ header.search-active .logout-modal {
 
 #indexpagination {
   gap: 10px;
-  margin: 1.5rem auto;
+  padding-block: 1.5rem;
+  padding-inline: .3rem;
+  margin-inline: auto;
   width: 95%;
   overflow-x: auto;
   -ms-overflow-style: none; 
@@ -526,30 +528,47 @@ header.search-active .logout-modal {
 &::-webkit-scrollbar {
   display: none;
 }
-  a, button {
+button {
     border: 1px solid transparent;
     font-size: 1rem;
-    background-color: var(--p);
+    background-color: var(--p); 
     display: flex;
     align-items: center;
     gap: 5px;
+    position: relative;
     color: var(--t1);
     padding: 10px;
     white-space: nowrap;
     border-radius: 18px;
     transition: transform .2s;
     &.active-menu-item {
-      color: var(--btn);
-      border-color: var(--btn);
-    }
-    &:active {
-      transform: scale(.96);
+      background: none;
     }
     svg {
     width: 20px;
     height: 20px;
     }
   }
+}
+#indexpagination .menu-item.active-menu-item::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: calc(100% - 1px);
+  width: calc(100% - 1px);
+  border-radius: 18px;
+  border: 1px solid var(--btn);
+  background-color: var(--p);
+  padding: 2px;
+  z-index: -2;
+  animation: aparecer .3s forwards;
+}
+
+@keyframes aparecer {
+  0% {opacity: 0; transform: translate(-50%, -50%) scale(.9);}
+  100% {opacity: 1; transform: translate(-50%, -50%) scale(1);}
 }
 
 /* Estructura principal */
