@@ -1,7 +1,7 @@
 //aplicar viewanme y eliminar a otras 
 export function aplicarViewTransition(id, ratingHtml) {
 if (ratingHtml){
-  document.querySelector("#anime-" + id +'.rating').style.setProperty('view-transition-name', 'rating' + id);
+  document.querySelectorAll("#anime-" + id +'.rating').forEach(el => el.style.setProperty('view-transition-name', 'rating' + id));
   }
 
 const cards = document.querySelectorAll('.anime-card.show a');
@@ -16,8 +16,9 @@ cards.forEach(card => {
     });
 });
   
-  document.querySelector('#anime-' + id + ' strong').style.setProperty('view-transition-name', 'title' + id);
-  document.querySelector('#anime-' + id + ' .container-img').style.setProperty('view-transition-name', id);
+  document.querySelectorAll('#anime-' + id + ' strong').forEach(el => el.style.setProperty('view-transition-name', 'title' + id));
+  document.querySelectorAll('#anime-' + id + ' .container-img').forEach(el => el.style.setProperty('view-transition-name', id));
+  console.log('aplicando view transition');
 }
 
 // Manejar el scroll para el efecto del header
