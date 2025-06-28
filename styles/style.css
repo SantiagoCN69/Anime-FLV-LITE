@@ -80,43 +80,43 @@ header.scrolled {
     color: var(--t1);
 }
 .btn-header {
-    display: block;
-    color: var(--t2);
-    font-weight: 800;
-    font-size: .9rem;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    margin-right: 10px;
-    white-space: nowrap;
-    transition: color .3s, filter .3s;
+  display: block;
+  color: var(--t2);
+  font-weight: 800;
+  font-size: .9rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  margin-right: 10px;
+  white-space: nowrap;
+  transition: color .3s, filter .3s;
 }
 #btn-directorio:before {
-    content: "";
-    width: 20px;
-    height: 20px;
-    margin-bottom: -2px;
-    margin-inline-end: 5px;
-    display: inline-block;
-    background-color: var(--t2); 
-    -webkit-mask-size: contain;
-    -webkit-mask: url('../icons/database-solid.svg') no-repeat center;
-    mask-size: contain;
-    mask: url('../icons/database-solid.svg') no-repeat center;
+  content: "";
+  width: 20px;
+  height: 20px;
+  margin-bottom: -2px;
+  margin-inline-end: 5px;
+  display: inline-block;
+  background-color: var(--t2); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/database-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/database-solid.svg') no-repeat center;
 }
 #btn-index::before {
-    content: "";
-    width: 20px;
-    height: 20px;
-    margin-bottom: -2px;
-    margin-inline-end: 5px;
-    display: inline-block;
-    background-color: var(--t2); 
-    -webkit-mask-size: contain;
-    -webkit-mask: url('../icons/house-solid.svg') no-repeat center;
-    mask-size: contain;
-    mask: url('../icons/house-solid.svg') no-repeat center;
+  content: "";
+  width: 20px;
+  height: 20px;
+  margin-bottom: -2px;
+  margin-inline-end: 5px;
+  display: inline-block;
+  background-color: var(--t2); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/house-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/house-solid.svg') no-repeat center;
 }
 .btn-header:hover {
   color: var(--t1);
@@ -145,12 +145,12 @@ header.scrolled {
   }
 }
 #busqueda {
-    padding: 14px;
-    border: 1px solid var(--t2);
-    border-radius: 20px;
-    background-color: transparent;
-    color: var(--t1);
-    font-size: .9rem;
+  padding: 14px;
+  border: 1px solid var(--t2);
+  border-radius: 20px;
+  background-color: transparent;
+  color: var(--t1);
+  font-size: .9rem;
 }
 #busqueda:focus {
     outline: none;
@@ -160,17 +160,17 @@ header.scrolled {
 }
 
 #btn-login {
-    padding: 8px 16px;
-    background-color: transparent;
-    color: var(--t1);
-    border: 1px solid var(--t2);
-    border-radius: 20px;
-    cursor: pointer;
-    transition: transform 0.2s;
-    display: flex;
-    align-items: center;
-    position: relative;
-    font-size: .9rem;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: var(--t1);
+  border: 1px solid var(--t2);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  position: relative;
+  font-size: .9rem;
 }
 #btn-login img {
   width: 28px;
