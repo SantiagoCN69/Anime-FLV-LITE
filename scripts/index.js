@@ -52,7 +52,7 @@ document.querySelectorAll(".content-section").forEach(sec => {
     sec.classList.add("hidden");
     setTimeout(() => {
       sec.style.display = "none";
-    }, 350);
+    }, 300);
   } else {
     sec.classList.remove("hidden");
     sec.style.display = "";

@@ -42,7 +42,9 @@
 }
 
  /*Directorio*/
-
+ #main-directorio, #main-populares {
+  height: 100%;
+}
 .btn-filtro, #btn-filtrar, .btn-filtro-opcion {
   display: flex;
   align-items: center;
@@ -179,7 +181,7 @@ nav.filtros {
   margin-bottom: auto;
   position: relative;
   width: 100%;
-  min-height: 253px;
+  min-height: calc(100% - 263px);
 }
 .container-img img {
   aspect-ratio: 26/37;
@@ -301,7 +303,6 @@ h3 {
 
 #busqueda-personalizada:focus {
   outline: none;
-  box-shadow: 0 0 10px 5px rgba(var(--bgt), .1);
 }
 
 /* Estilos para los botones de acción */
@@ -408,7 +409,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
 }
 #populares {
   position: relative;
-  min-height: calc(100vh - 88px);
+  min-height: calc(100% - 162px);
 }
 
 #nav-populares {

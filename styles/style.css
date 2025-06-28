@@ -593,7 +593,6 @@ main {
   flex-grow: 1;
   display: block;
   border-radius: 3px;
-  padding-bottom: 1rem;
   min-height: calc(100vh - 267px);
   position: relative;
   margin: 2rem auto;
