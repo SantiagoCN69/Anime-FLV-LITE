@@ -173,6 +173,9 @@ modal.addEventListener('click', () => {
 });
 window.addEventListener('scroll', () => {
     modal.classList.remove('active');
+    document.querySelectorAll('.btn-filtro').forEach(opcion => {
+        opcion.classList.remove('active');
+    });
 });
 
 
