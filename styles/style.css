@@ -904,15 +904,17 @@ section.content-section h2:first-of-type::after {
   border: 1px solid var(--br);
   padding: 20px;
   border-radius: 25px;
-  transition: opacity .2s;
+  transition: opacity .2s, transform .2s;
   opacity: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
   pointer-events: none;
+  transform: scale(.9);
 }
 .logout-modal.show {
   opacity: 1;
+  transform: scale(1);
   z-index: 30;
   pointer-events: auto;
 }
