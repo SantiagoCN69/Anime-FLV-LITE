@@ -43,6 +43,8 @@ function mostrarSeccionDesdesearch() {
     id = 'Ultimos-Episodios';
     history.replaceState(null, '', '?Ultimos-Episodios');
   };
+//veirfica si ya esta y temrina  la fucnion 
+if (!document.getElementById(id).classList.contains("hidden")) return;
 
   // Ocultar todas las secciones
   document.querySelectorAll(".content-section").forEach(sec => 
