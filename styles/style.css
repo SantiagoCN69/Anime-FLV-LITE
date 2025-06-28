@@ -583,6 +583,7 @@ main {
   width: 95%;
   max-width: 1150px;
   gap: 1rem;
+  position: relative;
 }
 
 
@@ -598,6 +599,21 @@ main {
   margin: 2rem auto;
   margin-left: 2%;
   width: 100%;
+  opacity: 1;
+  transition: opacity .3s;
+}
+
+/* Ocultar secciones */
+.hidden {
+  pointer-events: none;
+  position: absolute;
+  opacity: 0;
+}
+@media screen and (min-width: 600px) {
+  .hidden {
+    margin-left: calc(220px + 2% + 1rem);
+    width: calc(100% - 220px - 2% - 1rem);
+  }
 }
 #init-loading-servidores-busqueda {
   display: none;
@@ -624,10 +640,6 @@ main {
   transform: translate(-50%, -50%);
 }
 
-/* Ocultar secciones */
-.hidden {
-  display: none;
-}
 
 /* Títulos */
 .content-section h2 {
