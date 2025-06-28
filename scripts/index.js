@@ -47,9 +47,17 @@ function mostrarSeccionDesdesearch() {
 if (!document.getElementById(id).classList.contains("hidden")) return;
 
   // Ocultar todas las secciones
-  document.querySelectorAll(".content-section").forEach(sec => 
-    sec.classList.toggle("hidden", sec.id !== id)
-  );
+document.querySelectorAll(".content-section").forEach(sec => {
+  if (sec.id !== id) {
+    sec.classList.add("hidden");
+    setTimeout(() => {
+      sec.style.display = "none";
+    }, 350);
+  } else {
+    sec.classList.remove("hidden");
+    sec.style.display = "";
+  }
+});;
 
   // Actualizar el menú activo
   document.querySelectorAll('.menu-item').forEach(item => 
