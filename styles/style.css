@@ -529,29 +529,30 @@ header.search-active .logout-modal {
   display: none;
 }
 button {
-    border: 1px solid transparent;
-    font-size: 1rem;
-    background-color: var(--p); 
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    position: relative;
-    color: var(--t1);
-    padding: 10px;
-    white-space: nowrap;
-    border-radius: 18px;
-    transition: transform .2s;
-    &.active-menu-item {
-      background: none;
-    }
-    &:active {
-      transform: scale(.95);
-    }
-    svg {
-    width: 20px;
-    height: 20px;
-    }
+  will-change: transform;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  background-color: var(--p); 
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  color: var(--t1);
+  padding: 10px;
+  white-space: nowrap;
+  border-radius: 18px;
+  transition: transform .2s;
+  &.active-menu-item {
+    background: none;
   }
+  &:active {
+    transform: scale(.95);
+  }
+  svg {
+  width: 20px;
+  height: 20px;
+  }
+}
 }
 #indexpagination .menu-item.active-menu-item::after {
   content: "";
