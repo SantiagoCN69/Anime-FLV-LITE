@@ -595,6 +595,7 @@ main {
   border-radius: 3px;
   min-height: calc(100vh - 267px);
   position: relative;
+  padding-bottom: 1rem;
   margin: 2rem auto;
   margin-left: 2%;
   width: 100%;
