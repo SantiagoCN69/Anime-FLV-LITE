@@ -710,7 +710,8 @@ async function cargarContinuarViendo() {
 }
 
 function cargarFetch(direccion) {
-  const main = document.getElementById('main-' + direccion);
+  direccion = direccion.charAt(0).toUpperCase() + direccion.slice(1);
+  const main = document.getElementById(direccion);
   if (!main) return;
   fetch(direccion + '.html')
     .then(res => res.text())

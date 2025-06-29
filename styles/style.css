@@ -601,13 +601,15 @@ main {
   width: 100%;
   opacity: 1;
   transition: opacity .3s;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Ocultar secciones */
 .hidden {
-  pointer-events: none;
-  position: absolute;
-  opacity: 0;
+  pointer-events: none !important;
+  position: absolute !important;
+  opacity: 0 !important;
 }
 @media screen and (min-width: 600px) {
   .hidden {
@@ -652,7 +654,6 @@ main {
 }
 .section-title {
     font-size: 1.7rem;
-    margin-bottom: 1.3rem;
 }
 section.content-section h2:first-of-type::after {
   content: attr(data-text);
@@ -757,7 +758,6 @@ section.content-section h2:first-of-type::after {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 10px;
-    margin: 0 auto;
 }
 #main {
   width: 95%;

@@ -42,9 +42,6 @@
 }
 
  /*Directorio*/
- #main-directorio, #main-populares {
-  height: 100%;
-}
 .btn-filtro, #btn-filtrar, .btn-filtro-opcion {
   display: flex;
   align-items: center;
@@ -177,11 +174,9 @@ nav.filtros {
   background-color: var(--btn);
 }
     
-#resultados {
-  margin-bottom: auto;
+#resultados,#populares {
   position: relative;
-  width: 100%;
-  min-height: calc(100% - 263px);
+  flex: 1;
 }
 .container-img img {
   aspect-ratio: 26/37;
@@ -407,17 +402,12 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
     display: none !important;
   }
 }
-#populares {
-  position: relative;
-  min-height: calc(100% - 162px);
-}
 
 #nav-populares {
   position: relative;
   display: flex;
   gap: 10px;
   margin-bottom: 1.3rem;
-  margin-inline: auto;
  button {
 
     &.active {
@@ -454,7 +444,9 @@ cursor: pointer;
 border: none;
 margin-left: 3px;
 color: var(--br);
-
+position: absolute;
+top: 10px;
+left: 135px;
 svg {
   width: 20px;
   height: 20px;
