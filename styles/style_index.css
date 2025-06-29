@@ -370,7 +370,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
 
 /* Estilos responsive */
 @media (max-width: 768px) {
-  .acciones-fav {
+  .acciones-fav, .search-container {
     flex-direction: column;
   }
   
