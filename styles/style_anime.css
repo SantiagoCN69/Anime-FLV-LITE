@@ -820,7 +820,7 @@ width: 100%;
   width: auto;
   height: clamp(250px, 75vw, 400px);
   margin: auto;
-  aspect-ratio: 383/496;
+  aspect-ratio: 305/344;
   grid-area: container1;
 }
 #text-sin-resultados {
