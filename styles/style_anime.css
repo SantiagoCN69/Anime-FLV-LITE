@@ -326,7 +326,7 @@ transform: translateY(-20%);
 } 
 .genre-link-cargando {
   width: unset;
-  height: unset;
+  height: calc(1lh + 10px);
 }
 /* Shimmer diagonal */
 #titulocargando::before, #ratingcargando::before, .genre-link-cargando::before, #portadacarga::before {
