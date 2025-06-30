@@ -555,10 +555,6 @@ scrollHorizontal.addEventListener('wheel', (e) => {
   }
 });
 
-
-  document.getElementById("img-sin-resultados").addEventListener("click", () => {
-    document.getElementById("meow-audio").play();
-  });
   
     const search = document.getElementById("busqueda"); 
     search.classList.add("active");
