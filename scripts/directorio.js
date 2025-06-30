@@ -157,7 +157,7 @@ function cambiarPagina(page) {
     });
 }
 
-function cargarAnimesConCache() {
+async function cargarAnimesConCache() {
     const cachedData = localStorage.getItem(CACHE_KEY);
   
     const params = new URLSearchParams(window.location.search);
@@ -197,47 +197,54 @@ function cargarAnimesConCache() {
       
     if (cachedData) {
       const { data, page, PaginasTotales } = JSON.parse(cachedData);
-  
       // Verificar si la caché corresponde a la página actual
       if (page === currentPage) {
-        resultadosContainer.innerHTML = '';
+        resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
         data.forEach(anime => {
           const card = crearAnimeCardResultados(anime);
           resultadosContainer.appendChild(card);
         });
         observerAnimeCards();
         updatePagination({ animes: data, PaginasTotales });
-        return;
+
+        //compara con la api para ver si hay cambios
+        await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default&page=${currentPage}`)
+        .then(response => response.json())
+        .then(data => {
+          const parsedCache = JSON.parse(cachedData);
+          if (data.animes[0].title === parsedCache.data[0].title) {
+            //console.log('iguales');
+            //console.log(data.animes[0].title);
+            //console.log(parsedCache.data[0].title);
+            return;
+          } else {
+            console.log('distintos');
+            console.log(data.animes[0].title);
+            console.log(parsedCache.data[0].title);
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              data: data.animes,
+              page: currentPage,
+              PaginasTotales: data.PaginasTotales
+            }));
+      
+            resultadosContainer.innerHTML = '';
+            data.animes.forEach(anime => {
+              const card = crearAnimeCardResultados(anime);
+              resultadosContainer.appendChild(card);
+            });
+            observerAnimeCards();
+            updatePagination(data);
+          }
+        })
+        .catch(error => {
+          console.error('Error detallado:', error);
+          console.error('Error en la petición:', error.message);
+          console.error('Stack trace:', error.stack);
+        });
       }
     }
-  
-    // Si no hay caché válida, hacer la petición
-    fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
-      .then(response => response.json())
-      .then(data => {
-        localStorage.setItem(CACHE_KEY, JSON.stringify({
-          data: data.animes,
-          page: currentPage,
-          PaginasTotales: data.PaginasTotales
-        }));
-  
-        resultadosContainer.innerHTML = '';
-        data.animes.forEach(anime => {
-          const card = crearAnimeCardResultados(anime);
-          resultadosContainer.appendChild(card);
-        });
-        observerAnimeCards();
-        updatePagination(data);
-      })
-      .catch(error => {
-        console.error('Error detallado:', error);
-        console.error('Error en la petición:', error.message);
-        console.error('Stack trace:', error.stack);
-      });
-    }
   }
-  
-
+}
 
 // Sistema de filtros de género
 const generosBtn = document.getElementById('btn-filtro-genero');
