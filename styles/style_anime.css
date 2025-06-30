@@ -805,9 +805,10 @@ width: 100%;
 }
 @media screen and (max-width: 800px) {
   .anime-details.sin-resultados {
+    
+  margin-top: 0;
     grid-template-columns:1fr;
     grid-template-rows: repeat(3, auto);
-    gap: 1.7rem;
     grid-template-areas: 
       "container1"
       "container2"
@@ -822,8 +823,6 @@ width: 100%;
   grid-area: container1;
 }
 #text-sin-resultados {
-  align-self: end;
-  padding-block-end: 2rem;
   grid-area: container2;
   display: flex;
   gap: 10px;
