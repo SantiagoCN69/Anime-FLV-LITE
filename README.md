@@ -12,6 +12,7 @@
 
 - **Progressive Web App**: Funciona como una aplicación nativa
 - **Caché Inteligente**: Carga instantánea de contenido
+- **Lista de Animes**: Acceso rápido a tus animes favoritos y populares
 - **Diseño Minimalista**: Interfaz limpia y sin distracciones
 - **Multiplataforma**: Funciona en móviles, tablets y computadoras
 - **Firebase**: Almacena datos de usuarios
@@ -32,9 +33,11 @@
 
 ![cap animeflvlite](https://github.com/user-attachments/assets/02d47e0d-40e7-4c09-a8bc-74834eabb898)
 
-## 🌐 Origen de los Contenidos
+## 🌐 Origen de los Contenidos y créditos
 
-Los animes de esta plataforma son originalmente recopilados del sitio web [AnimeFlV.net](https://animeflv.net), uno de los repositorios más completos y reconocidos de anime en español.
+Los animes disponibles en esta plataforma han sido recopilados desde el sitio web AnimeFLV.net, reconocido como uno de los catálogos más amplios de anime en español.
+
+Además, la información adicional como descripciones, calificaciones, géneros y tops puede estar basada o inspirada en datos obtenidos de fuentes públicas como MyAnimeList.net, una de las bases de datos de anime más completas a nivel global.
 
 **Nota Importante**:
 
