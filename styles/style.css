@@ -62,7 +62,7 @@ header {
 @media screen and (max-width: 600px) {
 
 header.scrolled {
-  background: transparent;
+  background: rgba(var(--bgti), .1);
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   border-bottom: 1px solid var(--br);
@@ -389,6 +389,7 @@ header.scrolled {
     height: calc(100vh - 88px);
     transform: translateX(-120%);
     overflow-y: auto;
+    z-index: 20;
   }
 
   #btn-login span{
@@ -541,7 +542,7 @@ button {
   padding: 10px;
   white-space: nowrap;
   border-radius: 18px;
-  transition: transform .2s;
+  transition: transform .3s;
   &.active-menu-item {
     background: none;
   }
@@ -584,51 +585,15 @@ button {
     background: none;
     width: fit-content;
     height:60px;
-    transition: padding .3s;
+    transition: padding .3s, transform .3s;
     &.active-menu-item {
-      padding: 5px 10px;
+      padding: 5px 12px;
     }
   }
 
 }
 #indexpagination.fixed span:nth-of-type(2) {
   display: none;
-}
-
-/*@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes spin {
-  from {--angle: 0deg;}
-  to {--angle: 360deg;}
-}*/
-
-#indexpagination.fixed::before, #indexpagination.fixed::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  padding: 2px;
-  background-image: conic-gradient(from 63deg, transparent 0% 50%, var(--btn) 55%, transparent 60% 100%);
-
-  border-radius: inherit;
-  z-index: -1;
-  animation: spin 100s linear infinite;
-  
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: destination-out;
-  mask-composite: exclude;
-  opacity: .3;
-}
-
-#indexpagination.fixed::after {
-  background-image: conic-gradient(from 245deg, transparent 0% 50%, var(--btn) 55%, transparent 60% 100%)
 }
 
 #indexpagination.fixed .menu-item.active-menu-item::after {
