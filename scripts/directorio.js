@@ -212,7 +212,7 @@ async function cargarAnimesConCache() {
         .then(response => response.json())
         .then(data => {
           const parsedCache = JSON.parse(cachedData);
-          if (data.animes[0].title === parsedCache.data[0].title) {
+          if (data.animes[0].title === parsedCache.data[0].title && data.animes[1].title === parsedCache.data[1].title) {
             //console.log('iguales');
             //console.log(data.animes[0].title);
             //console.log(parsedCache.data[0].title);
