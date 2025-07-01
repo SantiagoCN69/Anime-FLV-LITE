@@ -566,7 +566,7 @@ button {
   background-color: rgba(var(--bgti), .1);
   border-radius: 30px;
   position: fixed;
-  bottom: 1rem;
+  bottom: 14px;
   left: 50%; 
   z-index: 10;
   animation: aparecer2 .3s forwards;
@@ -593,6 +593,27 @@ button {
   }
 
 }
+#indexpagination.fixed::before, #indexpagination.fixed::after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+ inset: 0;
+ z-index: -1;
+ padding: 1px;
+
+ background-image: conic-gradient(from 80deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+}
+#indexpagination.fixed::before {
+  background-image: conic-gradient(from 260deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
+}
 #indexpagination.fixed span:nth-of-type(2) {
   display: none;
 }
@@ -601,6 +622,7 @@ button {
   border-radius: 30px !important;
   border: none !important;
   background-color: rgba(var(--bgti), .2);
+  box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
 }
 #indexpagination.fixed + main {
   padding-top: 90px;
