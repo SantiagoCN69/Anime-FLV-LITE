@@ -518,6 +518,7 @@ header.search-active .logout-modal {
 }
 
 #indexpagination {
+  will-change: transform, opacity;
   gap: 10px;
   padding-block: 1.5rem;
   padding-inline: .3rem;
@@ -587,7 +588,7 @@ button {
     height:60px;
     transition: padding .3s, transform .3s;
     &.active-menu-item {
-      padding: 5px 12px;
+      padding: 5px 10px;
     }
   }
 
