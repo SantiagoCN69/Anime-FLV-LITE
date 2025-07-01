@@ -73,6 +73,7 @@ const actualizarCache = (id, anime) => {
 
 // DOM references
 const tituloEl = document.getElementById("titulo");
+const statusEl = document.getElementById("status");
 const portadaEl = document.getElementById("portada");
 const descripcionEl = document.getElementById("descripcion");
 const generoContainer = document.querySelector(".genero");
@@ -209,6 +210,10 @@ function crearAnimeCard(anime) {
   return div;
 }
 const renderAnime = anime => {
+  anime.estado === "En emision"
+  ? (statusEl.innerHTML = `<img src="../icons/circle-solid-blue.svg">${anime.estado}`, statusEl.classList.add("en-emision"))
+  : (statusEl.innerHTML = `<img src="../icons/circle-solid.svg">${anime.estado}`, statusEl.classList.remove("en-emision"));
+
   tituloEl.textContent = anime.titulo;
   document.getElementById("portadacarga").classList.add("cargado");
   portadaEl.src = anime.portada;

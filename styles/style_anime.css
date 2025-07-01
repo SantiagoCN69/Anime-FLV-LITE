@@ -299,6 +299,11 @@ transform: translateY(-20%);
   position: relative;
   gap: 10px;
 }
+.info11 {
+  display:flex;
+  gap:10px;
+  align-items: center;
+}
 
 .anime-title {
   font-size: 1.8rem;
@@ -310,8 +315,23 @@ transform: translateY(-20%);
   color:var(--btn);
   z-index: 1;
 }
-
-#titulocargando, #ratingcargando, .genre-link-cargando, #portadacarga {
+.anime-status {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #ff2929;
+}
+.en-emision {
+  color: #63E6BE;
+}
+.anime-status img {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+}
+#titulocargando, #ratingcargando, .genre-link-cargando, #portadacarga, #statuscargando {
   display: inline-block;
   width: 230px;
   height: 1lh;
@@ -324,12 +344,15 @@ transform: translateY(-20%);
 #ratingcargando {
   width: 30px;
 } 
+#statuscargando {
+  width: 100px;
+}
 .genre-link-cargando {
   width: unset;
   height: calc(1lh + 10px);
 }
 /* Shimmer diagonal */
-#titulocargando::before, #ratingcargando::before, .genre-link-cargando::before, #portadacarga::before {
+#titulocargando::before, #ratingcargando::before, .genre-link-cargando::before, #portadacarga::before, #statuscargando::before {
   content: "";
   position: absolute;
   top: 0;
