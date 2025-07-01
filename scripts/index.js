@@ -47,17 +47,10 @@ function mostrarSeccionDesdesearch() {
 if (!document.getElementById(id).classList.contains("hidden")) return;
 
   // Ocultar todas las secciones
-document.querySelectorAll(".content-section").forEach(sec => {
-  if (sec.id !== id) {
-    sec.classList.add("hidden");
-    setTimeout(() => {
-      sec.style.display = "none";
-    }, 300);
-  } else {
-    sec.classList.remove("hidden");
-    sec.style.display = "";
-  }
-});;
+  document.querySelectorAll(".content-section").forEach(sec => {
+    sec.classList.toggle("hidden", sec.id !== id);
+  });
+  
 
   // Actualizar el menú activo
   document.querySelectorAll('.menu-item').forEach(item => 
@@ -899,4 +892,12 @@ mostrarSeccionDesdesearch = function() {
   }, { passive: false });
 });
 
+const indexpagination = document.getElementById('indexpagination');
 
+window.addEventListener('scroll', () => {
+  if (window.scrollY >= 80) {
+    indexpagination.classList.add('fixed');
+  } else {
+    indexpagination.classList.remove('fixed');
+  }
+});
