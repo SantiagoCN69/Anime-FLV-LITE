@@ -64,7 +64,7 @@ const mensajes = [
   '⚠️ Los servidores pueden entrar en hibernación tras cierto tiempo de inactividad, lo que podría causar una breve demora al volver a acceder.',
   "🔁 Tu progreso se sincroniza automáticamente entre dispositivos cuando inicias sesión",
   '🔄 El contenido de la página se almacena temporalmente en caché, lo que mejora significativamente el rendimiento tras la primera carga.',
-  "⭐ Marca tus animes favoritos para acceder a ellos fácilmente",
+  "⭐ Marca tus animes favoritos para acceder a ellos fácilmente y recibir sugerencias personalizadas",
   '🧠 Algunas funciones de la plataforma están potenciadas por inteligencia artificial, y se actualizan constantemente para ofrecer mejores resultados.',
   '🚀 Esta plataforma ha sido optimizada para ofrecer una experiencia fluida, tanto en computadoras como en dispositivos móviles.',
   '📡 La aplicación realiza conexiones seguras y eficientes con los servidores de anime, garantizando estabilidad y rapidez en el acceso al contenido.',
