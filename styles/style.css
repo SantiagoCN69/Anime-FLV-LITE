@@ -644,7 +644,7 @@ button {
 }
 @keyframes aparecer2 {
   from {
-    transform: translate(-50%, 100%) scale(0.9);
+    transform: translate(-50%, 100%) scale(0.8);
     opacity: 0;
   }
   to {
