@@ -552,7 +552,92 @@ button {
   width: 20px;
   height: 20px;
   }
+  }
+  span {
+    pointer-events: none;
+  }
 }
+#indexpagination.fixed {
+  padding: 10px;
+  gap: 0px;
+  justify-content: center;
+  background-color: rgba(var(--bgti), .1);
+  border-radius: 30px;
+  position: fixed;
+  bottom: 1rem;
+  left: 50%; 
+  z-index: 10;
+  animation: aparecer2 .3s forwards;
+  width:95%;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  button {
+    padding: 5px 0px;
+    flex: 1;
+    gap: 3px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: .8rem;
+    background: none;
+    width: fit-content;
+    height:60px;
+    transition: padding .3s;
+    &.active-menu-item {
+      padding: 5px 10px;
+    }
+  }
+
+}
+#indexpagination.fixed span:nth-of-type(2) {
+  display: none;
+}
+
+/*@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin {
+  from {--angle: 0deg;}
+  to {--angle: 360deg;}
+}*/
+
+#indexpagination.fixed::before, #indexpagination.fixed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  background-image: conic-gradient(from 63deg, transparent 0% 50%, var(--btn) 55%, transparent 60% 100%);
+
+  border-radius: inherit;
+  z-index: -1;
+  animation: spin 100s linear infinite;
+  
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: .3;
+}
+
+#indexpagination.fixed::after {
+  background-image: conic-gradient(from 245deg, transparent 0% 50%, var(--btn) 55%, transparent 60% 100%)
+}
+
+#indexpagination.fixed .menu-item.active-menu-item::after {
+  border-radius: 30px !important;
+  border: none !important;
+  background-color: rgba(var(--bgti), .2);
+}
+#indexpagination.fixed + main {
+  padding-top: 90px;
 }
 #indexpagination .menu-item.active-menu-item::after {
   content: "";
@@ -568,6 +653,16 @@ button {
   padding: 2px;
   z-index: -2;
   animation: aparecer .3s forwards;
+}
+@keyframes aparecer2 {
+  from {
+    transform: translate(-50%, 100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0%) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes aparecer {
@@ -593,7 +688,7 @@ main {
   flex-grow: 1;
   display: block;
   border-radius: 3px;
-  min-height: calc(100vh - 267px);
+  min-height: 100vh /*calc(100vh - 267px)*/;
   position: relative;
   padding-bottom: 1rem;
   margin: 2rem auto;
@@ -607,9 +702,7 @@ main {
 
 /* Ocultar secciones */
 .hidden {
-  pointer-events: none !important;
-  position: absolute !important;
-  opacity: 0 !important;
+  display: none
 }
 @media screen and (min-width: 600px) {
   .hidden {
