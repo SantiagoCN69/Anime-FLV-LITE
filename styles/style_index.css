@@ -28,12 +28,15 @@
   height: var(--altura-main);
   margin-block: 2rem;
   margin-bottom: 1.8rem;
+  background: transparent;
 }
 @media screen and (max-width: 600px) {
   #menu-toggle {
     display: inline-block !important;
   }
   .sidebar {
+    
+    background: rgba(var(--bgti), .2);
     transform: translateX(-100%);
     position: fixed;
     margin: 0;
