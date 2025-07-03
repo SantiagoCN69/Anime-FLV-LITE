@@ -894,8 +894,7 @@ const observer = new IntersectionObserver(([entry]) => {
     indexpagination.classList.add('fixed');
   } else {
     indexpagination.classList.remove('fixed');
-    const id = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
-    centrarElementoEnVista(id);
+    centrarElementoEnVista(decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios'));
   }
 }, {
   root: null,
