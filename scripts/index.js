@@ -886,19 +886,22 @@ mostrarSeccionDesdesearch = function() {
 
 const indexpagination = document.getElementById('indexpagination');
 
-const trigger = document.createElement('div');
-document.body.prepend(trigger);
+if (window.innerWidth <= 600) {
+  const trigger = document.createElement('div');
+  document.body.prepend(trigger);
 
-const observer = new IntersectionObserver(([entry]) => {
-  if (!entry.isIntersecting) {
-    indexpagination.classList.add('fixed');
-  } else {
-    indexpagination.classList.remove('fixed');
-    centrarElementoEnVista(decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios'));
-  }
-}, {
-  root: null,
-  threshold: 0,
-});
+  const observer = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) {
+      indexpagination.classList.add('fixed');
+    } else {
+      indexpagination.classList.remove('fixed');
+      centrarElementoEnVista(decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios'));
+    }
+  }, {
+    root: null,
+    threshold: 0,
+  });
 
-observer.observe(trigger);
+  observer.observe(trigger);
+}
+
