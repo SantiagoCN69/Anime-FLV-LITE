@@ -724,6 +724,21 @@ function cargarFetch(direccion) {
     });
 }
 
+function centrarElementoEnVista(seccionId) {
+  const contenedor = document.getElementById("indexpagination");
+  const elemento = contenedor?.querySelector(`[data-target="${seccionId}"]`);
+  if (!contenedor || !elemento) return;
+
+  const { left: contLeft, width: contWidth } = contenedor.getBoundingClientRect();
+  const { left: elLeft, width: elWidth } = elemento.getBoundingClientRect();
+  const distanciaCentro = (elLeft - contLeft) - (contWidth / 2 - elWidth / 2);
+
+  contenedor.scrollTo({
+    left: contenedor.scrollLeft + distanciaCentro,
+    behavior: 'smooth'
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
@@ -779,21 +794,6 @@ document.addEventListener("DOMContentLoaded", () => {
   '#recomendaciones-personalizadas',
  ]
 
- function centrarElementoEnVista(seccionId) {
-  const contenedor = document.getElementById("indexpagination");
-  const elemento = contenedor?.querySelector(`[data-target="${seccionId}"]`);
-  if (!contenedor || !elemento) return;
-
-  const { left: contLeft, width: contWidth } = contenedor.getBoundingClientRect();
-  const { left: elLeft, width: elWidth } = elemento.getBoundingClientRect();
-  const distanciaCentro = (elLeft - contLeft) - (contWidth / 2 - elWidth / 2);
-
-  contenedor.scrollTo({
-    left: contenedor.scrollLeft + distanciaCentro,
-    behavior: 'smooth'
-  });
-}
-
 function handleSectionNavigation(sectionId, direction) {
   const targetSection = navigationMap[sectionId]?.[direction];
   if (!targetSection) return false;
@@ -810,8 +810,7 @@ mostrarSeccionDesdesearch = function() {
   centrarElementoEnVista(id);
 };
 
-  
-  // Función para verificar si un elemento está en las excepciones
+
   function isElementInExceptions(element) {
     if (!element) return false;
     return excepciones.some(selector => 
@@ -819,7 +818,6 @@ mostrarSeccionDesdesearch = function() {
     );
   }
 
-  // Función para manejar el inicio del toque
   function handleTouchStart(e) {
     const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
@@ -833,9 +831,7 @@ mostrarSeccionDesdesearch = function() {
     };
   }
 
-  // Función para manejar el fin del toque
   function handleTouchEnd(e) {
-    // No hacer nada si es parte de la paginación o está en las excepciones
     if (this._touchData?.isPagination || this._touchData?.isException) return;
     
     const endX = e.changedTouches[0].screenX;
@@ -843,7 +839,6 @@ mostrarSeccionDesdesearch = function() {
     const dx = endX - this._touchData.startX;
     const dy = Math.abs(endY - this._touchData.startY);
     
-    // Determinar dirección del deslizamiento
     const direction = Math.abs(dx) > 50 && dy < 35 
       ? dx < 0 ? 'left' : 'right' 
       : null;
@@ -852,17 +847,14 @@ mostrarSeccionDesdesearch = function() {
     
     const sectionId = this.id;
     
-    // No navegar si la barra lateral está activa en ciertas condiciones
     if (sidebar.classList.contains('active') && 
         sectionId === 'Ultimos-Episodios' && 
         direction === 'left') return;
     
-    // Manejar navegación o apertura de menú
     if (navigationMap[sectionId] && handleSectionNavigation(sectionId, direction)) {
       return;
     }
     
-    // Abrir menú al deslizar a la derecha si no hay otra acción
     if (direction === 'right' && !sidebar.classList.contains('active') && isMobile()) {
       sidebar.classList.add('active');
       menuBtn.classList.add('active');
@@ -898,6 +890,9 @@ window.addEventListener('scroll', () => {
   if (window.scrollY >= 80) {
     indexpagination.classList.add('fixed');
   } else {
+    const id = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
+    centrarElementoEnVista(id)
     indexpagination.classList.remove('fixed');
   }
 });
+
