@@ -812,6 +812,7 @@ width: 100%;
   .sidebar.active ~ header {
     -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
+    background-color: rgba(var(--bgti), .2);
     border-bottom: 1px solid var(--br);
   }
 }
