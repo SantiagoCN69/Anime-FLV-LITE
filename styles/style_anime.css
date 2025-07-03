@@ -316,7 +316,6 @@ transform: translateY(-20%);
   z-index: 1;
 }
 .anime-status {
-  opacity: .8;
   font-size: .8rem;
   font-weight: 600;
   display: flex;
