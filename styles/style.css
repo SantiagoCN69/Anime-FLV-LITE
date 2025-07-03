@@ -62,7 +62,7 @@ header {
 @media screen and (max-width: 600px) {
 
 header.scrolled {
-  background: rgba(var(--bgti), .1);
+  background: rgba(var(--bgti), .2);
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   border-bottom: 1px solid var(--br);
@@ -256,9 +256,9 @@ header.scrolled {
   border-right: 1px solid var(--br);
   overscroll-behavior: contain;
   -webkit-backdrop-filter: blur(30px);
-  backdrop-filter: blur(30px) brightness(1);
+  backdrop-filter: blur(30px);
+  background: rgba(var(--bgti), .2);
   will-change: transform;
-  z-index: 9;
   -ms-overflow-style: none; 
   scrollbar-width: none; 
 &::-webkit-scrollbar {
@@ -268,6 +268,7 @@ header.scrolled {
 
 .sidebar.active {
   transform: translateX(0);
+  z-index: 9;
 }
 
 .sidebar ul {
@@ -288,7 +289,6 @@ header.scrolled {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color .5s;
-  text-shadow: 1px 1px 1px var(--br);
   white-space: nowrap;
 }
 
@@ -310,7 +310,6 @@ header.scrolled {
   margin-inline-end: 4px;
   width: 20px;
   height: 20px;
-  filter: drop-shadow(0 0 5px var(--br));
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
@@ -563,12 +562,12 @@ button {
   padding: 10px;
   gap: 0px;
   justify-content: center;
-  background-color: rgba(var(--bgti), .1);
+  background-color: rgba(var(--bgti), .2);
   border-radius: 30px;
   position: fixed;
   bottom: 14px;
   left: 50%; 
-  z-index: 10;
+  z-index: 8;
   animation: aparecer2 .3s forwards;
   width:95%;
   -webkit-backdrop-filter: blur(10px);
