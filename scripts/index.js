@@ -724,7 +724,7 @@ function cargarFetch(direccion) {
     });
 }
 
-function centrarElementoEnVista(seccionId) {
+function centrarElementoEnVista(seccionId, smooth = true) {
   const contenedor = document.getElementById("indexpagination");
   const elemento = contenedor?.querySelector(`[data-target="${seccionId}"]`);
   if (!contenedor || !elemento) return;
@@ -735,8 +735,8 @@ function centrarElementoEnVista(seccionId) {
 
   contenedor.scrollTo({
     left: contenedor.scrollLeft + distanciaCentro,
-    behavior: 'smooth'
-  });
+    behavior: smooth ? 'smooth' : 'auto'
+  })
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -895,7 +895,7 @@ if (window.innerWidth <= 600) {
       indexpagination.classList.add('fixed');
     } else {
       indexpagination.classList.remove('fixed');
-      centrarElementoEnVista(decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios'));
+      centrarElementoEnVista(decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios'), false);
     }
   }, {
     root: null,
