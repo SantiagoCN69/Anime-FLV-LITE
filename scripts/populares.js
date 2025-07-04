@@ -13,6 +13,24 @@ function formatAnimeId(title) {
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+function centrarPaginacion() {
+  const paginationContainer = document.getElementById('pagination-populares');
+  const botones = paginationContainer.querySelectorAll('button');
+  const botonActual = botones[currentPage - 1];
+
+  if (botonActual) {
+    const offsetLeft = botonActual.offsetLeft;
+    const botonWidth = botonActual.offsetWidth;
+    const containerWidth = paginationContainer.offsetWidth;
+
+    const scrollLeft = offsetLeft - (containerWidth / 2) + (botonWidth / 2);
+    paginationContainer.scrollTo({
+      left: scrollLeft,
+      behavior: 'smooth'
+    });
+  }
+}
+
 function updatePagination(pagination) {
   const paginationContainer = document.getElementById('pagination-populares');
   paginationContainer.innerHTML = '';
@@ -108,8 +126,9 @@ async function cargarPopulares() {
       if (card) container.appendChild(card);
       observerAnimeCards();
     }    });
-
+    
     updatePagination(data.pagination);
+    centrarPaginacion();
     
     
   } catch (error) {

@@ -90,6 +90,27 @@ function crearAnimeCardResultados(anime) {
     return div;
 }
 
+
+function centrarPaginacion() {
+  const paginationContainer = document.getElementById('pagination-directorio');
+  const botones = paginationContainer.querySelectorAll('button');
+  const botonActual = botones[currentPage - 1];
+
+  if (botonActual) {
+    const offsetLeft = botonActual.offsetLeft;
+    const botonWidth = botonActual.offsetWidth;
+    const containerWidth = paginationContainer.offsetWidth;
+
+    const scrollLeft = offsetLeft - (containerWidth / 2) + (botonWidth / 2);
+    paginationContainer.scrollTo({
+      left: scrollLeft,
+      behavior: 'smooth'
+    });
+  }
+}
+
+
+
 // Sistema de caché para animes
 const CACHE_KEY = 'animes_cache';
 
@@ -125,7 +146,7 @@ function updatePagination(data) {
     button.addEventListener('click', () => cambiarPagina(i));
     paginationContainer.appendChild(button);
   }
-  
+  centrarPaginacion();
   // Actualizar el botón activo
   const buttons = paginationContainer.querySelectorAll('.page-button');
   buttons.forEach(button => {
@@ -397,6 +418,7 @@ ordenesOpciones.forEach(btn => {
       actualizarLinkBusqueda();
   });
 });
+
 btnFiltrar.addEventListener('click', async () => {
     const link = actualizarLinkBusqueda();
     resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
