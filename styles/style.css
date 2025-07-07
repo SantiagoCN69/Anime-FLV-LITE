@@ -243,6 +243,7 @@ header.scrolled {
 }
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
+  z-index: 9;
   position: absolute;
   top:88px;
   transform: translateX(-100%);
@@ -254,7 +255,6 @@ header.scrolled {
   height: calc(100% - 88px);
   overflow-y: auto;
   border-right: 1px solid var(--br);
-  overscroll-behavior: contain;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   background: rgba(var(--bgti), .2);
@@ -381,6 +381,7 @@ header.scrolled {
     pointer-events: auto;
   }
   .sidebar {
+    overscroll-behavior: contain;
     position: fixed;
     top: 88px;
     padding: 1.5rem;
@@ -388,7 +389,6 @@ header.scrolled {
     height: calc(100vh - 88px);
     transform: translateX(-120%);
     overflow-y: auto;
-    z-index: 20;
   }
 
   #btn-login span{

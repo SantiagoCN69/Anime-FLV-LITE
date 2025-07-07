@@ -376,7 +376,8 @@ transform: translateY(-20%);
   aspect-ratio: 19/27;
 }
 #portadacarga::before {
- width: 300%;   
+ width: 300%;  
+ animation: shimmer 1.7s infinite; 
 }
 #portadacarga.cargado::before {
   animation-duration: 10s; 
