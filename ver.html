@@ -78,6 +78,9 @@
     </script>
     <div class="contenedor-btn-cap">
       <h3 id="btn-cap" class="btn-cap">Episodio</h3>
+    <script>
+      document.getElementById('btn-cap').style.setProperty('view-transition-name', "episodio" + animeId);
+    </script>
       <button type="button" id="btn-estado-capitulo" title="Marcar capítulo como visto">
         <span id="texto-estado-capitulo" class="texto-estado-capitulo">No visto</span>
       </button>

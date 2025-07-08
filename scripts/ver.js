@@ -58,8 +58,9 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-
+const btnCap = document.getElementById("btn-cap");
 tituloAnime.textContent = animeId;
+btnCap.textContent = `Episodio ${params.get('url')}`;
 
 async function refrescarUIEstadoCapitulo() {
   const user = localStorage.getItem("userID");
@@ -303,12 +304,10 @@ async function cargarEpisodios() {
 
 async function cargarVideoDesdeEpisodio(index) {
   const ep = episodios[index];
-  const btnCap = document.getElementById("btn-cap"); 
-  if (btnCap && ep) {
-    btnCap.textContent = `Episodio ${ep.number || "desconocido"}`;
-  } else if (btnCap) {
+  if (!ep) {
     btnCap.textContent = "Episodio desconocido";
     console.warn("No se pudo determinar el episodio actual para btnCap en cargarVideoDesdeEpisodio");
+    return;
   }
 
 

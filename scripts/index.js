@@ -203,6 +203,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   
   btn.addEventListener('click', () => {
     btn.getElementsByClassName("texto-2-lineas")[0].style.setProperty('view-transition-name', 'title' + itemData.id);
+    btn.getElementsByClassName("texto-episodio")[0].style.setProperty('view-transition-name', 'episodio' + itemData.id);
   });
 
   return btn;
