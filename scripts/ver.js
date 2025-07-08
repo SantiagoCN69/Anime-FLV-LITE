@@ -463,11 +463,16 @@ function extraerNombreDesdeURL(url) {
     if (!sinProtocolo) return null;
 
     const partes = sinProtocolo.split('.');
+    let nombre;
+    
     if (sinProtocolo.startsWith('www.')) {
-      return partes[1]; 
+      nombre = partes[1];
     } else {
-      return partes[0]; 
+      nombre = partes[0];
     }
+    
+    // Convertir primera letra a mayúscula
+    return nombre ? nombre.charAt(0).toUpperCase() + nombre.slice(1) : null;
   } catch (e) {
     return null;
   }
