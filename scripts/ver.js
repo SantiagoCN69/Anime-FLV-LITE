@@ -403,7 +403,7 @@ async function cargarVideoDesdeEpisodio(index) {
   embeds.forEach((srv, i) => {
     const btn = document.createElement("button");
     btn.textContent = srv.nombre ? srv.nombre.replace("Servidor ", "") : `${i + 1}`;
-    btn.title = extraerNombreDesdeURL(srv.url);
+    btn.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
   });

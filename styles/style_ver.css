@@ -176,13 +176,13 @@ main section:nth-child(2) {
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-  overflow: hidden;
   position: relative;
 }
 #controles {
   display: flex;
 }
 #controles button {
+  position: relative;
   padding: 15px 8px;
   flex:1;
   border:none;
@@ -193,6 +193,17 @@ main section:nth-child(2) {
   cursor: pointer;
   z-index: 2;
 }
+#controles button:hover::after, #controles button:active::after {
+  content: attr(data-title);
+  padding: 5px 10px;
+  border-radius: 10px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 125%;
+  background-color: var(--p); 
+}
+
 @media screen and (min-width:1047px){
   #controles button::before {
     content: "Servidor "
