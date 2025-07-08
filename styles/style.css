@@ -31,8 +31,9 @@ body {
   background-color: var(--b);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-y: scroll;
+  position: relative;
 }
 a {
   text-decoration: none;
