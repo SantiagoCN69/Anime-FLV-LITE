@@ -820,15 +820,14 @@ width: 100%;
 .anime-details.sin-resultados {
   align-items: center;
   margin-top: 2rem;
-  min-height: calc(100dvh - 88px - 2rem - 10px);
   overflow: hidden;
   display: grid;
   grid-template-columns: 65% auto;
   grid-template-rows: minmax(177px, auto) auto;
   grid-template-areas: 
-    "container2 container1"
-    "container3 container1"
-    ;
+  "container2 container1"
+  "container3 container1"
+  ;
 }
 @media screen and (max-width: 800px) {
   .anime-details.sin-resultados {
