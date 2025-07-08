@@ -139,8 +139,9 @@ function handleSwipeGesture() {
 
 // Funciones para el componente de capítulos
 function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id }) {
-  const btn = document.createElement('div');
+  const btn = document.createElement('a');
   btn.className = 'btn-siguiente-capitulo';
+  btn.href = `ver.html?id=${id}&url=${siguienteCapitulo}`;
 
   const img = document.createElement('img');
   img.src = portada;
@@ -159,9 +160,6 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id
   `;
 
   btn.append(img, contenedorTexto);
-  btn.addEventListener('click', () => {
-    window.location.href = `ver.html?id=${id}&url=${siguienteCapitulo}`;
-  });
 
   return btn;
 }

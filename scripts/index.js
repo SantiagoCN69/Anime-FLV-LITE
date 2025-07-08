@@ -172,8 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function crearElementoSiguienteCapitulo(itemData) {
-  const btn = document.createElement('div');
+  const btn = document.createElement('a');
   btn.className = 'btn-siguiente-capitulo';
+  btn.href = `ver.html?id=${itemData.id}&url=${itemData.siguienteCapitulo}`;
   
   const portada = document.createElement('img');
   portada.src = itemData.portada;
@@ -201,8 +202,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   btn.appendChild(contenedorTexto);
   
   btn.addEventListener('click', () => {
-    btn.style.setProperty('view-transition-name', 'title' + itemData.id);
-    window.location.href = `ver.html?id=${itemData.id}&url=${itemData.siguienteCapitulo}`;
+    btn.getElementsByClassName("texto-2-lineas")[0].style.setProperty('view-transition-name', 'title' + itemData.id);
   });
 
   return btn;
