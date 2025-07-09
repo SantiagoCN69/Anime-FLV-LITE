@@ -245,7 +245,7 @@ overflow: hidden;
   color: var(--t1);
   opacity: 1;
   background-color: var(--p);
-  border-top: 2px solid var(--btn);
+  border-bottom: 2px solid var(--btn);
 }
 #controles button:hover {
   opacity: .9;
