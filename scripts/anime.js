@@ -834,7 +834,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
       estadoText.innerHTML = 'ESTADO';
       
       try {
-        const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estadoId);
+        const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoId);
         const estadoDoc = await getDoc(estadoRef);
         
         if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
