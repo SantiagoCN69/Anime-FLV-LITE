@@ -597,11 +597,11 @@ button {
   content: "";
   position: absolute;
   border-radius: inherit;
- inset: 0;
+  inset: 0;
  z-index: -1;
  padding: 1px;
 
- background-image: conic-gradient(from 80deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
+ background-image: conic-gradient(from 100deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -610,9 +610,10 @@ button {
     linear-gradient(#000 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
+  filter: brightness(1.2);
 }
 #indexpagination.fixed::before {
-  background-image: conic-gradient(from 260deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
+  background-image: conic-gradient(from 280deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
 }
 #indexpagination.fixed span:nth-of-type(2) {
   display: none;
@@ -676,7 +677,7 @@ main {
   flex-grow: 1;
   display: block;
   border-radius: 3px;
-  min-height: 100vh /*calc(100vh - 267px)*/;
+  min-height: calc(100vh - 267px);
   position: relative;
   padding-bottom: 1rem;
   margin: 2rem auto;
