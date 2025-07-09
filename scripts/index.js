@@ -334,11 +334,12 @@ async function cargarUltimosCapsVistos() {
   }
 }
   // Función para crear tarjeta de anime
-  function createAnimeCard(anime) {
+  function createAnimeCard(anime, siguienteEpisodioUrl) {
     const div = document.createElement('div');
     let chapterHtml = ''; 
     let estadoHtml = '';
     let ratingHtml = '';
+    let linkbase =  `<a href="anime.html?id=${anime.id}" id="anime-${anime.id}">`;
   
     div.className = 'anime-card';
     div.style.setProperty('--cover', `url(${anime.portada})`);
@@ -349,8 +350,10 @@ async function cargarUltimosCapsVistos() {
     }
     if (anime.rating) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;}
     
+    if (siguienteEpisodioUrl) {linkbase = `<a href="ver.html?id=${anime.id}&url=${siguienteEpisodioUrl}">`;
+    }
     div.innerHTML = `
-    <a href="anime.html?id=${anime.id}" id="anime-${anime.id}">
+    ${linkbase}
       <div class="container-img">
         <img src="${anime.portada}" class="cover" alt="${anime.titulo}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -697,7 +700,7 @@ async function cargarContinuarViendo() {
   }
    let datos = JSON.parse(localStorage.getItem(cachekey));
    datos.forEach(data => {
-    container.appendChild(createAnimeCard(data));
+    container.appendChild(createAnimeCard(data, data.siguienteCapitulo));
     observerAnimeCards();
    })
    h2.dataset.text = "Disponibles: " + datos.length;
