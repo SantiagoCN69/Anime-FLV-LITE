@@ -253,7 +253,6 @@ overflow: hidden;
 #video {
   display: flex;
   flex: 1;
-  z-index: 3;
 }
 iframe {
   height: auto;
@@ -262,9 +261,12 @@ iframe {
 }
 .reproductor-container.censure #video {
   filter: blur(13px);
-  z-index: 1;
+}
+.reproductor-container.censure #fullscreen {
+  opacity: 1;
 }
 #fullscreen {
+  opacity: 0;
   position: absolute;
   top: calc(50% + 23px);
   left: 50%;
