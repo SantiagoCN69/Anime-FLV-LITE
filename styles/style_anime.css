@@ -40,6 +40,7 @@ header {
 }
 
 .anime-details {
+  margin-block: .5rem;
   display: grid;
   grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
   grid-template-rows: 177px auto auto;
@@ -49,7 +50,6 @@ header {
     "container4 container4";
   gap: 25px;
   height: fit-content;
-  margin-bottom: 25px;
 }
 
 .anime-container1 {
@@ -497,7 +497,7 @@ transform: translateY(-20%);
   overflow-x: auto;
   scroll-behavior: smooth;
   height: fit-content;
-  max-height: 320px;
+  max-height: clamp(320px, calc(100vh - 400px), 1000px);
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
@@ -695,10 +695,10 @@ max-height: 500px;
 #relacionados {
 width: 100%;
     }
-    .episodes-list {
-      max-height: 410px;
-    }
-   }
+.episodes-list {
+  max-height: clamp(420px, calc(100vh - 550px), 1000px);
+  }
+}
 /* Ocultar botones por defecto */
 #btn-search-capitulo,
 #btn-close-search-capitulo {
