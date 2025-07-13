@@ -303,10 +303,10 @@ async function cargarEpisodios() {
 
 
 async function cargarVideoDesdeEpisodio(index) {
+  btnCap.textContent = `Episodio ${index + 1}`;
   const ep = episodios[index];
   if (!ep) {
     btnCap.textContent = "Episodio desconocido";
-    console.warn("No se pudo determinar el episodio actual para btnCap en cargarVideoDesdeEpisodio");
     document.getElementById("controles").innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontro el episodio.</span>";
     return;
   }
