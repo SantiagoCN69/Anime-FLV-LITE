@@ -416,9 +416,7 @@ iframe {
   
 }
 @media screen and (max-width:600px){
-  main {
-    margin-bottom: 30px;
-  }
+
 .botones-reproductor {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

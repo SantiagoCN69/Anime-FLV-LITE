@@ -501,14 +501,19 @@ transform: translateY(-20%);
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
-.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar, .anime-description::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar {
+.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar {
   height: 8px;
 }
 .episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb {
   background-color: var(--btn);
   border-radius: 5px;
 }
-
+.anime-description {
+  padding-right: 4px;
+}
+.anime-description::-webkit-scrollbar {
+  width: 4px;
+}
 .episodes-list li {
   width: 100%;
   display: flex;
