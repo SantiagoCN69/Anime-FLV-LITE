@@ -461,4 +461,11 @@ scrollContainer.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 
-cargarAnimesConCache();
+cargarAnimesConCache(); 
+    (async () => {
+        try {
+            fetch('https://backend-ia-anime.onrender.com/api/chat');
+        } catch (error) {
+            console.error('Error al iniciar backend:', error);
+        }
+    })();

@@ -365,12 +365,9 @@ header.scrolled {
   }
   header {
     padding-inline: 1rem;
-    position: fixed;
+    position: sticky;
     top: 0;
     z-index: 10;
-  }
-  body {
-    padding-top: 88px;
   }
   .search-active {
     top: 0;
