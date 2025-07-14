@@ -113,6 +113,19 @@
 <div id="main"></div>
 <footer>
 </footer>
-
+<script>
+  function ajustarAlturaMain() {
+    if (window.innerWidth <= 830) {
+      const main = document.querySelector('main');
+      const altura = window.innerHeight - 120;
+      main.style.height = altura + "px";
+    }
+  }
+  
+  window.addEventListener("load", ajustarAlturaMain);
+  window.addEventListener("resize", ajustarAlturaMain);
+  document.addEventListener("fullscreenchange", ajustarAlturaMain);
+  </script>
+  
 </body>
 </html>
