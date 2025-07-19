@@ -365,9 +365,12 @@ header.scrolled {
   }
   header {
     padding-inline: 1rem;
-    position: sticky;
+    position: fixed;
     top: 0;
     z-index: 10;
+  }
+  body {
+    padding-top: 88px;
   }
   .search-active {
     top: 0;
@@ -851,8 +854,7 @@ section.content-section h2:first-of-type::after {
   padding: 10px;
   text-align: center;
   transition: transform .5s, opacity .5s;
-}
-.anime-card {
+  height: fit-content;
   opacity: 0;
   transform: translateY(30px) scale(.9);
   transition: opacity .5s ease, transform .5s ease;
