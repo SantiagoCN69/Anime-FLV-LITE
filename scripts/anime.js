@@ -757,13 +757,19 @@ async function actualizarEstadoFirebase(estado) {
   const user = localStorage.getItem("userID");
   if (!user) return;
 
-  // Primero limpiamos cualquier estado previo
+  // Primero verificamos el estado actual
+  const estadoActual = await obtenerEstadoActual();
+  
+  // Si el estado es el mismo, no hacemos nada
+  if (estadoActual === estado) return;
+  
+  // Si hay un estado diferente, lo limpiamos primero
   await limpiarEstadosPrevios();
   
-  if (!estado) return; // Si no hay estado, no hacemos nada
-  
+  if (!estado) return; // Si no hay nuevo estado, terminamos aquí
+
+  // Actualizamos con el nuevo estado
   const estadoLower = estado.toLowerCase();
-  // Actualizamos el documento del estado con el nuevo anime
   const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoLower);
   const estadoDoc = await getDoc(estadoRef);
   
@@ -772,17 +778,11 @@ async function actualizarEstadoFirebase(estado) {
     animes = [...(estadoDoc.data().animes || [])];
   }
   
-  // Si el anime ya está en la lista, lo quitamos
-  const index = animes.indexOf(id);
-  if (index !== -1) {
-    animes.splice(index, 1);
-  } else {
-    // Si no está, lo agregamos
+  // Aseguramos que el anime esté en la lista
+  if (!animes.includes(id)) {
     animes.push(id);
+    await setDoc(estadoRef, { animes }, { merge: true });
   }
-  
-  // Actualizamos el documento
-  await setDoc(estadoRef, { animes }, { merge: true });
 }
 
 // Eliminar el anime de todos los estados
