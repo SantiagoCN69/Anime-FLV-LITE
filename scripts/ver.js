@@ -19,14 +19,6 @@ let censuraActiva = false;
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 const btnCensura = document.getElementById("btn-censura");
 
-// Inicializar estado del botón de AdBlock de manera segura
-document.addEventListener('DOMContentLoaded', () => {
-    if (btnBloquear) {
-        btnBloquear.classList.add("activo");
-        btnBloquear.textContent = "AdBlock: ON";
-    }
-});
-
 btnBloquear.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
   btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
@@ -62,6 +54,9 @@ const btnCap = document.getElementById("btn-cap");
 tituloAnime.textContent = animeId;
 btnCap.textContent = `Episodio ${params.get('url')}`;
 
+const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
+const textoEstado = document.getElementById("texto-estado-capitulo");
+
 async function refrescarUIEstadoCapitulo() {
   const user = localStorage.getItem("userID");
   if (!user) {
@@ -87,19 +82,12 @@ async function refrescarUIEstadoCapitulo() {
   const episodioId = String(episodioActual.number || episodioActual.title);
   const estaVisto = capitulosVistos.includes(episodioId);
 
-  // Actualizar el estado de la interfaz
-  const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
-  const textoEstado = document.getElementById("texto-estado-capitulo");
-  let iconoVisto = document.getElementById("icon-estado-capitulo");
-
   if (!btnEstadoCapitulo || !textoEstado) {
     console.warn('refrescarUIEstadoCapitulo: No se encontraron elementos de UI para el estado del capítulo.');
     return;
   }
-
-  btnEstadoCapitulo.classList.toggle("visto", estaVisto);
+  estaVisto ? btnEstadoCapitulo.classList.add("visto") : btnEstadoCapitulo.classList.remove("visto");
   textoEstado.textContent = estaVisto ? "Visto" : "No visto";
-  textoEstado.classList.toggle("visto", estaVisto);
 }
 
 async function toggleYGuardarEstadoCapitulo() {
@@ -109,6 +97,9 @@ async function toggleYGuardarEstadoCapitulo() {
     window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
     return;
   }
+
+  btnEstadoCapitulo.classList.toggle("visto");
+  textoEstado.textContent = btnEstadoCapitulo.classList.contains("visto") ? "Visto" : "No visto";
 
   const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
   const docSnap = await getDoc(animeRef);
@@ -124,10 +115,10 @@ async function toggleYGuardarEstadoCapitulo() {
     return;
   }
   const episodioId = String(episodioActual.number || episodioActual.title);
-  const titulo = tituloAnime.textContent; // Asumiendo que tituloAnime está disponible globalmente y actualizado
+  const titulo = tituloAnime.textContent; 
 
   const estaVistoActualmente = capitulosVistos.includes(episodioId);
-  const nuevoEstadoVisto = !estaVistoActualmente; // Alternamos el estado
+  const nuevoEstadoVisto = !estaVistoActualmente; 
 
   const episodiosActuales = new Set(capitulosVistos);
   if (nuevoEstadoVisto) {
@@ -139,7 +130,6 @@ async function toggleYGuardarEstadoCapitulo() {
   try {
     await setDoc(animeRef, {
       titulo,
-      fechaAgregado: serverTimestamp(), // O podrías querer actualizar solo si se añade un nuevo anime
       episodiosVistos: Array.from(episodiosActuales)
     });
   } catch (error) {
@@ -163,11 +153,9 @@ document.addEventListener("authStateReady", async (event) => {
 
 // Evento para cambiar el estado del capítulo al hacer clic
 
-const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
 btnEstadoCapitulo.addEventListener("click", async () => {
   try {
     await toggleYGuardarEstadoCapitulo();
-    await refrescarUIEstadoCapitulo();
   } catch (error) {
     console.error("Error al cambiar y guardar estado del capítulo", error);
   }
