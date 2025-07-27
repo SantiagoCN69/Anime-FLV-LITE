@@ -558,7 +558,9 @@ scrollHorizontal.addEventListener('wheel', (e) => {
     document.querySelector('header').classList.add('search-active');
     search.focus();
 
-    cargarSugerenciasSinResultados(id);
+    const porcentajeARecortar = Math.ceil(id.length * 0.4); 
+    const recortado = id.slice(0, -porcentajeARecortar);
+    cargarSugerenciasSinResultados(recortado);
   }
 };
 cargarAnime();
