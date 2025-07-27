@@ -224,7 +224,6 @@ const renderAnime = anime => {
   ratingEl.textContent = anime.rating + "/5";
   renderRelacionados(anime);
   actualizarEstadoFavorito()
-  actualizarEstadoActual();
 };
 
 const getAnchoColumna = () => {
@@ -757,18 +756,14 @@ async function actualizarEstadoFirebase(estado) {
   const user = localStorage.getItem("userID");
   if (!user) return;
 
-  // Primero verificamos el estado actual
   const estadoActual = await obtenerEstadoActual();
   
-  // Si el estado es el mismo, no hacemos nada
   if (estadoActual === estado) return;
   
-  // Si hay un estado diferente, lo limpiamos primero
   await limpiarEstadosPrevios();
   
-  if (!estado) return; // Si no hay nuevo estado, terminamos aquí
+  if (!estado) return; 
 
-  // Actualizamos con el nuevo estado
   const estadoLower = estado.toLowerCase();
   const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoLower);
   const estadoDoc = await getDoc(estadoRef);
@@ -778,7 +773,6 @@ async function actualizarEstadoFirebase(estado) {
     animes = [...(estadoDoc.data().animes || [])];
   }
   
-  // Aseguramos que el anime esté en la lista
   if (!animes.includes(id)) {
     animes.push(id);
     await setDoc(estadoRef, { animes }, { merge: true });
@@ -880,18 +874,10 @@ async function obtenerEstadoActual() {
   }
   return null;
 }
-
-async function actualizarEstadoActual() {
-  const user = localStorage.getItem("userID");
-  if (!user) return;
-
-  const estadoActual = await obtenerEstadoActual();
-  if (estadoActual) {
-    const btnSeleccionado = document.getElementById(`btn-${estadoActual.toLowerCase()}`);
-    if (btnSeleccionado) manejarEstadoSeleccionado(btnSeleccionado);
-    
-  }
-}
+obtenerEstadoActual().then(estado => {
+  const btnSeleccionado = document.getElementById(`btn-${estado.toLowerCase()}`);
+  if (btnSeleccionado) manejarEstadoSeleccionado(btnSeleccionado);
+});
 
 btnViendo.addEventListener('click', () => manejarEstadoSeleccionado(btnViendo));
 btnPendiente.addEventListener('click', () => manejarEstadoSeleccionado(btnPendiente));
