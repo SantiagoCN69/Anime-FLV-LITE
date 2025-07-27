@@ -528,13 +528,6 @@ async function cargarAnime(idauxiliar) {
     }
   } catch (err) {
     console.error('Error carga anime:', err)
-    const target = document.getElementById("disqus_thread");
-    target.style.display = "none";
-    const observer = new MutationObserver(() => {
-      target.style.display = "none";
-    });
-    observer.observe(target, { attributes: true, attributeFilter: ['style'] });
-
     const container = document.querySelector('.anime-details');
     container.classList.add('sin-resultados');
     
@@ -581,8 +574,11 @@ async function cargarSugerenciasSinResultados(id) {
         
         const animeData = await response.json();
         if (animeData.data.length === 0) {
-          const recortado = id.slice(0, -2);
-          cargarSugerenciasSinResultados(recortado);
+          const porcentajeARecortar = Math.ceil(id.length * 0.4); 
+          const recortado = id.slice(0, -porcentajeARecortar);
+          if (recortado.length >= 1) { 
+            cargarSugerenciasSinResultados(recortado);
+          }
           return;
         }
         const animeGrid = document.getElementById('anime-grid-sin-resultados');
@@ -604,7 +600,6 @@ document.getElementById('btn-search-capitulo').addEventListener('click', functio
   document.getElementById('filtro-capitulo').focus();
 });
 
-// Cerrar búsqueda de capítulos
 document.getElementById('btn-close-search-capitulo').addEventListener('click', function () {
   document.querySelector('.header-caps').classList.remove('search-active');
   document.getElementById('filtro-capitulo').value = "";
@@ -624,10 +619,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', setContainerHeight);
 });
 
-// Botón de favoritos
 const btnFav = document.getElementById('btn-fav');
 
-// Función para actualizar botón de favorito
 function actualizarEstadoFavorito() {
   obtenerFavoritosAnime()
     .then(favoritos => {
@@ -660,7 +653,7 @@ btnFav.addEventListener("click", () => {
       btnFav.disabled = false;
     });
 });
-// Función para alternar favoritos
+
 async function toggleFavoritoAnime(titulo) {
   const user = localStorage.getItem("userID");
   if (!user) {
@@ -675,18 +668,15 @@ async function toggleFavoritoAnime(titulo) {
     favoritos = [...favoritosDoc.data().animes];
   }
 
-  // Verificar si el anime ya está en favoritos
   const index = favoritos.indexOf(id);
   
   if (index !== -1) {
-    // Eliminar de favoritos
     favoritos.splice(index, 1);
     btnFav.classList.add('desaparecer');
     setTimeout(() => btnFav.classList.remove('desaparecer'), 500);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
     return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
   } else {
-    // Agregar a favoritos
     favoritos.push(id);
     btnFav.classList.add('aparecer');
     setTimeout(() => btnFav.classList.remove('aparecer'), 500);
@@ -695,7 +685,6 @@ async function toggleFavoritoAnime(titulo) {
   }
 }
 
-// Obtener lista de favoritos
 async function obtenerFavoritosAnime() {
   const user = localStorage.getItem("userID");
   if (!user) return [];
@@ -713,14 +702,12 @@ async function obtenerFavoritosAnime() {
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
   const progreso = (episodiosVistos.length / totalEpisodios) * 100;
 
-  // Actualizar variables CSS
   const progresoBtn = document.getElementById('btn-progreso');
   if (progresoBtn) {
     progresoBtn.style.setProperty('--progreso', progreso.toFixed(0));
     progresoBtn.style.setProperty('--progreso-text', `"${progreso.toFixed(0)}%"`);
   }
 
-  // Actualizar visual del progreso
   const progresoElement = document.getElementById('progreso');
   if (progresoElement) {
     progresoElement.style.width = `${progreso}%`;
@@ -728,14 +715,11 @@ async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
 
 }
 
-// Manejo de estados con botones individuales
 const btnViendo = document.getElementById('btn-viendo');
 const btnPendiente = document.getElementById('btn-pendiente');
 const btnVisto = document.getElementById('btn-visto');
 const seccionEstados = document.getElementById('Estados');
 const estadoText = document.getElementById('estado-text');
-
-// Asegúrate de definir esta variable correctamente
 
 const ESTADOS = {
   viendo: {
@@ -779,14 +763,12 @@ async function actualizarEstadoFirebase(estado) {
   }
 }
 
-// Eliminar el anime de todos los estados
 async function limpiarEstadosPrevios() {
   const user = localStorage.getItem("userID");
   if (!user) return;
 
   const estados = ['viendo', 'pendiente', 'visto'];
-  
-  // Recorremos cada estado
+
   for (const estado of estados) {
     const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estado);
     const estadoDoc = await getDoc(estadoRef);
@@ -795,17 +777,14 @@ async function limpiarEstadosPrevios() {
       let animes = [...(estadoDoc.data().animes || [])];
       const index = animes.indexOf(id);
       
-      // Si encontramos el anime, lo eliminamos
       if (index !== -1) {
         animes.splice(index, 1);
-        // Actualizamos el documento del estado
         await setDoc(estadoRef, { animes }, { merge: true });
       }
     }
   }
 }
 
-// Manejar selección de estado
 async function manejarEstadoSeleccionado(btnSeleccionado) {
   const btnEstado = document.getElementById('btn-estado');
   const estadoId = btnSeleccionado.id.replace('btn-', '');
@@ -818,7 +797,6 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
     return;
   }
 
-  // Si el botón ya está activo, eliminar el estado
   if (btnSeleccionado.classList.contains('active')) {
     btnSeleccionado.classList.remove('active');
     seccionEstados.classList.remove('active');
