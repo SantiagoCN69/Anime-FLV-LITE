@@ -495,10 +495,14 @@ transform: translateY(-20%);
   flex-direction: column;
   align-items: center;
   width: 100%;
+  overflow: hidden;
   overflow-x: auto;
   scroll-behavior: smooth;
-  height: fit-content;
-  max-height: clamp(320px, calc(100vh - 400px), 1000px);
+  height: 0px;
+  transition: height .5s;
+  &.cargado {
+    height: clamp(320px, calc(100vh - 400px), 1000px);
+  }
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */

@@ -222,7 +222,6 @@ const renderAnime = anime => {
   renderGeneros(generoContainer, anime.generos);
   ratingEl.textContent = anime.rating + "/5";
   crearBotonesEpisodios(anime);
-  capContenedor.classList.add("cargado");
   renderRelacionados(anime);
 };
 
@@ -277,10 +276,14 @@ async function crearBotonesEpisodios(anime) {
   const fragment = document.createDocumentFragment();
   episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
   capContenedor.appendChild(fragment);
+
   if (initLoadingCap) initLoadingCap.style.display = 'none';
   if (episodios.length > 0) {
     actualizarProgresoCapitulos(episodios.length, vistos);
   }
+
+  capContenedor.classList.add("cargado");
+  
   // Desplazar al primer episodio no visto
   const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
   if (primerNoVisto) {
@@ -312,6 +315,7 @@ async function crearBotonesEpisodios(anime) {
     }
   }
 }
+
 
 capContenedor.addEventListener('wheel', e => {
   e.preventDefault();
@@ -856,8 +860,10 @@ async function obtenerEstadoActual() {
   return null;
 }
 obtenerEstadoActual().then(estado => {
-  const btnSeleccionado = document.getElementById(`btn-${estado.toLowerCase()}`);
-  if (btnSeleccionado) manejarEstadoSeleccionado(btnSeleccionado);
+  if (estado) {
+    const btnSeleccionado = document.getElementById(`btn-${estado.toLowerCase()}`);
+    if (btnSeleccionado) manejarEstadoSeleccionado(btnSeleccionado);
+  }
 });
 
 btnViendo.addEventListener('click', () => manejarEstadoSeleccionado(btnViendo));
