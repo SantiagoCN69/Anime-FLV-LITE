@@ -500,7 +500,7 @@ transform: translateY(-20%);
   height: 0px;
   transition: height .5s;
   &.cargado {
-    height: min(calc(var(--caps) * 80px + 8px), clamp(320px, calc(100vh - 400px), 1000px));
+    height: min(calc(var(--caps) * 80px + 8px), clamp(248px, calc(100vh - 400px), 1000px));
   }
 }
 
