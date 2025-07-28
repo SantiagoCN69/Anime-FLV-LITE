@@ -220,12 +220,13 @@ const renderAnime = anime => {
   document.body.style.backgroundImage = `url(${anime.portada})`;
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);
-  crearBotonesEpisodios(anime);
   ratingEl.textContent = anime.rating + "/5";
+  crearBotonesEpisodios(anime);
+  capContenedor.classList.add("cargado");
   renderRelacionados(anime);
-  actualizarEstadoFavorito()
 };
 
+actualizarEstadoFavorito()
 const getAnchoColumna = () => {
   const li = capContenedor.querySelector('li');
   return li ? li.getBoundingClientRect().width : 0;
