@@ -283,12 +283,15 @@ async function crearBotonesEpisodios(anime) {
   }
 
   capContenedor.classList.add("cargado");
+  capContenedor.style.setProperty("--caps", episodios.length);
   
-  // Desplazar al primer episodio no visto
-  const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
-  if (primerNoVisto) {
-    const targetElement = primerNoVisto.parentElement;
-    if (targetElement) { 
+  setTimeout(() => {
+    capContenedor.style.overflowX = "auto";
+    // Desplazar al primer episodio no visto
+    const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
+    if (primerNoVisto) {
+      const targetElement = primerNoVisto.parentElement;
+      if (targetElement) { 
       const anchoColumna = typeof getAnchoColumna === 'function' ? getAnchoColumna() : 0; 
 
       if (anchoColumna && anchoColumna > 0) {
@@ -314,8 +317,8 @@ async function crearBotonesEpisodios(anime) {
       }
     }
   }
+}, 500);
 }
-
 
 capContenedor.addEventListener('wheel', e => {
   e.preventDefault();
@@ -892,3 +895,24 @@ scrollContainer.addEventListener('wheel', (e) => {
     scrollContainer.scrollLeft += e.deltaY;
   }
 }, { passive: false });
+
+//modal portada
+const modal = document.createElement('div');
+modal.id = 'modalImagen';
+modal.innerHTML = `<img src="" alt="Vista Ampliada">`;
+document.body.appendChild(modal);
+
+const modalImg = modal.querySelector('img');
+
+portadaEl.addEventListener('click', () => {
+  modalImg.src = portadaEl.src;
+  modal.classList.add('active');
+});
+
+// Cerrar al hacer clic en la imagen del modal
+modal.addEventListener('click', () => {
+  modal.classList.remove('active');
+});
+window.addEventListener('scroll', () => {
+  modal.classList.remove('active');
+});
