@@ -264,6 +264,7 @@ transform: translateY(-20%);
 #progreso {
   position: absolute;
   inset: 0;
+  transition: width .5s;
   width: calc(var(--progreso) * 1%);
   height: 100%;
   background-color: var(--btn);
