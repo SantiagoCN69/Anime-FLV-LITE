@@ -348,7 +348,7 @@ header.scrolled {
   right: 18px;
   top:50%;
   transform: translateY(-50%);
-  z-index: 20000;
+  z-index: 10;
   pointer-events: none;
   background-color: var(--t2);
   -webkit-mask-size: contain;
