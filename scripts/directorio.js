@@ -112,7 +112,10 @@ function centrarPaginacion() {
 
 
 // Sistema de caché para animes
-const CACHE_KEY = 'animes_cache';
+localStorage.removeItem("animes_cache");
+
+
+const CACHE_KEY = 'animes_cache_directorio';
 
 // Inicializar elementos del DOM
 const paginationContainer = document.getElementById('pagination-directorio');
@@ -120,8 +123,6 @@ const paginationContainer = document.getElementById('pagination-directorio');
 let currentPage = 1;
 let totalPages = 1;
 
-// Verificar si hay caché existente
-const cachedData = localStorage.getItem(CACHE_KEY);
 
 function updatePagination(data) {
   
@@ -179,7 +180,7 @@ function cambiarPagina(page) {
 }
 
 async function cargarAnimesConCache() {
-    const cachedData = localStorage.getItem(CACHE_KEY);
+    const cachedData = null;
   
     const params = new URLSearchParams(window.location.search);
     if (params.has('genre[]')) {
@@ -216,11 +217,12 @@ async function cargarAnimesConCache() {
     }
     else {
       
+    resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
+    
     if (cachedData) {
       const { data, page, PaginasTotales } = JSON.parse(cachedData);
       // Verificar si la caché corresponde a la página actual
       if (page === currentPage) {
-        resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
         data.forEach(anime => {
           const card = crearAnimeCardResultados(anime);
           resultadosContainer.appendChild(card);
@@ -263,6 +265,29 @@ async function cargarAnimesConCache() {
           console.error('Stack trace:', error.stack);
         });
       }
+    }
+    else {
+      fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
+      .then(response => response.json())
+      .then(data => {
+        resultadosContainer.innerHTML = '';
+        data.animes.forEach(anime => {
+          const card = crearAnimeCardResultados(anime);
+          resultadosContainer.appendChild(card);
+        });
+        observerAnimeCards();
+        updatePagination(data);
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          data: data.animes,
+          page: currentPage,
+          PaginasTotales: data.PaginasTotales
+        }));
+      })
+      .catch(error => {
+        console.error('Error detallado:', error);
+        console.error('Error en la petición:', error.message);
+        console.error('Stack trace:', error.stack);
+      });
     }
   }
 }
@@ -430,7 +455,7 @@ btnFiltrar.addEventListener('click', async () => {
         resultadosContainer.innerHTML = '';
         
         const linkSolo = link.split('/browse?')[1]; 
-        const fullUrl = "directorio.html?" + linkSolo;
+        const fullUrl = "?Directorio" + linkSolo;
         history.pushState({}, '', fullUrl);
         
         
