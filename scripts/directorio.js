@@ -186,7 +186,7 @@ async function cargarAnimesConCache() {
     if (params.has('genre[]')) {
       const genero = params.get('genre[]');
       
-        const generoNormalizado = genero.toLowerCase().replace(/\s+/g, '-');
+        const generoNormalizado = genero.replace(/\s+/g, '-');
         const botonGenero = document.getElementById(generoNormalizado);
         
         if (botonGenero) {
@@ -218,7 +218,7 @@ async function cargarAnimesConCache() {
     else {
       
     resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
-    
+
     if (cachedData) {
       const { data, page, PaginasTotales } = JSON.parse(cachedData);
       // Verificar si la caché corresponde a la página actual
@@ -455,7 +455,8 @@ btnFiltrar.addEventListener('click', async () => {
         resultadosContainer.innerHTML = '';
         
         const linkSolo = link.split('/browse?')[1]; 
-        const fullUrl = "?Directorio" + linkSolo;
+        console.log(linkSolo);
+        const fullUrl = "?Directorio&" + linkSolo;
         history.pushState({}, '', fullUrl);
         
         

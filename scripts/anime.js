@@ -86,7 +86,8 @@ function quitarTildesYEspacios(texto) {
   return texto
     .normalize('NFD')                   // Descompone los caracteres con tilde
     .replace(/[\u0300-\u036f]/g, '')   // Elimina las tildes
-    .replace(/ /g, '-');                // Reemplaza espacios por guiones
+    .replace(/ /g, '-')                // Reemplaza espacios por guiones
+    .toLowerCase(); //todo minuscula
 }
 
 const renderGeneros = (container, generos) => {
