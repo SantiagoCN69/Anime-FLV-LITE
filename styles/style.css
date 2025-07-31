@@ -1003,11 +1003,11 @@ section.content-section h2:first-of-type::after {
   gap: 2px;
   pointer-events: none;
   transform: scale(.9);
+  z-index: 30;
 }
 .logout-modal.show {
   opacity: 1;
   transform: scale(1);
-  z-index: 30;
   pointer-events: auto;
 }
 
