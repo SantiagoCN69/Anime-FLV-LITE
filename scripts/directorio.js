@@ -456,7 +456,7 @@ btnFiltrar.addEventListener('click', async () => {
         
         const linkSolo = link.split('/browse?')[1]; 
         console.log(linkSolo);
-        const fullUrl = "?Directorio&" + linkSolo;
+        const fullUrl = "?Directorio" + linkSolo;
         history.pushState({}, '', fullUrl);
         
         
@@ -488,10 +488,3 @@ scrollContainer.addEventListener('wheel', (e) => {
 
 
 cargarAnimesConCache(); 
-    (async () => {
-        try {
-            fetch('https://backend-ia-anime.onrender.com/api/chat');
-        } catch (error) {
-            console.error('Error al iniciar backend:', error);
-        }
-    })();
