@@ -130,6 +130,7 @@ async function toggleYGuardarEstadoCapitulo() {
   try {
     await setDoc(animeRef, {
       titulo,
+      fechaAgregado: serverTimestamp(),
       episodiosVistos: Array.from(episodiosActuales)
     });
   } catch (error) {
