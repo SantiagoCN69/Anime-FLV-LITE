@@ -435,7 +435,7 @@ btnFiltrar.addEventListener('click', async () => {
     try {
         const response = await fetch(link);
         const data = await response.json();
-        
+        console.log(link);
         resultadosContainer.innerHTML = '';
         
         const linkSolo = link.split('/browse?')[1]; 
