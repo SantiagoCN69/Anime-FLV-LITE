@@ -292,84 +292,68 @@ async function cargarAnimesConCache() {
   }
 }
 
-// Sistema de filtros de género
 const generosBtn = document.getElementById('btn-filtro-genero');
 const generosOpciones = document.querySelectorAll('#filtro-genero .btn-filtro-opcion');
 const btnFiltrar = document.getElementById('btn-filtrar');
 
-// Sistema de filtros de año
 const anoBtn = document.getElementById('btn-filtro-ano');
 const anosOpciones = document.querySelectorAll('#filtro-ano .btn-filtro-opcion');
 
-// Sistema de filtros de tipo
 const tipoBtn = document.getElementById('btn-filtro-tipo');
 const tiposOpciones = document.querySelectorAll('#filtro-tipo .btn-filtro-opcion');
 
-// Sistema de filtros de estado
 const estadoBtn = document.getElementById('btn-filtro-estado');
 const estadosOpciones = document.querySelectorAll('#filtro-estado .btn-filtro-opcion');
 
-// Sistema de filtros de orden
 const ordenBtn = document.getElementById('btn-filtro-orden');
 const ordenesOpciones = document.querySelectorAll('#filtro-orden .btn-filtro-opcion');
 
-// Función para actualizar el link de búsqueda
 function actualizarLinkBusqueda() {
-    // Obtener los géneros activos
     const generosActivos = Array.from(generosOpciones)
         .filter(btn => btn.classList.contains('active'))
         .map(btn => btn.id);
 
-    // Obtener los años activos
     const anosActivos = Array.from(document.querySelectorAll('#filtro-ano .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
         .map(btn => btn.id);
 
-    // Obtener los tipos activos
     const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
         .map(btn => btn.id);
 
-    // Obtener los estados activos
     const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
         .map(btn => btn.id);
 
-    // Obtener los ordenes activos
     const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
         .map(btn => btn.id);
 
-    // Construir el link
     let link = 'https://backend-animeflv-lite.onrender.com/api/browse?';
     
-    // Agregar géneros si hay
     if (generosActivos.length > 0) {
         link += 'genre%5B%5D=' + generosActivos.join('&genre%5B%5D=');
     }
 
-    // Agregar años si hay
     if (anosActivos.length > 0) {
-        if (generosActivos.length > 0) link += '&'; // Agregar & si ya hay géneros
+        if (generosActivos.length > 0) link += '&';
         link += 'year%5B%5D=' + anosActivos.join('&year%5B%5D=');
     }
 
-    // Agregar tipos si hay
     if (tiposActivos.length > 0) {
-        if (generosActivos.length > 0 || anosActivos.length > 0) link += '&'; // Agregar & si ya hay géneros o años
+        if (generosActivos.length > 0 || anosActivos.length > 0) link += '&';
         link += 'type%5B%5D=' + tiposActivos.join('&type%5B%5D=');
     }
 
-    // Agregar estados si hay
     if (estadosActivos.length > 0) {
-        if (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0) link += '&'; // Agregar & si ya hay géneros, años o tipos
+        if (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0) link += '&';
         link += 'status%5B%5D=' + estadosActivos.join('&status%5B%5D=');
     }
 
-    const orden = ordenesActivos.length > 0 ? ordenesActivos[0] : 'default';
-    
-    link += '&order=' + orden;
-
+    if (ordenesActivos.length > 0) {
+      if (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0 || estadosActivos.length > 0) link += '&';
+      link += 'order=' + ordenesActivos[0];
+  }
     return link;
 }
 
@@ -456,8 +440,8 @@ btnFiltrar.addEventListener('click', async () => {
         
         const linkSolo = link.split('/browse?')[1]; 
         console.log(linkSolo);
-        const fullUrl = "?Directorio" + linkSolo;
-        history.pushState({}, '', fullUrl);
+        linkSolo && history.pushState({}, '', '?Directorio&' + linkSolo);
+
         
         
         if (data.animes && data.animes.length > 0) {
