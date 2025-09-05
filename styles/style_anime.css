@@ -105,6 +105,10 @@ header {
   gap: 5px;
   position: relative;
   overflow: hidden;
+  &:hover {
+    filter: brightness(1.2);
+    box-shadow: 3px 3px 20px #f222;
+  }
 }
 
 #btn-fav.favorito {
@@ -372,6 +376,7 @@ transform: translateY(-20%);
   animation: shimmer 1.5s infinite;
 }
 #portadacarga {
+  pointer-events: none;
   width: calc(100% - 1.2rem);
   position: absolute;
   height: unset;
@@ -422,6 +427,9 @@ transform: translateY(-20%);
   border-radius: 5px;
   border: none;
   font-size: .8rem;
+  &:hover {
+    filter: brightness(1.5);
+  }
   }
 
 .anime-description {
@@ -543,6 +551,10 @@ transform: translateY(-20%);
   align-items: center;
   position: relative;
   padding-inline: 15px;
+  &:hover {
+    background-color: var(--p);
+    filter: brightness(1.5);
+  }
 }
 .icon-eye {
   width: 25px;
