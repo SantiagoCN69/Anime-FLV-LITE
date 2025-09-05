@@ -65,6 +65,7 @@ header {
 }
   
 .anime-container1 img {
+  cursor: pointer;
   border-radius: 5px;
   width: 100%;
   height: auto;
@@ -826,21 +827,24 @@ width: 100%;
     border-bottom: 1px solid var(--br);
   }
 }
+
 .anime-details.sin-resultados {
-  align-items: center;
-  margin-top: 2rem;
+  background-color: #00c853;
+  flex: 1;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 65% auto;
-  grid-template-rows: minmax(177px, auto) auto;
+
+  align-content: center;
+
+  grid-template-columns: 60% auto;
+  grid-template-rows: repeat(2, minmax(177px, 300px));
   grid-template-areas: 
-  "container2 container1"
-  "container3 container1"
-  ;
+    "container2 container1"
+    "container3 container1";
 }
+
 @media screen and (max-width: 800px) {
   .anime-details.sin-resultados {
-    margin-top: 0;
     min-height: calc(100dvh - 88px - 10px);
     grid-template-columns:1fr;
     grid-template-rows: repeat(3, auto);
@@ -852,7 +856,7 @@ width: 100%;
 }
 #img-sin-resultados {
   width: auto;
-  height: clamp(250px, 75vw, 400px);
+  height: clamp(250px, 75vw, 500px);
   margin: auto;
   aspect-ratio: 305/344;
   grid-area: container1;
@@ -905,25 +909,40 @@ width: 100%;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(var(--bgti), .3);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background-color: rgba(var(--bgti), 0.6); 
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  backdrop-filter: blur(12px) saturate(180%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 #modalImagen img {
   aspect-ratio: 2/3;
-  width: clamp(100px, 80vw, 430px);
+  width: clamp(100px, 85vw, 500px);
   max-height: 90%;
-  border-radius: 10px;
-  box-shadow: 0 0 20px #000;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 
+              0 20px 50px -12px rgba(0, 0, 0, 0.3),
+              0 0 0 1px rgba(255, 255, 255, 0.05);
   cursor: pointer;
+  transform: scale(0.95);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#modalImagen img:hover {
+  transform: scale(0.98);
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6), 
+              0 25px 60px -12px rgba(0, 0, 0, 0.4);
 }
 
 #modalImagen.active {
@@ -931,3 +950,18 @@ width: 100%;
   visibility: visible;
 }
 
+#modalImagen.active img {
+  transform: scale(1);
+  animation: modalAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
