@@ -377,6 +377,7 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
   arr = esVisto ? Array.from(new Set([...arr, episodio.toString()])) : arr.filter(x => x !== episodio.toString());
   await setDoc(ref, { titulo, fechaAgregado: serverTimestamp(), episodiosVistos: arr });
   actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, arr);
+  mostrarPildora("capvisto", esVisto);
 }
 
 async function obtenerCapitulosVistos(animeId) {
@@ -654,7 +655,7 @@ btnFav.addEventListener("click", async () => {
 
   // Deshabilitamos para evitar spam de clics
   btnFav.disabled = true;
-console.log("hola")
+
   try {
     // --- RESPUESTA VISUAL INSTANTÁNEA ---
     if (btnFav.classList.contains("activo")) {
@@ -672,7 +673,7 @@ console.log("hola")
 
     // --- ESTADO FINAL ---
     actualizarEstadoFavorito();
-    console.log("✅ Favoritos actualizado con éxito:", res.mensaje);
+
 
   } catch (err) {
     console.error("❌ Error al cambiar favorito:", err);
@@ -701,11 +702,13 @@ async function toggleFavoritoAnime(titulo) {
     // eliminar
     favoritos.splice(index, 1);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
+    mostrarPildora("fav", false);  
     return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
   } else {
     // agregar
     favoritos.push(id);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
+    mostrarPildora("fav", true);  
     return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
   }
 }
@@ -785,6 +788,8 @@ async function actualizarEstadoFirebase(estado) {
   if (!animes.includes(id)) {
     animes.push(id);
     await setDoc(estadoRef, { animes }, { merge: true });
+    console.log(estadoLower);
+    mostrarPildora(estadoLower, true);  
   }
 }
 
@@ -801,7 +806,7 @@ async function limpiarEstadosPrevios() {
     if (estadoDoc.exists()) {
       let animes = [...(estadoDoc.data().animes || [])];
       const index = animes.indexOf(id);
-      
+       
       if (index !== -1) {
         animes.splice(index, 1);
         await setDoc(estadoRef, { animes }, { merge: true });
@@ -838,6 +843,8 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
           const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
           if (animesActualizados.length !== estadoDoc.data().animes.length) {
             await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
+            console.log(estadoId);
+            mostrarPildora(estadoId, false);  
           }
         }
       } catch (error) {
@@ -931,3 +938,52 @@ modal.addEventListener('click', () => {
 window.addEventListener('scroll', () => {
   modal.classList.remove('active');
 });
+
+//pildora visual check 
+function mostrarPildora(opcion, estado = true) {
+  console.log("Mostrando pildora para", opcion, "con estado", estado);
+
+  const pill = document.createElement("div");
+  pill.classList.add("pildora");
+
+  const accion = estado ? "Agregado exitosamente a" : "Eliminado exitosamente de";
+
+  switch (opcion) {
+    case "fav":
+      pill.classList.add("pildora-fav");
+      pill.textContent = `${accion} favoritos`;
+      break;
+    case "pendiente":
+      pill.classList.add("pildora-pendiente");
+      pill.textContent = `${accion} pendientes`;
+      break;
+    case "visto":
+      pill.classList.add("pildora-visto");
+      pill.textContent = `${accion} vistos`;
+      break;
+    case "viendo":
+      pill.classList.add("pildora-viendo");
+      pill.textContent = `${accion} viendo`;
+      break;
+      case "capvisto":
+        pill.classList.add("pildora-visto");
+        pill.textContent = `${accion} capitulos vistos`;
+        break;
+    default:
+      pill.classList.add("pildora-default");
+      pill.textContent = estado ? "Acción realizada" : "Acción revertida";
+  }
+  if (!estado) {
+    pill.style.filter = "brightness(.8)";
+  }
+  document.body.appendChild(pill);
+
+  setTimeout(() => {
+    pill.classList.add("mostrar");
+  }, 50);
+
+  setTimeout(() => {
+    pill.classList.remove("mostrar");
+    setTimeout(() => pill.remove(), 400); 
+  }, 3000);
+}

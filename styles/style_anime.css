@@ -974,3 +974,56 @@ width: 100%;
     transform: scale(1) translateY(0);
   }
 }
+
+/*Pildora viusla check */
+.pildora {
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--t1);
+  opacity: 0;
+  transition: all 0.4s ease;
+  z-index: 9999;
+}
+
+/* Estado visible */
+.pildora.mostrar {
+  top: 20px; 
+  opacity: 1;
+}
+
+/* Variantes */
+.pildora-fav {
+  background-color: #ff5755;
+  border: 2px solid #c62828;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.5);
+}
+
+.pildora-pendiente {
+  background-color: #fdd835;
+  border: 2px solid #fbc02d;
+  box-shadow: 0 4px 12px rgba(253, 216, 53, 0.5);
+}
+
+.pildora-visto {
+  background-color: #4deb55;
+  border: 2px solid #2e7d32;
+  box-shadow: 0 4px 12px rgba(67, 160, 71, 0.5);
+}
+
+.pildora-viendo {
+  background-color: #3be5ff;
+  border: 2px solid #0096ad;
+  box-shadow: 0 4px 12px rgba(0, 251, 230, 0.5);
+}
+
+.pildora-default {
+  background-color: #607d8b;
+  border: 2px solid #455a64;
+  box-shadow: 0 4px 12px rgba(96, 125, 139, 0.5);
+}
