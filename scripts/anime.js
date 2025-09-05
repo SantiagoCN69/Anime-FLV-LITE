@@ -257,6 +257,7 @@ const createEpisodeButton = (ep, vistos = []) => {
 
   btn.addEventListener('click', async () => {
     if (btn.classList.contains("ep-no-visto")) {
+      mostrarPildora("capvisto", true);
       await manejarEstadoEpisodio(btn, icon, ep);
     }
     window.location.href = `ver.html?id=${id}&url=${ep.number}`;

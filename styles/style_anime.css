@@ -548,7 +548,9 @@ transform: translateY(-20%);
   align-items: center;
   position: relative;
   padding-inline: 15px;
-  &:hover {
+  &:active {
+    opacity: .8;
+    color: var(--btn);
     background-color: var(--p);
     filter: brightness(1.5);
   }
@@ -585,6 +587,8 @@ transform: translateY(-20%);
 .episode-btn:hover {
     color: var(--btn);
     opacity: .8;
+    background-color: var(--p);
+    filter: brightness(1.5);
 }
 }
 #btn-search-capitulo, #btn-close-search-capitulo {
