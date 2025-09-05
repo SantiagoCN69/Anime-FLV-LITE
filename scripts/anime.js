@@ -644,25 +644,41 @@ function actualizarEstadoFavorito() {
     });
 }
 
-btnFav.addEventListener("click", () => {
+btnFav.addEventListener("click", async () => {
   if (!auth.currentUser) {
     alert("Debes iniciar sesión para agregar a favoritos.");
     return;
   }
+
   const titulo = document.getElementById("titulo").textContent;
 
+  // Deshabilitamos para evitar spam de clics
   btnFav.disabled = true;
+console.log("hola")
+  try {
+    // --- RESPUESTA VISUAL INSTANTÁNEA ---
+    if (btnFav.classList.contains("activo")) {
+      btnFav.classList.remove("activo");
+      btnFav.classList.add("desaparecer");
+      setTimeout(() => btnFav.classList.remove("desaparecer"), 500);
+    } else {
+      btnFav.classList.add("activo");
+      btnFav.classList.add("aparecer");
+      setTimeout(() => btnFav.classList.remove("aparecer"), 500);
+    }
 
-  toggleFavoritoAnime(titulo)
-    .then(res => {
-      actualizarEstadoFavorito();
-    })
-    .catch(err => {
-      console.error("Error al cambiar favorito:", err);
-    })
-    .finally(() => {
-      btnFav.disabled = false;
-    });
+    // --- PROCESO INTERNO EN BASE DE DATOS ---
+    const res = await toggleFavoritoAnime(titulo);
+
+    // --- ESTADO FINAL ---
+    actualizarEstadoFavorito();
+    console.log("✅ Favoritos actualizado con éxito:", res.mensaje);
+
+  } catch (err) {
+    console.error("❌ Error al cambiar favorito:", err);
+  } finally {
+    btnFav.disabled = false;
+  }
 });
 
 async function toggleFavoritoAnime(titulo) {
@@ -673,24 +689,22 @@ async function toggleFavoritoAnime(titulo) {
 
   const favoritosRef = doc(collection(doc(db, "usuarios", user), "favoritos"), "lista");
   const favoritosDoc = await getDoc(favoritosRef);
-  
+
   let favoritos = [];
   if (favoritosDoc.exists() && favoritosDoc.data().animes) {
     favoritos = [...favoritosDoc.data().animes];
   }
 
   const index = favoritos.indexOf(id);
-  
+
   if (index !== -1) {
+    // eliminar
     favoritos.splice(index, 1);
-    btnFav.classList.add('desaparecer');
-    setTimeout(() => btnFav.classList.remove('desaparecer'), 500);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
     return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
   } else {
+    // agregar
     favoritos.push(id);
-    btnFav.classList.add('aparecer');
-    setTimeout(() => btnFav.classList.remove('aparecer'), 500);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
     return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
   }
