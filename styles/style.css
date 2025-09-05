@@ -953,13 +953,6 @@ section.content-section h2:first-of-type::after {
 .anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 40px;height: 40px;}
 .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
 }
-.anime-card:active img, .anime-card.active img {transform: scale(1.15);}
-.anime-card:active #chapter, .anime-card:active .estado, .anime-card:active .rating {opacity: 0;}
-.anime-card:active #chapter, .anime-card:active .estado, .anime-card.active .estado {transform: translate(-25px, 25px) scale(1.8);}
-.anime-card:active .rating, .anime-card.active .rating {transform: translate(25px, -25px) scale(1.8);}
-.anime-card:active .cover, .anime-card.active .cover {filter: blur(10px);}
-.anime-card:active .play-icon, .anime-card.active .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 40px;height: 40px;}
-.anime-card:active .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
 
 .anime-card img,
 .anime-card strong {
