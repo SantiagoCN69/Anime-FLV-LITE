@@ -842,7 +842,6 @@ width: 100%;
 }
 
 .anime-details.sin-resultados {
-  background-color: #00c853;
   flex: 1;
   overflow: hidden;
   display: grid;
