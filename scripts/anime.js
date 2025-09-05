@@ -942,7 +942,6 @@ window.addEventListener('scroll', () => {
 
 //pildora visual check 
 function mostrarPildora(opcion, estado = true) {
-  console.log("Mostrando pildora para", opcion, "con estado", estado);
 
   const pill = document.createElement("div");
   pill.classList.add("pildora");
