@@ -837,7 +837,7 @@ width: 100%;
   align-content: center;
 
   grid-template-columns: 60% auto;
-  grid-template-rows: repeat(2, minmax(177px, 300px));
+  grid-template-rows: repeat(2, minmax(170px, 250px));
   grid-template-areas: 
     "container2 container1"
     "container3 container1";
