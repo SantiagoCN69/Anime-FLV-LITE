@@ -180,7 +180,7 @@ function cambiarPagina(page) {
 }
 
 async function cargarAnimesConCache() {
-    const cachedData = null;
+    const cachedData = localStorage.getItem(CACHE_KEY);
   
     const params = new URLSearchParams(window.location.search);
     if (params.has('genre[]')) {
@@ -236,9 +236,9 @@ async function cargarAnimesConCache() {
         .then(data => {
           const parsedCache = JSON.parse(cachedData);
           if (data.animes[0].title === parsedCache.data[0].title && data.animes[1].title === parsedCache.data[1].title) {
-            //console.log('iguales');
-            //console.log(data.animes[0].title);
-            //console.log(parsedCache.data[0].title);
+            console.log('iguales');
+            console.log(data.animes[0].title);
+            console.log(parsedCache.data[0].title);
             return;
           } else {
             console.log('distintos');
