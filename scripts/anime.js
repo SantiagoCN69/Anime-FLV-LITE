@@ -261,7 +261,6 @@ const createEpisodeButton = (ep, vistos = []) => {
 
   btn.addEventListener('click', async () => {
     if (btn.classList.contains("ep-no-visto")) {
-      mostrarPildora("capvisto", true);
       await manejarEstadoEpisodio(btn, icon, ep);
     }
     window.location.href = `ver.html?id=${id}&url=${ep.number}`;
@@ -358,8 +357,6 @@ filtroCapitulo.addEventListener('input', debounce(() => {
 async function manejarEstadoEpisodio(btn, icon, ep) {
   const user = localStorage.getItem("userID");
   if (!user) {
-    console.warn('manejarEstadoEpisodio: No hay usuario autenticado.');
-    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
     return;
   }
   const nuevo = !btn.classList.contains('ep-visto');
@@ -946,6 +943,7 @@ window.addEventListener('scroll', () => {
 
 //pildora visual check 
 function mostrarPildora(opcion, estado = true) {
+  console.log("pildora")
 
   const pill = document.createElement("div");
   pill.classList.add("pildora");

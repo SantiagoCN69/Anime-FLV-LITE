@@ -11,7 +11,7 @@ const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
 const btnAnterior = document.getElementById("btn-anterior-capitulo");
 
 let episodios = [];
-let episodioActualIndex = -1;
+let episodioActualIndex = episodioUrl;
 let embeds = [];
 let bloquearAnuncios = true;
 let censuraActiva = false;
@@ -68,18 +68,12 @@ async function refrescarUIEstadoCapitulo() {
   const docSnap = await getDoc(animeRef);
   const capitulosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
 
-  if (!episodios || episodios.length === 0 || episodioActualIndex < 0 || episodioActualIndex >= episodios.length) {
+  if (!episodios || episodios.length === 0 || episodioActualIndex < 0 ) {
     console.warn('refrescarUIEstadoCapitulo: Lista de episodios no disponible o índice inválido.');
     return;
   }
 
-  const episodioActual = episodios[episodioActualIndex];
-  if (!episodioActual) {
-    console.warn('refrescarUIEstadoCapitulo: Episodio no válido o no encontrado.');
-    return;
-  }
-
-  const episodioId = String(episodioActual.number || episodioActual.title);
+  const episodioId = String(episodioActualIndex);
   const estaVisto = capitulosVistos.includes(episodioId);
 
   if (!btnEstadoCapitulo || !textoEstado) {
@@ -94,7 +88,6 @@ async function toggleYGuardarEstadoCapitulo() {
   const user = localStorage.getItem("userID");
   if (!user) {
     console.warn('toggleYGuardarEstadoCapitulo: No hay usuario autenticado.');
-    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
     return;
   }
 
@@ -105,16 +98,14 @@ async function toggleYGuardarEstadoCapitulo() {
   const docSnap = await getDoc(animeRef);
   const capitulosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
 
-  if (!episodios || episodios.length === 0 || episodioActualIndex < 0 || episodioActualIndex >= episodios.length) {
+  if (!episodios || episodios.length === 0 || episodioActualIndex < 0) {
     console.warn('toggleYGuardarEstadoCapitulo: Lista de episodios no disponible o índice inválido.');
     return;
   }
-  const episodioActual = episodios[episodioActualIndex];
-  if (!episodioActual) {
-    console.warn('toggleYGuardarEstadoCapitulo: Episodio actual no encontrado.');
-    return;
-  }
-  const episodioId = String(episodioActual.number || episodioActual.title);
+  
+  console.log(episodioActualIndex);
+
+  const episodioId = String(episodioActualIndex);
   const titulo = tituloAnime.textContent; 
 
   const estaVistoActualmente = capitulosVistos.includes(episodioId);
@@ -155,6 +146,11 @@ document.addEventListener("authStateReady", async (event) => {
 // Evento para cambiar el estado del capítulo al hacer clic
 
 btnEstadoCapitulo.addEventListener("click", async () => {
+  const user = localStorage.getItem("userID");
+  if (!user) {
+    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
+    return
+  }
   try {
     await toggleYGuardarEstadoCapitulo();
   } catch (error) {
@@ -276,9 +272,7 @@ async function cargarEpisodios() {
     if (docSnap.exists()) {
       const data = docSnap.data();
       episodios = data.episodios || [];
-      console.log(episodios);
-      const episodioActualIndex = episodios.findIndex(ep => ep.number === parseInt(episodioUrl));
-      // Si encontramos el episodio en Firestore, cargamos el video
+      const episodioActualIndex = parseInt(episodioUrl);
       await cargarVideoDesdeEpisodio(episodioActualIndex);
       return episodios;
     } else {
@@ -294,7 +288,7 @@ async function cargarEpisodios() {
 
 async function cargarVideoDesdeEpisodio(index) {
   btnCap.textContent = `Episodio ${index}`;
-  const ep = episodios[index];
+  const ep = episodios.find(ep => ep.number === index);
   if (!ep) {
     btnCap.textContent = "Episodio desconocido";
     document.getElementById("controles").innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontro el episodio.</span>";
@@ -509,14 +503,17 @@ function actualizarEstadoBotones() {
   btnAnterior.disabled = episodioActualIndex <= 0;
   btnAnterior.classList.toggle('desactivado', episodioActualIndex <= 0);
 
-  btnSiguiente.disabled = episodioActualIndex >= episodios.length - 1;
-  btnSiguiente.classList.toggle('desactivado', episodioActualIndex >= episodios.length - 1);
+const ultimoEpisodio = episodios[episodios.length - 1];
+const esUltimoEpisodio = ultimoEpisodio ? episodioActualIndex >= ultimoEpisodio.number : true;
+btnSiguiente.disabled = esUltimoEpisodio;
+btnSiguiente.classList.toggle('desactivado', esUltimoEpisodio);
 }
 
 // Configurar navegación de botones
 btnSiguiente.addEventListener("click", async (e) => {
   e.preventDefault();
-  if (episodioActualIndex < episodios.length - 1) {
+  const ultimoEpisodio = episodios[episodios.length - 1];
+  if (ultimoEpisodio && episodioActualIndex < ultimoEpisodio.number) {
     const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
     if (marcarVistoBtn && !marcarVistoBtn.classList.contains('visto')) {
       await toggleYGuardarEstadoCapitulo();
@@ -529,7 +526,8 @@ btnSiguiente.addEventListener("click", async (e) => {
 
 btnAnterior.addEventListener("click", async (e) => {
   e.preventDefault();
-  if (episodioActualIndex > 0) {
+  const primerEpisodio = episodios[0];
+  if (primerEpisodio && episodioActualIndex > primerEpisodio.number) {
     const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
     if (marcarVistoBtn && marcarVistoBtn.classList.contains('visto')) {
       await toggleYGuardarEstadoCapitulo();
