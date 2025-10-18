@@ -276,7 +276,8 @@ async function cargarEpisodios() {
     if (docSnap.exists()) {
       const data = docSnap.data();
       episodios = data.episodios || [];
-      episodioActualIndex = episodios.findIndex(ep => ep.number === parseInt(episodioUrl));
+      console.log(episodios);
+      const episodioActualIndex = episodios.findIndex(ep => ep.number === parseInt(episodioUrl));
       // Si encontramos el episodio en Firestore, cargamos el video
       await cargarVideoDesdeEpisodio(episodioActualIndex);
       return episodios;
@@ -292,7 +293,7 @@ async function cargarEpisodios() {
 
 
 async function cargarVideoDesdeEpisodio(index) {
-  btnCap.textContent = `Episodio ${index + 1}`;
+  btnCap.textContent = `Episodio ${index}`;
   const ep = episodios[index];
   if (!ep) {
     btnCap.textContent = "Episodio desconocido";
