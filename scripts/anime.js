@@ -245,7 +245,11 @@ const createEpisodeButton = (ep, vistos = []) => {
   const btn = document.createElement('button');
   const visto = vistos.includes(ep.number.toString());
   btn.className = `episode-btn ${visto ? 'ep-visto' : 'ep-no-visto'}`;
-  btn.textContent = `Episodio ${ep.number || ep.title || 'desconocido'}`;
+  btn.textContent = `Episodio ${
+  ep.number !== undefined && ep.number !== null ? 
+  ep.number : 
+  (ep.title || 'desconocido')
+}`;
 
   const icon = document.createElement('img');
   icon.className = 'icon-eye';
