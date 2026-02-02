@@ -374,13 +374,25 @@ async function manejarEstadoEpisodio(btn, icon, ep) {
 async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
   const user = localStorage.getItem("userID");
   const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
-  const snap = await getDoc(ref);
-  let arr = snap.exists() ? snap.data().episodiosVistos || [] : [];
-  arr = esVisto ? Array.from(new Set([...arr, episodio.toString()])) : arr.filter(x => x !== episodio.toString());
-  await setDoc(ref, { titulo, fechaAgregado: serverTimestamp(), episodiosVistos: arr });
-  actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, arr);
+  const { episodiosVistos = [] } = (await getDoc(ref)).data() || {};
+  
+  const nuevosEpisodios = new Set(episodiosVistos.filter(ep => ep && ep !== "undefined"));
+  if (esVisto) {
+    nuevosEpisodios.add(episodio.toString());
+  } else {
+    nuevosEpisodios.delete(episodio.toString());
+  }
+
+  await setDoc(ref, { 
+    titulo, 
+    fechaAgregado: serverTimestamp(), 
+    episodiosVistos: [...nuevosEpisodios] 
+  });
+
+  actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, [...nuevosEpisodios]);
   mostrarPildora("capvisto", esVisto);
-}
+} 
+
 
 async function obtenerCapitulosVistos(animeId) {
   return new Promise((resolve, reject) => { 

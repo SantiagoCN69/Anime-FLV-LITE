@@ -325,7 +325,7 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     
     const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])].join(', ');
 
-    const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
+    const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista`;
     enviarPrompt(prompt, "favoritos");
 });
 
@@ -360,8 +360,8 @@ btnGenerarPersonalizadas.addEventListener("click", async () => {
     const nombresCache2 = animesCache2.map(a => a.title || a.id).join(', ');
 
     const prompt = `Dame 5 nombres de animes de acuerdo a la siguiente descripción: ${busquedaPersonalizada}
-    Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2}
-    Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos`;
+    Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2},
+    Contetame solo y unicamente solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista`;
 
     enviarPrompt(prompt, "personalizadas");
 });
@@ -385,7 +385,7 @@ async function enviarPrompt(prompt, seccion) {
         const respuesta = data.response || 'Error en la respuesta';
 
         window.ultimaRespuesta = respuesta;
-
+        console.log(respuesta)
         mostrarRelacionadosDesdeRespuesta(respuesta, seccion);
     } catch (error) {
         console.error('Error al enviar prompt:', error);

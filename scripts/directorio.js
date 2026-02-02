@@ -221,8 +221,8 @@ async function cargarAnimesConCache() {
 
     if (cachedData) {
       const { data, page, PaginasTotales } = JSON.parse(cachedData);
-      // Verificar si la caché corresponde a la página actual
       if (page === currentPage) {
+        resultadosContainer.innerHTML = '';
         data.forEach(anime => {
           const card = crearAnimeCardResultados(anime);
           resultadosContainer.appendChild(card);
