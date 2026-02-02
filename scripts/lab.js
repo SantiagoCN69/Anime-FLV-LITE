@@ -371,7 +371,7 @@ btnGenerarPersonalizadas.addEventListener("click", async () => {
 
     const prompt = `Dame 5 nombres de animes de acuerdo a la siguiente descripción: ${busquedaPersonalizada}
     Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2},
-    Contetame solo y unicamente solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista`;
+    Contetame solo y unicamente solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista y siempre separa por la coma `;
 
     enviarPrompt(prompt, "personalizadas");
 });
@@ -421,9 +421,14 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     const { contenedorId, sectionId, textoBtnId, guardarEnCache } = config[seccion] || {};
     if (!contenedorId) return;
 
-    const nombres = respuesta.split(',')
-        .map(t => t.trim().replace(/-/g, ' ').replace(/:/g, '').replace(/\s+/g, ' '))
-        .filter(Boolean);
+    const nombres = respuesta
+    .replace(/\n/g, ',') 
+    .split(',')          
+    .map(t => t.trim()   
+        .replace(/-/g, ' ')
+        .replace(/:/g, '')
+        .replace(/\s+/g, ' '))
+    .filter(Boolean);    
 
     const contenedor = document.getElementById(contenedorId);
     const section = document.getElementById(sectionId);
@@ -540,6 +545,7 @@ document.getElementById("busqueda-personalizada").value = textos[random];
 document.getElementById("text-random").addEventListener("click", () => {
     const random = Math.floor(Math.random() * textos.length);
     document.getElementById("busqueda-personalizada").value = textos[random];
+    document.getElementById("generar-personalizadas").click();
 });
 
 btnGenerarPersonalizadas.click()
