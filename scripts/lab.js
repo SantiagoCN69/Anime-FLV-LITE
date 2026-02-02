@@ -329,6 +329,16 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     enviarPrompt(prompt, "favoritos");
 });
 
+
+// Agregar evento para detectar Enter en el input de búsqueda personalizada
+const inputBusqueda = document.getElementById("busqueda-personalizada");
+inputBusqueda.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("generar-personalizadas").click();
+    }
+});
+
 //generar personalizadas
 const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas")
 btnGenerarPersonalizadas.addEventListener("click", async () => {
