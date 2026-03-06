@@ -390,6 +390,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   height: 100%;
 }
 #btn-populares-pc {
+  filter: drop-shadow(0 0 20px rgb(255, 91, 91));
   z-index: 10;
   position: fixed;
   bottom: 15px;
@@ -399,6 +400,11 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   background: transparent;
   cursor: pointer;
   border: none;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+#btn-populares-pc:hover {
+  filter: drop-shadow(0 0 30px rgb(255, 0, 0));
+  transform: scale(1.1);
 }
 @media (max-width: 600px) {
   #btn-populares-pc {
