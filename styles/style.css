@@ -519,6 +519,8 @@ header.search-active .logout-modal {
 
 #indexpagination {
   will-change: transform, opacity;
+  position: absolute;
+  z-index: 9;
   gap: 10px;
   padding-block: 1.5rem;
   padding-inline: .3rem;
@@ -527,7 +529,7 @@ header.search-active .logout-modal {
   overflow-x: auto;
   -ms-overflow-style: none; 
   scrollbar-width: none; 
-&::-webkit-scrollbar {
+  &::-webkit-scrollbar {
   display: none;
 }
 button {
@@ -664,6 +666,7 @@ main {
 
 /* Estructura principal */
 main {
+  padding-top: 90px;
   display: flex;
   color: var(--t1);
   margin-inline: auto;
