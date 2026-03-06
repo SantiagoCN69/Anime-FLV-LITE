@@ -890,6 +890,16 @@ mostrarSeccionDesdesearch = function() {
 
 const indexpagination = document.getElementById('indexpagination');
 
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'config') {
+    if (window.innerWidth <= 600) {
+      indexpagination.classList.toggle('fixed');
+    }
+  }
+});
+
+// Código antiguo comentado - IntersectionObserver para paginación fija
+/*
 if (window.innerWidth <= 600) {
   const trigger = document.createElement('div');
   document.body.prepend(trigger);
@@ -908,4 +918,5 @@ if (window.innerWidth <= 600) {
 
   observer.observe(trigger);
 }
+*/
 

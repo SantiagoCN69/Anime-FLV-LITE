@@ -81,7 +81,7 @@ function crearmodal(user = false) {
   modal.innerHTML = `
     <button id="export-data">Exportar datos</button>
     <button id="theme-toggle">Cambiar tema</button>
-    <button id="config">Configuración</button>
+    <button id="config">Navegación</button>
   `;
   if (user) {
     modal.innerHTML += `<button id='confirm-logout' class="modal-btn-b">Cerrar sesión</button>`;

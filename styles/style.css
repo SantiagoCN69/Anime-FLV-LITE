@@ -626,7 +626,10 @@ button {
   box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
 }
 #indexpagination.fixed + main {
-  padding-top: 90px;
+  padding-top: 20px;
+}
+main {
+  transition: padding-top .3s;
 }
 #indexpagination .menu-item.active-menu-item::after {
   content: "";
@@ -1066,6 +1069,7 @@ footer {
   text-align: center;
   font-size: .8rem;
   margin-top: auto;
+  min-height: 100px;
   height: fit-content;
   position: relative;
   overflow: hidden;
