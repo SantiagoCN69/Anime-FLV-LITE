@@ -525,7 +525,9 @@ header.search-active .logout-modal {
   padding-block: 1.5rem;
   padding-inline: .3rem;
   margin-inline: auto;
-  width: 95%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 98%;
   overflow-x: auto;
   -ms-overflow-style: none; 
   scrollbar-width: none; 
@@ -666,7 +668,6 @@ main {
 
 /* Estructura principal */
 main {
-  padding-top: 90px;
   display: flex;
   color: var(--t1);
   margin-inline: auto;
@@ -675,7 +676,11 @@ main {
   gap: 1rem;
   position: relative;
 }
-
+@media screen and (max-width: 600px) {
+  main {
+      padding-top: 90px;
+  }
+}
 
 /* Contenido principal */
 .content-section {
