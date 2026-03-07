@@ -891,12 +891,17 @@ mostrarSeccionDesdesearch = function() {
 const indexpagination = document.getElementById('indexpagination');
 
 document.addEventListener('click', (e) => {
-  if (e.target && e.target.id === 'config') {
+  if (e.target.closest('#config')) {
     if (window.innerWidth <= 600) {
       indexpagination.classList.toggle('fixed');
+      localStorage.setItem(
+        'indexpaginationFixed',
+        indexpagination.classList.contains('fixed')
+      );
     }
   }
 });
+
 
 // Código antiguo comentado - IntersectionObserver para paginación fija
 /*
