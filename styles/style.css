@@ -629,7 +629,7 @@ button {
   background-color: rgba(var(--bgti), .2);
   box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
 }
-#indexpagination.fixed + main {
+#indexpagination.fixed ~ main {
   padding-top: 20px;
 }
 main {
@@ -677,7 +677,7 @@ main {
   position: relative;
 }
 @media screen and (max-width: 600px) {
-  #indexpagination + main {
+  #indexpagination ~ main {
     padding-top: 90px;
   }
 }
