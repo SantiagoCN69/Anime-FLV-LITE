@@ -1077,10 +1077,14 @@ footer {
   text-align: center;
   font-size: .8rem;
   margin-top: auto;
-  min-height: 100px;
   height: fit-content;
   position: relative;
   overflow: hidden;
+}
+@media screen and (max-width: 600px) {
+  footer {
+    min-height: 100px;
+  }
 }
 footer p {
   margin: auto;
