@@ -1084,6 +1084,7 @@ footer {
 @media screen and (max-width: 600px) {
   footer {
     min-height: 100px;
+    display: flex;
   }
 }
 footer p {
