@@ -994,7 +994,7 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
       pill.textContent = estado ? "Acción realizada" : "Acción revertida";
   }
   if (!estado) {
-    pill.style.filter = "brightness(.8)";
+    pill.style.filter = "grayscale(1) brightness(0.7)";
   }
   document.body.appendChild(pill);
 
