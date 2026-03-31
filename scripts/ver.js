@@ -121,6 +121,7 @@ async function toggleYGuardarEstadoCapitulo() {
       fechaAgregado: serverTimestamp(),
       episodiosVistos: Array.from(episodiosActuales)
     });
+    mostrarPildora(nuevoEstadoVisto, episodioActualIndex);
   } catch (error) {
     console.error("Error al guardar estado del capítulo en Firestore:", error);
   }
@@ -542,4 +543,37 @@ btnAnterior.addEventListener("click", async (e) => {
 
 cargarEpisodios().then(actualizarEstadoBotones);
 
+function mostrarPildora(estado = true, cap = null) {
+  // Eliminar píldora anterior si existe
+  const pillAnterior = document.querySelector('.pildora');
+  if (pillAnterior) {
+    pillAnterior.remove();
+  }
+  
+  if (cap) {
+    cap = ` ${cap}`;
+  }
+  const pill = document.createElement("div");
+  pill.classList.add("pildora");
+  
+  if (!estado) {
+    pill.classList.add("pildora-eliminado");
+  } else {
+    pill.classList.add("pildora-visto");
+  }
+
+  const accion = estado ? `Capítulo ${cap} marcado como visto` : `Capítulo ${cap} eliminado de vistos`;
+  pill.textContent = accion;
+
+  document.body.appendChild(pill);
+
+  requestAnimationFrame(() => {
+    pill.classList.add("mostrar");
+  });
+
+  setTimeout(() => {
+    pill.classList.remove("mostrar");
+    pill.addEventListener('transitionend', () => pill.remove());
+  }, 3000);
+}
 
