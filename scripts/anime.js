@@ -390,7 +390,7 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
   });
 
   actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, [...nuevosEpisodios]);
-  mostrarPildora("capvisto", esVisto);
+  mostrarPildora("capvisto", esVisto, null, episodio);
 } 
 
 
@@ -716,13 +716,13 @@ async function toggleFavoritoAnime(titulo) {
     // eliminar
     favoritos.splice(index, 1);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
-    mostrarPildora("fav", false);  
+    mostrarPildora("fav", false, titulo);  
     return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
   } else {
     // agregar
     favoritos.push(id);
     await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
-    mostrarPildora("fav", true);  
+    mostrarPildora("fav", true, titulo);  
     return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
   }
 }
@@ -803,7 +803,7 @@ async function actualizarEstadoFirebase(estado) {
     animes.push(id);
     await setDoc(estadoRef, { animes }, { merge: true });
     console.log(estadoLower);
-    mostrarPildora(estadoLower, true);  
+    mostrarPildora(estadoLower, true, document.getElementById('titulo')?.textContent || '');  
   }
 }
 
@@ -858,7 +858,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
           if (animesActualizados.length !== estadoDoc.data().animes.length) {
             await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
             console.log(estadoId);
-            mostrarPildora(estadoId, false);  
+            mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');  
           }
         }
       } catch (error) {
@@ -954,34 +954,40 @@ window.addEventListener('scroll', () => {
 });
 
 //pildora visual check 
-function mostrarPildora(opcion, estado = true) {
+function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
+
+  const pillAnterior = document.querySelector('.pildora');
+  if (pillAnterior) {
+    pillAnterior.remove();
+  }
+  
   console.log("pildora")
 
   const pill = document.createElement("div");
   pill.classList.add("pildora");
 
-  const accion = estado ? "Agregado exitosamente a" : "Eliminado exitosamente de";
+  const accion = estado ? "Agregado a" : "Eliminado de";
 
   switch (opcion) {
     case "fav":
       pill.classList.add("pildora-fav");
-      pill.textContent = `${accion} favoritos`;
+      pill.textContent = `${anime} ${accion} favoritos`;
       break;
     case "pendiente":
       pill.classList.add("pildora-pendiente");
-      pill.textContent = `${accion} pendientes`;
+      pill.textContent = `${anime} ${accion} pendientes`;
       break;
     case "visto":
       pill.classList.add("pildora-visto");
-      pill.textContent = `${accion} vistos`;
+      pill.textContent = `${anime} ${accion} vistos`;
       break;
     case "viendo":
       pill.classList.add("pildora-viendo");
-      pill.textContent = `${accion} viendo`;
+      pill.textContent = `${anime} ${accion} viendo`;
       break;
       case "capvisto":
         pill.classList.add("pildora-visto");
-        pill.textContent = `${accion} capitulos vistos`;
+        pill.textContent = `Capítulo ${cap} ${accion} vistos`;
         break;
     default:
       pill.classList.add("pildora-default");
