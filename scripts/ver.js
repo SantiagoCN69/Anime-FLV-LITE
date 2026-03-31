@@ -95,7 +95,8 @@ async function toggleYGuardarEstadoCapitulo() {
   textoEstado.textContent = btnEstadoCapitulo.classList.contains("visto") ? "Visto" : "No visto";
 
   const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
-  const docSnap = await getDaacSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
+  const docSnap = await getDoc(animeRef);
+  const episodiosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
 
   if (!episodios || episodios.length === 0 || episodioActualIndex < 0) {
     console.warn('toggleYGuardarEstadoCapitulo: Lista de episodios no disponible o índice inválido.');
@@ -107,10 +108,10 @@ async function toggleYGuardarEstadoCapitulo() {
   const episodioId = String(episodioActualIndex);
   const titulo = tituloAnime.textContent; 
 
-  const estaVistoActualmente = capitulosVistos.includes(episodioId);
+  const estaVistoActualmente = episodiosVistos.includes(episodioId);
   const nuevoEstadoVisto = !estaVistoActualmente; 
 
-  const episodiosActuales = new Set(capitulosVistos);
+  const episodiosActuales = new Set(episodiosVistos);
   if (nuevoEstadoVisto) {
     episodiosActuales.add(episodioId);
   } else {
