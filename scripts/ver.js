@@ -91,9 +91,6 @@ async function toggleYGuardarEstadoCapitulo() {
     return;
   }
 
-  btnEstadoCapitulo.classList.toggle("visto");
-  textoEstado.textContent = btnEstadoCapitulo.classList.contains("visto") ? "Visto" : "No visto";
-
   const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
   const docSnap = await getDoc(animeRef);
   const episodiosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
@@ -152,6 +149,10 @@ btnEstadoCapitulo.addEventListener("click", async () => {
     return
   }
   try {
+    
+  btnEstadoCapitulo.classList.toggle("visto");
+  textoEstado.textContent = btnEstadoCapitulo.classList.contains("visto") ? "Visto" : "No visto";
+
     await toggleYGuardarEstadoCapitulo();
   } catch (error) {
     console.error("Error al cambiar y guardar estado del capítulo", error);
