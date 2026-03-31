@@ -544,7 +544,6 @@ btnAnterior.addEventListener("click", async (e) => {
 cargarEpisodios().then(actualizarEstadoBotones);
 
 function mostrarPildora(estado = true, cap = null) {
-  // Eliminar píldora anterior si existe
   const pillAnterior = document.querySelector('.pildora');
   if (pillAnterior) {
     pillAnterior.remove();
