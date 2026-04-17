@@ -980,6 +980,10 @@ section.content-section h2:first-of-type::after {
   z-index: 20;
   transition: transform .3s, inset .3s, width .3s, height .3s;
 }
+.anime-card .play-icon:hover {
+  width: 60px;
+  height: 60px;
+}
 .anime-card strong {
   color: var(--t1);
   overflow: hidden;

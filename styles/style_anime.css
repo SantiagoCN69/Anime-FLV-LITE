@@ -258,12 +258,13 @@ transform: translateY(-20%);
 #btn-progreso {
   grid-area: progreso;
   background: rgba(var(--bgt), .3);
-
+  
   position: relative;
   --progreso-text: "0%";
   --progreso: 0;
-  }
+}
 #progreso {
+  max-width: 100%;
   position: absolute;
   inset: 0;
   transition: width .5s;
