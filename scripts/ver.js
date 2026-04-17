@@ -502,13 +502,15 @@ function mostrarVideo(link, botonSeleccionado) {
   }
 }
 function actualizarEstadoBotones() {
-  btnAnterior.disabled = episodioActualIndex <= 0;
-  btnAnterior.classList.toggle('desactivado', episodioActualIndex <= 0);
+  const primerEpisodio = episodios[0];
+  const esPrimerEpisodio = primerEpisodio ? episodioActualIndex <= primerEpisodio.number : true;
+  btnAnterior.disabled = esPrimerEpisodio;
+  btnAnterior.classList.toggle('desactivado', esPrimerEpisodio);
 
-const ultimoEpisodio = episodios[episodios.length - 1];
-const esUltimoEpisodio = ultimoEpisodio ? episodioActualIndex >= ultimoEpisodio.number : true;
-btnSiguiente.disabled = esUltimoEpisodio;
-btnSiguiente.classList.toggle('desactivado', esUltimoEpisodio);
+  const ultimoEpisodio = episodios[episodios.length - 1];
+  const esUltimoEpisodio = ultimoEpisodio ? episodioActualIndex >= ultimoEpisodio.number : true;
+  btnSiguiente.disabled = esUltimoEpisodio;
+  btnSiguiente.classList.toggle('desactivado', esUltimoEpisodio);
 }
 
 // Configurar navegación de botones
