@@ -408,13 +408,17 @@ async function cargarVideoDesdeEpisodio(index) {
   }
 
   // Pre-cargar siguiente episodio (si existe)
-  const siguiente = episodios[index + 1];
+  const siguiente = episodios.find(e => e.number === index + 1);
+
   if (siguiente && (!siguiente.servidores || !siguiente.servidores.length)) {
     try {
-      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${siguiente.url}`);
+      // Usamos el ID del anime y el número del siguiente episodio para construir la URL
+      const urlEpisodio = `https://www3.animeflv.net/ver/${animeId}-${index + 1}`;
+      
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${urlEpisodio}`);
       const data = await res.json();
 
-      if (data.servidores?.length) {
+      if (data.servidores && data.servidores.length > 0) {
         siguiente.servidores = data.servidores.map((srv, i) => ({
           nombre: `Servidor ${i + 1}`,
           url: srv
@@ -422,10 +426,10 @@ async function cargarVideoDesdeEpisodio(index) {
 
         const ref = doc(db, 'datos-animes', animeId);
         const snap = await getDoc(ref);
-        const datos = snap.data() || {};
-        if (!datos.episodios) datos.episodios = [];
-
-        const idx = datos.episodios.findIndex(e => e.url === siguiente.url);
+        const datos = snap.data() || { episodios: [] };
+        
+        // Buscamos si el episodio ya existe en el array de la DB para actualizarlo
+        const idx = datos.episodios.findIndex(e => e.number === siguiente.number);
         if (idx !== -1) {
           datos.episodios[idx].servidores = siguiente.servidores;
         } else {
