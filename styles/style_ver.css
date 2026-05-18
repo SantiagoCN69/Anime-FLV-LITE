@@ -270,6 +270,9 @@ iframe {
 .reproductor-container.censure #fullscreen {
   opacity: 1;
 }
+.reproductor-container a {
+  pointer-events: none;
+}
 #fullscreen {
   opacity: 0;
   position: absolute;
