@@ -11,6 +11,12 @@ function mostrarMensajeError(container, mensaje) {
   container.innerHTML = `<span class="no-results">${mensaje}</span>`;
 }
 
+function setDisplay(element, value) {
+  if (element) {
+    element.style.display = value;
+  }
+}
+
 function limpiarVistaAnimePage() {
   setDisplay(animeDetails, 'grid');
   if (mainContainer) {
@@ -18,10 +24,10 @@ function limpiarVistaAnimePage() {
     mainContainer.style.display = 'none';
     mainContainer.classList.remove('sin-resultados');
   }
-  if (disqusThread) disqusThread.style.display = 'block';
-  if (relacionados) relacionados.style.display = 'flex';
-  if (verAnime) verAnime.style.display = 'flex';
-  if (mainLab) mainLab.style.display = 'flex';
+  setDisplay(disqusThread, 'block');
+  setDisplay(relacionados, 'flex');
+  setDisplay(verAnime, 'flex');
+  setDisplay(mainLab, 'flex');
 }
 
 function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, resultadosContainer) {
@@ -186,17 +192,12 @@ function mostrarResultados(data, searchTerm) {
   mainContainer.innerHTML = '';
   mainContainer.style.display = 'grid';
 
-  function setDisplay(element, value) {
-    if (element) {
-      element.style.display = value;
-    }
-  }
   if (isAnimePage || isVerPage || isDirectorioPage || isLabPage) {
     setDisplay(animeDetails, 'none');
     setDisplay(disqusThread, 'none');
     setDisplay(relacionados, 'none');
     setDisplay(mainLab, 'none');
-    if (verAnime) verAnime.style.display = 'none';
+    setDisplay(verAnime, 'none');
 
     if (resultados.length === 0) {
       renderSinResultados(mainContainer, searchTerm);
