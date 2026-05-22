@@ -984,7 +984,8 @@ section.content-section h2:first-of-type::after {
 .anime-card:hover #chapter, .anime-card:hover .estado {transform: translate(-25px, 25px) scale(1.8);}
 .anime-card:hover .rating {transform: translate(25px, -25px) scale(1.8);}
 .anime-card:hover .cover {filter: blur(3px);}
-.anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px;}
+.anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px;
+  border: 1px solid #fff2;}
 .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
 .anime-card:hover {
   transform: translate(0, -6px);
@@ -1002,8 +1003,11 @@ section.content-section h2:first-of-type::after {
   width: 20px;
   height: 20px;
   background: transparent;
+  border-color: transparent;
+  backdrop-filter: blur(5px);
+  border-radius: 50%;
   z-index: 20;
-  transition: transform .3s, inset .3s, width .3s, height .3s;
+  transition: transform .3s, inset .3s, width .3s, height .3s, border .3s;
 }
 
 .anime-card strong {
