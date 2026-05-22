@@ -218,7 +218,8 @@ const renderAnime = anime => {
   tituloEl.textContent = anime.titulo;
   document.getElementById("portadacarga").classList.add("cargado");
   portadaEl.src = anime.portada;
-  document.body.style.backgroundImage = `url(${anime.portada})`;
+  const fondo = anime.banner || anime.portada;
+  document.body.style.backgroundImage = fondo ? `url(${fondo})` : '';
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);
   ratingEl.textContent = anime.rating + "/5";
@@ -229,7 +230,10 @@ const renderAnime = anime => {
 actualizarEstadoFavorito()
 const getAnchoColumna = () => {
   const li = capContenedor.querySelector('li');
-  return li ? li.getBoundingClientRect().width : 0;
+  if (!li) return 0;
+  const anchoLi = li.getBoundingClientRect().width;
+  const gap = 16; // 1rem = 16px
+  return anchoLi + gap;
 };
 
 const debounce = (fn, delay = 200) => {
@@ -327,13 +331,23 @@ async function crearBotonesEpisodios(anime) {
 
 capContenedor.addEventListener('wheel', e => {
   e.preventDefault();
+
   const ancho = getAnchoColumna();
   if (!ancho) return;
+
   const dir = e.deltaY > 0 ? 1 : -1;
   const curr = capContenedor.scrollLeft;
+
   const col = Math.round(curr / ancho);
   const target = (col + dir) * ancho;
-  capContenedor.scrollTo({ left: Math.max(0, Math.min(target, capContenedor.scrollWidth - ancho)), behavior: 'smooth' });
+
+  const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
+
+  capContenedor.scrollTo({
+    left: Math.max(0, Math.min(target, maxScroll)),
+    behavior: 'smooth'
+  });
+
 }, { passive: false });
 
 let scrollTimeout;
@@ -454,6 +468,7 @@ function compararDatos(a, b) {
   const camposBasicos = [
     ['titulo', strEqual],
     ['portada', strEqual],
+    ['banner', strEqual],
     ['descripcion', strEqual],
     ['rating', strEqual],
     ['estado', strEqual]
@@ -533,9 +548,11 @@ async function cargarAnime(idauxiliar) {
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
+    console.log(data);
     const anime = {
       titulo: data.title || '',
       portada: data.cover || '',
+      banner: data.banner || '',
       descripcion: data.synopsis || '',
       generos: data.genres || [],
       rating: data.rating || null,
@@ -631,19 +648,7 @@ document.getElementById('btn-close-search-capitulo').addEventListener('click', f
   document.getElementById('filtro-capitulo').value = "";
 });
 
-// Altura del container 1
-document.addEventListener('DOMContentLoaded', () => {
-  function setContainerHeight() {
-    const container1 = document.querySelector('.anime-container1');
-    if (container1) {
-      const height = container1.offsetHeight;
-      document.documentElement.style.setProperty('--altura-container-1', `${height}px`);
-    }
-  }
 
-  setContainerHeight();
-  window.addEventListener('resize', setContainerHeight);
-});
 
 const btnFav = document.getElementById('btn-fav');
 
@@ -652,7 +657,6 @@ function actualizarEstadoFavorito() {
     .then(favoritos => {
       const esFavorito = favoritos.includes(id);
       btnFav.classList.toggle("favorito", esFavorito);
-      btnFav.textContent = esFavorito ? "FAVORITO" : "FAV";
     })
     .catch(error => {
       console.error("Error al obtener favoritos:", error);
@@ -760,7 +764,6 @@ async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
 const btnViendo = document.getElementById('btn-viendo');
 const btnPendiente = document.getElementById('btn-pendiente');
 const btnVisto = document.getElementById('btn-visto');
-const seccionEstados = document.getElementById('Estados');
 const estadoText = document.getElementById('estado-text');
 
 const ESTADOS = {
@@ -830,7 +833,6 @@ async function limpiarEstadosPrevios() {
 }
 
 async function manejarEstadoSeleccionado(btnSeleccionado) {
-  const btnEstado = document.getElementById('btn-estado');
   const estadoId = btnSeleccionado.id.replace('btn-', '');
   const estado = ESTADOS[estadoId];
   const user = localStorage.getItem("userID");
@@ -843,11 +845,8 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
 
   if (btnSeleccionado.classList.contains('active')) {
     btnSeleccionado.classList.remove('active');
-    seccionEstados.classList.remove('active');
     
     if (estado) {
-      btnEstado.style.backgroundColor = '#6c757d';
-      estadoText.innerHTML = 'ESTADO';
       
       try {
         const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoId);
@@ -870,12 +869,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
 
   [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
   btnSeleccionado.classList.add('active');
-  seccionEstados.classList.remove('active');
 
-  if (estado) {
-    btnEstado.style.backgroundColor = estado.color;
-    estadoText.innerHTML = `${estado.texto}`;
-  }
 
   await actualizarEstadoFirebase(estadoId.toUpperCase());
 }
@@ -909,9 +903,7 @@ btnViendo.addEventListener('click', () => manejarEstadoSeleccionado(btnViendo));
 btnPendiente.addEventListener('click', () => manejarEstadoSeleccionado(btnPendiente));
 btnVisto.addEventListener('click', () => manejarEstadoSeleccionado(btnVisto));
 
-document.getElementById("btn-estado").addEventListener("click", () => {
-  seccionEstados.classList.toggle("active");
-});
+
 document.addEventListener("click", (e) => {
   const seccion = document.getElementById("Estados");
   if (!seccion) return;
@@ -1007,3 +999,6 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
     setTimeout(() => pill.remove(), 400); 
   }, 3000);
 }
+document.getElementById("btn-volver").addEventListener("click", () => {
+  history.back();
+});
