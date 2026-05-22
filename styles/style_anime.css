@@ -1,39 +1,55 @@
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 101vh;
-    background-image: inherit;
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    filter: blur(10px) brightness(0.8);
-    opacity: calc(-0.3 * var(--f) + 1.3);
-    transform: scale(1.1);
-    z-index: -2;
-  }
-
 body {
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-blend-mode: overlay;
-    position: relative;
-  }
+  overflow-x: hidden !important;
+  overflow-y: auto;
+}
 
-body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 101vh;
-    background: linear-gradient(to bottom, transparent 0%, var(--b) 80%);
-    pointer-events: none;
-    z-index: -2;
+body::before {
+  content: '';
+  position: fixed;
+  top: -2.5vh;
+  left: -2.5vw;
+  width: 105vw;
+  height: 105vh;
+
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  opacity: calc(-0.3 * var(--f) + 1.3);
+  z-index: -2;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  animation: zoom 1s ease-in-out forwards;
+}
+@keyframes zoom {
+  0% {
+    transform: scale(1);
+    filter: blur(1px) brightness(0.8);
   }
+  100% {
+    transform: scale(1.06);
+    filter: blur(6px) brightness(0.6);
+  }
+}
+body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  min-width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--b) 100vh,
+    var(--b) 100%
+  );
+
+  z-index: -1;
+  pointer-events: none;
+}
 header {
   padding-left: calc(2rem - 10px);
   justify-content: space-between;
