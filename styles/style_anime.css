@@ -100,11 +100,11 @@ header div {
     padding-inline: 1rem;
     position: fixed;
     top: 0;
-    z-index: 10;
+    z-index: 10 !important;
   }
   .search-active {
     top: 0;
-   z-index: 10;
+   z-index: 9;
   }
   .search-active .search {
     opacity: 1;
