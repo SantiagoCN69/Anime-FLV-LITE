@@ -38,7 +38,91 @@ header {
   background: transparent;
   border-color: transparent;
 }
+  
+  
+/* Al hacer clic en el search */
+header.search-active .title,
+header.search-active #btn-directorio,
+header.search-active #btn-search,
+header.search-active #btn-login,
+header.search-active #menu-toggle {
+  transform: translateY(-100px);
+}
 
+.search {
+  left: 0;
+  position: absolute !important;
+  width: calc(100% - 2rem);
+  margin: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:10px;
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+header.search-active .search {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+header.search-active .logout-modal {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Botón de cerrar búsqueda */
+#btn-close-search {
+  background: none;
+  border: none;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+#btn-close-search::after {
+  content: "";
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--t2); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/xmark-solid.svg') no-repeat center;
+}
+}
+#btn-volver {
+  z-index: 1;
+  position: absolute;
+  cursor: pointer;
+  top: calc(88px + 2rem);
+  font-weight: 600;
+  left: 2rem;
+  background: #000a;
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: none;
+  padding: 0.6rem 1rem;
+  color: var(--t1);
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
 .anime-details {
   padding-top: 225px;
   padding-inline: 4rem;
