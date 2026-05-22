@@ -35,8 +35,91 @@ body::after {
     z-index: -2;
   }
 header {
-  background: transparent;
-  border-color: transparent;
+  padding-left: calc(2rem - 10px);
+  justify-content: space-between;
+}
+
+.title {
+  margin-right: calc(3rem - 7px);
+}
+.sidebar {
+  top: 88px;
+  padding-top: 1rem;
+  height: calc(100vh - 88px);
+}
+
+header div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.search, #busqueda {
+  flex: 1;
+  display: flex;
+}
+
+.search {
+  position: relative;
+}
+.search::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  left: 12px;
+  top:50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none;
+  background-color: var(--t2);
+  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
+  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
+}
+
+
+@media (max-width: 717px) {
+  .title {
+  margin-right: 0rem;
+}
+  header {
+    padding-inline: 1rem;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+  }
+  .search-active {
+    top: 0;
+   z-index: 10;
+  }
+  .search-active .search {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  #btn-search, #btn-close-search {
+    display: block;
+    
+  }
+
+#btn-search {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#btn-search::before {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color: var(--t2); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
 }
   
   
