@@ -100,28 +100,40 @@
         </h1>
         <script>
           document.getElementById('titulo').style.setProperty('view-transition-name', "title" + urlPart);
-        </script>
-        <div class="info11">
-        <p id="status" class="anime-status">
-          <span id="statuscargando"></span>
-        </p>
-        <p id="rating" class="anime-rating">
-          <span id="ratingcargando"></span>
-          <script>
-            document.getElementById('rating').style.setProperty('view-transition-name', "rating" + urlPart);
           </script>
-        </p>
-        </div>
-      </div>
-      <div class="genero">
-        <a href="" style="width: 100px;" class="genre-link genre-link-cargando"></a>
-        <a href="" style="width: 60px;" class="genre-link genre-link-cargando"></a>
-        <a href="" style="width: 120px;" class="genre-link genre-link-cargando"></a>
-      </div>
-      <p id="descripcion" class="anime-description"></p>
-    </section>
+    <div class="info11">
+      <p id="status" class="anime-status">
+        <span id="statuscargando"></span>
+      </p>
+  </div>
+    </div>
+    <div class="genero">
+      <a href="" style="width: 100px;" class="genre-link genre-link-cargando"></a>
+      <a href="" style="width: 60px;" class="genre-link genre-link-cargando"></a>
+      <a href="" style="width: 120px;" class="genre-link genre-link-cargando"></a>
+    </div>
+    <div class="botones">
+      <button type="button" id="btn-progreso" title="Progreso de capítulos vistos"><span id="progreso-text"></span>
+        <div id="progreso"></div>
+      </button>
+      <button type="button" title="Favorito" id="btn-fav"> <svg class="svgheadersection" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 21 21"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M10.5 6.5c.5-2.5 4.343-2.657 6-1c1.603 1.603 1.5 4.334 0 6l-6 6l-6-6a4.243 4.243 0 0 1 0-6c1.55-1.55 5.5-1.5 6 1z"/></svg></button>
 
-    <section class="anime-container3">
+  
+      <button type="button" title="Viendo" id="btn-viendo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+      </button>
+      <button type="button" title="Pendiente" id="btn-pendiente">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 7V12L14.5 10.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+      </button>
+      <button type="button" id="btn-visto">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="12" cy="12" r="10" stroke="#ffffff" stroke-width="1.608"></circle> <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="#ffffff" stroke-width="1.608" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+      </button>
+    </div>
+    <span> Sinopsis</span>
+    <p id="descripcion" class="anime-description"></p>
+  </section>
+  
+  <section class="anime-container3">
         <div class="header-caps">
           <span id="titulo-lista-caps"> Lista de episodios</span>
           <button type="button" id="btn-search-capitulo" title="Buscar capítulo"></button>
