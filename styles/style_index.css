@@ -289,9 +289,7 @@ h3 {
 .grid-animes.lab .container-img{
   aspect-ratio: 1/2;
 }
-.grid-animes.lab .carga .container-img{
-  border: 1px solid var(--br);
-}
+
 .acciones-fav {
   margin-block: 1.5rem;
 }
