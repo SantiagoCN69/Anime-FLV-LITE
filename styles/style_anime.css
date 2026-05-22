@@ -74,35 +74,39 @@ header {
 }
   
 .botones {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
-  grid-template-areas: 
-    "fav fav"
-    "estado progreso";
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 10px;
   width: 100%;
 }
   
 .botones button {
   cursor: pointer;
-  padding: 10px;
-  border-radius: 5px;
+  padding: 15px;
+  border-radius: 12px;
   border: none;
   color: var(--t1);
-  transition: background 0.3s ease;
-  max-height: 35px;
-  }
-
-#btn-fav {
-  grid-area: fav;
-  background: #5a131aad;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  height: 40px !important;
+  background: var(--p);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+  }
+.botones button:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+#btn-fav {
+  grid-area: fav;
+  background: #5a131aad;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   overflow: hidden;
   &:hover {
@@ -113,152 +117,38 @@ header {
 
 #btn-fav.favorito {
   background: #fb3447; 
-}#btn-fav::before {
-  content: url('../icons/star-solid.svg');
-  width: 0;
-  height: 15px;
-  display: inline-block;
-  transform: scale(0);
-  opacity: 0;
-  transition: transform 0.4s ease, opacity 0.4s ease, width 0.4s ease;
-}
-
-/* cuando está en favoritos */
-#btn-fav.favorito::before {
-  transform: scale(1);
-  opacity: 1;
-  width: 16px;
-}
-
-#btn-fav.favorito:hover::before {
-  filter: brightness(.8);
-}
-#section-estados {
-  grid-area: estado;
-  position: relative;
-}
-#btn-estado {
-  width: 100%;
-  background: rgba(var(--bgt), .3);
-  color: var(--t1);
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 14px;
-  cursor: pointer;
-  position: relative;
-  z-index: 8;
-}
-
-#btn-estado span {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  max-width: 120px;
-  justify-content: center;
-}
-
-#btn-estado img {
-  width: 17px;
-  height: 17px;
-  filter: invert(100%);
-}
-#Estados {
-position: absolute;
-top: 100%;
-left: 0;
-border-radius: 5px;
-display: flex; 
-gap: 5px;
-padding-top: 15px;
-z-index: 8;
-opacity: 0;
-pointer-events: none;
-transition: transform .3s, opacity .3s;
-transform: translateY(-10px);
-}
-button:hover {
-  opacity: 1;
-}
-@media (hover: hover) {
-  #Estados:hover, #btn-estado:hover + #Estados {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-}
-
-#Estados.active {
-opacity: 1;
-pointer-events: auto;
-transform: translateY(0);
-}
-#Estados button{
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  transition: background 0.3s ease;
-  background-color: var(--p);
-  box-shadow: 3px 3px 20px rgb(var(--bgt),.2);
-}
-
-#Estados button.active {
-  color: var(--t1);
-  border-radius: 5px;
-}
-
-#Estados button:hover::after {
-transform: translateY(-20%);
-}
-  /* Estados del botón */
-#btn-estado.estado-default {
-  background: rgba(var(--bgt), .3);
-}
-
-#Estados button::after {
-  content: "";
-  width: 20px;
-  height: 20px;
-  background-color: var(--t1);
-  pointer-events: none;
-  transition: transform .2s;
 }
 
 #btn-viendo.active {
   background: #22cee9;
 }
-
-#btn-viendo::after {
-  -webkit-mask: url('../icons/eye-solid.svg') no-repeat center;
-  mask: url('../icons/eye-solid.svg') no-repeat center;
-}
-
 #btn-pendiente.active {
   background: #ffc107;
-}
-
-#btn-pendiente::after {
-  background-color: var(--t1);
-  -webkit-mask: url('../icons/clock-solid.svg') no-repeat center;
-  mask: url('../icons/clock-solid.svg') no-repeat center;
 }
 
 #btn-visto.active {
   background: #00c853;
 }
+#btn-viendo:hover {
+  background-color: rgba(34, 206, 233, 0.25);
+}
 
-#btn-visto::after {
-  background-color: var(--t1);
-  -webkit-mask: url('../icons/circle-check-solid.svg') no-repeat center;
-  mask: url('../icons/circle-check-solid.svg') no-repeat center;
+#btn-pendiente:hover {
+  background-color: rgba(255, 193, 7, 0.25);
+}
+
+
+#btn-visto:hover {
+  background-color: rgba(0, 200, 83, 0.25);
 }
 
 #btn-progreso {
   grid-area: progreso;
   background: rgba(var(--bgt), .3);
-  
+  height: 35px;
+  width: 30%;
+  border-radius: 12px;
+  overflow: hidden;
   position: relative;
   --progreso-text: "0%";
   --progreso: 0;

@@ -84,27 +84,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         const urlPart = urlParams.get('id');
         document.getElementById('portada').style.setProperty('view-transition-name', urlPart);
-      </script>
-      <div class="botones">
-        <button type="button" id="btn-fav">FAV</button>
-        <div id="section-estados">
-          <button type="button" id="btn-estado"><span id="estado-text">ESTADO</span></button>
-          <section id="Estados">
-            <button type="button" id="btn-viendo">
-              VIENDO
-          </button>
-          <button type="button" id="btn-pendiente">
-            PENDIENTE
-          </button>
-          <button type="button" id="btn-visto">
-            VISTO
-          </button>
-        </section>
-        </div>
-        <button type="button" id="btn-progreso" title="Progreso de capítulos vistos"><span id="progreso-text"></span>
-          <div id="progreso"></div>
-        </button>
-      </div>
+        </script>
+    <p id="rating" class="anime-rating">
+      <span id="ratingcargando"></span>
+      <script>
+        document.getElementById('rating').style.setProperty('view-transition-name', "rating" + urlPart);
+        </script>
+    </p>
     </section>
 
     <section class="anime-container2">
