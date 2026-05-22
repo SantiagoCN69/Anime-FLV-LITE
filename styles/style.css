@@ -427,7 +427,7 @@ header #busqueda{
 #indexpagination {display: none;}
 
 @media screen and (max-width: 600px) {
-  .content-section {margin: 0 1rem !important; width: calc(100% - 2rem) !important;}
+  .content-section {margin: 0 1rem 2rem 1rem !important; width: calc(100% - 2rem) !important;}
   #indexpagination {display: flex;}
   .indexbtnmovil {display: none !important;}
   #btn-lab {display: none;}
