@@ -401,6 +401,16 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   width: 100%;
   height: 100%;
 }
+@keyframes outright {
+  0% {
+    transform: scale(.7) translate(2rem, 2rem);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 1;
+  }
+}
 #btn-populares-pc {
   filter: drop-shadow(0 0 20px rgb(255, 91, 91));
   z-index: 10;
@@ -413,6 +423,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   cursor: pointer;
   border: none;
   transition: transform 0.3s ease, filter 0.3s ease;
+  animation: outright 0.5s ease forwards;
 }
 #btn-populares-pc:hover {
   filter: drop-shadow(0 0 30px rgb(255, 0, 0));
