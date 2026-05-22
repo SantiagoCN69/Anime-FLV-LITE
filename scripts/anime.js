@@ -210,6 +210,81 @@ function crearAnimeCard(anime) {
   });
   return div;
 }
+
+/** Placeholder negro de AnimeFLV ≈ 6767 bytes (1280×370). El navegador no puede medirlo por CORS. */
+const BANNER_PESO_MIN_BYTES = 7 * 1024;
+const BANNER_PESO_PROXIES = [
+  '/.netlify/functions/banner-peso',
+  'https://animeflvlite.netlify.app/.netlify/functions/banner-peso',
+];
+
+async function obtenerPesoBanner(url) {
+  if (!url) return null;
+  const q = `?url=${encodeURIComponent(url)}`;
+
+  for (const base of BANNER_PESO_PROXIES) {
+    try {
+      const res = await fetch(`${base}${q}`);
+      if (!res.ok) continue;
+      const { bytes } = await res.json();
+      if (typeof bytes === 'number' && bytes > 0) return bytes;
+    } catch {
+      /* probar siguiente proxy (local → deploy en Netlify) */
+    }
+  }
+  return null;
+}
+
+async function esBannerOscuroPorMuestra(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const sw = Math.min(80, img.naturalWidth);
+        const sh = Math.min(40, img.naturalHeight);
+        canvas.width = sw;
+        canvas.height = sh;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0, sw, sh);
+        const { data } = ctx.getImageData(0, 0, sw, sh);
+        let sum = 0;
+        const n = data.length / 4;
+        for (let i = 0; i < data.length; i += 4) sum += data[i] + data[i + 1] + data[i + 2];
+        resolve(sum / (n * 3) < 38);
+      } catch {
+        resolve(false);
+      }
+    };
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+}
+
+async function esBannerPlaceholder(url) {
+  const peso = await obtenerPesoBanner(url);
+  if (peso !== null) return peso < BANNER_PESO_MIN_BYTES;
+  return esBannerOscuroPorMuestra(url);
+}
+
+async function aplicarFondoAnime(anime) {
+  const portada = anime.portada;
+  const banner = anime.banner;
+
+  if (!banner) {
+    document.body.style.backgroundImage = portada ? `url(${portada})` : '';
+    return;
+  }
+
+  document.body.style.backgroundImage = `url(${banner})`;
+
+  const usarPortada = await esBannerPlaceholder(banner);
+  if (usarPortada && portada) {
+    document.body.style.backgroundImage = `url(${portada})`;
+  }
+}
+
 const renderAnime = anime => {
   anime.estado === "En emision"
   ? (statusEl.innerHTML = `<img src="../icons/circle-solid-blue.svg">${anime.estado}`, statusEl.classList.add("en-emision"))
@@ -218,8 +293,7 @@ const renderAnime = anime => {
   tituloEl.textContent = anime.titulo;
   document.getElementById("portadacarga").classList.add("cargado");
   portadaEl.src = anime.portada;
-  const fondo = anime.banner || anime.portada;
-  document.body.style.backgroundImage = fondo ? `url(${fondo})` : '';
+  aplicarFondoAnime(anime);
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);
   ratingEl.textContent = anime.rating + "/5";
