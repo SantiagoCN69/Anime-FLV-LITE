@@ -57,6 +57,9 @@ if (!document.getElementById(id).classList.contains("hidden")) return;
     item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
   );
 
+  // Animar el indicador activo
+  actualizarIndicadorActivo();
+
 switch(id) {
     case 'Mis-Favoritos':
       if (!favoritosCargados) {
@@ -120,6 +123,7 @@ switch(id) {
 }
 document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
 observerAnimeCards();
+cerrarSidebar();
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -128,6 +132,24 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("searchchange", () => {
   mostrarSeccionDesdesearch();
 });
+
+function actualizarIndicadorActivo() {
+  const indicator = document.querySelector('.active-indicator');
+  const activeItem = document.querySelector('.sidebar .menu-item.active-menu-item');
+  const sidebarUl = document.querySelector('.sidebar ul');
+  
+  if (!indicator || !activeItem || !sidebarUl) return;
+  
+  const ulRect = sidebarUl.getBoundingClientRect();
+  const itemRect = activeItem.getBoundingClientRect();
+  
+  const top = itemRect.top - ulRect.top;
+  const height = itemRect.height;
+  
+  indicator.style.top = top + 'px';
+  indicator.style.height = height + 'px';
+  indicator.classList.add('visible');
+}
 
 window.handlesearchChange = function () {
   let search = window.location.search.substring(1);
@@ -342,7 +364,6 @@ async function cargarUltimosCapsVistos() {
     let linkbase =  `<a href="anime.html?id=${anime.id}" id="anime-${anime.id}">`;
   
     div.className = 'anime-card';
-    div.style.setProperty('--cover', `url(${anime.portada})`);
     
     if (anime.siguienteCapitulo) {chapterHtml = `<span id="chapter">Episodio ${anime.siguienteCapitulo}</span>`;}
     if (anime.estado) {if (anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
@@ -743,6 +764,23 @@ function centrarElementoEnVista(seccionId, smooth = true) {
   })
 }
 
+function cerrarSidebar() {
+  const sidebar = document.querySelector(".sidebar");
+  const menuBtn = document.getElementById("menu-toggle");
+  const overlay = document.querySelector(".overlay");
+
+  sidebar.classList.remove("active");
+  menuBtn.classList.remove("active");
+  overlay.classList.remove("active");
+
+  document.body.style.overflow = "";
+}
+
+// click en overlay
+document.querySelector(".overlay").addEventListener("click", () => {
+  cerrarSidebar();
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
@@ -753,8 +791,9 @@ document.addEventListener("DOMContentLoaded", () => {
   menuBtn.addEventListener("click", () => {
     sidebar.classList.toggle("active");
     menuBtn.classList.toggle("active");
+    document.body.style.overflow = sidebar.classList.contains("active") ? "hidden" : "";
+    document.querySelector(".overlay").classList.toggle("active");
   });
-
   let touchStartX = 0;
   let touchEndX = 0;
   const handleSwipe = () => {
@@ -763,6 +802,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dist > 50) {
         sidebar.classList.remove("active")
         menuBtn.classList.remove("active")
+        document.body.style.overflow = "";
+        document.querySelector(".overlay").classList.remove("active");
       }
     }
   };
@@ -862,6 +903,8 @@ mostrarSeccionDesdesearch = function() {
     if (direction === 'right' && !sidebar.classList.contains('active') && isMobile()) {
       sidebar.classList.add('active');
       menuBtn.classList.add('active');
+      document.body.style.overflow = "hidden";
+      document.querySelector(".overlay").classList.add("active");
     }
   }
 

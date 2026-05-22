@@ -20,22 +20,25 @@
 </head>
 <body>
   <header>
-    <h1 class="title"><a href="index.html">AnimeFLV Lite</a></h1>
-    <a href="index" id="btn-index" class="btn-header" title="Inicio">Inicio</a>
-    <a href="index.html?Directorio" id="btn-directorio" class="btn-header" title="Directorio">Directorio Anime</a>
+
+    <h2 class="title"><a href="index.html">AnimeFLV<span> Lite</span></a></h2>
+
     <div class="search">
         <input type="text" id="busqueda" placeholder="Buscar anime...">
         <button id="btn-close-search" title="Cerrar búsqueda"></button>
     </div>
+    <div>
     <button disabled type="button" id="btn-login" class="nouser">
       <span>Login</span>
     </button>
     <button type="button" id="btn-search" title="Buscar anime"></button>
+
     <button type="button" id="menu-toggle" title="Menú">
       <span></span>
       <span></span>
       <span></span>
     </button>
+    </div>
 </header>
 
 <nav class="sidebar">
@@ -71,7 +74,11 @@
 </nav>
 <main id="main-ver">
   <section>
-    <a title="Volver al anime" href="#" id="btn-volver-anime" class="btn-volver">Volver a <span id="titulo-anime"></span></a>
+    <div id="links">
+      <a href="index.html" class="btn-volver" id="btn-volver-inicio">Inicio</a>
+      <span class="btn-volver">/</span>
+      <a title="Volver al anime" href="#" id="btn-volver-anime" class="btn-volver"><span id="titulo-anime"></span></a>
+    </div>
     <script>
       const animeId = new URLSearchParams(location.search).get("id");
       document.getElementById('titulo-anime').style.setProperty('view-transition-name', "title" + animeId);
