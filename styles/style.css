@@ -25,6 +25,7 @@ html {
   --btn2: #FFD700;
   --f: 1;
   --bt: 255, 255, 255;
+  overflow-x: hidden;
 }
 
 body {
