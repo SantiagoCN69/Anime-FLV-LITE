@@ -34,7 +34,7 @@ body {
   background-color: var(--b);
   display: flex;
   min-height: 100vh;
-  overflow-y: scroll;
+  overflow-x: hidden;
   position: relative;
 }
 a {
