@@ -33,7 +33,7 @@ body {
   margin: 0 auto;
   background-color: var(--b);
   display: flex;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
 }
@@ -495,7 +495,7 @@ button {
   left: 50%; 
   z-index: 8;
   animation: aparecer2 .3s forwards;
-  width:95%;
+  width:calc(100% - 1rem);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   button {
@@ -618,7 +618,7 @@ main {
   flex-grow: 1;
   display: block;
   border-radius: 3px;
-  min-height: calc(100vh - 267px);
+  min-height: calc(100dvh - 267px);
   position: relative;
   margin: 2rem;
   width: calc(100% - 4rem - 230px);
