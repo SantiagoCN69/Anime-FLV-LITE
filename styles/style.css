@@ -630,7 +630,7 @@ main {
 
 /* Ocultar secciones */
 .hidden {
-  display: none
+  display: none !important;
 }
 @media screen and (min-width: 600px) {
   .hidden {
@@ -874,7 +874,8 @@ section.content-section h2:first-of-type::after {
   aspect-ratio: 3/2;
 }
 #main, .grid-animes {
-      height: fit-content;
+    height: fit-content;
+    min-height: 267px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     grid-template-rows: auto;
