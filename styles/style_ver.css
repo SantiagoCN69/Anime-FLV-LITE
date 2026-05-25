@@ -320,7 +320,7 @@ main section:nth-child(2) {
   font-weight: bold;
 }
 
-.texto-estado-capitulo.visto {
+.visto .texto-estado-capitulo {
   color: var(--t1);
 }
 
