@@ -6,3 +6,5 @@ node_modules/
 /scripts/firebaseconfig.js
 sitemap.xml
 .vscode
+.cursor
+.netlify
