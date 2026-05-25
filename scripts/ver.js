@@ -56,6 +56,7 @@ btnCap.textContent = `Episodio ${params.get('url')}`;
 
 const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
 const textoEstado = document.getElementById("texto-estado-capitulo");
+let toggleInProgress = false;
 
 async function refrescarUIEstadoCapitulo() {
   const user = localStorage.getItem("userID");
@@ -85,45 +86,58 @@ async function refrescarUIEstadoCapitulo() {
 }
 
 async function toggleYGuardarEstadoCapitulo() {
-  const user = localStorage.getItem("userID");
-  if (!user) {
-    console.warn('toggleYGuardarEstadoCapitulo: No hay usuario autenticado.');
+  if (toggleInProgress) {
+    console.warn('toggleYGuardarEstadoCapitulo: Operación en progreso, ignorando clic.');
     return;
   }
 
-  const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
-  const docSnap = await getDoc(animeRef);
-  const episodiosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
-
-  if (!episodios || episodios.length === 0 || episodioActualIndex < 0) {
-    console.warn('toggleYGuardarEstadoCapitulo: Lista de episodios no disponible o índice inválido.');
-    return;
-  }
-  
-  console.log(episodioActualIndex);
-
-  const episodioId = String(episodioActualIndex);
-  const titulo = tituloAnime.textContent; 
-
-  const estaVistoActualmente = episodiosVistos.includes(episodioId);
-  const nuevoEstadoVisto = !estaVistoActualmente; 
-
-  const episodiosActuales = new Set(episodiosVistos);
-  if (nuevoEstadoVisto) {
-    episodiosActuales.add(episodioId);
-  } else {
-    episodiosActuales.delete(episodioId);
-  }
+  toggleInProgress = true;
 
   try {
-    await setDoc(animeRef, {
-      titulo,
-      fechaAgregado: serverTimestamp(),
-      episodiosVistos: Array.from(episodiosActuales)
-    });
-    mostrarPildora(nuevoEstadoVisto, episodioActualIndex);
-  } catch (error) {
-    console.error("Error al guardar estado del capítulo en Firestore:", error);
+    const user = localStorage.getItem("userID");
+    if (!user) {
+      console.warn('toggleYGuardarEstadoCapitulo: No hay usuario autenticado.');
+      return;
+    }
+
+    const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
+    const docSnap = await getDoc(animeRef);
+    const episodiosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
+
+    if (!episodios || episodios.length === 0 || episodioActualIndex < 0) {
+      console.warn('toggleYGuardarEstadoCapitulo: Lista de episodios no disponible o índice inválido.');
+      return;
+    }
+
+    console.log(episodioActualIndex);
+
+    const episodioId = String(episodioActualIndex);
+    const titulo = tituloAnime.textContent;
+
+    const estaVistoActualmente = episodiosVistos.includes(episodioId);
+    const nuevoEstadoVisto = !estaVistoActualmente;
+
+    const episodiosActuales = new Set(episodiosVistos);
+    if (nuevoEstadoVisto) {
+      episodiosActuales.add(episodioId);
+    } else {
+      episodiosActuales.delete(episodioId);
+    }
+
+    try {
+      await setDoc(animeRef, {
+        titulo,
+        fechaAgregado: serverTimestamp(),
+        episodiosVistos: Array.from(episodiosActuales)
+      });
+      mostrarPildora(nuevoEstadoVisto, episodioActualIndex);
+    } catch (error) {
+      console.error("Error al guardar estado del capítulo en Firestore:", error);
+      // Revertir UI en caso de error
+      await refrescarUIEstadoCapitulo();
+    }
+  } finally {
+    toggleInProgress = false;
   }
 }
 // Esperar a que el estado de autenticación esté listo
@@ -149,12 +163,13 @@ btnEstadoCapitulo.addEventListener("click", async () => {
     window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
     return
   }
+  if (toggleInProgress) {
+    console.warn('Click ignorado: operación en progreso');
+    return;
+  }
   try {
-    
-  btnEstadoCapitulo.classList.toggle("visto");
-  textoEstado.textContent = btnEstadoCapitulo.classList.contains("visto") ? "Visto" : "No visto";
-
     await toggleYGuardarEstadoCapitulo();
+    await refrescarUIEstadoCapitulo();
   } catch (error) {
     console.error("Error al cambiar y guardar estado del capítulo", error);
   }
