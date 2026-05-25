@@ -1,7 +1,7 @@
 {
     "name": "Anime FLV Lite",
     "short_name": "AnimeFLV",
-    "version": "3.0.2",
+    "version": "6.0.5",
     "description": "Aplicación web para ver anime",
     "start_url": "/index.html",
     "display": "standalone",
@@ -9,8 +9,8 @@
     "theme_color": "#000000",
     "icons": [
         {
-            "src": "icons/icon.png",
-            "sizes": "256x256",
+            "src": "icons/icon2.png",
+            "sizes": "1191x1191",
             "type": "image/png"
         }
     ]
