@@ -111,6 +111,8 @@ const renderGeneros = (container, generos) => {
 
 // Renderizar relacionados
 let isRendering = false;
+let capituloToggleInProgress = false;
+let estadoToggleInProgress = false;
 
 async function renderRelacionados(anime) {
   const relacionadosContainer = document.getElementById('animes-relacionados');
@@ -447,40 +449,86 @@ async function manejarEstadoEpisodio(btn, icon, ep) {
   if (!user) {
     return;
   }
+  if (capituloToggleInProgress) {
+    console.warn('manejarEstadoEpisodio: Operación en progreso, ignorando clic.');
+    return;
+  }
+
   const nuevo = !btn.classList.contains('ep-visto');
-  btn.classList.toggle('ep-visto', nuevo);
-  btn.classList.toggle('ep-no-visto', !nuevo);
-  icon.src = nuevo ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
+  
   try {
     const titulo = tituloEl.textContent;
     await toggleCapituloVisto(id, titulo, ep.number, nuevo);
+    // Actualizar UI después de confirmar con Firebase
+    btn.classList.toggle('ep-visto', nuevo);
+    btn.classList.toggle('ep-no-visto', !nuevo);
+    icon.src = nuevo ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
   } catch (e) {
-    console.error(e);
+    console.error('Error al cambiar estado del episodio:', e);
+    // Revertir UI en caso de error
+    await refrescarEstadoEpisodio(btn, icon, ep);
   }
 }
 
 async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
-  const user = localStorage.getItem("userID");
-  const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
-  const { episodiosVistos = [] } = (await getDoc(ref)).data() || {};
-  
-  const nuevosEpisodios = new Set(episodiosVistos.filter(ep => ep && ep !== "undefined"));
-  if (esVisto) {
-    nuevosEpisodios.add(episodio.toString());
-  } else {
-    nuevosEpisodios.delete(episodio.toString());
+  if (capituloToggleInProgress) {
+    console.warn('toggleCapituloVisto: Operación en progreso, ignorando.');
+    return;
   }
 
-  await setDoc(ref, { 
-    titulo, 
-    fechaAgregado: serverTimestamp(), 
-    episodiosVistos: [...nuevosEpisodios] 
-  });
+  capituloToggleInProgress = true;
 
-  actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, [...nuevosEpisodios]);
-  mostrarPildora("capvisto", esVisto, null, episodio);
+  try {
+    const user = localStorage.getItem("userID");
+    if (!user) {
+      console.warn('toggleCapituloVisto: No hay usuario autenticado.');
+      return;
+    }
+
+    const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
+    const { episodiosVistos = [] } = (await getDoc(ref)).data() || {};
+
+    const nuevosEpisodios = new Set(episodiosVistos.filter(ep => ep && ep !== "undefined"));
+    if (esVisto) {
+      nuevosEpisodios.add(episodio.toString());
+    } else {
+      nuevosEpisodios.delete(episodio.toString());
+    }
+
+    await setDoc(ref, {
+      titulo,
+      fechaAgregado: serverTimestamp(),
+      episodiosVistos: [...nuevosEpisodios]
+    });
+
+    actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, [...nuevosEpisodios]);
+    mostrarPildora("capvisto", esVisto, null, episodio);
+  } catch (error) {
+    console.error("Error al guardar estado del capítulo en Firestore:", error);
+    throw error;
+  } finally {
+    capituloToggleInProgress = false;
+  }
 } 
 
+
+async function refrescarEstadoEpisodio(btn, icon, ep) {
+  const user = localStorage.getItem("userID");
+  if (!user) return;
+
+  try {
+    const ref = doc(db, 'usuarios', user, 'caps-vistos', id);
+    const snap = await getDoc(ref);
+    const episodiosVistos = snap.exists() ? snap.data().episodiosVistos || [] : [];
+    const visto = episodiosVistos.includes(ep.number.toString());
+
+    btn.classList.toggle('ep-visto', visto);
+    btn.classList.toggle('ep-no-visto', !visto);
+    icon.src = visto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
+  } catch (error) {
+    console.error('Error al refrescar estado del episodio:', error);
+  }
+}
 
 async function obtenerCapitulosVistos(animeId) {
   return new Promise((resolve, reject) => { 
@@ -856,31 +904,45 @@ const ESTADOS = {
 };
 
 async function actualizarEstadoFirebase(estado) {
-  const user = localStorage.getItem("userID");
-  if (!user) return;
-
-  const estadoActual = await obtenerEstadoActual();
-  
-  if (estadoActual === estado) return;
-  
-  await limpiarEstadosPrevios();
-  
-  if (!estado) return; 
-
-  const estadoLower = estado.toLowerCase();
-  const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoLower);
-  const estadoDoc = await getDoc(estadoRef);
-  
-  let animes = [];
-  if (estadoDoc.exists()) {
-    animes = [...(estadoDoc.data().animes || [])];
+  if (estadoToggleInProgress) {
+    console.warn('actualizarEstadoFirebase: Operación en progreso, ignorando.');
+    return;
   }
-  
-  if (!animes.includes(id)) {
-    animes.push(id);
-    await setDoc(estadoRef, { animes }, { merge: true });
-    console.log(estadoLower);
-    mostrarPildora(estadoLower, true, document.getElementById('titulo')?.textContent || '');  
+
+  estadoToggleInProgress = true;
+
+  try {
+    const user = localStorage.getItem("userID");
+    if (!user) return;
+
+    const estadoActual = await obtenerEstadoActual();
+
+    if (estadoActual === estado) return;
+
+    await limpiarEstadosPrevios();
+
+    if (!estado) return;
+
+    const estadoLower = estado.toLowerCase();
+    const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoLower);
+    const estadoDoc = await getDoc(estadoRef);
+
+    let animes = [];
+    if (estadoDoc.exists()) {
+      animes = [...(estadoDoc.data().animes || [])];
+    }
+
+    if (!animes.includes(id)) {
+      animes.push(id);
+      await setDoc(estadoRef, { animes }, { merge: true });
+      console.log(estadoLower);
+      mostrarPildora(estadoLower, true, document.getElementById('titulo')?.textContent || '');
+    }
+  } catch (error) {
+    console.error("Error al actualizar estado en Firebase:", error);
+    throw error;
+  } finally {
+    estadoToggleInProgress = false;
   }
 }
 
@@ -907,10 +969,15 @@ async function limpiarEstadosPrevios() {
 }
 
 async function manejarEstadoSeleccionado(btnSeleccionado) {
+  if (estadoToggleInProgress) {
+    console.warn('manejarEstadoSeleccionado: Operación en progreso, ignorando clic.');
+    return;
+  }
+
   const estadoId = btnSeleccionado.id.replace('btn-', '');
   const estado = ESTADOS[estadoId];
   const user = localStorage.getItem("userID");
-  
+
   if (!user) {
     console.warn('manejarEstadoSeleccionado: No hay usuario autenticado.');
     window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
@@ -918,34 +985,55 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
   }
 
   if (btnSeleccionado.classList.contains('active')) {
-    btnSeleccionado.classList.remove('active');
-    
-    if (estado) {
-      
-      try {
-        const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoId);
-        const estadoDoc = await getDoc(estadoRef);
-        
-        if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
-          const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
-          if (animesActualizados.length !== estadoDoc.data().animes.length) {
-            await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
-            console.log(estadoId);
-            mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');  
-          }
+    // Desactivar estado
+    try {
+      const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoId);
+      const estadoDoc = await getDoc(estadoRef);
+
+      if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
+        const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
+        if (animesActualizados.length !== estadoDoc.data().animes.length) {
+          await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
+          console.log(estadoId);
+          mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');
         }
-      } catch (error) {
-        console.error('Error al eliminar el estado:', error);
       }
+      btnSeleccionado.classList.remove('active');
+    } catch (error) {
+      console.error('Error al eliminar el estado:', error);
+      // Revertir UI en caso de error
+      await refrescarEstadoBotones();
     }
     return;
   }
 
-  [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
-  btnSeleccionado.classList.add('active');
+  // Activar nuevo estado
+  try {
+    await actualizarEstadoFirebase(estadoId.toUpperCase());
+    [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
+    btnSeleccionado.classList.add('active');
+  } catch (error) {
+    console.error('Error al cambiar estado:', error);
+    // Revertir UI en caso de error
+    await refrescarEstadoBotones();
+  }
+}
 
+async function refrescarEstadoBotones() {
+  const user = localStorage.getItem("userID");
+  if (!user) return;
 
-  await actualizarEstadoFirebase(estadoId.toUpperCase());
+  try {
+    const estadoActual = await obtenerEstadoActual();
+    [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
+
+    if (estadoActual) {
+      const btn = document.getElementById(`btn-${estadoActual.toLowerCase()}`);
+      if (btn) btn.classList.add('active');
+    }
+  } catch (error) {
+    console.error('Error al refrescar estado de botones:', error);
+  }
 }
 
 async function obtenerEstadoActual() {
