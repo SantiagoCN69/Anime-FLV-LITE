@@ -1132,7 +1132,7 @@ margin-top: 10px;
     "container4 container4" !important;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1300px) {
   .sin-resultados {
     min-height: calc(100dvh - 88px - 10px) !important;
 
@@ -1146,17 +1146,7 @@ margin-top: 10px;
       "container4" !important;
   }
 }
-#Busqueda-Resultados {
-  .sin-resultados {
-    margin: 0rem !important;
-    padding-bottom:2rem !important;
-    grid-template-rows: repeat(2, minmax(170px, 250px)) auto !important;
-    grid-template-areas:
-      "container2 container1"
-      "container3 container1"
-      "container4 container4" !important;
-  }
-}
+
 #img-sin-resultados {
   grid-area: container1 !important;
 
