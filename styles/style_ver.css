@@ -41,6 +41,10 @@ header div {
 
 
 @media (max-width: 717px) {
+  .search::after {
+    left: 28px;
+  }
+  
   .title {
   margin-right: 0rem;
 }
