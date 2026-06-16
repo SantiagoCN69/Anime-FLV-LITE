@@ -140,7 +140,10 @@ async function renderRelacionados(anime) {
     const resultados = await Promise.allSettled(
       relacionesUnicas.map(relacionado =>
         fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`)
-          .then(res => res.ok ? res.json() : Promise.reject(`HTTP Error: ${res.status}`))
+          .then(res => {
+            console.log('fetch relacionado:', res);
+            return res.ok ? res.json() : Promise.reject(`HTTP Error: ${res.status}`);
+          })
           .then(data => ({
             data: data[0],
             relation: relacionado.relation
@@ -705,20 +708,23 @@ async function cargarAnime(idauxiliar) {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     console.log(data);
-    const anime = {
-      titulo: data.title || '',
-      portada: data.cover || '',
-      banner: data.banner || '',
-      descripcion: data.synopsis || '',
-      generos: data.genres || [],
-      rating: data.rating || null,
-      estado: data.status || null,
-      episodios: data.episodes.map(ep => ({ number: ep.number, url: ep.url })),
-      relacionados: data.related.map(ep => ({ title: ep.title, relation: ep.relation })) || [],
-
-    };
+    const anime = normalizarDatosAPI(data);
 
     if (!compararDatos(cached, anime)) {
+      // Preservar servidores existentes en Firestore
+      const docSnap = await getDoc(doc(db, 'datos-animes', id));
+      if (docSnap.exists()) {
+        const dataFirestore = docSnap.data();
+        if (dataFirestore.episodios) {
+          anime.episodios = anime.episodios.map(ep => {
+            const epFirestore = dataFirestore.episodios.find(e => e.url === ep.url);
+            if (epFirestore?.servidores) {
+              return { ...ep, servidores: epFirestore.servidores };
+            }
+            return ep;
+          });
+        }
+      }
       await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
       actualizarCache(id, anime);
       renderAnime(anime);
@@ -792,6 +798,7 @@ async function cargarSugerenciasSinResultados(id) {
       console.log(id);
       try {
         const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${id}`);
+        console.log('fetch sugerencias:', response);
         if (!response.ok) throw new Error('Error al cargar el anime');
         
         const animeData = await response.json();
