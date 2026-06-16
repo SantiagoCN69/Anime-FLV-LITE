@@ -184,20 +184,29 @@ async function renderRelacionados(anime) {
 }
 
 function crearAnimeCard(anime) {
+  const coverImage = anime.cover || anime.image || 'img/loading.png';
+  let animeId = anime.id;
+  if (!animeId && anime.url) {
+    const urlParts = anime.url.replace(/\/$/, '').split('/');
+    animeId = urlParts[urlParts.length - 1];
+  }
+  if (!animeId) {
+    animeId = anime.title?.toLowerCase().replace(/\s+/g, '-');
+  }
   const div = document.createElement('div');
   let ratingHtml = '';
   if (anime.rating) {
     ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
   }
   div.className = 'anime-card';
-  div.style.setProperty('--cover', `url(${anime.cover})`);
+  div.style.setProperty('--cover', `url(${coverImage})`);
   div.innerHTML = `
-  <a href="anime.html?id=${anime.id}" id="anime-${anime.id}">
+  <a href="anime.html?id=${animeId}" id="anime-${animeId}">
   <div class="container-img">
-    <img src="${anime.cover}" class="cover" alt="${anime.title || anime.name}">
+    <img src="${coverImage}" class="cover" alt="${anime.title || anime.name}">
     <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
     ${ratingHtml}
-    <span class="estado">${anime.type}</span>
+    <span class="estado">${anime.type || ''}</span>
   </div>
   <strong>${anime.title || anime.name}</strong>
 </a>`;
@@ -297,7 +306,6 @@ const renderAnime = anime => {
   renderRelacionados(anime);
 };
 
-actualizarEstadoFavorito()
 const getAnchoColumna = () => {
   const li = capContenedor.querySelector('li');
   if (!li) return 0;
@@ -790,6 +798,8 @@ document.getElementById('btn-close-search-capitulo').addEventListener('click', f
 
 
 const btnFav = document.getElementById('btn-fav');
+
+actualizarEstadoFavorito()
 
 function actualizarEstadoFavorito() {
   obtenerFavoritosAnime()
