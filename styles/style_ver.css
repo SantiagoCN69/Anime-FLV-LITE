@@ -662,3 +662,6 @@ iframe {
   background: linear-gradient(135deg, rgba(255, 87, 85, 0.30), rgba(198, 40, 40, 0.30));
   border-color: rgba(255, 87, 85, 0.4);
 }
+.recomendaciones-ia-busqueda {
+  margin: 2rem 1rem 1rem 1rem;
+}
