@@ -33,6 +33,7 @@ body {
   margin: 0 auto;
   background-color: var(--b);
   display: flex;
+  flex-direction: column;
   min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
@@ -645,10 +646,10 @@ main {
 .span-carga {
   text-align: center;
   color: var(--t2);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 1rem 0;
 }
 #init-loading-cap {
   margin-top: 1.5rem;
@@ -882,7 +883,7 @@ section.content-section h2:first-of-type::after {
     gap: 17px;
 }
 #main {
-  width: 100%;
+  width: calc(100% - 2rem);
   margin: calc(88px + 2rem) auto 2rem;
   padding-inline: 1rem;
   display: none;
@@ -1123,11 +1124,12 @@ margin-top: 10px;
   align-content: center !important;
   gap: 1rem !important;
   grid-template-columns: 1fr auto !important;
-  grid-template-rows: repeat(2, minmax(170px, 250px)) !important;
+  grid-template-rows: repeat(2, minmax(170px, 250px)) auto !important;
 
   grid-template-areas:
     "container2 container1"
-    "container3 container1" !important;
+    "container3 container1"
+    "container4 container4" !important;
 }
 
 @media screen and (max-width: 800px) {
@@ -1135,18 +1137,24 @@ margin-top: 10px;
     min-height: calc(100dvh - 88px - 10px) !important;
 
     grid-template-columns: 1fr !important;
-    grid-template-rows: repeat(3, auto) !important;
+    grid-template-rows: repeat(4, auto) !important;
 
     grid-template-areas:
       "container1"
       "container2"
-      "container3" !important;
+      "container3"
+      "container4" !important;
   }
 }
 #Busqueda-Resultados {
   .sin-resultados {
     margin: 0rem !important;
     padding-bottom:2rem !important;
+    grid-template-rows: repeat(2, minmax(170px, 250px)) auto !important;
+    grid-template-areas:
+      "container2 container1"
+      "container3 container1"
+      "container4 container4" !important;
   }
 }
 #img-sin-resultados {
@@ -1217,10 +1225,68 @@ margin-top: 10px;
 #anime-grid-sin-resultados .anime-card div > img:first-of-type {
   height: 130px !important;
 }
-.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar {
+
+.recomendaciones-ia-busqueda {
+  padding: 1.5rem;
+  margin-top: 2rem;
+  color: var(--t1);
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(206, 165, 255, 0.1) 0%, rgba(255, 215, 0, 0.05) 50%, rgba(34, 206, 233, 0.1) 100%);
+  border: 1px solid rgba(206, 165, 255, 0.3);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  grid-area: container4;
+}
+
+.recomendaciones-ia-busqueda h2 {
+  color: var(--btn);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--btn);
+}
+
+.recomendaciones-ia-busqueda h2:after {
+  content: unset !important;
+}
+
+#anime-grid-ia-busqueda {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  gap: 1rem;
+  padding: 8px;
+  padding-top: 1rem;
+  min-height: 170px;
+  height: fit-content;
+}
+
+#anime-grid-ia-busqueda .anime-card {
+  min-width: 250px;
+  width: 250px;
+  height: fit-content;
+  flex-shrink: 0;
+  background: rgba(var(--bgt), .1);
+}
+
+#anime-grid-ia-busqueda .anime-card div > img:first-of-type {
+  height: 130px !important;
+}
+
+#anime-grid-ia-busqueda::-webkit-scrollbar {
   height: 8px;
 }
-.episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb {
+
+#anime-grid-ia-busqueda::-webkit-scrollbar-thumb {
+  background-color: var(--btn);
+  border-radius: 5px;
+}
+
+.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar, #anime-grid-ia-busqueda::-webkit-scrollbar {
+  height: 8px;
+}
+.episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb, #anime-grid-ia-busqueda::-webkit-scrollbar-thumb {
   background-color: var(--btn);
   border-radius: 5px;
 }

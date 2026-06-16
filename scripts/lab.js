@@ -4,6 +4,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebas
 import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards } from "./utils.js";
+import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName } from "./ai-recommendations.js";
 
 
 // Inicialización de Firebase
@@ -385,17 +386,9 @@ async function enviarPrompt(prompt, seccion) {
     }
 
     try {
-        const response = await fetch('https://backend-ia-anime.onrender.com/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: prompt })
-        });
-
-        const data = await response.json();
-        const respuesta = data.response || 'Error en la respuesta';
-
+        const respuesta = await fetchIAResponse(prompt);
         window.ultimaRespuesta = respuesta;
-        console.log(respuesta)
+        console.log(respuesta);
         mostrarRelacionadosDesdeRespuesta(respuesta, seccion);
     } catch (error) {
         console.error('Error al enviar prompt:', error);
@@ -421,14 +414,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     const { contenedorId, sectionId, textoBtnId, guardarEnCache } = config[seccion] || {};
     if (!contenedorId) return;
 
-    const nombres = respuesta
-    .replace(/\n/g, ',') 
-    .split(',')          
-    .map(t => t.trim()   
-        .replace(/-/g, ' ')
-        .replace(/:/g, '')
-        .replace(/\s+/g, ' '))
-    .filter(Boolean);    
+    const nombres = parseAnimeNamesFromResponse(respuesta);
 
     const contenedor = document.getElementById(contenedorId);
     const section = document.getElementById(sectionId);
@@ -442,42 +428,9 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     
     const fragment = document.createDocumentFragment();
     const animesEncontrados = [];
-    const buscarAnime = async (nombre) => {
-        try {
-            const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(nombre)}`);
-            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-
-            const data = await res.json();
-            const animes = data.data || [];
-
-            if (!animes.length) return null;
-
-            let animeSeleccionado = animes.find(a => 
-                a.title.toLowerCase() === nombre.toLowerCase()
-            );
-
-            if (!animeSeleccionado) {
-                const animesCandidatos = animes.filter(a => 
-                    a.title.toLowerCase().includes(nombre.toLowerCase())
-                );
-
-                if (animesCandidatos.length) {
-                    animesCandidatos.sort((a, b) => a.title.length - b.title.length);
-                    animeSeleccionado = animesCandidatos[0];
-                } else {
-                    animeSeleccionado = animes[0];
-                }
-            }
-
-            return animeSeleccionado;
-        } catch (err) {
-            console.error('Error al buscar anime:', nombre, err);
-            return null;
-        }
-    };
 
     for (const nombre of nombres) {
-        const anime = await buscarAnime(nombre);
+        const anime = await resolveAnimeByName(nombre);
         if (!anime) continue;
         if (guardarEnCache) {
             const animeData = {

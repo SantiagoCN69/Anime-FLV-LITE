@@ -1,4 +1,5 @@
 import { observerAnimeCards } from './utils.js';
+import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from './ai-recommendations.js';
 
 // === UTILIDADES ===
 function normalizarTexto(texto) {
@@ -24,10 +25,19 @@ function limpiarVistaAnimePage() {
     mainContainer.style.display = 'none';
     mainContainer.classList.remove('sin-resultados');
   }
+  limpiarSeccionIA();
   setDisplay(disqusThread, 'block');
   setDisplay(relacionados, 'flex');
   setDisplay(verAnime, 'flex');
   setDisplay(mainLab, 'flex');
+}
+
+function limpiarSeccionIA() {
+  if (currentIaController) {
+    currentIaController.abort();
+    currentIaController = null;
+  }
+  document.querySelectorAll('#recomendaciones-ia-busqueda').forEach(el => el.remove());
 }
 
 function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, resultadosContainer) {
@@ -38,6 +48,7 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
     resultadosContainer.innerHTML = '';
     resultadosContainer.classList.remove('sin-resultados');
   }
+  limpiarSeccionIA();
   handlesearchChange();
 }
 
@@ -108,8 +119,9 @@ function crearAnimeCard(anime) {
 }
 
 // === RENDER SIN RESULTADOS ===
-function renderSinResultados(container, searchTerm) {
+function renderSinResultados(container, searchTerm, searchId) {
   if (!container) return;
+  limpiarSeccionIA();
   container.classList.add('sin-resultados');
   container.innerHTML = `
     <img src="/img/cat.png" id="img-sin-resultados" alt="sin resultados">
@@ -131,12 +143,38 @@ function renderSinResultados(container, searchTerm) {
       }
     };
   }
+
+  const iaSection = document.createElement('div');
+  iaSection.innerHTML = IA_SECTION_HTML.trim();
+  const iaBlock = iaSection.firstElementChild;
+  container.insertAdjacentElement('afterend', iaBlock);
+
   const porcentajeARecortar = Math.ceil(searchTerm.length * 0.4);
   const recortado = searchTerm.slice(0, -porcentajeARecortar);
   const animeGrid = document.getElementById('anime-grid-sin-resultados');
   if (animeGrid && recortado.length >= 3) {
     cargarSugerenciasSinResultados(recortado, animeGrid);
   }
+  cargarRecomendacionesIA(searchTerm, searchId);
+}
+
+async function cargarRecomendacionesIA(searchTerm, searchId) {
+  if (currentIaController) currentIaController.abort();
+  currentIaController = new AbortController();
+
+  const grid = document.getElementById('anime-grid-ia-busqueda');
+  if (!grid) return;
+
+  attachIaGridWheelScroll(grid);
+
+  await loadIaRecommendationsIntoGrid({
+    searchTerm,
+    grid,
+    isStale: () => searchId !== undefined && searchId !== currentSearch,
+    signal: currentIaController.signal,
+    crearAnimeCard,
+    observerAnimeCards
+  });
 }
 
 // === SUGERENCIAS ===
@@ -145,7 +183,7 @@ async function cargarSugerenciasSinResultados(id, container) {
     const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(id)}`);
     if (!response.ok) throw new Error('Error al cargar sugerencias');
     const animeData = await response.json();
-    const resultados = animeData.data || [];
+    const resultados = animeData || [];
     if (resultados.length === 0) {
       const porcentajeARecortar = Math.ceil(id.length * 0.4);
       const recortado = id.slice(0, -porcentajeARecortar);
@@ -161,8 +199,9 @@ async function cargarSugerenciasSinResultados(id, container) {
 }
 
 // === MOSTRAR RESULTADOS ===
-function mostrarResultados(data, searchTerm) {
+function mostrarResultados(data, searchTerm, searchId) {
   const resultados = data.data || data || [];
+  limpiarSeccionIA();
 
   if (isIndexPage) {
     const resultadosContainer = document.getElementById('resultados-busqueda');
@@ -182,7 +221,7 @@ function mostrarResultados(data, searchTerm) {
       observerAnimeCards();
     } else {
       seccionResultados?.classList.remove('hidden');
-      renderSinResultados(resultadosContainer, searchTerm);
+      renderSinResultados(resultadosContainer, searchTerm, searchId);
       if (busquedaH2) busquedaH2.textContent = 'No hay resultados';
     }
     return;
@@ -200,7 +239,7 @@ function mostrarResultados(data, searchTerm) {
     setDisplay(verAnime, 'none');
 
     if (resultados.length === 0) {
-      renderSinResultados(mainContainer, searchTerm);
+      renderSinResultados(mainContainer, searchTerm, searchId);
       return;
     }
 
@@ -217,7 +256,7 @@ function ver(id) {
 
 // === BÚSQUEDA ===
 const busquedaInput = document.getElementById('busqueda');
-let busquedaTimer, busquedaCountdownInterval, initialDelayTimer, currentSearch = 0, currentController = null;
+let busquedaTimer, busquedaCountdownInterval, initialDelayTimer, currentSearch = 0, currentController = null, currentIaController = null;
 
 if (busquedaInput) {
   busquedaInput.addEventListener('input', () => {
@@ -227,6 +266,11 @@ if (busquedaInput) {
     clearTimeout(initialDelayTimer);
     if (busquedaCountdownInterval) clearInterval(busquedaCountdownInterval);
     if (currentController) currentController.abort();
+    if (currentIaController) {
+      currentIaController.abort();
+      currentIaController = null;
+    }
+    limpiarSeccionIA();
 
     const valor = busquedaInput.value.trim();
     const loadingSpan = document.getElementById('init-loading-servidores-busqueda');
@@ -249,11 +293,13 @@ if (busquedaInput) {
         resultadosContainer.innerHTML = '';
         resultadosContainer.classList.remove('sin-resultados');
       }
+      limpiarSeccionIA();
     } else {
       if (mainContainer) {
         mainContainer.innerHTML = '';
         mainContainer.classList.remove('sin-resultados');
       }
+      limpiarSeccionIA();
     }
 
     busquedaTimer = setTimeout(() => {
@@ -290,8 +336,8 @@ if (busquedaInput) {
           clearTimeout(initialDelayTimer);
           clearInterval(busquedaCountdownInterval);
           if (isIndexPage && loadingSpan) loadingSpan.style.display = 'none';
-          const filtrados = (resData.data || []).filter(anime => normalizarTexto(anime.title || anime.name || '').includes(queryNormalizada));
-          mostrarResultados(filtrados, valor);
+          const filtrados = (resData || []).filter(anime => normalizarTexto(anime.title || anime.name || '').includes(queryNormalizada));
+          mostrarResultados(filtrados, valor, searchId);
         })
         .catch(err => {
           if (err.name === 'AbortError') return;

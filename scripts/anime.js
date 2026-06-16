@@ -3,6 +3,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards, aplicarViewTransition } from "./utils.js";
+import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from "./ai-recommendations.js";
 
 // Inicializar Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
@@ -137,11 +138,11 @@ async function renderRelacionados(anime) {
     });
     // Hacer todas las peticiones en paralelo
     const resultados = await Promise.allSettled(
-      relacionesUnicas.map(relacionado => 
+      relacionesUnicas.map(relacionado =>
         fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`)
           .then(res => res.ok ? res.json() : Promise.reject(`HTTP Error: ${res.status}`))
           .then(data => ({
-            data: data.data?.[0],
+            data: data[0],
             relation: relacionado.relation
           }))
       )
@@ -698,7 +699,9 @@ async function cargarAnime(idauxiliar) {
       <div id="anime-grid-sin-resultados">
       <span class="span-carga">cargando...</span></div>
     </div>
+    ${IA_SECTION_HTML.trim()}
   `;
+
   const scrollHorizontal = document.querySelector('#anime-grid-sin-resultados');
 
 scrollHorizontal.addEventListener('wheel', (e) => {
@@ -717,9 +720,30 @@ scrollHorizontal.addEventListener('wheel', (e) => {
     const porcentajeARecortar = Math.ceil(id.length * 0.4); 
     const recortado = id.slice(0, -porcentajeARecortar);
     cargarSugerenciasSinResultados(recortado);
+    cargarRecomendacionesIAAnime(id);
   }
 };
 cargarAnime();
+
+let currentIaControllerAnime = null;
+
+async function cargarRecomendacionesIAAnime(searchTerm) {
+  if (currentIaControllerAnime) currentIaControllerAnime.abort();
+  currentIaControllerAnime = new AbortController();
+
+  const grid = document.getElementById('anime-grid-ia-busqueda');
+  if (!grid) return;
+
+  attachIaGridWheelScroll(grid);
+
+  await loadIaRecommendationsIntoGrid({
+    searchTerm,
+    grid,
+    signal: currentIaControllerAnime.signal,
+    crearAnimeCard,
+    observerAnimeCards
+  });
+}
 
 
 async function cargarSugerenciasSinResultados(id) {
@@ -731,7 +755,7 @@ async function cargarSugerenciasSinResultados(id) {
         if (!response.ok) throw new Error('Error al cargar el anime');
         
         const animeData = await response.json();
-        if (animeData.data.length === 0) {
+        if (animeData.length === 0) {
           const porcentajeARecortar = Math.ceil(id.length * 0.4); 
           const recortado = id.slice(0, -porcentajeARecortar);
           if (recortado.length >= 1) { 
@@ -741,7 +765,7 @@ async function cargarSugerenciasSinResultados(id) {
         }
         const animeGrid = document.getElementById('anime-grid-sin-resultados');
         animeGrid.innerHTML = '';
-        animeData.data.forEach(anime => {
+        animeData.forEach(anime => {
           const animeCard = crearAnimeCard(anime);
           animeGrid.appendChild(animeCard);
           observerAnimeCards()
