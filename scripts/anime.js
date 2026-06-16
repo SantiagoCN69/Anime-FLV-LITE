@@ -637,6 +637,38 @@ function compararDatos(a, b) {
   );
 }
 
+// Función para normalizar datos de la API (maneja ambos formatos)
+function normalizarDatosAPI(data) {
+  // Verificar si tiene el formato nuevo con "sources"
+  if (data.sources && Array.isArray(data.sources) && data.sources.length > 0) {
+    const sourceData = data.sources[0].data;
+    // Usar datos de sources[0].data si existen, si no usar datos del nivel superior
+    return {
+      titulo: sourceData?.title || data.title || '',
+      portada: sourceData?.cover || data.cover || '',
+      banner: data.banner || '',
+      descripcion: sourceData?.synopsis || data.synopsis || '',
+      generos: sourceData?.genres || data.genres || [],
+      rating: data.rating || null,
+      estado: sourceData?.status || data.status || null,
+      episodios: (sourceData?.episodes || data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
+      relacionados: (data.related || []).map(ep => ({ title: ep.title, relation: ep.relation })) || [],
+    };
+  }
+  // Formato antiguo (directo)
+  return {
+    titulo: data.title || '',
+    portada: data.cover || '',
+    banner: data.banner || '',
+    descripcion: data.synopsis || '',
+    generos: data.genres || [],
+    rating: data.rating || null,
+    estado: data.status || null,
+    episodios: (data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
+    relacionados: (data.related || []).map(ep => ({ title: ep.title, relation: ep.relation })) || [],
+  };
+}
+
 async function cargarAnime(idauxiliar) {
   if (idauxiliar) {
     console.log(idauxiliar);
