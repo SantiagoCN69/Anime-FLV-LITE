@@ -10,7 +10,8 @@ export const IA_SECTION_HTML = `
 </div>`;
 
 export function buildSimilarAnimePrompt(searchTerm) {
-  return `Corrige la ortografía de "${searchTerm}" (ejemplo: "chingeky" → "shingeky") y dame 5 animes similares. Usa nombres oficiales en japonés/inglés si el input está en español.
+  return `Corrige la ortografía de "${searchTerm}" (ejemplo: "chingeky" → "shingeky") y convierte nombres en español al oficial japonés/inglés (ejemplo: "los siete pecados" → "nanatsu-no-taizai"). Luego dame 5 animes similares.
+Usa SIEMPRE nombres oficiales en japonés/inglés (formato kebab-case con guiones).
 Responde SOLO con nombres separados por comas, sin espacios, sin caracteres especiales, sin explicaciones.
 Ejemplo: shingeki-no-kyojin,one-piece,dragon-ball,naruto,bleach,black-clover`;
 }
