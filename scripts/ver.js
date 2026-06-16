@@ -296,8 +296,31 @@ function mapearServidoresApi(servidoresApi) {
   }));
 }
 
-async function obtenerServidoresDesdeApi(numeroEpisodio) {
-  const urlEpisodio = `https://www3.animeflv.net/ver/${animeId}-${numeroEpisodio}`;
+function convertirUrlAjkanime(url) {
+  // Si ya es de jkanime, retornarla tal cual
+  if (url.includes('jkanime.net')) {
+    return url;
+  }
+
+  // Convertir de animeflv a jkanime
+  // animeflv: https://www3.animeflv.net/ver/nanatsu-no-taizai-1
+  // jkanime: https://jkanime.net/nanatsu-no-taizai/1/
+  if (url.includes('animeflv.net/ver/')) {
+    const match = url.match(/animeflv\.net\/ver\/(.+)-(\d+)$/);
+    if (match) {
+      const animeName = match[1];
+      const episodeNumber = match[2];
+      return `https://jkanime.net/${animeName}/${episodeNumber}/`;
+    }
+  }
+
+  return url;
+}
+
+async function obtenerServidoresDesdeApi(episodio) {
+  const urlEpisodio = convertirUrlAjkanime(episodio.url);
+  console.log("[obtenerServidoresDesdeApi] URL original:", episodio.url);
+  console.log("[obtenerServidoresDesdeApi] URL convertida:", urlEpisodio);
 
   const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(urlEpisodio)}`);
   if (!res.ok) {
@@ -353,7 +376,7 @@ async function sincronizarServidoresConApi(ep) {
   }
 
   try {
-    const servidoresApi = await obtenerServidoresDesdeApi(ep.number);
+    const servidoresApi = await obtenerServidoresDesdeApi(ep);
 
     if (servidoresApi === null) {
       // API falló (404 u otro error), usar respaldo de Firestore
@@ -440,9 +463,14 @@ async function cargarEpisodios() {
 
 
 async function cargarVideoDesdeEpisodio(index) {
+  console.log("[cargarVideoDesdeEpisodio] Índice recibido:", index);
+  console.log("[cargarVideoDesdeEpisodio] Array de episodios:", episodios);
+  console.log("[cargarVideoDesdeEpisodio] Longitud de episodios:", episodios.length);
   btnCap.textContent = `Episodio ${index}`;
-  const ep = episodios.find(ep => ep.number === index);
+  const ep = episodios.find(ep => String(ep.number) === String(index));
+  console.log("[cargarVideoDesdeEpisodio] Episodio encontrado:", ep);
   if (!ep) {
+    console.warn("[cargarVideoDesdeEpisodio] No se encontró el episodio con number:", index);
     btnCap.textContent = "Episodio desconocido";
     document.getElementById("controles").innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontro el episodio.</span>";
     return;
