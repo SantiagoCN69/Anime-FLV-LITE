@@ -49,7 +49,7 @@ export async function resolveAnimeByName(nombre) {
     if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
     const data = await res.json();
-    const animes = data.data || [];
+    const animes = Array.isArray(data) ? data : (data.data || []);
     console.log('[AI] Search results for', nombre, ':', animes.length, 'results');
     if (!animes.length) return null;
 
