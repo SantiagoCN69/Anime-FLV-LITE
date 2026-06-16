@@ -301,15 +301,22 @@ async function obtenerServidoresDesdeApi(numeroEpisodio) {
 
   const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(urlEpisodio)}`);
   if (!res.ok) {
-    throw new Error(`API episode respondió ${res.status}`);
+    console.warn(`[API episode] API respondió ${res.status} para: ${urlEpisodio}`);
+    return null; // Retornar null en lugar de lanzar error
   }
 
   const data = await res.json();
+  console.log("[API episode] Respuesta completa:", data);
+  console.log("[API episode] Servidores:", data.servidores);
+
   if (!data.servidores?.length) {
+    console.log("[API episode] No se encontraron servidores en la respuesta");
     return [];
   }
 
-  return mapearServidoresApi(data.servidores);
+  const servidoresMapeados = mapearServidoresApi(data.servidores);
+  console.log("[API episode] Servidores mapeados:", servidoresMapeados);
+  return servidoresMapeados;
 }
 
 async function guardarServidoresEnFirestore(ep, servidores) {
@@ -348,25 +355,37 @@ async function sincronizarServidoresConApi(ep) {
   try {
     const servidoresApi = await obtenerServidoresDesdeApi(ep.number);
 
-    if (!servidoresApi.length && !servidoresFirestore.length) {
+    if (servidoresApi === null) {
+      // API falló (404 u otro error), usar respaldo de Firestore
+      if (servidoresFirestore.length) {
+        console.log("[servidores] API falló, usando respaldo de Firestore");
+        return servidoresFirestore;
+      }
       return [];
     }
 
-    const iguales = servidoresSonIguales(servidoresFirestore, servidoresApi);
-
-    if (servidoresApi.length && !iguales) {
-      await guardarServidoresEnFirestore(ep, servidoresApi);
-      return servidoresApi;
-    }
-
     if (servidoresApi.length) {
+      const iguales = servidoresSonIguales(servidoresFirestore, servidoresApi);
+
+      if (!iguales) {
+        await guardarServidoresEnFirestore(ep, servidoresApi);
+      }
+
       return servidoresApi;
     }
 
-    return servidoresFirestore;
-  } catch (error) {
-    console.error("[servidores] Error al consultar API:", error);
+    // Si la API no devuelve servidores, usar los de Firestore como respaldo (sin guardar)
     if (servidoresFirestore.length) {
+      console.log("[servidores] API no devolvió servidores, usando respaldo de Firestore");
+      return servidoresFirestore;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("[servidores] Error inesperado al consultar API:", error);
+    // Si hay error inesperado, usar los de Firestore como respaldo (sin guardar)
+    if (servidoresFirestore.length) {
+      console.log("[servidores] Error inesperado, usando respaldo de Firestore");
       return servidoresFirestore;
     }
     throw error;
@@ -429,21 +448,27 @@ async function cargarVideoDesdeEpisodio(index) {
     return;
   }
 
+  // Actualizar índice y URL siempre, incluso si no hay servidores
+  episodioActualIndex = index;
+  history.replaceState({}, "", `ver.html?id=${animeId}&url=${ep.number}`);
 
   try {
     ep.servidores = await sincronizarServidoresConApi(ep);
     if (!ep.servidores?.length) {
       document.getElementById("video").innerHTML = "No se encontraron servidores.";
+      document.getElementById("controles").innerHTML = "";
+      actualizarEstadoBotones();
       return;
     }
   } catch (error) {
     console.error("[servidores] No se pudieron cargar:", error);
     document.getElementById("video").innerHTML = "Error al cargar servidores.";
+    document.getElementById("controles").innerHTML = "";
+    actualizarEstadoBotones();
     return;
   }
 
   embeds = ep.servidores;
-  episodioActualIndex = index;
 
   // Reordenar servidores: Mega primero, luego YourUpload, luego el resto
   if (embeds && embeds.length > 0) {
@@ -475,8 +500,6 @@ async function cargarVideoDesdeEpisodio(index) {
   embeds.forEach((srv, i) => {
     srv.nombre = `Servidor ${i + 1}`;
   });
-
-  history.replaceState({}, "", `ver.html?id=${animeId}&url=${ep.number}`);
 
   const controles = document.getElementById("controles");
   controles.innerHTML = "";
