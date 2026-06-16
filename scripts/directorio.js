@@ -71,16 +71,23 @@ const initLoading = document.getElementById('init-loading');
 const resultadosContainer = document.getElementById('resultados');
 
 function crearAnimeCardResultados(anime) {
+    const coverImage = anime.cover || anime.image || 'img/loading.png';
     const div = document.createElement('div');
     div.className = 'anime-card';
-    div.style.setProperty('--cover', `url(${anime.cover})`);
-    const urlPart = anime.url.split('/').slice(2).join('/');
+    div.style.setProperty('--cover', `url(${coverImage})`);
+    let urlPart;
+    if (anime.url) {
+        const urlParts = anime.url.replace(/\/$/, '').split('/');
+        urlPart = urlParts[urlParts.length - 1];
+    } else {
+        urlPart = anime.id || anime.title?.toLowerCase().replace(/\s+/g, '-');
+    }
     div.innerHTML = `
     <a href="anime.html?id=${urlPart}" id="anime-${urlPart}">
     <div class="container-img">
-      <img src="${anime.cover}" class="cover" alt="${anime.title}">
+      <img src="${coverImage}" class="cover" alt="${anime.title}">
       <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-      <span class="estado">${anime.type}</span>
+      <span class="estado">${anime.type || ''}</span>
     </div>
     <strong>${anime.title}</strong>
     </a>`;
