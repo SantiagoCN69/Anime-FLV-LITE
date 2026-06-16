@@ -298,6 +298,7 @@ header.search-active .logout-modal {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
   svg {
     width: 24px;
     height: 24px;
@@ -306,6 +307,37 @@ header.search-active .logout-modal {
 .botones button:hover {
   transform: translateY(-2px) scale(1.05);
 }
+
+.botones button::after {
+  content: attr(data-text);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: linear-gradient(135deg, var(--btn), rgba(var(--btn2), 0.8));
+  color: var(--t1);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 8px;
+  z-index: 10;
+}
+
+.botones button:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
 #btn-fav {
   grid-area: fav;
   background: #5a131aad;
@@ -313,7 +345,6 @@ header.search-active .logout-modal {
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
   &:hover {
     filter: brightness(1.2);
     box-shadow: 3px 3px 20px #f222;
