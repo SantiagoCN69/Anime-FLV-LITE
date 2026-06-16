@@ -369,6 +369,9 @@ header.search-active .logout-modal {
   border-radius: 5px;
   overflow: hidden;
 }
+#btn-progreso:hover {
+  transform: scale(1);
+}
 #progreso-text::before {
   content: var(--progreso-text);
   position: absolute;
