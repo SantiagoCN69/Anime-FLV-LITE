@@ -28,38 +28,32 @@ const cargarDatosDesdeCache = id => {
 };
 
 const actualizarCache = (id, anime) => {
-  // Primero verificar si el anime ya existe en caché
   const existingData = localStorage.getItem(getCacheKey(id));
   const existingAnime = existingData ? JSON.parse(existingData) : null;
   
-  // Si existe y tiene fecha de caché, usar esa fecha
   const fechaActualizacion = existingAnime?._cachedAt || Date.now();
   const toCache = { ...anime, _cachedAt: fechaActualizacion };
   localStorage.setItem(getCacheKey(id), JSON.stringify(toCache));
   
-  // Verificar y mantener solo los 10 animes más recientes
   const animes = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith('anime_')) {
       try {
         const data = JSON.parse(localStorage.getItem(key));
-        if (data && data._cachedAt) { // Verificar que el objeto existe y tiene fecha
+        if (data && data._cachedAt) {
           animes.push({ id: key, fecha: data._cachedAt });
         }
       } catch (e) {
         console.error(`Error al procesar anime ${key}:`, e);
-        localStorage.removeItem(key); // Eliminar datos corruptos
+        localStorage.removeItem(key);
       }
     }
   }
 
-  // Si hay más de 5 animes, eliminar los más viejos
   if (animes.length > 20) {
     try {
-      // Ordenar animes por fecha (de más nuevo a más viejo)
       const animesOrdenados = animes.sort((a, b) => b.fecha - a.fecha);
-      // Eliminar todos los animes más allá del límite
       const animesAEliminar = animesOrdenados.slice(20);
       
       animesAEliminar.forEach(anime => {
@@ -84,10 +78,10 @@ const initLoadingCap = document.getElementById("init-loading-cap");
 
 function quitarTildesYEspacios(texto) {
   return texto
-    .normalize('NFD')                   // Descompone los caracteres con tilde
-    .replace(/[\u0300-\u036f]/g, '')   // Elimina las tildes
-    .replace(/ /g, '-')                // Reemplaza espacios por guiones
-    .toLowerCase(); //todo minuscula
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ /g, '-')
+    .toLowerCase();
 }
 
 const renderGeneros = (container, generos) => {
@@ -97,7 +91,6 @@ const renderGeneros = (container, generos) => {
       const a = document.createElement('a');
       a.textContent = g;
       a.className = 'genre-link';
-      // Convertir 'aventuras' a 'aventura' para la URL
       const generoUrl = g.toLowerCase() === 'aventuras' ? 'aventura' : g;
       a.href = `index.html?Directorio&genre[]=${quitarTildesYEspacios(generoUrl)}`;
 
@@ -308,7 +301,7 @@ const getAnchoColumna = () => {
   const li = capContenedor.querySelector('li');
   if (!li) return 0;
   const anchoLi = li.getBoundingClientRect().width;
-  const gap = 16; // 1rem = 16px
+  const gap = 16;
   return anchoLi + gap;
 };
 
