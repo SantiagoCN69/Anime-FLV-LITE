@@ -10,10 +10,17 @@ export const IA_SECTION_HTML = `
 </div>`;
 
 export function buildSimilarAnimePrompt(searchTerm) {
-  return `Corrige la ortografía de "${searchTerm}" (ejemplo: "chingeky" → "shingeky") y convierte nombres en español al oficial japonés/inglés (ejemplo: "los siete pecados" → "nanatsu-no-taizai"). Luego dame 5 animes similares.
-Usa SIEMPRE nombres oficiales en japonés/inglés (formato kebab-case con guiones).
-Responde SOLO con nombres separados por comas, sin espacios, sin caracteres especiales, sin explicaciones.
-Ejemplo: shingeki-no-kyojin,one-piece,dragon-ball,naruto,bleach,black-clover`;
+  return `Actúa como un traductor y normalizador de títulos de anime. Corrige la ortografía de "${searchTerm}" (ejemplo: "one pis" → "one-piece") e interpreta traducciones literales al nombre oficial (ejemplo: "la nobleza de las flores" → "kaoru-hana-wa-rin-to-saku").
+
+Una vez identificado el título oficial en japonés o inglés, genera una lista de 5 animes similares.
+
+REGLAS DE SALIDA:
+
+Usa SIEMPRE nombres oficiales en formato kebab-case (con guiones).
+El primer nombre de la lista DEBE ser el título corregido de "${searchTerm}".
+Responde ÚNICAMENTE con los nombres separados por comas.
+Sin espacios, sin mayúsculas, sin explicaciones ni texto adicional.
+Ejemplo de salida: kaoru-hana-wa-rin-to-saku,horimiya,kimi-ni-todoke,blue-box,skip-to-loafer`;
 }
 
 export function parseAnimeNamesFromResponse(text) {
