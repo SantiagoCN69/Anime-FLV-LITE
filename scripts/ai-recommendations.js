@@ -34,6 +34,7 @@ Reglas:
 * Formato: kebab-case.
 * Sin espacios después de las comas.
 * Sin explicaciones, texto adicional ni saltos de línea.
+* Nunca busques animes en español, siempre en japonés.
 
 Ejemplo:
 kaoru-hana-wa-rin-to-saku,horimiya,kimi-ni-todoke,blue-box,skip-to-loafer
