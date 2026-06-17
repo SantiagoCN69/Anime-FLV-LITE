@@ -1,5 +1,8 @@
 const IA_CHAT_URL = 'https://backend-ia-anime.onrender.com/api/chat';
+//const IA_CHAT_URL = '.com/chat';
+
 const SEARCH_URL = 'https://backend-animeflv-lite.onrender.com/api/search';
+//const SEARCH_URL = 'http://localhost:3001/api/search';
 
 export const IA_SECTION_HTML = `
 <div id="recomendaciones-ia-busqueda" class="recomendaciones-ia-busqueda">
@@ -10,17 +13,31 @@ export const IA_SECTION_HTML = `
 </div>`;
 
 export function buildSimilarAnimePrompt(searchTerm) {
-  return `Actúa como un traductor y normalizador de títulos de anime. Corrige la ortografía de "${searchTerm}" (ejemplo: "one pis" → "one-piece") e interpreta traducciones literales al nombre oficial (ejemplo: "la nobleza de las flores" → "kaoru-hana-wa-rin-to-saku").
+  return `Actúa como un normalizador de títulos de anime.
 
-Una vez identificado el título oficial en japonés o inglés, genera una lista de 5 animes similares.
+1. Identifica "${searchTerm}":
 
-REGLAS DE SALIDA:
+* Busca el título oficial en japonés (romaji).
+* Corrige errores ortográficos y nombres incompletos.
+* Interpreta traducciones o nombres alternativos y encuentra el anime correcto.
 
-Usa SIEMPRE nombres oficiales en formato kebab-case (con guiones).
-El primer nombre de la lista DEBE ser el título corregido de "${searchTerm}".
-Responde ÚNICAMENTE con los nombres separados por comas.
-Sin espacios, sin mayúsculas, sin explicaciones ni texto adicional.
-Ejemplo de salida: kaoru-hana-wa-rin-to-saku,horimiya,kimi-ni-todoke,blue-box,skip-to-loafer`;
+2. Genera:
+
+* Convierte el título oficial a kebab-case (minúsculas y guiones).
+* Usa solo el nombre oficial en romaji.
+* Recomienda 4 animes similares en género, tono y público objetivo.
+
+Reglas:
+
+* El primer elemento debe ser el anime corregido de "${searchTerm}".
+* Devuelve exactamente 5 nombres.
+* Formato: kebab-case.
+* Sin espacios después de las comas.
+* Sin explicaciones, texto adicional ni saltos de línea.
+
+Ejemplo:
+kaoru-hana-wa-rin-to-saku,horimiya,kimi-ni-todoke,blue-box,skip-to-loafer
+`;
 }
 
 export function parseAnimeNamesFromResponse(text) {
