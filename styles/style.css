@@ -1132,7 +1132,7 @@ margin-top: 10px;
     "container4 container4" !important;
 }
 
-@media screen and (max-width: 1300px) {
+@media screen and (max-width: 1000px) {
   .sin-resultados {
     min-height: calc(100dvh - 88px - 10px) !important;
 
@@ -1241,13 +1241,13 @@ margin-top: 10px;
 }
 
 #anime-grid-ia-busqueda {
+  align-items: center;
   position: relative;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
   gap: 1rem;
   padding: 8px;
-  padding-top: 1rem;
   min-height: 170px;
   height: fit-content;
 }
