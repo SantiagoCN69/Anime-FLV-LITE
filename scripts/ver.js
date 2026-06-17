@@ -296,6 +296,39 @@ function mapearServidoresApi(servidoresApi) {
   }));
 }
 
+function reordenarServidores(servidores) {
+  if (!servidores || servidores.length === 0) return servidores;
+  
+  let mp4uploadServer = null;
+  let megaServer = null;
+  let yourUploadServer = null;
+  const otherServers = [];
+
+  servidores.forEach(srv => {
+    if (srv && typeof srv.url === "string") {
+      if (srv.url.includes('mp4upload.com')) {
+        mp4uploadServer = srv;
+      } else if (srv.url.includes('mega.nz/')) {
+        megaServer = srv;
+      } else if (srv.url.includes('yourupload.com/embed/')) {
+        yourUploadServer = srv;
+      } else {
+        otherServers.push(srv);
+      }
+    } else {
+      otherServers.push(srv); 
+    }
+  });
+
+  const orderedEmbeds = [];
+  if (mp4uploadServer) orderedEmbeds.push(mp4uploadServer);
+  if (megaServer) orderedEmbeds.push(megaServer);
+  if (yourUploadServer) orderedEmbeds.push(yourUploadServer);
+  orderedEmbeds.push(...otherServers);
+  
+  return orderedEmbeds;
+}
+
 function convertirUrlAjkanime(url) {
   // Si ya es de jkanime, retornarla tal cual
   if (url.includes('jkanime.net')) {
@@ -382,7 +415,7 @@ async function sincronizarServidoresConApi(ep) {
       // API falló (404 u otro error), usar respaldo de Firestore
       if (servidoresFirestore.length) {
         console.log("[servidores] API falló, usando respaldo de Firestore");
-        return servidoresFirestore;
+        return reordenarServidores(servidoresFirestore);
       }
       return [];
     }
@@ -394,13 +427,13 @@ async function sincronizarServidoresConApi(ep) {
         await guardarServidoresEnFirestore(ep, servidoresApi);
       }
 
-      return servidoresApi;
+      return reordenarServidores(servidoresApi);
     }
 
     // Si la API no devuelve servidores, usar los de Firestore como respaldo (sin guardar)
     if (servidoresFirestore.length) {
       console.log("[servidores] API no devolvió servidores, usando respaldo de Firestore");
-      return servidoresFirestore;
+      return reordenarServidores(servidoresFirestore);
     }
 
     return [];
@@ -409,7 +442,7 @@ async function sincronizarServidoresConApi(ep) {
     // Si hay error inesperado, usar los de Firestore como respaldo (sin guardar)
     if (servidoresFirestore.length) {
       console.log("[servidores] Error inesperado, usando respaldo de Firestore");
-      return servidoresFirestore;
+      return reordenarServidores(servidoresFirestore);
     }
     throw error;
   }
@@ -498,32 +531,8 @@ async function cargarVideoDesdeEpisodio(index) {
 
   embeds = ep.servidores;
 
-  // Reordenar servidores: Mega primero, luego YourUpload, luego el resto
-  if (embeds && embeds.length > 0) {
-    let megaServer = null;
-    let yourUploadServer = null;
-    const otherServers = [];
-
-    embeds.forEach(srv => {
-      if (srv && typeof srv.url === "string") {
-        if (srv.url.includes('mega.nz/')) {
-          megaServer = srv;
-        } else if (srv.url.includes('yourupload.com/embed/')) {
-          yourUploadServer = srv;
-        } else {
-          otherServers.push(srv);
-        }
-      } else {
-        otherServers.push(srv); 
-      }
-    });
-
-    const orderedEmbeds = [];
-    if (megaServer) orderedEmbeds.push(megaServer);
-    if (yourUploadServer) orderedEmbeds.push(yourUploadServer);
-    orderedEmbeds.push(...otherServers);
-    embeds = orderedEmbeds;
-  }
+  // Reordenar servidores: Mp4upload primero, luego Mega, luego YourUpload, luego el resto
+  embeds = reordenarServidores(embeds);
   //reasigna los nombres de servidor segun el nuevo orden
   embeds.forEach((srv, i) => {
     srv.nombre = `Servidor ${i + 1}`;
