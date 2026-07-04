@@ -405,7 +405,7 @@ function leerCache(key) {
 }
 
 // Función auxiliar para verificar y limpiar caché con background.webp o estado no disponible
-function verificarYLimpiarCacheBackground(cacheKey, datos, campoPortada = 'portada', onLimpiar = null) {
+function verificarYLimpiarCacheBackground(cacheKey, datos, campoPortada = 'portada', onLimpiar = null, recargarPagina = false) {
   if (!datos || !Array.isArray(datos)) return false;
   
   const itemsConBackground = datos.filter(item => 
@@ -421,6 +421,11 @@ function verificarYLimpiarCacheBackground(cacheKey, datos, campoPortada = 'porta
     } else {
       localStorage.removeItem(cacheKey);
     }
+    
+    if (recargarPagina) {
+      location.reload();
+    }
+    
     return true;
   }
   return false;
@@ -472,7 +477,7 @@ async function cargarUltimosCapitulos() {
     // 1. Cargar desde caché local
     let cached = leerCache(cacheKey);
     if (cached) {
-      if (verificarYLimpiarCacheBackground(cacheKey, cached, 'cover')) {
+      if (verificarYLimpiarCacheBackground(cacheKey, cached, 'cover', null, true)) {
         cached = null;
       } else {
         render(cached);
@@ -579,8 +584,7 @@ async function cargarhistorial() {
     // Verificar si hay portadas background.webp y borrar cachés individuales
     if (verificarYLimpiarCacheBackground(null, animesAMostrar, 'portada', (items) => {
       items.forEach(anime => localStorage.removeItem('anime_' + anime.id));
-    })) {
-      cargarhistorial();
+    }, true)) {
       return;
     }
     
@@ -661,7 +665,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
 
   // Mostrar caché si es la primera carga
   if (cachedData && offset === 0) {
-    if (verificarYLimpiarCacheBackground(cacheKey, cachedData)) {
+    if (verificarYLimpiarCacheBackground(cacheKey, cachedData, 'portada', null, true)) {
       // Caché borrado, continuar con carga desde Firestore
     } else {
       agregarAnimesAlContenedor(cachedData, container);
@@ -759,8 +763,7 @@ async function cargarContinuarViendo() {
   }
    let datos = JSON.parse(localStorage.getItem(cachekey));
    
-   if (verificarYLimpiarCacheBackground(cachekey, datos)) {
-     cargarContinuarViendo();
+   if (verificarYLimpiarCacheBackground(cachekey, datos, 'portada', null, true)) {
      return;
    }
    
