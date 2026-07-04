@@ -348,7 +348,7 @@ async function obtenerServidoresDesdeApi(episodio) {
   console.log("[obtenerServidoresDesdeApi] URL original:", episodio.url);
   console.log("[obtenerServidoresDesdeApi] URL convertida:", urlEpisodio);
 
-  const res = await fetch(`http://localhost:3001/api/episode?url=${encodeURIComponent(urlEpisodio)}`);
+  const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(urlEpisodio)}`);
   if (!res.ok) {
     console.warn(`[API episode] API respondió ${res.status} para: ${urlEpisodio}`);
     return null; // Retornar null en lugar de lanzar error
@@ -464,7 +464,7 @@ async function cargarEpisodios() {
   }
 
   try {
-    const res = await fetch(`http://localhost:3001/api/anime?id=${encodeURIComponent(animeId)}`);
+    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${encodeURIComponent(animeId)}`);
     if (!res.ok) throw new Error(`API anime respondió ${res.status}`);
 
     const data = await res.json();
