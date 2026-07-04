@@ -513,27 +513,99 @@ async function cargarVideoDesdeEpisodio(index) {
   episodioActualIndex = index;
   history.replaceState({}, "", `ver.html?id=${animeId}&url=${ep.number}`);
 
+  // 1. Cargar servidores de Firestore primero (instantáneo)
+  let servidoresFirestore = [];
   try {
-    ep.servidores = await sincronizarServidoresConApi(ep);
-    if (!ep.servidores?.length) {
-      document.getElementById("video").innerHTML = "No se encontraron servidores.";
-      document.getElementById("controles").innerHTML = "";
-      actualizarEstadoBotones();
-      return;
+    const animeDatosRef = doc(db, "datos-animes", animeId);
+    const animeDatosSnap = await getDoc(animeDatosRef);
+    const animeDatos = animeDatosSnap.data() || {};
+    const episodioGuardado = animeDatos.episodios?.find(e => e.url === ep.url);
+
+    if (episodioGuardado?.servidores?.length) {
+      servidoresFirestore = episodioGuardado.servidores;
+      console.log("[cargarVideoDesdeEpisodio] Servidores cargados de Firestore:", servidoresFirestore.length);
     }
   } catch (error) {
-    console.error("[servidores] No se pudieron cargar:", error);
-    document.getElementById("video").innerHTML = "Error al cargar servidores.";
+    console.error("[cargarVideoDesdeEpisodio] Error al leer servidores de Firestore:", error);
+  }
+
+  // 2. Si hay servidores en Firestore, mostrarlos inmediatamente
+  if (servidoresFirestore.length) {
+    ep.servidores = reordenarServidores(servidoresFirestore);
+    renderizarServidores(ep.servidores);
+  } else {
+    // Si no hay en Firestore, mostrar indicador de carga
+    document.getElementById("controles").innerHTML = "<span class='span-carga'>Cargando servidores...</span>";
+  }
+
+  // 3. Sincronizar con la API en segundo plano
+  try {
+    const servidoresApi = await obtenerServidoresDesdeApi(ep);
+
+    if (servidoresApi === null) {
+      // API falló, mantener los de Firestore si existen
+      if (!servidoresFirestore.length) {
+        document.getElementById("video").innerHTML = "No se encontraron servidores.";
+        document.getElementById("controles").innerHTML = "";
+      }
+      actualizarEstadoBotones();
+      return ep;
+    }
+
+    if (servidoresApi.length) {
+      const iguales = servidoresSonIguales(servidoresFirestore, servidoresApi);
+
+      if (!iguales) {
+        // Actualizar Firestore con los nuevos servidores
+        await guardarServidoresEnFirestore(ep, servidoresApi);
+      }
+
+      // Si los servidores son diferentes, actualizar la UI
+      if (!iguales) {
+        ep.servidores = reordenarServidores(servidoresApi);
+        renderizarServidores(ep.servidores);
+      }
+    } else if (!servidoresFirestore.length) {
+      // API no devolvió servidores y no hay en Firestore
+      document.getElementById("video").innerHTML = "No se encontraron servidores.";
+      document.getElementById("controles").innerHTML = "";
+    }
+  } catch (error) {
+    console.error("[cargarVideoDesdeEpisodio] Error al sincronizar con API:", error);
+    if (!servidoresFirestore.length) {
+      document.getElementById("video").innerHTML = "Error al cargar servidores.";
+      document.getElementById("controles").innerHTML = "";
+    }
+  }
+
+  actualizarEstadoBotones();
+
+  // Pre-cargar siguiente episodio (si existe)
+  const siguiente = episodios.find(e => e.number === index + 1);
+
+  if (siguiente) {
+    sincronizarServidoresConApi(siguiente)
+      .then(servidores => {
+        if (servidores?.length) {
+          siguiente.servidores = servidores;
+        }
+      })
+      .catch(() => {});
+  }
+
+  return ep;
+}
+
+function renderizarServidores(servidores) {
+  if (!servidores?.length) {
+    document.getElementById("video").innerHTML = "No hay servidores disponibles.";
     document.getElementById("controles").innerHTML = "";
-    actualizarEstadoBotones();
     return;
   }
 
-  embeds = ep.servidores;
+  embeds = servidores;
 
-  // Reordenar servidores: Mp4upload primero, luego Mega, luego YourUpload, luego el resto
-  embeds = reordenarServidores(embeds);
-  //reasigna los nombres de servidor segun el nuevo orden
+  // Reasignar nombres de servidor según el nuevo orden
   embeds.forEach((srv, i) => {
     srv.nombre = `Servidor ${i + 1}`;
   });
@@ -554,27 +626,11 @@ async function cargarVideoDesdeEpisodio(index) {
     if (buttons.length > 0) {
       mostrarVideo(embeds[0], buttons[0]);
     } else {
-      // Esto no debería ocurrir si embeds tiene elementos y los botones se crean correctamente
       document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
     }
   } else {
     document.getElementById("video").innerHTML = "No hay servidores disponibles para mostrar.";
   }
-
-  // Pre-cargar siguiente episodio (si existe)
-  const siguiente = episodios.find(e => e.number === index + 1);
-
-  if (siguiente) {
-    sincronizarServidoresConApi(siguiente)
-      .then(servidores => {
-        if (servidores?.length) {
-          siguiente.servidores = servidores;
-        }
-      })
-      .catch(() => {});
-  }
-
-  return ep;
 }
 
 //funcion extraer nombre del link
