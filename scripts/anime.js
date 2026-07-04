@@ -304,7 +304,11 @@ const renderAnime = anime => {
   aplicarFondoAnime(anime);
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);
-  ratingEl.textContent = anime.rating + "/5";
+  if (anime.rating === null) {
+    ratingEl.style.display = 'none';
+  } else {
+    ratingEl.textContent = anime.rating + "/5";
+  }
   crearBotonesEpisodios(anime);
   renderRelacionados(anime);
 };
