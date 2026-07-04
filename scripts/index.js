@@ -666,7 +666,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           animes.push({
             id: docSnap.id,
             titulo: data.titulo,
-            portada: data.portada || 'img/background.webp',
+            portada: data.portada || data.banner,
             estado: data.estado || 'No disponible',
             rating: data.rating || null
           });
