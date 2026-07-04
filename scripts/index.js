@@ -357,6 +357,7 @@ async function cargarUltimosCapsVistos() {
 }
   // Función para crear tarjeta de anime
   function createAnimeCard(anime, siguienteEpisodioUrl) {
+    console.log(anime);
     const div = document.createElement('div');
     let chapterHtml = ''; 
     let estadoHtml = '';
@@ -459,11 +460,24 @@ async function cargarUltimosCapitulos() {
         container.innerHTML = '<p>No se encontraron últimos episodios.</p>';
         return;
       }
-  
+    
+      const getIdFromUrl = (url) => {
+        if (!url) return '';
+
+        const clean = url.replace(/\/+$/, ''); 
+        const parts = clean.split('/');
+
+        const last = parts[parts.length - 1];
+
+        if (/^\d+$/.test(last)) {
+          return parts[parts.length - 2] || '';
+        }
+        return last || '';
+      };
       const fragment = document.createDocumentFragment();
       datos.forEach(anime => {
         const card = createAnimeCard({
-          id: anime.url?.split('/').pop()?.replace(/-\d+$/, '') || '',
+          id: getIdFromUrl(anime.url),
           portada: anime.cover || '',
           titulo: anime.title || 'Sin título',
           siguienteCapitulo: anime.chapter?.toString() || ''
@@ -515,7 +529,6 @@ async function cargarUltimosCapitulos() {
     try {
       const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
       const apiData = await res.json();
-      console.log(apiData);
   
       if (!Array.isArray(apiData)) {
         throw new Error('Formato de respuesta inválido');
