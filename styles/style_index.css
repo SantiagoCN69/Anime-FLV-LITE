@@ -258,6 +258,7 @@ h3 {
 }
 
 .grid-animes.lab {
+  padding-right: 30px;
  display: flex !important;
  width: fit-content;
  max-width: 100%;
