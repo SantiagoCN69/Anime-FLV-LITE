@@ -449,13 +449,17 @@ async function sincronizarServidoresConApi(ep) {
 }
 
 async function cargarEpisodios() {
+  console.log('cargarEpisodios - Iniciando');
   try {
     const episodiosRef = doc(db, "datos-animes", animeId);
     const docSnap = await getDoc(episodiosRef);
 
     if (docSnap.exists()) {
       const data = docSnap.data();
+      console.log('Datos de Firestore:', data);
       episodios = data.episodios || [];
+      console.log('Llamando aplicarFondoAnime con datos de Firestore');
+      aplicarFondoAnime(data);
       if (episodios.length) {
         await cargarVideoDesdeEpisodio(episodioActualIndex);
         return episodios;
@@ -471,15 +475,26 @@ async function cargarEpisodios() {
     if (!res.ok) throw new Error(`API anime respondió ${res.status}`);
 
     const data = await res.json();
+    console.log('Datos de API:', data);
     episodios = (data.episodes || []).map(ep => ({ number: ep.number, url: ep.url }));
 
     if (!episodios.length) {
       throw new Error("La API no devolvió episodios");
     }
 
+    const animeData = {
+      portada: data.cover || '',
+      banner: data.banner || ''
+    };
+    console.log('animeData para fondo:', animeData);
+    console.log('Llamando aplicarFondoAnime con datos de API');
+    aplicarFondoAnime(animeData);
+
     await setDoc(doc(db, "datos-animes", animeId), {
       episodios,
-      titulo: data.title || animeId
+      titulo: data.title || animeId,
+      portada: data.cover || '',
+      banner: data.banner || ''
     }, { merge: true });
 
     await cargarVideoDesdeEpisodio(episodioActualIndex);
@@ -491,6 +506,16 @@ async function cargarEpisodios() {
       controles.innerHTML = "<span class='span-carga'><h2>Error</h2><br>No se pudieron cargar los episodios.</span>";
     }
     throw err;
+  }
+}
+
+function aplicarFondoAnime(anime) {
+  const imagenUrl = anime.portada || anime.banner;
+  if (imagenUrl) {
+    document.body.style.backgroundImage = `url('${imagenUrl}')`;
+    console.log('Fondo aplicado:', imagenUrl);
+  } else {
+    console.log('No hay imagen para fondo');
   }
 }
 

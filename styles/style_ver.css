@@ -1,3 +1,28 @@
+body {
+  overflow-x: hidden !important;
+  overflow-y: auto;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--b);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(50px) brightness(0.2);
+  z-index: -1;
+  scale: 1.5;
+}
 
 header {
   padding-left: calc(2rem - 10px);
