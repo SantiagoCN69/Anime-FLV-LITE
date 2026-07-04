@@ -21,7 +21,7 @@ body::before {
   background-repeat: no-repeat;
   filter: blur(50px) brightness(0.2);
   z-index: -1;
-  scale: 1.5;
+  scale: 2.2;
 }
 
 header {
