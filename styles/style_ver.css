@@ -410,7 +410,7 @@ overflow: hidden;
 #controles {
   display: flex;
 }
-#controles button {
+#controles button, #controles a {
   position: relative;
   padding: 15px 8px;
   flex:1;
@@ -419,16 +419,18 @@ overflow: hidden;
   opacity: .6;
   color: var(--t1);
   font-weight: bolder;
+  font-size: .8rem;
+  text-align: center;
   cursor: pointer;
   z-index: 2;
 }
-#controles button:nth-child(1){
+#controles button:nth-child(1), #controles a:nth-child(1){
   border-top-left-radius: 8px;
 }
-#controles button:last-child{
+#controles button:last-child, #controles a:last-child{
   border-top-right-radius: 8px;
 }
-#controles button::after {
+#controles button::after, #controles a::after {
   padding: 5px 10px;
   border-radius: 10px;
   position: absolute;
@@ -438,16 +440,16 @@ overflow: hidden;
   background-color: var(--p); 
 }
 @media (hover: hover) {
-#controles button:hover::after {
+#controles button:hover::after, #controles a:hover::after {
   content: attr(data-title);
 }
 }
-#controles button:active::after {
+#controles button:active::after, #controles a:active::after {
   content: attr(data-title);
 }
 
 @media screen and (min-width:1050px){
-  #controles button::before {
+  #controles button::before, #controles a::before {
     content: "Servidor "
   }
 }
