@@ -404,6 +404,28 @@ function leerCache(key) {
     return null;
 }
 
+// Función auxiliar para verificar y limpiar caché con background.webp o estado no disponible
+function verificarYLimpiarCacheBackground(cacheKey, datos, campoPortada = 'portada', onLimpiar = null) {
+  if (!datos || !Array.isArray(datos)) return false;
+  
+  const itemsConBackground = datos.filter(item => 
+    item[campoPortada] === 'img/background.webp' || 
+    item[campoPortada] === 'background.webp' ||
+    item.estado === 'No disponible' ||
+    item.estado === 'no disponible'
+  );
+  
+  if (itemsConBackground.length > 0) {
+    if (onLimpiar) {
+      onLimpiar(itemsConBackground);
+    } else {
+      localStorage.removeItem(cacheKey);
+    }
+    return true;
+  }
+  return false;
+}
+
 function guardarCache(key, data) {
   try {
     if (!Array.isArray(data) || data.length === 0) {
@@ -450,7 +472,11 @@ async function cargarUltimosCapitulos() {
     // 1. Cargar desde caché local
     let cached = leerCache(cacheKey);
     if (cached) {
-      render(cached);
+      if (verificarYLimpiarCacheBackground(cacheKey, cached, 'cover')) {
+        cached = null;
+      } else {
+        render(cached);
+      }
     }
   
     const normalizar = obj => {
@@ -550,6 +576,14 @@ async function cargarhistorial() {
   
   // Mostrar u ocultar según si hay animes
   if (animesAMostrar.length > 0) {
+    // Verificar si hay portadas background.webp y borrar cachés individuales
+    if (verificarYLimpiarCacheBackground(null, animesAMostrar, 'portada', (items) => {
+      items.forEach(anime => localStorage.removeItem('anime_' + anime.id));
+    })) {
+      cargarhistorial();
+      return;
+    }
+    
     historialh2.classList.remove('hidden');
     historialContainer.classList.remove('hidden');
     
@@ -627,8 +661,12 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
 
   // Mostrar caché si es la primera carga
   if (cachedData && offset === 0) {
+    if (verificarYLimpiarCacheBackground(cacheKey, cachedData)) {
+      // Caché borrado, continuar con carga desde Firestore
+    } else {
       agregarAnimesAlContenedor(cachedData, container);
       h2.dataset.text = "Disponibles: " + cachedData.length;
+    }
   }
 
   try {
@@ -720,6 +758,12 @@ async function cargarContinuarViendo() {
     return;
   }
    let datos = JSON.parse(localStorage.getItem(cachekey));
+   
+   if (verificarYLimpiarCacheBackground(cachekey, datos)) {
+     cargarContinuarViendo();
+     return;
+   }
+   
    datos.forEach(data => {
     container.appendChild(createAnimeCard(data, data.siguienteCapitulo));
     observerAnimeCards();

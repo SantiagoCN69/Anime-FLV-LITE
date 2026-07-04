@@ -467,7 +467,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
         if (guardarEnCache) {
             const animeData = {
                 titulo: anime.title || '',
-                portada: anime.cover || '',
+                portada: anime.cover || anime.portada || anime.banner || anime.image,
                 descripcion: anime.synopsis || '',
                 rating: anime.rating || null,
                 episodios: anime.episodes?.map(ep => ({ 
@@ -480,7 +480,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
             animesEncontrados.push({
                 id: anime.id,
                 title: anime.title,
-                cover: anime.cover,
+                cover: anime.cover || anime.portada || anime.banner || anime.image,
                 rating: anime.rating,
                 type: anime.type
             });
