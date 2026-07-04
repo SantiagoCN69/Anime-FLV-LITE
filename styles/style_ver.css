@@ -410,24 +410,40 @@ overflow: hidden;
 #controles {
   display: flex;
 }
-#controles button, #controles a {
+#controles button,
+#controles a {
   position: relative;
-  padding: 15px 8px;
-  flex:1;
-  border:none;
-  background-color: var(--p);
-  opacity: .6;
-  color: var(--t1);
+  flex: 1;
+  border: none;
   font-weight: bolder;
   font-size: .8rem;
   text-align: center;
   cursor: pointer;
   z-index: 2;
+  padding: 15px 8px;
+}
+
+#controles button {
+  background-color: var(--p);
+  opacity: .6;
+  color: var(--t1);
+}
+
+#controles a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px;
+  background: #3ca0e7;
+  border-radius: 8px;
+  text-decoration: none;
+  opacity: 1;
 }
 #controles button:nth-child(1), #controles a:nth-child(1){
   border-top-left-radius: 8px;
 }
-#controles button:last-child, #controles a:last-child{
+#controles button:nth-last-child(2),
+#controles a:nth-last-child(2){
   border-top-right-radius: 8px;
 }
 #controles button::after, #controles a::after {
@@ -448,8 +464,8 @@ overflow: hidden;
   content: attr(data-title);
 }
 
-@media screen and (min-width:1050px){
-  #controles button::before, #controles a::before {
+@media screen and (min-width:1350px){
+  #controles button::before{
     content: "Servidor "
   }
 }
@@ -480,9 +496,7 @@ iframe {
 .reproductor-container.censure #fullscreen {
   opacity: 1;
 }
-.reproductor-container a {
-  pointer-events: none;
-}
+
 #fullscreen {
   opacity: 0;
   position: absolute;

@@ -298,34 +298,61 @@ function mapearServidoresApi(servidoresApi) {
 
 function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
-  
+
+  let jkPlayers = [];
   let mp4uploadServer = null;
   let megaServer = null;
   let yourUploadServer = null;
+  const mediafireServers = [];
   const otherServers = [];
 
   servidores.forEach(srv => {
     if (srv && typeof srv.url === "string") {
-      if (srv.url.includes('mp4upload.com')) {
+
+      const url = srv.url.toLowerCase();
+
+      if (srv.type === "player" || url.includes("jkplayer")) {
+        jkPlayers.push(srv);
+      }
+
+      else if (srv.url.includes('mp4upload.com')) {
         mp4uploadServer = srv;
+
       } else if (srv.url.includes('mega.nz/')) {
         megaServer = srv;
+
       } else if (srv.url.includes('yourupload.com/embed/')) {
         yourUploadServer = srv;
+
+      }
+
+      else if (url.includes('mediafire.com')) {
+        mediafireServers.push({
+          ...srv,
+          name: "Descargar"
+        });
+
       } else {
         otherServers.push(srv);
       }
+
     } else {
-      otherServers.push(srv); 
+      otherServers.push(srv);
     }
   });
 
   const orderedEmbeds = [];
+
+  orderedEmbeds.push(...jkPlayers);
+
   if (mp4uploadServer) orderedEmbeds.push(mp4uploadServer);
   if (megaServer) orderedEmbeds.push(megaServer);
   if (yourUploadServer) orderedEmbeds.push(yourUploadServer);
+
   orderedEmbeds.push(...otherServers);
-  
+
+  orderedEmbeds.push(...mediafireServers);
+
   return orderedEmbeds;
 }
 
@@ -638,23 +665,58 @@ function renderizarServidores(servidores) {
   const controles = document.getElementById("controles");
   controles.innerHTML = "";
   embeds.forEach((srv, i) => {
+
+    const url = srv.url?.toLowerCase?.() || "";
+
+    // 🔥 MEDIAFIRE -> <a> DESCARGAR
+  if (url.includes("mediafire.com")) {
+  const a = document.createElement("a");
+  a.href = srv.url;
+
+  a.innerHTML = `
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path opacity="0.5" d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 3V16M12 16L16 11.625M12 16L8 11.625"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `;
+
+  a.classList.add("btn-descarga");
+
+      a.target = "_blank";
+      a.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
+      a.rel = "noopener noreferrer";
+      controles.appendChild(a);
+      return;
+    }
+
+    // 🔥 RESTO -> button normal
     const btn = document.createElement("button");
-    btn.textContent = srv.nombre ? srv.nombre.replace("Servidor ", "") : `${i + 1}`;
+    btn.textContent = srv.nombre
+      ? srv.nombre.replace("Servidor ", "")
+      : `${i + 1}`;
+
     btn.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
     btn.onclick = () => mostrarVideo(srv, btn);
+
     controles.appendChild(btn);
   });
 
-  // Mostrar el primer video de la lista reordenada (si existe)
+  // 🔥 primer video igual que antes
   if (embeds && embeds.length > 0) {
+    const firstPlayable = embeds.find(s => !s.url?.includes("mediafire.com"));
     const buttons = controles.querySelectorAll("button");
+
     if (buttons.length > 0) {
-      mostrarVideo(embeds[0], buttons[0]);
+      mostrarVideo(firstPlayable || embeds[0], buttons[0]);
     } else {
-      document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
+      document.getElementById("video").innerHTML =
+        "No se encontraron botones de servidor.";
     }
   } else {
-    document.getElementById("video").innerHTML = "No hay servidores disponibles para mostrar.";
+    document.getElementById("video").innerHTML =
+      "No hay servidores disponibles para mostrar.";
   }
 }
 
