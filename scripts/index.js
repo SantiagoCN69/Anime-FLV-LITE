@@ -437,8 +437,8 @@ function guardarCache(key, data) {
       localStorage.removeItem(key);
       return;
     }
-    const dataToCache = data.slice(0, 20);
-    localStorage.setItem(key, JSON.stringify(dataToCache));
+
+    localStorage.setItem(key, JSON.stringify(data));
   } catch (e) {
     console.error(`Error guardando cache (${key}):`, e);
     localStorage.removeItem(key);
@@ -515,6 +515,7 @@ async function cargarUltimosCapitulos() {
     try {
       const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
       const apiData = await res.json();
+      console.log(apiData);
   
       if (!Array.isArray(apiData)) {
         throw new Error('Formato de respuesta inválido');
