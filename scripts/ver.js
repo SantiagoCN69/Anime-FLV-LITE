@@ -289,6 +289,13 @@ function servidoresSonIguales(servidoresA, servidoresB) {
   return urlsA.every((url, i) => url === urlsB[i]);
 }
 
+function mapearServidoresApi(servidoresApi) {
+  return servidoresApi.map((servidor, index) => ({
+    nombre: `Servidor ${index + 1}`,
+    url: typeof servidor === "string" ? servidor : servidor.url
+  }));
+}
+
 function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
 
