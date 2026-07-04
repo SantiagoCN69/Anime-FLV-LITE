@@ -227,16 +227,40 @@ function crearAnimeCard(anime, isLink = false) {
     return div;
 }
 
+// Función para mostrar alertas flotantes
+function mostrarPildora(mensaje, tipo = "default") {
+  const pillAnterior = document.querySelector('.pildora');
+  if (pillAnterior) {
+    pillAnterior.remove();
+  }
+
+  const pill = document.createElement("div");
+  pill.classList.add("pildora");
+  pill.classList.add(`pildora-${tipo}`);
+  pill.textContent = mensaje;
+
+  document.body.appendChild(pill);
+
+  requestAnimationFrame(() => {
+    pill.classList.add("mostrar");
+  });
+
+  setTimeout(() => {
+    pill.classList.remove("mostrar");
+    setTimeout(() => pill.remove(), 400);
+  }, 3000);
+}
+
 // Función para agregar animes a pendientes
 document.getElementById("agregar-a-pendientes").addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user) {
-    alert("Por favor, inicia sesión primero");
+    mostrarPildora("Por favor, inicia sesión primero", "error");
     return;
   }
 
   if (!window.seleccionados || window.seleccionados.size === 0) {
-    alert("Por favor, selecciona al menos un anime");
+    mostrarPildora("Por favor, selecciona al menos un anime", "error");
     return;
   }
 
@@ -267,10 +291,10 @@ document.getElementById("agregar-a-pendientes").addEventListener("click", async 
       card.classList.remove('active');
     });
 
-    alert("Animes agregados a pendientes exitosamente!");
+    mostrarPildora("Animes agregados a pendientes exitosamente!", "success");
   } catch (error) {
     console.error("Error al agregar animes a pendientes:", error);
-    alert("Error al agregar animes a pendientes. Por favor, intenta nuevamente.");
+    mostrarPildora("Error al agregar animes a pendientes. Por favor, intenta nuevamente.", "error");
   }
 });
 
