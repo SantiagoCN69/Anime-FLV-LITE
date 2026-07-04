@@ -421,7 +421,7 @@ overflow: hidden;
   content: attr(data-title);
 }
 
-@media screen and (min-width:1047px){
+@media screen and (min-width:1050px){
   #controles button::before {
     content: "Servidor "
   }
