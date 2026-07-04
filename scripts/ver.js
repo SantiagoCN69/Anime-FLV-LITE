@@ -298,28 +298,35 @@ function mapearServidoresApi(servidoresApi) {
 
 function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
-
-  const jkPlayers = [];
-  const otros = [];
+  
+  let mp4uploadServer = null;
+  let megaServer = null;
+  let yourUploadServer = null;
+  const otherServers = [];
 
   servidores.forEach(srv => {
-    if (!srv || typeof srv.url !== "string") {
-      otros.push(srv);
-      return;
-    }
-
-    // 🔥 SOLO ESTO: detectar players de JKAnime
-    if (
-      srv.type === "player" ||
-      (srv.url && srv.url.includes("jkplayer"))
-    ) {
-      jkPlayers.push(srv);
+    if (srv && typeof srv.url === "string") {
+      if (srv.url.includes('mp4upload.com')) {
+        mp4uploadServer = srv;
+      } else if (srv.url.includes('mega.nz/')) {
+        megaServer = srv;
+      } else if (srv.url.includes('yourupload.com/embed/')) {
+        yourUploadServer = srv;
+      } else {
+        otherServers.push(srv);
+      }
     } else {
-      otros.push(srv);
+      otherServers.push(srv); 
     }
   });
 
-  return [...jkPlayers, ...otros];
+  const orderedEmbeds = [];
+  if (mp4uploadServer) orderedEmbeds.push(mp4uploadServer);
+  if (megaServer) orderedEmbeds.push(megaServer);
+  if (yourUploadServer) orderedEmbeds.push(yourUploadServer);
+  orderedEmbeds.push(...otherServers);
+  
+  return orderedEmbeds;
 }
 
 function convertirUrlAjkanime(url) {
