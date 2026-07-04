@@ -289,44 +289,30 @@ function servidoresSonIguales(servidoresA, servidoresB) {
   return urlsA.every((url, i) => url === urlsB[i]);
 }
 
-function mapearServidoresApi(servidoresApi) {
-  return servidoresApi.map((servidor, index) => ({
-    nombre: `Servidor ${index + 1}`,
-    url: typeof servidor === "string" ? servidor : servidor.url
-  }));
-}
-
 function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
-  
-  let mp4uploadServer = null;
-  let megaServer = null;
-  let yourUploadServer = null;
-  const otherServers = [];
+
+  const jkPlayers = [];
+  const otros = [];
 
   servidores.forEach(srv => {
-    if (srv && typeof srv.url === "string") {
-      if (srv.url.includes('mp4upload.com')) {
-        mp4uploadServer = srv;
-      } else if (srv.url.includes('mega.nz/')) {
-        megaServer = srv;
-      } else if (srv.url.includes('yourupload.com/embed/')) {
-        yourUploadServer = srv;
-      } else {
-        otherServers.push(srv);
-      }
+    if (!srv || typeof srv.url !== "string") {
+      otros.push(srv);
+      return;
+    }
+
+    // 🔥 SOLO ESTO: detectar players de JKAnime
+    if (
+      srv.type === "player" ||
+      (srv.url && srv.url.includes("jkplayer"))
+    ) {
+      jkPlayers.push(srv);
     } else {
-      otherServers.push(srv); 
+      otros.push(srv);
     }
   });
 
-  const orderedEmbeds = [];
-  if (mp4uploadServer) orderedEmbeds.push(mp4uploadServer);
-  if (megaServer) orderedEmbeds.push(megaServer);
-  if (yourUploadServer) orderedEmbeds.push(yourUploadServer);
-  orderedEmbeds.push(...otherServers);
-  
-  return orderedEmbeds;
+  return [...jkPlayers, ...otros];
 }
 
 function convertirUrlAjkanime(url) {
@@ -355,7 +341,7 @@ async function obtenerServidoresDesdeApi(episodio) {
   console.log("[obtenerServidoresDesdeApi] URL original:", episodio.url);
   console.log("[obtenerServidoresDesdeApi] URL convertida:", urlEpisodio);
 
-  const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(urlEpisodio)}`);
+  const res = await fetch(`http://localhost:3001/api/episode?url=${encodeURIComponent(urlEpisodio)}`);
   if (!res.ok) {
     console.warn(`[API episode] API respondió ${res.status} para: ${urlEpisodio}`);
     return null; // Retornar null en lugar de lanzar error
@@ -471,7 +457,7 @@ async function cargarEpisodios() {
   }
 
   try {
-    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${encodeURIComponent(animeId)}`);
+    const res = await fetch(`http://localhost:3001/api/anime?id=${encodeURIComponent(animeId)}`);
     if (!res.ok) throw new Error(`API anime respondió ${res.status}`);
 
     const data = await res.json();
