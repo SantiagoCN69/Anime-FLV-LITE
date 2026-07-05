@@ -163,7 +163,7 @@ nav.filtros {
 #filtro-genero ul {
   grid-template-columns: repeat(auto-fill, 120px);
 }
-#filtro-ano ul {
+#filtro-ano ul, #filtro-letra ul {
   grid-template-columns: repeat(auto-fill, 62px);
 }
 
@@ -201,6 +201,7 @@ nav.filtros {
 
 .pagination {
   display: flex;
+  justify-content: center;
   gap: 10px;
   margin-top: 1rem;
   padding: 5px;
@@ -557,4 +558,203 @@ svg {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.3rem;
+}
+#subheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#subheader > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Contenedor principal de los filtros */
+#filtrosseleccionados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.filtro-activo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; 
+  background-color: #1f2937; 
+  color: #f3f4f6; 
+  padding: 5px 14px;
+  border-radius: 9999px; 
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #374151; 
+  padding-block-end: 7px;
+  padding-right: 27px;
+  position: relative;
+}
+
+/* Estilo del botón de eliminar (la 'x') */
+.filtro-activo button {
+  background: none;
+  border: none;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  right: 5px;
+}
+
+.filtro-activo button:hover {
+  color: #ef4444;
+  transform: scale(1.1) translateY(-50%);
+}
+
+#layout {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+
+#layout button {
+  width: 40px;
+  height: 40px;
+  background: var(--t1);
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#layout button:hover {
+  background: #2a2a3a;
+}
+
+#layout button.active {
+  background: var(--btn);
+}
+
+#layout svg {
+  width: 100%;
+  height: 100%;
+  color: var(--t1);
+}
+/* ===== CONTADOR PAG ===== */
+#Num-pag {
+  display: block;
+  padding: 10px;
+  opacity: 0.8;
+}
+#contenedor-animes {
+  display: grid;
+  gap: 12px;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+/* ===== LAYOUT 1: GRID TARJETAS ===== */
+#contenedor-animes.layout1 {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+/* ===== LAYOUT 2: MÁS GRANDE ===== */
+#contenedor-animes.layout2 {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+/* ===== LAYOUT 3: LISTA ===== */
+#contenedor-animes.layout3 {
+  grid-template-columns: 1fr;
+}
+.card-anime {
+  background: #1a1a24;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: 0.2s;
+}
+
+.card-anime:hover {
+  transform: scale(1.03);
+}
+
+/* IMG */
+.card-anime img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+/* TITULO */
+.card-anime h3 {
+  font-size: 14px;
+  margin: 8px;
+}
+
+/* SINOPSIS */
+.card-anime p {
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 0 8px 10px;
+}
+
+/* ===== LISTA (layout 3) ===== */
+#contenedor-animes.layout3 .card-anime {
+  display: flex;
+  height: 120px;
+}
+
+#contenedor-animes.layout3 .card-anime img {
+  width: 90px;
+  height: 100%;
+}
+
+#contenedor-animes.layout3 .card-anime p {
+  display: none;
+}
+
+/* ===== ESTILOS FALTANTES DIRECTORIO ===== */
+.section-title {
+  color: var(--t1);
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.anime-details {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.span-carga {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  color: var(--t2);
+  font-size: 1.2rem;
+}
+
+#btn-aleatorio {
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+  color: var(--t1);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+#btn-aleatorio:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+#layout button.active {
+  background: var(--btn);
 }

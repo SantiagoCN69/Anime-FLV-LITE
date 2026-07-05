@@ -1,7 +1,197 @@
 import { mostrarSeccionDesdesearch } from './index.js';
 
-document.getElementById('btn-fuente-directorio-JK').addEventListener('click', () => {
+let paginaActual = 1;
+let totalPaginas = 1;
+
+const filtros = {
+  orden: "", genero: "", letra: "", demografia: "", categoria: "",
+  tipo: "", estado: "", fecha: "", temporada: "", orden_dir: ""
+};
+
+const $ = id => document.getElementById(id);
+
+$('btn-fuente-directorio-JK')?.addEventListener('click', () => {
    history.replaceState(null, '', `?DirectorioFLV`);
    mostrarSeccionDesdesearch();
 });
 
+const actualizarBoton = (idBtn, texto) => {
+  const span = $(idBtn)?.querySelector("span");
+  if (span) span.textContent = texto;
+};
+
+const contarFiltrosActivos = () => Object.values(filtros).filter(v => v).length;
+
+const actualizarContador = () => {
+  const btn = $('btn-filtrar');
+  if (!btn) return;
+  const total = contarFiltrosActivos();
+  btn.textContent = total > 0 ? `FILTRAR (${total})` : "FILTRAR";
+};
+
+const toggleMenu = (btnId, menuId) => {
+  const btn = $(btnId);
+  const menu = $(menuId);
+  if (!btn || !menu) return;
+
+  btn.addEventListener("click", () => menu.classList.toggle("active"));
+  document.addEventListener("click", e => {
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.classList.remove("active");
+    }
+  });
+};
+
+const bindOpciones = (menuId, filtroKey, btnId) => {
+  $(menuId)?.querySelectorAll(".btn-filtro-opcion").forEach(btn => {
+    btn.addEventListener("click", () => {
+      filtros[filtroKey] = btn.id || "";
+      actualizarBoton(btnId, btn.textContent.trim());
+      $(menuId).classList.remove("active");
+      actualizarContador();
+    });
+  });
+};
+
+const aplicarFiltros = async (pagina = 1) => {
+  paginaActual = pagina;
+  
+  const cleanFilters = Object.fromEntries(Object.entries(filtros).filter(([_, v]) => v));
+  // Por defecto si no hay filtros, cargará el directorio raíz.
+  const params = new URLSearchParams({ source: "jkanime", ...cleanFilters, p: paginaActual }).toString();
+
+  try {
+    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${params}`);
+    const data = await res.json();
+    
+    totalPaginas = Number(data.PaginasTotales || 1);
+    renderAnime(data.animes);
+    renderPagination();
+    actualizarPaginaUI();
+    actualizarFiltrosSeleccionados();
+  } catch (err) {
+    console.error("Error al obtener datos:", err);
+  }
+};
+
+const initFiltros = () => {
+  const menus = [
+    ["btn-filtro", "filtro", "orden"],
+    ["btn-filtro-genero", "filtro-genero", "genero"],
+    ["btn-filtro-letra", "filtro-letra", "letra"],
+    ["btn-filtro-demografia", "filtro-demografia", "demografia"],
+    ["btn-filtro-categoria", "filtro-categoria", "categoria"],
+    ["btn-filtro-tipo", "filtro-tipo", "tipo"],
+    ["btn-filtro-estado", "filtro-estado", "estado"],
+    ["btn-filtro-ano", "filtro-ano", "fecha"],
+    ["btn-filtro-temporada", "filtro-temporada", "temporada"],
+    ["btn-filtro-orden", "filtro-orden", "orden_dir"]
+  ];
+
+  menus.forEach(([btnId, menuId, filtroKey]) => {
+    toggleMenu(btnId, menuId);
+    bindOpciones(menuId, filtroKey, btnId);
+  });
+
+  $('btn-filtrar')?.addEventListener("click", () => aplicarFiltros(1));
+  actualizarContador();
+  
+  // Petición inicial al cargar la página
+  aplicarFiltros(1); 
+};
+
+const actualizarPaginaUI = () => {
+  const span = $('Num-pag');
+  if (span) span.textContent = `Página: ${paginaActual} / ${totalPaginas}`;
+};
+
+const renderPagination = () => {
+  const c = $('pagination-directorio');
+  if (!c) return;
+  c.innerHTML = "";
+  
+  const start = Math.max(1, paginaActual - 2);
+  const end = Math.min(totalPaginas, start + 4);
+
+  const crearBoton = (texto, disabled, onClick, isActive = false) => {
+    const btn = document.createElement("button");
+    btn.textContent = texto;
+    btn.disabled = disabled;
+    btn.classList.add("page-button");
+    if (isActive) btn.classList.add("active");
+    btn.onclick = onClick;
+    c.appendChild(btn);
+  };
+
+  crearBoton("<", paginaActual === 1, () => aplicarFiltros(paginaActual - 1));
+  
+  for (let i = start; i <= end; i++) {
+    crearBoton(i, false, () => aplicarFiltros(i), i === paginaActual);
+  }
+  
+  crearBoton(">", paginaActual === totalPaginas, () => aplicarFiltros(paginaActual + 1));
+};
+
+const renderAnime = (animes) => {
+  const c = $('contenedor-animes');
+  if (!c) return;
+  c.innerHTML = "";
+  
+  if (!animes || animes.length === 0) {
+    c.innerHTML = "<p>No se encontraron resultados.</p>";
+    return;
+  }
+
+  animes.forEach(a => {
+    const div = document.createElement("div");
+    div.className = "card-anime";
+    div.innerHTML = `
+      <a href="${a.url}" target="_blank">
+        <img src="${a.image}" alt="${a.title}">
+        <h3>${a.title}</h3>
+      </a>
+      <p>${a.synopsis?.slice(0, 120) || ""}...</p>
+    `;
+    c.appendChild(div);
+  });
+};
+
+const actualizarFiltrosSeleccionados = () => {
+  const c = $('filtrosseleccionados');
+  if (!c) return;
+  c.innerHTML = "";
+  
+  Object.entries(filtros).forEach(([key, value]) => {
+    if (!value) return;
+    const tag = document.createElement("span");
+    tag.className = "filtro-activo";
+    tag.textContent = `${key}: ${value}`;
+    
+    const btnClose = document.createElement("button");
+    btnClose.textContent = "×";
+    btnClose.onclick = () => {
+      filtros[key] = "";
+      actualizarFiltrosSeleccionados();
+      actualizarContador();
+      aplicarFiltros(1);
+    };
+    
+    tag.appendChild(btnClose);
+    c.appendChild(tag);
+  });
+};
+
+const setLayout = type => {
+  const c = $('contenedor-animes');
+  if (!c) return;
+  c.classList.remove("layout1", "layout2", "layout3");
+  c.classList.add(type);
+};
+
+['layout1', 'layout2', 'layout3'].forEach(id => {
+  const btn = $(id);
+  if (btn) btn.onclick = () => setLayout(id);
+});
+
+// Inicializamos todo inmediatamente en lugar de esperar al DOMContentLoaded
+initFiltros();
