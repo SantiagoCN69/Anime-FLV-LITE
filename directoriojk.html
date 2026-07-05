@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DirectorioJK</title>
+<head>
+  <script>
+    window.location.href = "https://animeflvlite.netlify.app/?directoriojk";
+  </script>
+</head>
+<body>
+  <main class="anime-details" id="main-directorioJK">
+    <div class="header-directorio">
+        <h1 class="section-title">Directorio de JKAnime</h1>
+        <button id="btn-fuente-directorio-JK" class="btn-fuente-directorios">
+            <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#fff" d="M118.656 438.656a32 32 0 0 1 0-45.248L416 96l4.48-3.776A32 32 0 0 1 461.248 96l3.712 4.48a32.064 32.064 0 0 1-3.712 40.832L218.56 384H928a32 32 0 1 1 0 64H141.248a32 32 0 0 1-22.592-9.344zM64 608a32 32 0 0 1 32-32h786.752a32 32 0 0 1 22.656 54.592L608 928l-4.48 3.776a32.064 32.064 0 0 1-40.832-49.024L805.632 640H96a32 32 0 0 1-32-32z"></path></g></svg>JKAnime</button>
+     </div>
+        <nav class="filtros">
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-genero" class="btn-filtro" title="Genero">Genero: <span>Todos</span></button>
+            <nav id="filtro-genero" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="accion">Acción 💥</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="artes-marciales">Artes Marciales 🥊</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="aventura">Aventura 🏞️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="carreras">Carreras 🏎️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ciencia-ficcion">Ciencia Ficción 🚀</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="comedia">Comedia 😂</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="demencia">Demencia 🤯</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="demonios">Demonios 👿</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="deportes">Deportes 🏀</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="drama">Drama 😭</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ecchi">Ecchi 🔞</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="escolares">Escolares 🏫</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="espacial">Espacial 🌌</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="fantasia">Fantasía 🔮</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="harem">Harem 👫</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="historico">Histórico 🏛️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="infantil">Infantil 👶</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="josei">Josei 👩‍❤️‍👨</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="juegos">Juegos 🎮</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="magia">Magia ✨</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="mecha">Mecha 🤖</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="militar">Militar 🪖</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="misterio">Misterio 🕵️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="musica">Música 🎵</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="parodia">Parodia 🤪</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="policia">Policía 👮</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="psicologico">Psicológico 🧠</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="recuentos-de-la-vida">Recuentos de la vida 🏠</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="romance">Romance ❤️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="samurai">Samurai 🗡️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="seinen">Seinen 👨‍🦳</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shoujo">Shoujo 👩‍🦱</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shounen">Shounen 👦</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="sobrenatural">Sobrenatural 👻</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="superpoderes">Superpoderes 🦸</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="suspenso">Suspenso 🤐</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="terror">Terror 👹</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="vampiros">Vampiros 🧛</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="yaoi">Yaoi 👨‍❤️‍👨</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="yuri">Yuri 👩‍❤️‍👩</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section" id="filtro-ano-section">
+            <button type="button" id="btn-filtro-ano" class="btn-filtro" title="Año">Año: <span>Todos</span></button>
+            <nav id="filtro-ano" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="2025">2025</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2024">2024</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2023">2023</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2022">2022</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2021">2021</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2020">2020</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2019">2019</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2018">2018</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2017">2017</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2016">2016</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2015">2015</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2014">2014</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2013">2013</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2012">2012</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2011">2011</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2010">2010</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2009">2009</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2008">2008</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2007">2007</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2006">2006</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2005">2005</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2004">2004</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2003">2003</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2002">2002</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2001">2001</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2000">2000</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1999">1999</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1998">1998</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1997">1997</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1996">1996</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1995">1995</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1994">1994</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1993">1993</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1992">1992</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1991">1991</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="1990">1990</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-tipo" class="btn-filtro" title="Tipo">Tipo: <span>Todos</span></button>
+            <nav id="filtro-tipo" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="tv">TV</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="movie">Película</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="special">Especial</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ova">OVA</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-estado" class="btn-filtro" title="Estado">Estado: <span>Todos</span></button>
+            <nav id="filtro-estado" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="1">En emisión</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2">Finalizado</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="3">Próximamente</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-orden" class="btn-filtro" title="Orden">Orden: <span>Por defecto</span></button>
+            <nav id="filtro-orden" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="default">Por defecto</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="updated">Actualizados</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="added">Agregados</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="title">Nombre A-Z</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="rating">Calificación</button></li>
+                </ul>
+            </nav>
+            </section>
+            <section class="filtro-section">
+            <button type="button" id="btn-filtrar" title="Filtrar">FILTRAR</button>
+            </section>
+        </nav>
+        <div id="resultados" class="grid-animes">
+            <!-- Aquí se insertarán los resultados dinámicamente -->
+            <span id="init-loading" class="span-carga">Iniciando servidores... <span id="contador"></span></span>
+        </div>
+        <div id="pagination-directorio" class="pagination">
+        </div>
+  </main>
+</body>

@@ -27,11 +27,13 @@ let pendientesCargados = false;
 let completadosCargados = false;
 let ultimosCapsCargados = false;
 let continuarViendoCargado = false;
-let directorioCargado = false;
+let directorioflvCargado = false;
+let directorioJkCargado = false;
 let labCargado = false;
 let popularesCargados = false;
 
-function mostrarSeccionDesdesearch() {
+export function mostrarSeccionDesdesearch() {
+  console.log("mostrarSeccionDesdesearch");
   let search = window.location.search;
   
   // Obtener solo el primer parámetro antes de & o ?
@@ -102,10 +104,16 @@ switch(id) {
         continuarViendoCargado = true;
       }
       break;
-    case 'Directorio':
-      if (!directorioCargado) {
-        cargarFetch("directorio");
-        directorioCargado = true;
+    case 'DirectorioFLV':
+      if (!directorioflvCargado) {
+        cargarFetch("DirectorioFLV");
+        directorioflvCargado = true;
+      }
+      break;
+    case 'DirectorioJK':
+      if (!directorioJkCargado) {
+        cargarFetch("DirectorioJK");
+        directorioJkCargado = true;
       }
       break;
     case 'Lab':
@@ -357,7 +365,6 @@ async function cargarUltimosCapsVistos() {
 }
   // Función para crear tarjeta de anime
   function createAnimeCard(anime, siguienteEpisodioUrl) {
-    console.log(anime);
     const div = document.createElement('div');
     let chapterHtml = ''; 
     let estadoHtml = '';

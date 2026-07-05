@@ -479,3 +479,11 @@ scrollContainer.addEventListener('wheel', (e) => {
 
 
 cargarAnimesConCache(); 
+
+import { mostrarSeccionDesdesearch } from './index.js';
+
+document.getElementById('btn-fuente-directorio-FLV').addEventListener('click', () => {
+   history.replaceState(null, '', `?DirectorioJK`);
+   mostrarSeccionDesdesearch();
+});
+
