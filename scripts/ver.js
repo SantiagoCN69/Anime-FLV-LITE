@@ -719,7 +719,102 @@ function renderizarServidores(servidores) {
       "No hay servidores disponibles para mostrar.";
   }
 }
+const controles = document.getElementById("controles");
 
+const tooltip = document.createElement("div");
+tooltip.className = "tooltip-global";
+document.body.appendChild(tooltip);
+
+let currentEl = null;
+let hideTimer = null;
+let lastTouchX = 0;
+let lastTouchY = 0;
+let rafPending = false;
+
+function updateTooltip() {
+  rafPending = false;
+
+  if (!currentEl) return;
+
+  const rect = currentEl.getBoundingClientRect();
+
+  tooltip.textContent = currentEl.getAttribute("data-title") || "";
+
+  tooltip.style.left = (rect.left + rect.width / 2) + "px";
+  tooltip.style.top = (rect.top - 10) + "px";
+  tooltip.style.opacity = "1";
+}
+
+function scheduleUpdate() {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(updateTooltip);
+}
+
+function setCurrent(el) {
+  if (el === currentEl) return;
+  currentEl = el;
+  scheduleUpdate();
+}
+
+/* ===== TOUCH (OPTIMIZADO) ===== */
+controles.addEventListener("touchstart", onTouch, { passive: true });
+controles.addEventListener("touchmove", onTouch, { passive: true });
+
+function onTouch(e) {
+  const t = e.touches[0];
+  if (!t) return;
+
+  lastTouchX = t.clientX;
+  lastTouchY = t.clientY;
+
+  const el = document.elementFromPoint(lastTouchX, lastTouchY);
+  const btn = el?.closest?.("button, a");
+
+  if (!btn) {
+    currentEl = null;
+    tooltip.style.opacity = "0";
+    return;
+  }
+
+  setCurrent(btn);
+
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => {
+    tooltip.style.opacity = "0";
+    currentEl = null;
+  }, 1200);
+}
+
+/* ===== DESKTOP ===== */
+controles.addEventListener("mouseover", (e) => {
+  const el = e.target.closest("button, a");
+  if (!el) return;
+
+  setCurrent(el);
+});
+
+controles.addEventListener("mousemove", () => {
+  scheduleUpdate();
+});
+
+controles.addEventListener("mouseout", () => {
+  tooltip.style.opacity = "0";
+  currentEl = null;
+});
+
+/* ===== SCROLL OPTIMIZADO ===== */
+let scrollTimer = null;
+
+controles.addEventListener("scroll", () => {
+  scheduleUpdate();
+
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => {
+    tooltip.style.opacity = "0";
+    currentEl = null;
+  }, 3000);
+}, { passive: true });
 //funcion extraer nombre del link
 function extraerNombreDesdeURL(url) {
   try {

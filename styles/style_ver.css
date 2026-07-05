@@ -453,23 +453,20 @@ overflow: hidden;
   position: absolute;
   border-top-right-radius: 8px;
 }
-
-#controles button::after, #controles a::after {
+.tooltip-global {
+  position: fixed;
   padding: 5px 10px;
   border-radius: 10px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 125%;
-  background-color: var(--p); 
-}
-@media (hover: hover) {
-#controles button:hover::after, #controles a:hover::after {
-  content: attr(data-title);
-}
-}
-#controles button:active::after, #controles a:active::after {
-  content: attr(data-title);
+  background: var(--p);
+  color: var(--t1);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+
+  transform: translate(-50%, -120%);
+  transition: left .15s ease, top .15s ease, opacity .15s;
+  z-index: 99999;
 }
 
 @media screen and (min-width:1350px){
