@@ -274,6 +274,7 @@ h3 {
   border-radius: 7px;
 }
 .grid-animes.lab .anime-card {
+  border-bottom: 2px solid transparent;
   flex: 1;
   min-width: 180px;
   max-width: 180px;
