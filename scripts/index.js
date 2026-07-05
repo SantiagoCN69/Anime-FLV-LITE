@@ -904,6 +904,8 @@ document.addEventListener("DOMContentLoaded", () => {
   '.pagination',
   '#recomendaciones-favoritos',
   '#recomendaciones-personalizadas',
+  '#sugerencias-sin-resultados',
+  '#anime-grid-ia-busqueda'
  ]
 
 function handleSectionNavigation(sectionId, direction) {
