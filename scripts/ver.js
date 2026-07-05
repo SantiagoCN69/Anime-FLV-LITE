@@ -719,33 +719,41 @@ function renderizarServidores(servidores) {
       "No hay servidores disponibles para mostrar.";
   }
 }
+
 const controles = document.getElementById("controles");
 
 const tooltip = document.createElement("div");
 tooltip.className = "tooltip-global";
+tooltip.style.position = "fixed";
 document.body.appendChild(tooltip);
 
 let currentEl = null;
 let hideTimer = null;
-let lastTouchX = 0;
-let lastTouchY = 0;
+let scrollTimer = null;
 let rafPending = false;
+let lastRect = null;
 
 function updateTooltip() {
   rafPending = false;
-
-  if (!currentEl) return;
-
-  const rect = currentEl.getBoundingClientRect();
+  if (!currentEl) {
+    tooltip.style.opacity = "0";
+    return;
+  }
 
   tooltip.textContent = currentEl.getAttribute("data-title") || "";
+  
+  const rect = lastRect || currentEl.getBoundingClientRect();
+  lastRect = null;
 
-  tooltip.style.left = (rect.left + rect.width / 2) + "px";
-  tooltip.style.top = (rect.top - 10) + "px";
+  tooltip.style.left = `${rect.left + rect.width / 2}px`;
+  tooltip.style.top = `${rect.top - 10}px`;
   tooltip.style.opacity = "1";
 }
 
-function scheduleUpdate() {
+function scheduleUpdate(forceRectRefresh = false) {
+  if (forceRectRefresh && currentEl) {
+    lastRect = currentEl.getBoundingClientRect();
+  }
   if (rafPending) return;
   rafPending = true;
   requestAnimationFrame(updateTooltip);
@@ -754,67 +762,70 @@ function scheduleUpdate() {
 function setCurrent(el) {
   if (el === currentEl) return;
   currentEl = el;
-  scheduleUpdate();
+  scheduleUpdate(true);
 }
 
-/* ===== TOUCH (OPTIMIZADO) ===== */
+function clearTimers() {
+  clearTimeout(hideTimer);
+  clearTimeout(scrollTimer);
+}
+
+function hideTooltip(delay = 0) {
+  clearTimers();
+  if (delay === 0) {
+    currentEl = null;
+    tooltip.style.opacity = "0";
+  } else {
+    hideTimer = setTimeout(() => {
+      currentEl = null;
+      tooltip.style.opacity = "0";
+    }, delay);
+  }
+}
+
 controles.addEventListener("touchstart", onTouch, { passive: true });
 controles.addEventListener("touchmove", onTouch, { passive: true });
+controles.addEventListener("touchend", () => hideTooltip(1200), { passive: true });
 
 function onTouch(e) {
   const t = e.touches[0];
   if (!t) return;
 
-  lastTouchX = t.clientX;
-  lastTouchY = t.clientY;
-
-  const el = document.elementFromPoint(lastTouchX, lastTouchY);
+  const el = document.elementFromPoint(t.clientX, t.clientY);
   const btn = el?.closest?.("button, a");
 
-  if (!btn) {
-    currentEl = null;
-    tooltip.style.opacity = "0";
+  if (!btn || !controles.contains(btn)) {
+    hideTooltip();
     return;
   }
 
+  clearTimers();
   setCurrent(btn);
-
-  clearTimeout(hideTimer);
-  hideTimer = setTimeout(() => {
-    tooltip.style.opacity = "0";
-    currentEl = null;
-  }, 1200);
 }
 
-/* ===== DESKTOP ===== */
 controles.addEventListener("mouseover", (e) => {
   const el = e.target.closest("button, a");
   if (!el) return;
-
   setCurrent(el);
 });
 
 controles.addEventListener("mousemove", () => {
-  scheduleUpdate();
+  if (currentEl) scheduleUpdate(true);
 });
 
-controles.addEventListener("mouseout", () => {
-  tooltip.style.opacity = "0";
-  currentEl = null;
+controles.addEventListener("mouseout", (e) => {
+  const related = e.relatedTarget;
+  if (currentEl && currentEl.contains(related)) return;
+  hideTooltip();
 });
-
-/* ===== SCROLL OPTIMIZADO ===== */
-let scrollTimer = null;
 
 controles.addEventListener("scroll", () => {
-  scheduleUpdate();
-
-  clearTimeout(scrollTimer);
-  scrollTimer = setTimeout(() => {
-    tooltip.style.opacity = "0";
-    currentEl = null;
-  }, 3000);
+  if (!currentEl) return;
+  scheduleUpdate(true);
+  clearTimers();
+  scrollTimer = setTimeout(() => hideTooltip(), 1500);
 }, { passive: true });
+
 //funcion extraer nombre del link
 function extraerNombreDesdeURL(url) {
   try {
