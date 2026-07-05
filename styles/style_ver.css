@@ -19,7 +19,7 @@ body::before {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(50px) brightness(0.2);
+  filter: blur(30px) brightness(0.2);
   z-index: -1;
   scale: 2.2;
 }
@@ -409,6 +409,9 @@ overflow: hidden;
 }
 #controles {
   display: flex;
+  margin-right: 65px;
+  border-top-left-radius: 8px;
+  height: 50px;
 }
 #controles button,
 #controles a {
@@ -420,32 +423,37 @@ overflow: hidden;
   text-align: center;
   cursor: pointer;
   z-index: 2;
-  padding: 15px 8px;
+  padding: 15px;
+  min-width: 65px;
 }
 
 #controles button {
   background-color: var(--p);
   opacity: .6;
   color: var(--t1);
+  border-right: 1px solid #00000040;
 }
-
+#controles  {
+  overflow: auto;
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* IE/Edge viejo */
+}
+#controles::-webkit-scrollbar {
+  display: none;              /* Chrome/Safari */
+}
 #controles a {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 4px;
   background: #3ca0e7;
-  border-radius: 8px;
   text-decoration: none;
   opacity: 1;
-}
-#controles button:nth-child(1), #controles a:nth-child(1){
-  border-top-left-radius: 8px;
-}
-#controles button:nth-last-child(2),
-#controles a:nth-last-child(2){
+  right: 0;
+  height: 50px;
+  position: absolute;
   border-top-right-radius: 8px;
 }
+
 #controles button::after, #controles a::after {
   padding: 5px 10px;
   border-radius: 10px;
