@@ -12,13 +12,6 @@ const DOM = {
   grid: document.getElementById('anime-grid')
 };
 
-const slug = (text) => text.toString().toLowerCase()
-  .replace(/\s+/g, '-')
-  .replace(/[^\w\-]+/g, '')
-  .replace(/\-\-+/g, '-')
-  .replace(/^-+/, '')
-  .replace(/-+$/, '');
-
 const renderButtons = () => {
   if (!DOM.buttons) return;
   DOM.buttons.innerHTML = '';
@@ -39,6 +32,15 @@ const renderButtons = () => {
     DOM.buttons.appendChild(btn);
   });
 };
+
+function slug(str) {
+  const clean = str
+    .toLowerCase()
+    .trim()
+    .replace(/[:'".,!?]/g, '')
+    .replace(/\s+/g, '-');
+  return `/anime.html?id=${clean}`;
+}
 
 const renderGrid = (filter = '') => {
   if (!DOM.grid) return;
@@ -72,7 +74,7 @@ const renderGrid = (filter = '') => {
   animesToRender.forEach(a => {
     const div = document.createElement("a");
     div.className = "anime-card";
-    div.href = `/anime/${slug(a.title)}`;
+    div.href = slug(a.title);
 
     div.innerHTML = `
       <div class="container-img">
