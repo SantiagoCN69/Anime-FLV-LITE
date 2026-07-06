@@ -738,6 +738,20 @@ main {
     }
   }
 }
+.svg-header {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    border-radius: 15px;
+    padding: 0.6rem;
+ }
+ .header-directorio div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+ }
  #btn-ver-todo:hover {
   filter: brightness(1.1);
   transform: scale(1.02);
