@@ -87,7 +87,7 @@ nav.filtros {
   width: fit-content;
   cursor: pointer;
   position: relative;
-  min-width: 160px;
+  min-width: 173px;
   flex:1 1 0;
 }
 .btn-filtro::after {
@@ -176,7 +176,9 @@ nav.filtros {
 #filtro-ano ul, #filtro-letra ul {
   grid-template-columns: repeat(auto-fill, 62px);
 }
-
+#btn-filtro-demografia {
+  font-size: 0.8rem;
+}
 .filtro-opciones ul li {
   list-style: none;
 }
