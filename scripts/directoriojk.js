@@ -181,10 +181,17 @@ const renderAnime = (animes) => {
 const actualizarFiltrosSeleccionados = () => {
   const c = $('filtrosseleccionados');
   if (!c) return;
+  
+  const filtrosActivos = Object.entries(filtros).filter(([_, v]) => v);
+  
+  if (filtrosActivos.length === 0) {
+    c.textContent = "Sin filtros seleccionados";
+    return;
+  }
+  
   c.innerHTML = "";
   
-  Object.entries(filtros).forEach(([key, value]) => {
-    if (!value) return;
+  filtrosActivos.forEach(([key, value]) => {
     const tag = document.createElement("span");
     tag.className = "filtro-activo";
     tag.textContent = `${key}: ${value}`;
