@@ -163,6 +163,16 @@ nav.filtros {
 #filtro-genero ul {
   grid-template-columns: repeat(auto-fill, 120px);
 }
+@media (max-width: 1000px) {
+  .filtro-generojk {
+    right: 0;
+  }
+}
+@media (max-width: 1164px) {
+  .filtro-letrajk, .filtro-anojk {
+    right: 0;
+  }
+}
 #filtro-ano ul, #filtro-letra ul {
   grid-template-columns: repeat(auto-fill, 62px);
 }
