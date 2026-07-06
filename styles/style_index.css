@@ -562,8 +562,6 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   gap: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
   min-width: 150px;
 }
 
@@ -842,3 +840,78 @@ justify-content: space-between;
 .filtrosjk button {
   height: 51px;
 }
+.header-schedule {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.header-schedule div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.day-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.btn-day {
+  background-color: #1a1d24;
+  color: #a0a5b1;
+  border: 1px solid #2d323e;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.btn-day:hover {
+  background-color: #2d323e;
+  color: #ffffff;
+}
+
+.btn-day.active {
+  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  border-color: var(--t1);
+  color: #ffffff;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #2d323e;
+  background-color: #1a1d24;
+  color: #ffffff;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--btn);
+}
+.estado {
+  top: 3px;
+}
+.ultimo-cap {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: var(--btn);
+  color: var(--t1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+}
+
