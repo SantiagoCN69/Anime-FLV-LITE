@@ -1,4 +1,5 @@
 import { mostrarSeccionDesdesearch } from './index.js';
+import { observerAnimeCards } from './utils.js';
 
 let paginaActual = 1;
 let totalPaginas = 1;
@@ -154,6 +155,8 @@ const renderAnime = (animes) => {
     `;
     c.appendChild(div);
   });
+  
+  observerAnimeCards(c);
 };
 
 const actualizarFiltrosSeleccionados = () => {
