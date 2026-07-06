@@ -927,7 +927,7 @@ justify-content: space-between;
   left: 0;
   right: 0;
   bottom: calc(-100% - 29px);
-  height: calc(2lh + 12px);
+  height: 47.5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -943,4 +943,5 @@ justify-content: space-between;
 .anime-card-schedule:hover .content:after {
   bottom: -10px;
   opacity: 1;
+  color: var(--btn);
 }
