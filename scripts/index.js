@@ -135,7 +135,6 @@ switch(id) {
       }
       break;
 }
-observerAnimeCards();
 cerrarSidebar();
 }
 

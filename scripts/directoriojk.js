@@ -317,7 +317,7 @@ const setLayout = type => {
     }
   });
 
-  observerAnimeCards();
+
 };
 
 ['layout1', 'layout2', 'layout3'].forEach(id => {
