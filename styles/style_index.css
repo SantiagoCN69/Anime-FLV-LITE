@@ -142,6 +142,11 @@ nav.filtros {
     right: 0;
   }
 }
+@media screen and (max-width: 577px) {
+  #filtro-letra {
+    left: 0;
+  }
+}
 .filtro-opciones.active {
   opacity: 1;
   pointer-events: auto;
