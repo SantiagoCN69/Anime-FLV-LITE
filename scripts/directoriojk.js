@@ -3,6 +3,7 @@ import { observerAnimeCards } from './utils.js';
 
 let paginaActual = 1;
 let totalPaginas = 1;
+const CACHE_KEY = "cache-directoriojk";
 
 const filtros = {
   orden: "", genero: "", letra: "", demografia: "", categoria: "",
@@ -54,18 +55,83 @@ const bindOpciones = (menuId, filtroKey, btnId) => {
   });
 };
 
-const aplicarFiltros = async (pagina = 1) => {
+const aplicarFiltros = async (pagina = 1, usarCache = false) => {
   paginaActual = pagina;
-  
-  const cleanFilters = Object.fromEntries(Object.entries(filtros).filter(([_, v]) => v));
-  // Por defecto si no hay filtros, cargará el directorio raíz.
-  const params = new URLSearchParams({ source: "jkanime", ...cleanFilters, p: paginaActual }).toString();
+
+  const cleanFilters = Object.fromEntries(
+    Object.entries(filtros).filter(([_, v]) => v)
+  );
+
+  const params = new URLSearchParams({
+    source: "jkanime",
+    ...cleanFilters,
+    p: paginaActual
+  }).toString();
+
+  if (usarCache) {
+    console.log("Leyendo cache...");
+
+    let cache = null;
+
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+
+      if (raw) {
+        cache = JSON.parse(raw);
+
+        console.log("Cache encontrado");
+
+        totalPaginas = Number(cache.PaginasTotales || 1);
+
+        renderAnime(cache.animes);
+        renderPagination();
+        actualizarPaginaUI();
+        actualizarFiltrosSeleccionados();
+
+        console.log("Cache renderizado");
+      } else {
+        console.log("No existe cache");
+      }
+    } catch (e) {
+      console.log("Error leyendo cache", e);
+    }
+
+    try {
+      console.log("Consultando API...");
+
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${params}`);
+      const data = await res.json();
+
+      if (cache && JSON.stringify(cache) === JSON.stringify(data)) {
+        console.log("API igual al cache");
+        return;
+      }
+
+      console.log("API más reciente");
+
+      totalPaginas = Number(data.PaginasTotales || 1);
+
+      renderAnime(data.animes);
+      renderPagination();
+      actualizarPaginaUI();
+      actualizarFiltrosSeleccionados();
+
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+
+      console.log("Cache actualizado");
+    } catch (err) {
+      console.error(err);
+    }
+
+    return;
+  }
 
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${params}`);
     const data = await res.json();
-    
+
     totalPaginas = Number(data.PaginasTotales || 1);
+
     renderAnime(data.animes);
     renderPagination();
     actualizarPaginaUI();
@@ -102,7 +168,7 @@ const initFiltros = () => {
   actualizarContador();
   
   // Petición inicial al cargar la página
-  aplicarFiltros(1); 
+  aplicarFiltros(1, true); 
 };
 
 const actualizarPaginaUI = () => {
