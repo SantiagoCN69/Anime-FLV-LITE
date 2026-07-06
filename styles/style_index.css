@@ -863,6 +863,7 @@ justify-content: space-between;
 }
 
 .btn-day {
+  flex: 1;
   background-color: #1a1d24;
   color: #a0a5b1;
   border: 1px solid #2d323e;
@@ -901,7 +902,7 @@ justify-content: space-between;
 .search-input:focus {
   border-color: var(--btn);
 }
-.estado {
+.estadoarriba {
   top: 3px;
 }
 .ultimo-cap {
@@ -914,4 +915,3 @@ justify-content: space-between;
   border-radius: 5px;
   font-size: 0.8rem;
 }
-
