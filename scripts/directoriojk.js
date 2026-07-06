@@ -190,7 +190,12 @@ const renderPagination = () => {
       btn.classList.add("active");
     }
 
-    btn.onclick = () => aplicarFiltros(i);
+    btn.onclick = () => {
+      paginaActual = i;
+      aplicarFiltros(i);
+      renderPagination(); 
+    };
+
     c.appendChild(btn);
   }
 
