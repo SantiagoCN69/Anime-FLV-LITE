@@ -95,6 +95,10 @@ const initFiltros = () => {
   });
 
   $('btn-filtrar')?.addEventListener("click", () => aplicarFiltros(1));
+  $('btn-aleatorio')?.addEventListener("click", () => {
+    const randomPage = Math.floor(Math.random() * totalPaginas) + 1;
+    aplicarFiltros(randomPage);
+  });
   actualizarContador();
   
   // Petición inicial al cargar la página
