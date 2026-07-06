@@ -608,7 +608,7 @@ justify-content: space-between;
 
 .filtro-activo {
   text-transform: capitalize;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px; 
@@ -619,9 +619,7 @@ justify-content: space-between;
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 500;
-  border: 1px solid #374151; 
-  padding-block-end: 7px;
-  padding-right: 27px;
+  border: 1px solid #374151;  
   position: relative;
 }
 
@@ -629,18 +627,13 @@ justify-content: space-between;
 .filtro-activo button {
   background: none;
   border: none;
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  right: 5px;
+  font-size: 20px;
+  transition: all 0.2s ease;
 }
 
 .filtro-activo button:hover {
   color: #ef4444;
-  transform: scale(1.1) translateY(-50%);
+  transform: scale(1.1);
 }
 
 #layout {
