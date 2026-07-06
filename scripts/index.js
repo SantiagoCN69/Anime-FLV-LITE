@@ -31,6 +31,7 @@ let directorioflvCargado = false;
 let directorioJkCargado = false;
 let labCargado = false;
 let popularesCargados = false;
+let horariosCargados = false;
 
 export function mostrarSeccionDesdesearch() {
   let search = window.location.search;
@@ -125,6 +126,12 @@ switch(id) {
       if (!popularesCargados) {
         cargarFetch("populares");
         popularesCargados = true;
+      }
+      break;
+    case "Horarios" :
+      if (!horariosCargados) {
+        cargarFetch("horarios");
+        horariosCargados = true;
       }
       break;
 }
