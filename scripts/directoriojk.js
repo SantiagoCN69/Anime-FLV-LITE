@@ -77,16 +77,16 @@ const aplicarFiltros = async (pagina = 1) => {
 
 const initFiltros = () => {
   const menus = [
-    ["btn-filtro", "filtro", "orden"],
-    ["btn-filtro-genero", "filtro-genero", "genero"],
-    ["btn-filtro-letra", "filtro-letra", "letra"],
-    ["btn-filtro-demografia", "filtro-demografia", "demografia"],
-    ["btn-filtro-categoria", "filtro-categoria", "categoria"],
-    ["btn-filtro-tipo", "filtro-tipo", "tipo"],
-    ["btn-filtro-estado", "filtro-estado", "estado"],
-    ["btn-filtro-ano", "filtro-ano", "fecha"],
-    ["btn-filtro-temporada", "filtro-temporada", "temporada"],
-    ["btn-filtro-orden", "filtro-orden", "orden_dir"]
+    ["btn-filtro", "filtro", "Orden"],
+    ["btn-filtro-genero", "filtro-genero", "Genero"],
+    ["btn-filtro-letra", "filtro-letra", "Letra"],
+    ["btn-filtro-demografia", "filtro-demografia", "Demografia"],
+    ["btn-filtro-categoria", "filtro-categoria", "Categoria"],
+    ["btn-filtro-tipo", "filtro-tipo", "Tipo"],
+    ["btn-filtro-estado", "filtro-estado", "Estado"],
+    ["btn-filtro-ano", "filtro-ano", "Año"],
+    ["btn-filtro-temporada", "filtro-temporada", "Temporada"],
+    ["btn-filtro-orden", "filtro-orden", "Orden_dir"]
   ];
 
   menus.forEach(([btnId, menuId, filtroKey]) => {
