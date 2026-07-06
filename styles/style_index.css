@@ -836,3 +836,6 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   filter: brightness(1.1);
   transform: translateY(-2px);
 }
+.filtrosjk button {
+  height: 51px;
+}
