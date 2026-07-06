@@ -115,26 +115,34 @@ const renderPagination = () => {
   if (!c) return;
   c.innerHTML = "";
   
-  const start = Math.max(1, paginaActual - 2);
-  const end = Math.min(totalPaginas, start + 4);
-
-  const crearBoton = (texto, disabled, onClick, isActive = false) => {
+  for (let i = 1; i <= totalPaginas; i++) {
     const btn = document.createElement("button");
-    btn.textContent = texto;
-    btn.disabled = disabled;
-    btn.classList.add("page-button");
-    if (isActive) btn.classList.add("active");
-    btn.onclick = onClick;
-    c.appendChild(btn);
-  };
+    btn.textContent = i;
+    btn.className = "page-button";
 
-  crearBoton("<", paginaActual === 1, () => aplicarFiltros(paginaActual - 1));
-  
-  for (let i = start; i <= end; i++) {
-    crearBoton(i, false, () => aplicarFiltros(i), i === paginaActual);
+    if (i === paginaActual) {
+      btn.classList.add("active");
+    }
+
+    btn.onclick = () => aplicarFiltros(i);
+    c.appendChild(btn);
   }
-  
-  crearBoton(">", paginaActual === totalPaginas, () => aplicarFiltros(paginaActual + 1));
+
+requestAnimationFrame(() => {
+  const active = c.querySelector(".page-button.active");
+  if (!active) return;
+
+  const left =
+    active.getBoundingClientRect().left -
+    c.getBoundingClientRect().left +
+    c.scrollLeft -
+    (c.clientWidth - active.offsetWidth) / 2;
+
+  c.scrollTo({
+    left,
+    behavior: "smooth"
+  });
+});
 };
 
 const renderAnime = (animes) => {
