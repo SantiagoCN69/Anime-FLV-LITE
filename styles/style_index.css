@@ -112,7 +112,7 @@ nav.filtros {
 }
 .filtro-opciones {
   position: absolute;
-  top: 25px;
+  top: 45px;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   box-shadow: 2px 10px 30px rgba(0, 0, 0, 0.5);
