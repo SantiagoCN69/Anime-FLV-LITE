@@ -307,7 +307,8 @@ const setLayout = type => {
   c.classList.remove("layout1", "layout2", "layout3");
   c.classList.add(type);
 
-  // Actualizar estado activo de botones
+  localStorage.setItem('layout-activo', type);
+
   ['layout1', 'layout2', 'layout3'].forEach(id => {
     const btn = $(id);
     if (btn) {
@@ -324,7 +325,8 @@ const setLayout = type => {
   if (btn) btn.onclick = () => setLayout(id);
 });
 
-setLayout('layout1');
+const savedLayout = localStorage.getItem('layout-activo') || 'layout1';
+setLayout(savedLayout);
 
 // Inicializamos todo inmediatamente en lugar de esperar al DOMContentLoaded
 initFiltros();
