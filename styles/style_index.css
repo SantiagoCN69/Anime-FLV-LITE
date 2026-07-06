@@ -214,7 +214,6 @@ nav.filtros {
   max-width: 614px;
   margin: 0 auto;
   display: flex;
-  justify-content: flex-start;
   gap: 10px;
   overflow-x: auto;
   overflow-y: hidden;
