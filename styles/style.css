@@ -746,6 +746,23 @@ main {
     border-radius: 15px;
     padding: 0.6rem;
  }
+ @media screen and (max-width: 470px) {
+  .svg-header {
+    display: none;
+  }
+ }
+ @media screen and (max-width: 380px) {
+  
+  .btn-fuente-directorios {
+    min-width: 50px !important;
+    width: 50px !important;
+    height: 50px !important;
+    padding: 0 !important;
+  }
+  .btn-fuente-directorios span{
+    display: none;
+  }
+ }
  .header-directorio div {
   display: flex;
   align-items: center;
