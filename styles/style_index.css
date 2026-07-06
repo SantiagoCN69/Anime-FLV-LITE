@@ -829,6 +829,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   cursor: pointer;
   font-weight: bold;
   transition: all 0.3s ease;
+  margin-left: 10px;
 }
 
 #btn-aleatorio:hover {
