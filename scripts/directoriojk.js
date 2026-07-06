@@ -211,6 +211,15 @@ requestAnimationFrame(() => {
 });
 };
 
+function slug(str) {
+  const clean = str
+    .toLowerCase()
+    .trim()
+    .replace(/[:'".,!?]/g, '')
+    .replace(/\s+/g, '-');
+  return `/anime.html?id=${clean}`;
+}
+
 const renderAnime = (animes) => {
   const c = $('contenedor-animes');
   if (!c) return;
@@ -222,11 +231,12 @@ const renderAnime = (animes) => {
   }
 
   animes.forEach(a => {
+    console.log(a);
     const div = document.createElement("div");
     div.className = "anime-card anime-card-jk";
 
       div.innerHTML = `
-        <a href="${a.url}" target="_blank">
+        <a href="${slug(a.title)}">
         <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
