@@ -457,49 +457,49 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   display: flex;
   gap: 10px;
   margin-bottom: 1.3rem;
- button {
+}
 
-    &.active {
-      border-color: var(--btn);
-    }
-    &.active + div {
-        opacity: 1;
-        transform: translateX(-50%) scale(1) ;
-        pointer-events: auto;
-      }
-    }
-  
-    div {
-      z-index: 10;
-      position: absolute;
-      top: 56px;
-      left: 50%;
-      transform: translateX(-50%) scale(.9);
-      opacity: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      transition: opacity .2s, transform .2s;
-    }
+#nav-populares button.active {
+  border-color: var(--btn);
+}
+
+#nav-populares button.active + div {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  pointer-events: auto;
+}
+
+#nav-populares div {
+  z-index: 10;
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%) scale(.9);
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: opacity .2s, transform .2s;
 }
 #popularesh2 {
   display: inline-block;
 }
 #btn-populares-alert {
-background-color: transparent;
-cursor: pointer;
-border: none;
-margin-left: 3px;
-color: var(--br);
-position: absolute;
-top: 10px;
-left: 135px;
-svg {
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  margin-left: 3px;
+  color: var(--br);
+  position: absolute;
+  top: 10px;
+  left: 135px;
+}
+
+#btn-populares-alert svg {
   width: 20px;
   height: 20px;
-}
 }
 #modal-populares {
   pointer-events: none;
@@ -516,27 +516,30 @@ svg {
   padding: 3rem;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  h3 {
-    color: var(--t1);
-    width: fit-content;
-    margin-inline: auto;
-    font-size: 2rem
-  }
-  p {
-    color: var(--t2);
-  }
-  .close-modal {
-    background-color: var(--btn);
-    color: var(--t1);
-    border: none;
-    padding: 18px;
-    cursor: pointer;
-    border-radius: 25px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 10rem;
-  }
+}
+
+#modal-populares h3 {
+  color: var(--t1);
+  width: fit-content;
+  margin-inline: auto;
+  font-size: 2rem;
+}
+
+#modal-populares p {
+  color: var(--t2);
+}
+
+#modal-populares .close-modal {
+  background-color: var(--btn);
+  color: var(--t1);
+  border: none;
+  padding: 18px;
+  cursor: pointer;
+  border-radius: 25px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10rem;
 }
 #modal-populares.active {
   pointer-events: auto;
@@ -563,10 +566,11 @@ svg {
   margin-top: 10px;
   margin-bottom: 10px;
   min-width: 150px;
-  svg {
-    width: 20px;
-    height: 20px;
-  }
+}
+
+.btn-fuente-directorios svg {
+  width: 20px;
+  height: 20px;
 }
 .header-directorio {
   display: flex;
@@ -590,6 +594,9 @@ svg {
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px 0;
+  color: var(--t2);
+  font-size: 16px;
+  min-height: 20px;
 }
 
 .filtro-activo {
@@ -637,25 +644,32 @@ svg {
 #layout button {
   width: 40px;
   height: 40px;
-  background: var(--t1);
-  border: none;
+  background: var(--p);
+  border: 1px solid var(--br);
   padding: 8px;
   border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #layout button:hover {
-  background: #2a2a3a;
+  background: var(--btn);
+  border-color: var(--btn);
+  transform: translateY(-2px);
 }
 
 #layout button.active {
   background: var(--btn);
+  border-color: var(--btn);
+  box-shadow: 0 0 10px rgba(var(--btn), 0.5);
 }
 
 #layout svg {
-  width: 100%;
-  height: 100%;
+  width: 24px;
+  height: 24px;
   color: var(--t1);
 }
 /* ===== CONTADOR PAG ===== */
@@ -668,7 +682,6 @@ svg {
   display: grid;
   gap: 12px;
   padding: 10px;
-  transition: all 0.3s ease;
 }
 
 /* ===== LAYOUT 1: GRID TARJETAS ===== */
@@ -685,50 +698,103 @@ svg {
 #contenedor-animes.layout3 {
   grid-template-columns: 1fr;
 }
-.card-anime {
-  background: #1a1a24;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: 0.2s;
+.anime-card-jk a, .anime-card-jk {
+  height: 100%;
 }
-
-.card-anime:hover {
-  transform: scale(1.03);
-}
-
-/* IMG */
-.card-anime img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-}
-
-/* TITULO */
-.card-anime h3 {
+.anime-card-jk h3 {
   font-size: 14px;
+  margin: 10px;
+  color: var(--t1);
+  font-weight: 600;
+  line-height: 1.4;
+  height: 2lh;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none;
+}
+
+#card-synopsis {
+  display: none;
+  
+  font-size: 14px;
+  margin-top: 0;
+  text-align: start;
+  position: static;
+  transform: none;
+  text-overflow: ellipsis;
+  overflow: auto;
+  white-space: wrap;
+}
+
+/* ===== LAYOUT 1: GRID TARJETAS PEQUEÑAS ===== */
+#contenedor-animes.layout1 .card-anime {
+  min-width: 160px;
+  max-width: 200px;
+}
+
+#contenedor-animes.layout1 .card-anime img {
+  height: auto;
+  aspect-ratio: 26/37;
+}
+
+#contenedor-animes.layout1 .card-anime h3 {
+  font-size: 13px;
   margin: 8px;
 }
 
-/* SINOPSIS */
-.card-anime p {
-  font-size: 12px;
-  opacity: 0.7;
-  margin: 0 8px 10px;
+/* ===== LAYOUT 2: TARJETAS GRANDES ===== */
+#contenedor-animes.layout2 .card-anime {
+  min-width: 220px;
+  max-width: 280px;
 }
 
-/* ===== LISTA (layout 3) ===== */
-#contenedor-animes.layout3 .card-anime {
+#contenedor-animes.layout2 .card-anime img {
+  height: 280px;
+  aspect-ratio: auto;
+}
+
+#contenedor-animes.layout2 .card-anime h3 {
+  font-size: 16px;
+  margin: 12px;
+}
+
+/* ===== LAYOUT 3: LISTA ===== */
+#contenedor-animes.layout3 .anime-card a {
   display: flex;
-  height: 120px;
+  flex-direction: row;
 }
 
-#contenedor-animes.layout3 .card-anime img {
-  width: 90px;
+#contenedor-animes.layout3 .anime-card .container-img {
+  width: 170px;
+  min-width: 170px;
   height: 100%;
 }
 
-#contenedor-animes.layout3 .card-anime p {
-  display: none;
+#contenedor-animes.layout3 .anime-card .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  padding: 20px;
+  gap: 10px;
+  
+  max-height: 240px;
+}
+
+#contenedor-animes.layout3 .anime-card h3 {
+  font-size: 16px;
+  min-height: 1lh;
+  
+  padding: 0;
+  margin: 0;
+}
+
+#contenedor-animes.layout3 #card-synopsis {
+  display: block !important;
 }
 
 /* ===== ESTILOS FALTANTES DIRECTORIO ===== */
@@ -768,8 +834,4 @@ svg {
 #btn-aleatorio:hover {
   filter: brightness(1.1);
   transform: translateY(-2px);
-}
-
-#layout button.active {
-  background: var(--btn);
 }
