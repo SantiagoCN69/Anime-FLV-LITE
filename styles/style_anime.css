@@ -470,6 +470,11 @@ header.search-active .logout-modal {
   color: #63E6BE;
   background-color: #63e6bf5b;
 }
+.estrenando {
+  color: #e6dd63;
+  background-color: #e6dd635b;
+}
+
 .anime-status img {
   display: inline-block;
   width: 15px;

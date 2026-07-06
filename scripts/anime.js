@@ -297,6 +297,9 @@ const renderAnime = anime => {
   anime.estado === "En emision"
   ? (statusEl.innerHTML = `<img src="../icons/circle-solid-blue.svg">${anime.estado}`, statusEl.classList.add("en-emision"))
   : (statusEl.innerHTML = `<img src="../icons/circle-solid.svg">${anime.estado}`, statusEl.classList.remove("en-emision"));
+  anime.estado === "Por estrenar"
+  ? (statusEl.innerHTML = `<img src="../icons/circle-solid-yellow.svg">${anime.estado}`, statusEl.classList.add("estrenando"))
+  : (statusEl.innerHTML = `<img src="../icons/circle-solid.svg">${anime.estado}`, statusEl.classList.remove("estrenando"));
 
   tituloEl.textContent = anime.titulo;
   document.getElementById("portadacarga").classList.add("cargado");
