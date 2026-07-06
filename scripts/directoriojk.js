@@ -237,6 +237,16 @@ const renderAnime = (animes) => {
 
   animes.forEach(a => {
     console.log(a);
+    let estadoHtml = '';
+    if (a.estado === "Por estrenar") {
+      estadoHtml = `<span class="estado"><img src="../icons/circle-solid-yellow.svg" alt="${a.estado}">${a.estado}</span>`;
+    }
+    else if (a.estado === "En emision") {
+      estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${a.estado}">${a.estado}</span>`;
+    }
+    else {
+      estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${a.estado}">${a.estado}</span>`;
+    }
     const div = document.createElement("div");
     div.className = "anime-card anime-card-jk";
 
@@ -245,6 +255,7 @@ const renderAnime = (animes) => {
         <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+          ${estadoHtml}
         </div>
           <div class="content">
             <h3>${a.title}</h3>
