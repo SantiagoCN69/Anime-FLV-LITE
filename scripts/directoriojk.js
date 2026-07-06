@@ -215,6 +215,17 @@ const setLayout = type => {
   if (!c) return;
   c.classList.remove("layout1", "layout2", "layout3");
   c.classList.add(type);
+
+  // Actualizar estado activo de botones
+  ['layout1', 'layout2', 'layout3'].forEach(id => {
+    const btn = $(id);
+    if (btn) {
+      btn.classList.remove("active");
+      if (id === type) btn.classList.add("active");
+    }
+  });
+  document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
+  observerAnimeCards();
 };
 
 ['layout1', 'layout2', 'layout3'].forEach(id => {
