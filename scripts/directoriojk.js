@@ -150,7 +150,7 @@ const initFiltros = () => {
     ["btn-filtro-categoria", "filtro-categoria", "categoria"],
     ["btn-filtro-tipo", "filtro-tipo", "tipo"],
     ["btn-filtro-estado", "filtro-estado", "estado"],
-    ["btn-filtro-ano", "filtro-ano", "ano"],
+    ["btn-filtro-ano", "filtro-ano", "fecha"],
     ["btn-filtro-temporada", "filtro-temporada", "temporada"],
     ["btn-filtro-orden", "filtro-orden", "orden_dir"]
   ];

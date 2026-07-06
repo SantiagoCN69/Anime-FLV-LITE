@@ -600,6 +600,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
 }
 
 .filtro-activo {
+  text-transform: capitalize;
   display: inline-flex;
   align-items: center;
   justify-content: center;
