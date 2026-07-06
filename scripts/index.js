@@ -397,7 +397,13 @@ async function cargarUltimosCapsVistos() {
       <strong>${anime.titulo}</strong>
     </a>`;
     div.addEventListener('click', () => {
-      aplicarViewTransition(anime.id, ratingHtml);
+      const strong = div.querySelector('strong');
+      const containerImg = div.querySelector('.container-img');
+      const rating = div.querySelector('.rating');
+      
+      if (strong) strong.style.setProperty('view-transition-name', 'title' + anime.id);
+      if (containerImg) containerImg.style.setProperty('view-transition-name', anime.id);
+      if (rating && ratingHtml) rating.style.setProperty('view-transition-name', 'rating' + anime.id);
     });
     
     return div;
