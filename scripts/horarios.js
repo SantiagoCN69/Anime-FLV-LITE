@@ -72,20 +72,26 @@ const renderGrid = (filter = '') => {
   }
 
   animesToRender.forEach(a => {
+    console.log(a);
+    let timeago = ""
+    timeago = a.time_ago
+      ? `<div class="content" data-time_ago="${a.time_ago}">`
+      : "";
+
     const div = document.createElement("a");
     div.className = "anime-card anime-card-schedule";
     div.href = slug(a.title);
 
     div.innerHTML = `
-      <div class="container-img">
+        <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}" loading="lazy">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver" onerror="this.style.display='none'">
           <span class="rating">${a.type}</span>
-          <span class="estado">Capítulo ${a.last_episode}</span>
+          <span class="estado">Capítulo ${a.last_episode || 1}</span>
         </div>
-        <div class="content" data-time_ago="${a.time_ago}">
+        ${timeago}
           <strong>${a.title}</strong>
-        </div>
+        ${timeago ? '</div>' : ''}
     `;
     DOM.grid.appendChild(div);
   });
