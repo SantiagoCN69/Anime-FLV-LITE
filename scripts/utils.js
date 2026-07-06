@@ -56,11 +56,27 @@ export function observerAnimeCards() {
         entries.forEach(entry => {
             if (!entry.isIntersecting) return;
 
-            entry.target.classList.add("show");
-            obs.unobserve(entry.target);
+            const card = entry.target;
+
+            requestAnimationFrame(() => {
+                card.classList.add("show");
+
+                // Evita que el delay afecte futuros hovers
+                const onEnd = (e) => {
+                    if (e.propertyName !== "opacity" && e.propertyName !== "transform") return;
+
+                    card.style.transitionDelay = "0s";
+                    card.removeEventListener("transitionend", onEnd);
+                };
+
+                card.addEventListener("transitionend", onEnd);
+            });
+
+            obs.unobserve(card);
         });
     }, {
-        threshold: 0
+        threshold: 0.05,
+        rootMargin: "0px 0px -10% 0px"
     });
 
     cards.forEach((card, index) => {
