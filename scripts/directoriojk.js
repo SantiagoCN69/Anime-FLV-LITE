@@ -114,7 +114,7 @@ const renderPagination = () => {
   const c = $('pagination-directorio');
   if (!c) return;
   c.innerHTML = "";
-  
+
   for (let i = 1; i <= totalPaginas; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
@@ -159,18 +159,18 @@ const renderAnime = (animes) => {
     const div = document.createElement("div");
     div.className = "anime-card anime-card-jk";
 
-    div.innerHTML = `
-      <a href="${a.url}" target="_blank">
+      div.innerHTML = `
+        <a href="${a.url}" target="_blank">
         <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
         </div>
           <div class="content">
-        <h3>${a.title}</h3>
+            <h3>${a.title}</h3>
             <p id="card-synopsis">${a.synopsis || ""}</p>
           </div>
-      </a>
-    `;
+        </a>
+      `;
     
     c.appendChild(div);
   });
@@ -232,6 +232,8 @@ const setLayout = type => {
   const btn = $(id);
   if (btn) btn.onclick = () => setLayout(id);
 });
+
+setLayout('layout1');
 
 // Inicializamos todo inmediatamente en lugar de esperar al DOMContentLoaded
 initFiltros();
