@@ -915,3 +915,32 @@ justify-content: space-between;
   border-radius: 5px;
   font-size: 0.8rem;
 }
+.anime-card-schedule .content {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+.anime-card-schedule .content:after {
+  z-index: 1;
+  content: attr(data-time_ago);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(-100% - 29px);
+  height: calc(2lh + 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--p);
+  color: var(--t1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: bottom 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+.anime-card-schedule:hover .content:after {
+  bottom: -10px;
+  opacity: 1;
+}

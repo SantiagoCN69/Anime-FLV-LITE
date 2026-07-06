@@ -73,7 +73,7 @@ const renderGrid = (filter = '') => {
 
   animesToRender.forEach(a => {
     const div = document.createElement("a");
-    div.className = "anime-card";
+    div.className = "anime-card anime-card-schedule";
     div.href = slug(a.title);
 
     div.innerHTML = `
@@ -83,7 +83,7 @@ const renderGrid = (filter = '') => {
           <span class="rating">${a.type}</span>
           <span class="estado">Capítulo ${a.last_episode}</span>
         </div>
-        <div class="content">
+        <div class="content" data-time_ago="${a.time_ago}">
           <strong>${a.title}</strong>
         </div>
     `;
