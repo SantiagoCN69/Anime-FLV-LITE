@@ -135,7 +135,6 @@ switch(id) {
       }
       break;
 }
-document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
 observerAnimeCards();
 cerrarSidebar();
 }

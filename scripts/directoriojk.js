@@ -316,7 +316,7 @@ const setLayout = type => {
       if (id === type) btn.classList.add("active");
     }
   });
-  document.querySelectorAll('.anime-card').forEach(el => el.classList.remove('show'));
+
   observerAnimeCards();
 };
 
