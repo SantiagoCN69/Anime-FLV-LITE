@@ -123,8 +123,8 @@ const renderGrid = (filter = '') => {
         <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}" loading="lazy">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver" onerror="this.style.display='none'">
-          <span class="estado">${a.type}</span>
-          <span class="ultimo-cap">Capítulo ${a.last_episode}</span>
+          <span class="rating">${a.type}</span>
+          <span class="estado">Capítulo ${a.last_episode}</span>
         </div>
         <div class="content">
           <strong>${a.title}</strong>
