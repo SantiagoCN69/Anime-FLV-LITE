@@ -294,12 +294,11 @@ async function aplicarFondoAnime(anime) {
 }
 
 const renderAnime = anime => {
+  console.log(anime);
   anime.estado === "En emision"
   ? (statusEl.innerHTML = `<img src="../icons/circle-solid-blue.svg">${anime.estado}`, statusEl.classList.add("en-emision"))
   : (statusEl.innerHTML = `<img src="../icons/circle-solid.svg">${anime.estado}`, statusEl.classList.remove("en-emision"));
-  anime.estado === "Por estrenar"
-  ? (statusEl.innerHTML = `<img src="../icons/circle-solid-yellow.svg">${anime.estado}`, statusEl.classList.add("estrenando"))
-  : (statusEl.innerHTML = `<img src="../icons/circle-solid.svg">${anime.estado}`, statusEl.classList.remove("estrenando"));
+
 
   tituloEl.textContent = anime.titulo;
   document.getElementById("portadacarga").classList.add("cargado");
@@ -311,6 +310,14 @@ const renderAnime = anime => {
     ratingEl.style.display = 'none';
   } else {
     ratingEl.textContent = anime.rating + "/5";
+  }
+  if (anime.estado === "Por estrenar") {
+    statusEl.innerHTML = `<img src="../icons/circle-solid-yellow.svg">${anime.estado}`;
+    statusEl.classList.add("estrenando");
+    document.getElementsByClassName("anime-container3")[0].innerHTML = "<span id='anime-proximo-estrenar'>Próximamente en estreno. Los capítulos aún no están disponibles.</span>";
+    return;
+  } else {
+    statusEl.classList.remove("estrenando");
   }
   crearBotonesEpisodios(anime);
   renderRelacionados(anime);
@@ -1235,5 +1242,9 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
   }, 3000);
 }
 document.getElementById("btn-volver").addEventListener("click", () => {
-  history.back();
+  if (history.length > 1) {
+    history.back();
+  } else {
+    window.location.href = "https://animeflvlite.netlify.app/";
+  }
 });
