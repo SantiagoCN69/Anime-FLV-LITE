@@ -751,6 +751,11 @@ main {
     display: none;
   }
  }
+  @media screen and (min-width: 600px) and (max-width: 730px) {
+  .svg-header {
+    display: none;
+  }
+ }
  @media screen and (max-width: 380px) {
   
   .btn-fuente-directorios {
