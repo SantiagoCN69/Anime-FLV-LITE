@@ -210,16 +210,21 @@ nav.filtros {
 }
 
 .pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 1rem;
-  padding: 5px;
   width: 100%;
   max-width: 614px;
-  margin-inline: auto;
-  overflow-y: auto;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
   scroll-snap-type: x mandatory;
+  padding: 10px 0;
+}
+
+.page-button {
+  flex: 0 0 auto;
 }
 .pagination::-webkit-scrollbar {
   height: 8px;
