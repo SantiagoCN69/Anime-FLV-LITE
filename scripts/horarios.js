@@ -22,11 +22,9 @@ const renderButtons = () => {
     btn.textContent = item.day;
     
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.btn-day').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
       currentDay = item.day;
-      DOM.search.value = '';
-      renderGrid();
+      if (DOM.search) DOM.search.value = '';
+      applyFilter();
     });
     
     DOM.buttons.appendChild(btn);
@@ -42,75 +40,108 @@ function slug(str) {
   return `/anime.html?id=${clean}`;
 }
 
-const renderGrid = (filter = '') => {
+const renderInitialGrid = () => {
   if (!DOM.grid) return;
   DOM.grid.innerHTML = '';
   
-  let animesToRender = [];
+  const fragment = document.createDocumentFragment();
 
-  if (filter.trim() === '') {
-    const dayData = scheduleData.find(d => d.day === currentDay);
-    if (dayData) animesToRender = dayData.animes;
-    
-    document.querySelectorAll('.btn-day').forEach(b => {
-      if (b.textContent === currentDay) b.classList.add('active');
-    });
-  } else {
-    scheduleData.forEach(d => {
-      const coincidencias = d.animes.filter(a => 
-        a.title.toLowerCase().includes(filter.toLowerCase())
-      );
-      animesToRender = [...animesToRender, ...coincidencias];
-    });
-    
-    document.querySelectorAll('.btn-day').forEach(b => b.classList.remove('active'));
-  }
+  
+  scheduleData.forEach(d => {
+    d.animes.forEach(a => {
+      const div = document.createElement("a");
+      div.className = "anime-card anime-card-schedule";
+      div.href = slug(a.title);
+      div.dataset.day = d.day;
+      div.dataset.title = a.title.toLowerCase();
 
-  if (animesToRender.length === 0) {
-    DOM.grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #a0a5b1;">No se encontraron animes con ese nombre.</p>';
-    return;
-  }
+      let timeago = ""
+      timeago = a.time_ago
+        ? `<div class="content" data-time_ago="${a.time_ago}">`
+        : "";
 
-  animesToRender.forEach(a => {
-    console.log(a);
-    let timeago = ""
-    timeago = a.time_ago
-      ? `<div class="content" data-time_ago="${a.time_ago}">`
-      : "";
-
-    const div = document.createElement("a");
-    div.className = "anime-card anime-card-schedule";
-    div.href = slug(a.title);
-
-    div.innerHTML = `
+      div.innerHTML = `
         <div class="container-img">
-          <img class="cover" src="${a.image}" alt="${a.title}" loading="lazy">
-          <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver" onerror="this.style.display='none'">
-          <span class="rating">${a.type}</span>
+            <img class="cover" src="${a.image}" alt="${a.title}" loading="lazy">
+            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver" onerror="this.style.display='none'">
+            <span class="rating">${a.type}</span>
           <span class="estado">Capítulo ${a.last_episode || 1}</span>
-        </div>
+          </div>
         ${timeago}
-          <strong>${a.title}</strong>
+            <strong>${a.title}</strong>
         ${timeago ? '</div>' : ''}
-    `;
-    DOM.grid.appendChild(div);
+      `;
+      fragment.appendChild(div);
+    });
   });
+
+  const noResults = document.createElement('p');
+  noResults.id = 'no-results-message';
+  noResults.style.cssText = 'display:none; text-align:center; grid-column: 1/-1; color: #a0a5b1;';
+  noResults.textContent = 'No se encontraron animes con ese nombre.';
+  fragment.appendChild(noResults);
+
+  DOM.grid.appendChild(fragment);
   
   if (typeof observerAnimeCards === 'function') {
     observerAnimeCards();
   }
 };
 
+const applyFilter = (filterText = '') => {
+  const query = filterText.trim().toLowerCase();
+  const cards = DOM.grid.querySelectorAll('.anime-card');
+  const noResultsMessage = document.getElementById('no-results-message');
+  let visibleCount = 0;
+
+  if (query === '') {
+    cards.forEach(card => {
+      if (card.dataset.day === currentDay) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    document.querySelectorAll('.btn-day').forEach(b => {
+      b.classList.toggle('active', b.textContent === currentDay);
+    });
+  } else {
+    cards.forEach(card => {
+      if (card.dataset.title.includes(query)) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    
+    document.querySelectorAll('.btn-day').forEach(b => b.classList.remove('active'));
+  }
+
+  if (noResultsMessage) {
+    noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+};
+
 const processData = (data, isInitial = false) => {
   scheduleData = data;
   if (scheduleData.length > 0) {
-    if (!currentDay) currentDay = scheduleData[0].day;
+    
+    if (!currentDay) {
+      const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const hoy = diasSemana[new Date().getDay()];
+      const existeHoy = scheduleData.some(d => d.day.toLowerCase() === hoy.toLowerCase());
+      currentDay = existeHoy ? scheduleData.find(d => d.day.toLowerCase() === hoy.toLowerCase()).day : scheduleData[0].day;
+    }
     
     renderButtons();
-    renderGrid(DOM.search.value);
+    renderInitialGrid(); 
+    applyFilter(DOM.search ? DOM.search.value : ''); 
     
     if (!eventsBound && DOM.search) {
-      DOM.search.addEventListener('input', (e) => renderGrid(e.target.value));
+      DOM.search.addEventListener('input', (e) => applyFilter(e.target.value));
       eventsBound = true;
     }
   }

@@ -26,6 +26,7 @@ html {
   --f: 1;
   --bt: 255, 255, 255;
   overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 body {

@@ -42,44 +42,35 @@ window.addEventListener('scroll', handleScroll);
 
 // utils.js
 export function observerAnimeCards() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const cards = Array.from(document.querySelectorAll('.anime-card'));
-                const index = cards.indexOf(entry.target);
-                
-                const row = Math.floor(index / 4);
-                const col = index % 4;
-                const delay = (row + col) * 0.03;
-                
-                entry.target.style.transitionDelay = `${delay}s`;
-                entry.target.classList.add('show');
-            }
-        });
-    }, { threshold: 0 });
+    const cards = document.querySelectorAll(".anime-card");
+    if (!cards.length) return;
 
-    // Aplicar delays escalonados a tarjetas ya visibles
-    const cards = document.querySelectorAll('.anime-card');
+    const container = cards[0].parentElement;
+
+    const columns = Math.max(
+        1,
+        getComputedStyle(container).gridTemplateColumns.split(" ").length
+    );
+
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+
+            entry.target.classList.add("show");
+            obs.unobserve(entry.target);
+        });
+    }, {
+        threshold: 0
+    });
+
     cards.forEach((card, index) => {
+        const row = Math.floor(index / columns);
+        const col = index % columns;
+
+        card.style.transitionDelay = `${(row + col) * 0.03}s`;
         observer.observe(card);
-        
-        // Verificar si ya está visible
-        const rect = card.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-        
-        if (isVisible) {
-            const row = Math.floor(index / 4);
-            const col = index % 4;
-            const delay = (row + col) * 0.03;
-            
-            card.style.transitionDelay = `${delay}s`;
-            requestAnimationFrame(() => {
-                card.classList.add('show');
-            });
-        }
     });
 }
-
 
 // INDICADOR sidebar scroll
 document.addEventListener('DOMContentLoaded', () => {
