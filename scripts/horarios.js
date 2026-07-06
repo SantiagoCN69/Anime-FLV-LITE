@@ -70,12 +70,12 @@ const renderGrid = (filter = '') => {
   }
 
   animesToRender.forEach(a => {
-    const div = document.createElement("div");
+    const div = document.createElement("a");
     div.className = "anime-card";
+    div.href = `/anime/${slug(a.title)}`;
 
     div.innerHTML = `
-      <a href="/anime/${slug(a.title)}">
-        <div class="container-img">
+      <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}" loading="lazy">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver" onerror="this.style.display='none'">
           <span class="rating">${a.type}</span>
@@ -84,7 +84,6 @@ const renderGrid = (filter = '') => {
         <div class="content">
           <strong>${a.title}</strong>
         </div>
-      </a>
     `;
     DOM.grid.appendChild(div);
   });

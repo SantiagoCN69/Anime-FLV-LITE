@@ -921,13 +921,13 @@ section.content-section h2:first-of-type::after {
 #main {
   width: calc(100% - 2rem);
   margin: calc(88px + 2rem) auto 2rem;
-  padding-inline: 1rem;
   display: none;
 }
 #ultimos-episodios {
   position: relative;
 }
 .anime-card {
+  background-color: var(--p);
   position: relative;
   border-radius: 15px;
   overflow: hidden;
