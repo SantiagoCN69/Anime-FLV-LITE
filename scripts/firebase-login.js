@@ -273,7 +273,7 @@ export { app, auth, db };
 
 //tema // Configuración de temas
 const THEME_CONFIG = {
-    themes: ['dark', 'light', 'nocturno', 'pastel', 'verde', 'neon'],
+    themes: ['dark', 'nocturno', 'sakura', 'cyberpunk'],
     defaultTheme: 'dark',
     saveDelay: 10000
 };
