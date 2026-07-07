@@ -37,7 +37,7 @@ function slug(str) {
     .trim()
     .replace(/[:'".,!?]/g, '')
     .replace(/\s+/g, '-');
-  return `/anime.html?id=${clean}`;
+  return `${clean}`;
 }
 
 const renderInitialGrid = () => {
@@ -51,7 +51,7 @@ const renderInitialGrid = () => {
     d.animes.forEach(a => {
       const div = document.createElement("a");
       div.className = "anime-card anime-card-schedule";
-      div.href = slug(a.title);
+      div.href = `/anime.html?id=${slug(a.title)}`;
       div.dataset.day = d.day;
       div.dataset.title = a.title.toLowerCase();
 
@@ -71,6 +71,13 @@ const renderInitialGrid = () => {
             <strong>${a.title}</strong>
         ${timeago ? '</div>' : ''}
       `;
+      div.addEventListener('click', () => {
+      const h3 = div.querySelector('strong');
+      const containerImg = div.querySelector('.container-img');
+      
+      if (h3) h3.style.setProperty('view-transition-name', 'title' + slug(a.title));
+      if (containerImg) containerImg.style.setProperty('view-transition-name', slug(a.title));
+    });
       fragment.appendChild(div);
     });
   });

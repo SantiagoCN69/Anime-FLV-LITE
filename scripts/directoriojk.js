@@ -262,9 +262,13 @@ const renderAnime = (animes) => {
           </div>
         </a>
       `;
-        div.addEventListener('click', () => {
-          aplicarViewTransition(slug(a.title));
-        });
+    div.addEventListener('click', () => {
+      const h3 = div.querySelector('h3');
+      const containerImg = div.querySelector('.container-img');
+      
+      if (h3) h3.style.setProperty('view-transition-name', 'title' + slug(a.title));
+      if (containerImg) containerImg.style.setProperty('view-transition-name', slug(a.title));
+    });
     c.appendChild(div);
   });
   
