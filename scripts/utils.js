@@ -18,7 +18,6 @@ cards.forEach(card => {
   
   document.querySelectorAll('#anime-' + id + ' strong').forEach(el => el.style.setProperty('view-transition-name', 'title' + id));
   document.querySelectorAll('#anime-' + id + ' .container-img').forEach(el => el.style.setProperty('view-transition-name', id));
-  console.log('aplicando view transition');
 }
 
 // Manejar el scroll para el efecto del header

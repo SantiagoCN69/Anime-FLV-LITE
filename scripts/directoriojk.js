@@ -1,5 +1,5 @@
 import { mostrarSeccionDesdesearch } from './index.js';
-import { observerAnimeCards } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition } from './utils.js';
 
 let paginaActual = 1;
 let totalPaginas = 1;
@@ -222,7 +222,7 @@ function slug(str) {
     .trim()
     .replace(/[:'".,!?]/g, '')
     .replace(/\s+/g, '-');
-  return `/anime.html?id=${clean}`;
+  return `${clean}`;
 }
 
 const renderAnime = (animes) => {
@@ -250,7 +250,7 @@ const renderAnime = (animes) => {
     div.className = "anime-card anime-card-jk";
 
       div.innerHTML = `
-        <a href="${slug(a.title)}">
+        <a href="/anime.html?id=${slug(a.title)}">
         <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -262,7 +262,9 @@ const renderAnime = (animes) => {
           </div>
         </a>
       `;
-    
+        div.addEventListener('click', () => {
+          aplicarViewTransition(slug(a.title));
+        });
     c.appendChild(div);
   });
   
