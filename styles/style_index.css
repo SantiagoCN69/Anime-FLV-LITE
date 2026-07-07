@@ -864,9 +864,9 @@ justify-content: space-between;
 
 .btn-day {
   flex: 1;
-  background-color: #1a1d24;
-  color: #a0a5b1;
-  border: 1px solid #2d323e;
+  background-color: var(--p);
+  color: var(--t2);
+  border: 1px solid var(--br);
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   cursor: pointer;
@@ -876,14 +876,14 @@ justify-content: space-between;
 }
 
 .btn-day:hover {
-  background-color: #2d323e;
-  color: #ffffff;
+  background-color: var(--br);
+  color: var(--t1);
 }
 
 .btn-day.active {
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
   border-color: var(--t1);
-  color: #ffffff;
+  color: var(--t1);
 }
 
 .search-input {
@@ -891,9 +891,9 @@ justify-content: space-between;
   max-width: 500px;
   padding: 0.8rem 1.2rem;
   border-radius: 8px;
-  border: 1px solid #2d323e;
-  background-color: #1a1d24;
-  color: #ffffff;
+  border: 1px solid var(--br);
+  background-color: var(--p);
+  color: var(--t1);
   font-size: 1rem;
   outline: none;
   transition: border-color 0.2s ease;
