@@ -903,16 +903,16 @@ document.addEventListener("DOMContentLoaded", () => {
       right: 'Ultimos-Episodios',
     },
     'Continuar-viendo': {
-      left: 'Directorio',
+      left: 'DirectorioJK',
       right: 'Populares',
     },
-    'Directorio': {
+    'DirectorioJK': {
       left: 'Lab',
       right: 'Continuar-viendo',
     },
     'Lab': {
       left: null,
-      right: 'Directorio',
+      right: 'DirectorioJK',
     }
   };
  const excepciones = [
