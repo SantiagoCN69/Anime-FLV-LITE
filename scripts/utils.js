@@ -39,59 +39,39 @@ window.addEventListener('load', handleScroll);
 window.addEventListener('scroll', handleScroll);
 
 
-// utils.js
 export function observerAnimeCards() {
     const cards = document.querySelectorAll(".anime-card");
     if (!cards.length) return;
 
     const container = cards[0].parentElement;
+    const columns = Math.max(
+        1,
+        getComputedStyle(container).gridTemplateColumns.split(" ").length
+    );
 
-    let cachedColumns = 1;
-    const updateColumns = () => {
-      const gridStyle = getComputedStyle(container).gridTemplateColumns;
-      cachedColumns = Math.max(1, gridStyle.split(" ").length);
-      console.log('[Observer] 📊 Columnas grid actualizadas:', cachedColumns);
-    };
-    
-    updateColumns();
-    const resizeObserver = new ResizeObserver(() => updateColumns());
-    resizeObserver.observe(container);
-    console.log('[Observer] ✅ ResizeObserver activo para optimizar grid');
+    cards.forEach((card, index) => {
+        const row = Math.floor(index / columns);
+        const col = index % columns;
+        card.style.transitionDelay = `${(row + col) * 0.03}s`;
+    });
 
     const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
+        for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
 
             const card = entry.target;
 
-            requestAnimationFrame(() => {
-                card.classList.add("show");
-
-                // Evita que el delay afecte futuros hovers
-                const onEnd = (e) => {
-                    if (e.propertyName !== "opacity" && e.propertyName !== "transform") return;
-
-                    card.style.transitionDelay = "0s";
-                    card.removeEventListener("transitionend", onEnd);
-                };
-
-                card.addEventListener("transitionend", onEnd);
-            });
+            card.classList.add("show");
+            card.style.transitionDelay = "";
 
             obs.unobserve(card);
-        });
+        }
     }, {
         threshold: 0.05,
         rootMargin: "0px 0px -10% 0px"
     });
 
-    cards.forEach((card, index) => {
-        const row = Math.floor(index / cachedColumns);
-        const col = index % cachedColumns;
-
-        card.style.transitionDelay = `${(row + col) * 0.03}s`;
-        observer.observe(card);
-    });
+    cards.forEach(card => observer.observe(card));
 }
 
 // INDICADOR sidebar scroll
