@@ -127,6 +127,7 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
   }
 
   try {
+    console.log("Consultando API... ", params);
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${params}`);
     const data = await res.json();
 
@@ -143,7 +144,7 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
 
 const initFiltros = () => {
   const menus = [
-    ["btn-filtro", "filtro", "orden"],
+    ["btn-filtro", "filtro", "filtro"],
     ["btn-filtro-genero", "filtro-genero", "genero"],
     ["btn-filtro-letra", "filtro-letra", "letra"],
     ["btn-filtro-demografia", "filtro-demografia", "demografia"],
