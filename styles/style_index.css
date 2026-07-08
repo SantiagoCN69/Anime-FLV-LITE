@@ -921,6 +921,7 @@ justify-content: space-between;
   overflow: visible;
 }
 .anime-card-schedule .content:after {
+  text-transform: capitalize;
   z-index: 1;
   content: attr(data-time_ago);
   position: absolute;
