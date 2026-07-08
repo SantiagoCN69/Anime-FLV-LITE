@@ -1,8 +1,5 @@
 const IA_CHAT_URL = 'https://backend-ia-anime.onrender.com/api/chat';
-//const IA_CHAT_URL = '.com/chat';
-
 const SEARCH_URL = 'https://backend-animeflv-lite.onrender.com/api/search';
-//const SEARCH_URL = 'http://localhost:3001/api/search';
 
 export const IA_SECTION_HTML = `
 <div id="recomendaciones-ia-busqueda" class="recomendaciones-ia-busqueda">
@@ -45,93 +42,111 @@ export function parseAnimeNamesFromResponse(text) {
   return text
     .replace(/\n/g, ',')
     .split(',')
-    .map(t => t.trim()
-      .replace(/-/g, ' ')
-      .replace(/:/g, '')
-      .replace(/\s+/g, ' '))
-    .filter(Boolean);
+    .map(title =>
+      title
+        .trim()
+        .replace(/-/g, ' ')
+        .replace(/:/g, '')
+        .replace(/\s+/g, ' ')
+    )
+    .filter(Boolean)
+    .slice(0, 5);
 }
 
 export async function fetchIAResponse(prompt, signal) {
-  console.log('[AI] Fetching IA response with prompt:', prompt);
   const response = await fetch(IA_CHAT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({ message: prompt }),
     signal
   });
 
-  if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
 
   const data = await response.json();
-  console.log('[AI] IA response received:', data.response);
   return data.response || '';
 }
 
-export async function resolveAnimeByName(nombre) {
-  console.log('[AI] Resolving anime by name:', nombre);
+export async function resolveAnimeByName(nombre, signal) {
   try {
-    const res = await fetch(`${SEARCH_URL}?q=${encodeURIComponent(nombre)}`);
-    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-
-    const data = await res.json();
-    const animes = Array.isArray(data) ? data : (data.data || []);
-    console.log('[AI] Search results for', nombre, ':', animes.length, 'results');
-    if (!animes.length) return null;
-
-    let animeSeleccionado = animes.find(a =>
-      a.title.toLowerCase() === nombre.toLowerCase()
+    const response = await fetch(
+      `${SEARCH_URL}?q=${encodeURIComponent(nombre)}`,
+      { signal }
     );
 
-    if (!animeSeleccionado) {
-      const animesCandidatos = animes.filter(a =>
-        a.title.toLowerCase().includes(nombre.toLowerCase())
-      );
-
-      if (animesCandidatos.length) {
-        animesCandidatos.sort((a, b) => a.title.length - b.title.length);
-        animeSeleccionado = animesCandidatos[0];
-      } else {
-        animeSeleccionado = animes[0];
-      }
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
 
-    console.log('[AI] Selected anime:', animeSeleccionado?.title);
-    return animeSeleccionado;
-  } catch (err) {
-    console.error('[AI] Error al buscar anime:', nombre, err);
+    const data = await response.json();
+    const animes = Array.isArray(data) ? data : (data.data || []);
+
+    if (!animes.length) return null;
+
+    const nombreLower = nombre.toLowerCase();
+
+    return (
+      animes.find(a => a.title.toLowerCase() === nombreLower) ||
+      animes
+        .filter(a => a.title.toLowerCase().includes(nombreLower))
+        .sort((a, b) => a.title.length - b.title.length)[0] ||
+      animes[0]
+    );
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error;
+    }
+
+    console.warn(`[AI] Error resolving "${nombre}"`, error);
     return null;
   }
 }
 
 export async function fetchRecommendationsFromIA(searchTerm, signal) {
-  console.log('[AI] Fetching recommendations for search term:', searchTerm);
   const prompt = buildSimilarAnimePrompt(searchTerm);
   const respuesta = await fetchIAResponse(prompt, signal);
   const nombres = parseAnimeNamesFromResponse(respuesta);
-  console.log('[AI] Parsed anime names from response:', nombres);
 
-  const animes = [];
+  if (!nombres.length) return [];
+
+  const resultados = await Promise.all(
+    nombres.map(async nombre => {
+      try {
+        return await resolveAnimeByName(nombre, signal);
+      } catch (error) {
+        if (error.name === 'AbortError') throw error;
+
+        console.warn(`[AI] Failed to resolve "${nombre}"`, error);
+        return null;
+      }
+    })
+  );
+
   const idsVistos = new Set();
+  const animes = [];
 
-  for (const nombre of nombres) {
-    const anime = await resolveAnimeByName(nombre);
+  for (const anime of resultados) {
     if (!anime || idsVistos.has(anime.id)) continue;
+
     idsVistos.add(anime.id);
     animes.push(anime);
   }
 
-  console.log('[AI] Final recommendations count:', animes.length);
   return animes;
 }
 
 export function attachIaGridWheelScroll(grid) {
   if (!grid) return;
-  grid.onwheel = (e) => {
-    if (e.deltaY !== 0) {
-      e.preventDefault();
-      grid.scrollLeft += e.deltaY;
-    }
+
+  grid.onwheel = e => {
+    if (e.deltaY === 0) return;
+
+    e.preventDefault();
+    grid.scrollLeft += e.deltaY;
   };
 }
 
@@ -143,37 +158,36 @@ export async function loadIaRecommendationsIntoGrid({
   crearAnimeCard,
   observerAnimeCards
 }) {
-  console.log('[AI] Loading IA recommendations into grid for:', searchTerm);
   if (!grid) return;
 
   try {
     const animes = await fetchRecommendationsFromIA(searchTerm, signal);
-    if (isStale?.()) {
-      console.log('[AI] Request is stale, aborting');
-      return;
-    }
+
+    if (isStale?.()) return;
 
     grid.innerHTML = '';
 
     if (!animes.length) {
-      console.log('[AI] No recommendations found');
-      grid.innerHTML = '<span class="span-carga">No se pudieron generar recomendaciones</span>';
+      grid.innerHTML =
+        '<span class="span-carga">No se pudieron generar recomendaciones</span>';
       return;
     }
 
-    console.log('[AI] Rendering', animes.length, 'anime cards');
     const fragment = document.createDocumentFragment();
-    animes.forEach(anime => fragment.appendChild(crearAnimeCard(anime)));
-    grid.appendChild(fragment);
-    if (typeof observerAnimeCards === 'function') observerAnimeCards();
-    console.log('[AI] Successfully loaded recommendations');
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      console.log('[AI] Request aborted');
-      return;
+
+    for (const anime of animes) {
+      fragment.appendChild(crearAnimeCard(anime));
     }
-    console.error('[AI] Error al cargar recomendaciones IA:', error);
-    if (isStale?.()) return;
-    grid.innerHTML = '<span class="span-carga">No se pudieron generar recomendaciones</span>';
+
+    grid.appendChild(fragment);
+
+    observerAnimeCards?.();
+  } catch (error) {
+    if (error.name === 'AbortError' || isStale?.()) return;
+
+    console.error('[AI] Error al cargar recomendaciones:', error);
+
+    grid.innerHTML =
+      '<span class="span-carga">No se pudieron generar recomendaciones</span>';
   }
 }
