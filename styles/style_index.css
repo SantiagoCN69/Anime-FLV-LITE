@@ -955,4 +955,12 @@ justify-content: space-between;
 }
 #DirectorioJK {
   overflow: hidden;
+  p {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+    grid-column: 1 / -1; 
+    grid-row: 1 / -1;
+  }
 }
+
