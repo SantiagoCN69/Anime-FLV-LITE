@@ -316,6 +316,7 @@ if (busquedaInput) {
 
       initialDelayTimer = setTimeout(() => {
         if (searchId === currentSearch && isIndexPage) {
+          console.log('[Search] ⏱️ Mostrando loading después de 100ms');
           if (loadingSpan) loadingSpan.style.display = 'block';
           if (contadorSpan) contadorSpan.textContent = countdown + 's';
           busquedaCountdownInterval = setInterval(() => {
@@ -331,7 +332,7 @@ if (busquedaInput) {
             }
           }, 1000);
         }
-      }, 1000);
+      }, 100);
 
       currentController = new AbortController();
       fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(valor)}`, { signal: currentController.signal })
@@ -344,7 +345,14 @@ if (busquedaInput) {
           clearTimeout(initialDelayTimer);
           clearInterval(busquedaCountdownInterval);
           if (isIndexPage && loadingSpan) loadingSpan.style.display = 'none';
-          const filtrados = (resData || []).filter(anime => normalizarTexto(anime.title || anime.name || '').includes(queryNormalizada));
+          
+          console.log('[Search] 🔍 Pre-normalizando', resData.length, 'animes...');
+          const dataNormalizada = (resData || []).map(anime => ({
+            ...anime,
+            titleNorm: normalizarTexto(anime.title || anime.name || '')
+          }));
+          const filtrados = dataNormalizada.filter(anime => anime.titleNorm.includes(queryNormalizada));
+          console.log('[Search] ✅ Filtrado completado:', filtrados.length, 'resultados');
           mostrarResultados(filtrados, valor, searchId);
         })
         .catch(err => {

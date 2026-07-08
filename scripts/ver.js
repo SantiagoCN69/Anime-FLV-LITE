@@ -419,7 +419,24 @@ async function guardarServidoresEnFirestore(ep, servidores) {
   await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
 }
 
+// Caché en memoria para servidores
+const serverCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000;
+
+function getServerCacheKey(url) {
+  return `servers_${url}`;
+}
+
 async function sincronizarServidoresConApi(ep) {
+  const cacheKey = getServerCacheKey(ep.url);
+  const cached = serverCache.get(cacheKey);
+  
+  if (cached && Date.now() - cached.time < CACHE_TTL) {
+    console.log("[Servidores] ⚡ Usando caché en memoria (5 min):", cacheKey);
+    return cached.data;
+  }
+
+  console.log("[Servidores] 🔄 No hay caché válido, consultando API...");
   let servidoresFirestore = [];
 
   try {
@@ -442,7 +459,9 @@ async function sincronizarServidoresConApi(ep) {
       // API falló (404 u otro error), usar respaldo de Firestore
       if (servidoresFirestore.length) {
         console.log("[servidores] API falló, usando respaldo de Firestore");
-        return reordenarServidores(servidoresFirestore);
+        const result = reordenarServidores(servidoresFirestore);
+        serverCache.set(cacheKey, { data: result, time: Date.now() });
+        return result;
       }
       return [];
     }
@@ -454,13 +473,18 @@ async function sincronizarServidoresConApi(ep) {
         await guardarServidoresEnFirestore(ep, servidoresApi);
       }
 
-      return reordenarServidores(servidoresApi);
+      const result = reordenarServidores(servidoresApi);
+      serverCache.set(cacheKey, { data: result, time: Date.now() });
+      console.log("[Servidores] 💾 Guardado en caché:", cacheKey);
+      return result;
     }
 
     // Si la API no devuelve servidores, usar los de Firestore como respaldo (sin guardar)
     if (servidoresFirestore.length) {
       console.log("[servidores] API no devolvió servidores, usando respaldo de Firestore");
-      return reordenarServidores(servidoresFirestore);
+      const result = reordenarServidores(servidoresFirestore);
+      serverCache.set(cacheKey, { data: result, time: Date.now() });
+      return result;
     }
 
     return [];
@@ -469,7 +493,9 @@ async function sincronizarServidoresConApi(ep) {
     // Si hay error inesperado, usar los de Firestore como respaldo (sin guardar)
     if (servidoresFirestore.length) {
       console.log("[servidores] Error inesperado, usando respaldo de Firestore");
-      return reordenarServidores(servidoresFirestore);
+      const result = reordenarServidores(servidoresFirestore);
+      serverCache.set(cacheKey, { data: result, time: Date.now() });
+      return result;
     }
     throw error;
   }

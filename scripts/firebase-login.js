@@ -13,12 +13,14 @@ function updateUIForUser(user) {
   const btnLogin = document.getElementById('btn-login');
   
   if (user) {
+    console.log('[Login] 👤 Actualizando UI con usuario:', user.displayName);
     const nombres = (user.displayName || '').split(' ');
     const primerNombre = nombres[0] || '';
     
     btnLogin.innerHTML = `<img src="${user.photoURL || 'icons/user-solid.svg'}" alt="Foto de perfil"><span>${primerNombre}</span>`;
     btnLogin.classList.remove('nouser');
   } else {
+    console.log('[Login] 👤 Usuario desconectado');
     btnLogin.innerHTML = '<span>Login</span>';
     btnLogin.classList.add('nouser');
   }
@@ -201,13 +203,23 @@ const cachedDisplayName = localStorage.getItem('cachedUserDisplayName');
 const cachedPhotoURL = localStorage.getItem('cachedUserPhotoURL');
 const userID = localStorage.getItem('userID');
 
+let userCached = null;
+
 if (cachedDisplayName || cachedPhotoURL || userID) {
   updateUIForUser({
     displayName: cachedDisplayName,
     photoURL: cachedPhotoURL,
   });
 }
-auth.onAuthStateChanged((user) => {
+
+onAuthStateChanged(auth, (user) => {
+  if (userCached?.uid === user?.uid) {
+    console.log('[Auth] ✅ Usuario sin cambios, evitando re-render innecesario');
+    return;
+  }
+  console.log('[Auth] Cambio de usuario detectado');
+  userCached = user;
+  
   if (!user) {
     document.getElementById('btn-login').textContent = 'Login';
     document.getElementById('btn-login').innerHTML = '<span>Login</span>';
@@ -219,35 +231,26 @@ auth.onAuthStateChanged((user) => {
     } catch (e) {
       console.warn('No se pudo limpiar localStorage:', e);
     }
-  }
-});
-
-onAuthStateChanged(auth, (user) => {
-  const currentUsername = document.getElementById('btn-login')?.getAttribute('data-username');
-  if (!user && currentUsername) {
-      updateUIForUser(null);
-  } else if (user && (!currentUsername || currentUsername !== user.displayName)) {
-      updateUIForUser(user);
-      document.getElementById('btn-login').classList.remove('nouser');
-      if (!cachedDisplayName || !cachedPhotoURL || !userID) {
-      try {
+  } else {
+    updateUIForUser(user);
+    document.getElementById('btn-login').classList.remove('nouser');
+    try {
       localStorage.setItem('cachedUserDisplayName', user.displayName || '');
       localStorage.setItem('cachedUserPhotoURL', user.photoURL || '');
       localStorage.setItem('userID', user.uid);
-      } catch (e) {
-        console.warn('No se pudo guardar en localStorage:', e);
-      }
-      window.location.reload();
+    } catch (e) {
+      console.warn('No se pudo guardar en localStorage:', e);
     }
   }
+  
   // Disparar evento personalizado para indicar que el estado de autenticación está listo
   crearmodal(user);
   document.dispatchEvent(new CustomEvent('authStateReady', { detail: { user } }));
   document.getElementById('btn-login').disabled = false;
   themeToggle();
   if (!localStorage.getItem('theme')) {
-   cargarTemaDesdeFirestore();
-}
+    cargarTemaDesdeFirestore();
+  }
 });
 
 const btnLogin = document.getElementById('btn-login');

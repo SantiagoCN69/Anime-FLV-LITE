@@ -389,39 +389,40 @@ async function crearBotonesEpisodios(anime) {
   capContenedor.classList.add("cargado");
   capContenedor.style.setProperty("--caps", episodios.length);
   
-  setTimeout(() => {
+  requestAnimationFrame(() => {
+    console.log('[Episodios] 🎬 requestAnimationFrame optimizando scroll');
     capContenedor.style.overflowX = "auto";
-    // Desplazar al primer episodio no visto
     const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
     if (primerNoVisto) {
+      console.log('[Episodios] ✅ Desplazando al primer episodio no visto');
       const targetElement = primerNoVisto.parentElement;
       if (targetElement) { 
-      const anchoColumna = typeof getAnchoColumna === 'function' ? getAnchoColumna() : 0; 
+        const anchoColumna = typeof getAnchoColumna === 'function' ? getAnchoColumna() : 0; 
 
-      if (anchoColumna && anchoColumna > 0) {
-        const columnaDelTarget = Math.floor(targetElement.offsetLeft / anchoColumna);
-        let scrollToX = columnaDelTarget * anchoColumna;
-        
-        const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
-        scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
+        if (anchoColumna && anchoColumna > 0) {
+          const columnaDelTarget = Math.floor(targetElement.offsetLeft / anchoColumna);
+          let scrollToX = columnaDelTarget * anchoColumna;
+          
+          const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
+          scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
 
-        capContenedor.scrollTo({
-          left: scrollToX,
-          behavior: 'smooth'
-        });
-      } else {
-        let scrollToX = targetElement.offsetLeft;
-        const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
-        scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
+          capContenedor.scrollTo({
+            left: scrollToX,
+            behavior: 'smooth'
+          });
+        } else {
+          let scrollToX = targetElement.offsetLeft;
+          const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
+          scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
 
-        capContenedor.scrollTo({
-          left: scrollToX,
-          behavior: 'smooth'
-        });
+          capContenedor.scrollTo({
+            left: scrollToX,
+            behavior: 'smooth'
+          });
+        }
       }
     }
-  }
-}, 500);
+  });
 }
 
 capContenedor.addEventListener('wheel', e => {

@@ -46,10 +46,17 @@ export function observerAnimeCards() {
 
     const container = cards[0].parentElement;
 
-    const columns = Math.max(
-        1,
-        getComputedStyle(container).gridTemplateColumns.split(" ").length
-    );
+    let cachedColumns = 1;
+    const updateColumns = () => {
+      const gridStyle = getComputedStyle(container).gridTemplateColumns;
+      cachedColumns = Math.max(1, gridStyle.split(" ").length);
+      console.log('[Observer] 📊 Columnas grid actualizadas:', cachedColumns);
+    };
+    
+    updateColumns();
+    const resizeObserver = new ResizeObserver(() => updateColumns());
+    resizeObserver.observe(container);
+    console.log('[Observer] ✅ ResizeObserver activo para optimizar grid');
 
     const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
@@ -79,8 +86,8 @@ export function observerAnimeCards() {
     });
 
     cards.forEach((card, index) => {
-        const row = Math.floor(index / columns);
-        const col = index % columns;
+        const row = Math.floor(index / cachedColumns);
+        const col = index % cachedColumns;
 
         card.style.transitionDelay = `${(row + col) * 0.03}s`;
         observer.observe(card);

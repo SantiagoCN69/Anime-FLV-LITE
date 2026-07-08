@@ -62,79 +62,30 @@ if (!document.getElementById(id).classList.contains("hidden")) return;
   // Animar el indicador activo
   actualizarIndicadorActivo();
 
-switch(id) {
-    case 'Mis-Favoritos':
-      if (!favoritosCargados) {
-        const DocRef = doc(db, "usuarios", userID, "favoritos", "lista");
-        cargarDatos(document.getElementById('favoritos'), DocRef);
-        favoritosCargados = true;
-      }
-      break;
-    case 'Viendo':
-      if (!viendoCargado) {
-        const DocRef = doc(db, "usuarios", userID, "estados", "viendo");
-        cargarDatos(document.getElementById('viendo'), DocRef);
-        viendoCargado = true;
-      }
-      break;
-    case 'Pendientes':
-      if (!pendientesCargados) {
-        const DocRef = doc(db, "usuarios", userID, "estados", "pendiente");
-        cargarDatos(document.getElementById('pendientes'), DocRef);
-        pendientesCargados = true;
-      }
-      break;
-    case 'Completados':
-      if (!completadosCargados) {
-        const DocRef = doc(db, "usuarios", userID, "estados", "visto");
-        cargarDatos(document.getElementById('completados'), DocRef);
-        completadosCargados = true;
-      }
-      break;
-    case 'Ultimos-Episodios':
-      if (!ultimosCapsCargados) {
-        cargarUltimosCapitulos();
-        cargarhistorial();
-        ultimosCapsCargados = true;
-      }
-      break;
-    case 'Continuar-viendo':
-      if (!continuarViendoCargado) {
-        cargarContinuarViendo();
-        continuarViendoCargado = true;
-      }
-      break;
-    case 'DirectorioFLV':
-      if (!directorioflvCargado) {
-        cargarFetch("DirectorioFLV");
-        directorioflvCargado = true;
-      }
-      break;
-    case 'DirectorioJK':
-      if (!directorioJkCargado) {
-        cargarFetch("DirectorioJK");
-        directorioJkCargado = true;
-      }
-      break;
-    case 'Lab':
-      if (!labCargado) {
-        cargarFetch("lab");
-        labCargado = true;
-      }
-      break;
-    case "Populares" :
-      if (!popularesCargados) {
-        cargarFetch("populares");
-        popularesCargados = true;
-      }
-      break;
-    case "Horarios" :
-      if (!horariosCargados) {
-        cargarFetch("horarios");
-        horariosCargados = true;
-      }
-      break;
+const sectionConfig = {
+  'Mis-Favoritos': { flag: () => favoritosCargados, setFlag: () => { favoritosCargados = true; }, load: () => cargarDatos(document.getElementById('favoritos'), doc(db, "usuarios", userID, "favoritos", "lista")) },
+  'Viendo': { flag: () => viendoCargado, setFlag: () => { viendoCargado = true; }, load: () => cargarDatos(document.getElementById('viendo'), doc(db, "usuarios", userID, "estados", "viendo")) },
+  'Pendientes': { flag: () => pendientesCargados, setFlag: () => { pendientesCargados = true; }, load: () => cargarDatos(document.getElementById('pendientes'), doc(db, "usuarios", userID, "estados", "pendiente")) },
+  'Completados': { flag: () => completadosCargados, setFlag: () => { completadosCargados = true; }, load: () => cargarDatos(document.getElementById('completados'), doc(db, "usuarios", userID, "estados", "visto")) },
+  'Ultimos-Episodios': { flag: () => ultimosCapsCargados, setFlag: () => { ultimosCapsCargados = true; }, load: () => { cargarUltimosCapitulos(); cargarhistorial(); } },
+  'Continuar-viendo': { flag: () => continuarViendoCargado, setFlag: () => { continuarViendoCargado = true; }, load: () => cargarContinuarViendo() },
+  'DirectorioFLV': { flag: () => directorioflvCargado, setFlag: () => { directorioflvCargado = true; }, load: () => cargarFetch("DirectorioFLV") },
+  'DirectorioJK': { flag: () => directorioJkCargado, setFlag: () => { directorioJkCargado = true; }, load: () => cargarFetch("DirectorioJK") },
+  'Lab': { flag: () => labCargado, setFlag: () => { labCargado = true; }, load: () => cargarFetch("lab") },
+  'Populares': { flag: () => popularesCargados, setFlag: () => { popularesCargados = true; }, load: () => cargarFetch("populares") },
+  'Horarios': { flag: () => horariosCargados, setFlag: () => { horariosCargados = true; }, load: () => cargarFetch("horarios") }
+};
+
+const config = sectionConfig[id];
+if (config && !config.flag()) {
+  console.log('[Index] 📂 Cargando sección:', id);
+  config.load();
+  config.setFlag();
+  console.log('[Index] ✅ Sección cargada');
+} else if (config) {
+  console.log('[Index] ⚡ Sección ya cargada (caché):', id);
 }
+
 cerrarSidebar();
 }
 

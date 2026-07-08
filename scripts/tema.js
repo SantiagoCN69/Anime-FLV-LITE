@@ -106,9 +106,24 @@
     };
     
     const applyTheme = t => {
-        const theme = themes[t] || themes.dark;
-        for (const [k, v] of Object.entries(theme)) {
-            document.documentElement.style.setProperty(`--${k}`, v);
+        try {
+            const theme = themes[t] || themes.dark;
+            if (!theme) throw new Error(`Theme ${t} not found`);
+            
+            console.log('[Theme] 🎨 Aplicando tema:', t);
+            for (const [k, v] of Object.entries(theme)) {
+                if (v !== undefined && v !== null) {
+                    document.documentElement.style.setProperty(`--${k}`, v);
+                }
+            }
+            console.log('[Theme] ✅ Tema aplicado exitosamente');
+        } catch (err) {
+            console.error('[Theme] ❌ Error:', err);
+            console.log('[Theme] 🔄 Usando fallback (tema dark)');
+            const fallbackTheme = themes.dark;
+            for (const [k, v] of Object.entries(fallbackTheme)) {
+                document.documentElement.style.setProperty(`--${k}`, v);
+            }
         }
     };
 
