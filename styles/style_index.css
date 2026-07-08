@@ -940,7 +940,14 @@ justify-content: space-between;
   transition: bottom 0.2s ease, opacity 0.2s ease;
   opacity: 0;
 }
-.anime-card-schedule:hover .content:after {
+@media (hover: hover) and (pointer: fine) {
+  .anime-card-schedule:hover .content:after {
+    bottom: -10px;
+    opacity: 1;
+    color: var(--btn);
+  }
+}
+.anime-card-schedule.touch-hover .content:after {
   bottom: -10px;
   opacity: 1;
   color: var(--btn);

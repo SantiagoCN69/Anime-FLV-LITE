@@ -50,7 +50,7 @@ const renderInitialGrid = () => {
   scheduleData.forEach(d => {
     d.animes.forEach(a => {
       const div = document.createElement("a");
-      div.className = "anime-card anime-card-schedule";
+      div.className = "anime-card anime-card-schedule hover-touch";
       div.href = `/anime.html?id=${slug(a.title)}`;
       div.dataset.day = d.day;
       div.dataset.title = a.title.toLowerCase();
@@ -58,7 +58,7 @@ const renderInitialGrid = () => {
       let timeago = ""
       timeago = a.time_ago
         ? `<div class="content" data-time_ago="${a.time_ago}">`
-        : "";
+        : '<div class="content" data-time_ago="Sin ultima hora de emisión">';
 
       div.innerHTML = `
         <div class="container-img">
@@ -78,6 +78,25 @@ const renderInitialGrid = () => {
       if (h3) h3.style.setProperty('view-transition-name', 'title' + slug(a.title));
       if (containerImg) containerImg.style.setProperty('view-transition-name', slug(a.title));
     });
+    
+    // Touch events for mobile hover effect
+    let touchTimeout;
+    div.addEventListener('touchstart', (e) => {
+      clearTimeout(touchTimeout);
+      div.classList.add('touch-hover');
+    });
+    
+    div.addEventListener('touchend', () => {
+      touchTimeout = setTimeout(() => {
+        div.classList.remove('touch-hover');
+      }, 2000); 
+    });
+    
+    div.addEventListener('touchcancel', () => {
+      clearTimeout(touchTimeout);
+      div.classList.remove('touch-hover');
+    });
+    
       fragment.appendChild(div);
     });
   });
