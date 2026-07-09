@@ -429,23 +429,22 @@ async function cargarUltimosCapitulos() {
         return;
       }
     
-const getIdFromUrl = (url) => {
-  if (!url) return '';
+    const getIdFromUrl = (url) => {
+      if (!url) return '';
 
-  const clean = url.replace(/\/+$/, '');
-  const parts = clean.split('/');
+      const clean = url.replace(/\/+$/, '');
+      const parts = clean.split('/');
 
-  let last = parts[parts.length - 1];
+      let last = parts[parts.length - 1];
 
-  last = last.replace(/-\d+$/, '');
+      if (/^\d+$/.test(last)) {
+        last = parts[parts.length - 2] || '';
+      } else {
+        last = last.replace(/-\d+$/, '');
+      }
 
-  if (/^\d+$/.test(last)) {
-    last = parts[parts.length - 2] || '';
-    last = last.replace(/-\d+$/, '');
-  }
-
-  return last;
-};
+      return last;
+    };
       const fragment = document.createDocumentFragment();
       datos.forEach(anime => {
         const card = createAnimeCard({
