@@ -66,7 +66,7 @@ export async function fetchIAResponse(prompt, signal) {
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
-
+  console.log(response);
   const data = await response.json();
   return data.response || '';
 }

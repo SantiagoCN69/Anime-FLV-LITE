@@ -304,6 +304,7 @@ const renderAnime = (animes) => {
   }
 
   animes.forEach(a => {
+    console.log(a);
     let estadoHtml = '';
     if (a.estado === "Por estrenar") {
       estadoHtml = `<span class="estado"><img src="../icons/circle-solid-yellow.svg" alt="${a.estado}">${a.estado}</span>`;
