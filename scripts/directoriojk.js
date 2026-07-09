@@ -6,11 +6,26 @@ let totalPaginas = 1;
 const CACHE_KEY = "cache-directoriojk";
 
 const filtros = {
-  orden: "", genero: "", letra: "", demografia: "", categoria: "",
+  filtro: "", orden: "", genero: "", letra: "", demografia: "", categoria: "",
   tipo: "", estado: "", fecha: "", temporada: "", orden_dir: ""
 };
 
 const $ = id => document.getElementById(id);
+
+const filtroMenus = [
+  ["btn-filtro", "filtro", "filtro"],
+  ["btn-filtro-genero", "filtro-genero", "genero"],
+  ["btn-filtro-letra", "filtro-letra", "letra"],
+  ["btn-filtro-demografia", "filtro-demografia", "demografia"],
+  ["btn-filtro-categoria", "filtro-categoria", "categoria"],
+  ["btn-filtro-tipo", "filtro-tipo", "tipo"],
+  ["btn-filtro-estado", "filtro-estado", "estado"],
+  ["btn-filtro-ano", "filtro-ano", "fecha"],
+  ["btn-filtro-temporada", "filtro-temporada", "temporada"],
+  ["btn-filtro-orden", "filtro-orden", "orden"]
+];
+
+const filtroKeys = filtroMenus.map(([_, __, key]) => key);
 
 $('btn-fuente-directorio-JK')?.addEventListener('click', () => {
    history.replaceState(null, '', `?DirectorioFLV`);
@@ -23,6 +38,66 @@ const actualizarBoton = (idBtn, texto) => {
 };
 
 const contarFiltrosActivos = () => Object.values(filtros).filter(v => v).length;
+
+const limpiarTextoOpcion = texto => texto.replace(/\s+/g, " ").trim();
+
+const getBtnTextoPorValor = (menuId, valor) => {
+  const opcion = Array.from($(menuId)?.querySelectorAll(".btn-filtro-opcion") || [])
+    .find(btn => (btn.id || "") === valor);
+
+  return opcion ? limpiarTextoOpcion(opcion.textContent) : null;
+};
+
+const sincronizarBotonesConFiltros = () => {
+  filtroMenus.forEach(([btnId, menuId, filtroKey]) => {
+    const texto = getBtnTextoPorValor(menuId, filtros[filtroKey]);
+    if (texto) actualizarBoton(btnId, texto);
+  });
+};
+
+const getPaginaUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  const page = Number(params.get("p") || 1);
+  return Number.isFinite(page) && page > 0 ? page : 1;
+};
+
+const urlTieneFiltros = () => {
+  const params = new URLSearchParams(window.location.search);
+  return filtroKeys.some(key => params.has(key) && params.get(key));
+};
+
+const cargarFiltrosDesdeUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+
+  filtroKeys.forEach(key => {
+    filtros[key] = params.get(key) || "";
+  });
+
+  sincronizarBotonesConFiltros();
+  actualizarContador();
+};
+
+const actualizarUrlFiltros = (pagina = paginaActual, reemplazar = false) => {
+  const params = new URLSearchParams();
+  const pathname = window.location.pathname;
+  const estaEnIndex = pathname.endsWith("index.html") || pathname === "/" || pathname === "";
+
+  Object.entries(filtros).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+
+  if (pagina > 1) params.set("p", pagina);
+
+  const query = params.toString();
+  const nuevaUrl = estaEnIndex
+    ? (query ? `?DirectorioJK&${query}` : "?DirectorioJK")
+    : (query ? `?${query}` : "?DirectorioJK");
+  const metodo = reemplazar ? "replaceState" : "pushState";
+
+  if (window.location.search !== nuevaUrl) {
+    history[metodo]({}, "", nuevaUrl);
+  }
+};
 
 const actualizarContador = () => {
   const btn = $('btn-filtrar');
@@ -50,13 +125,16 @@ const bindOpciones = (menuId, filtroKey, btnId) => {
       filtros[filtroKey] = btn.id || "";
       actualizarBoton(btnId, btn.textContent.trim());
       $(menuId).classList.remove("active");
+      paginaActual = 1;
       actualizarContador();
+      actualizarUrlFiltros(1, true);
     });
   });
 };
 
 const aplicarFiltros = async (pagina = 1, usarCache = false) => {
   paginaActual = pagina;
+  actualizarUrlFiltros(pagina, usarCache);
 
   const cleanFilters = Object.fromEntries(
     Object.entries(filtros).filter(([_, v]) => v)
@@ -143,20 +221,7 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
 };
 
 const initFiltros = () => {
-  const menus = [
-    ["btn-filtro", "filtro", "filtro"],
-    ["btn-filtro-genero", "filtro-genero", "genero"],
-    ["btn-filtro-letra", "filtro-letra", "letra"],
-    ["btn-filtro-demografia", "filtro-demografia", "demografia"],
-    ["btn-filtro-categoria", "filtro-categoria", "categoria"],
-    ["btn-filtro-tipo", "filtro-tipo", "tipo"],
-    ["btn-filtro-estado", "filtro-estado", "estado"],
-    ["btn-filtro-ano", "filtro-ano", "fecha"],
-    ["btn-filtro-temporada", "filtro-temporada", "temporada"],
-    ["btn-filtro-orden", "filtro-orden", "orden"]
-  ];
-
-  menus.forEach(([btnId, menuId, filtroKey]) => {
+  filtroMenus.forEach(([btnId, menuId, filtroKey]) => {
     toggleMenu(btnId, menuId);
     bindOpciones(menuId, filtroKey, btnId);
   });
@@ -167,9 +232,11 @@ const initFiltros = () => {
     aplicarFiltros(randomPage);
   });
   actualizarContador();
+  cargarFiltrosDesdeUrl();
+  const paginaInicial = getPaginaUrl();
   
   // Petición inicial al cargar la página
-  aplicarFiltros(1, true); 
+  aplicarFiltros(paginaInicial, !urlTieneFiltros() && paginaInicial === 1); 
 };
 
 const actualizarPaginaUI = () => {
@@ -298,8 +365,10 @@ const actualizarFiltrosSeleccionados = () => {
     btnClose.textContent = "×";
     btnClose.onclick = () => {
       filtros[key] = "";
+      sincronizarBotonesConFiltros();
       actualizarFiltrosSeleccionados();
       actualizarContador();
+      actualizarUrlFiltros(1, true);
       aplicarFiltros(1);
     };
     
