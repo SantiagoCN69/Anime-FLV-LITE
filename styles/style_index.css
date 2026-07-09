@@ -612,14 +612,14 @@ justify-content: space-between;
   align-items: center;
   justify-content: center;
   gap: 8px; 
-  background-color: #1f2937; 
+  background-color: var(--p); 
   color: #f3f4f6; 
   padding: 5px 14px;
   border-radius: 9999px; 
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 500;
-  border: 1px solid #374151;  
+  border: 1px solid var(--btn2);  
   position: relative;
 }
 
@@ -629,6 +629,7 @@ justify-content: space-between;
   border: none;
   font-size: 20px;
   transition: all 0.2s ease;
+  color: var(--t2);
 }
 
 .filtro-activo button:hover {
