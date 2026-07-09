@@ -199,7 +199,7 @@ header #busqueda{
   content: "";
   display: inline-block;
   width: 28px;
-  height: 23px;
+  height: 28px;
   background-color: var(--btn);
 
   -webkit-mask: url("../icons/user-solid.svg") no-repeat center / contain;
