@@ -1,17 +1,20 @@
 import { observerAnimeCards, aplicarViewTransition } from './utils.js';
+
+const valorFiltroFlv = (btn) => btn.id.replace(/-flv$/, '');
+
 // constantes botones filtro
-const btnFiltroGenero = document.getElementById('btn-filtro-genero');
-const btnFiltroAno = document.getElementById('btn-filtro-ano');
-const btnFiltroTipo = document.getElementById('btn-filtro-tipo');
-const btnFiltroEstado = document.getElementById('btn-filtro-estado');
-const btnFiltroOrden = document.getElementById('btn-filtro-orden');
+const btnFiltroGenero = document.getElementById('btn-filtro-genero-flv');
+const btnFiltroAno = document.getElementById('btn-filtro-ano-flv');
+const btnFiltroTipo = document.getElementById('btn-filtro-tipo-flv');
+const btnFiltroEstado = document.getElementById('btn-filtro-estado-flv');
+const btnFiltroOrden = document.getElementById('btn-filtro-orden-flv');
 
 // constantes filtros
-const filtroGenero = document.getElementById('filtro-genero');
-const filtroAno = document.getElementById('filtro-ano');
-const filtroTipo = document.getElementById('filtro-tipo');
-const filtroEstado = document.getElementById('filtro-estado');
-const filtroOrden = document.getElementById('filtro-orden');
+const filtroGenero = document.getElementById('filtro-genero-flv');
+const filtroAno = document.getElementById('filtro-ano-flv');
+const filtroTipo = document.getElementById('filtro-tipo-flv');
+const filtroEstado = document.getElementById('filtro-estado-flv');
+const filtroOrden = document.getElementById('filtro-orden-flv');
 
 const filtros = [
     { btn: btnFiltroGenero, filtro: filtroGenero },
@@ -56,7 +59,7 @@ filtros.forEach(({ filtro }) => {
 });
 
 // contador 
-const contador = document.getElementById('contador');
+const contador = document.getElementById('contador-flv');
 let count = 100;
 setInterval(() => {
     count--;
@@ -67,8 +70,8 @@ setInterval(() => {
 }, 230);
 
 // carga inicial 
-const initLoading = document.getElementById('init-loading');
-const resultadosContainer = document.getElementById('resultados');
+const initLoading = document.getElementById('init-loading-flv');
+const resultadosContainer = document.getElementById('resultados-flv');
 
 function crearAnimeCardResultados(anime) {
     const coverImage = anime.cover || anime.image || 'img/loading.png';
@@ -99,7 +102,7 @@ function crearAnimeCardResultados(anime) {
 
 
 function centrarPaginacion() {
-  const paginationContainer = document.getElementById('pagination-directorio');
+  const paginationContainer = document.getElementById('pagination-directorio-flv');
   const botones = paginationContainer.querySelectorAll('button');
   const botonActual = botones[currentPage - 1];
 
@@ -125,7 +128,7 @@ localStorage.removeItem("animes_cache");
 const CACHE_KEY = 'animes_cache_directorio';
 
 // Inicializar elementos del DOM
-const paginationContainer = document.getElementById('pagination-directorio');
+const paginationContainer = document.getElementById('pagination-directorio-flv');
 
 let currentPage = 1;
 let totalPages = 1;
@@ -193,12 +196,12 @@ async function cargarAnimesConCache() {
     if (params.has('genre[]')) {
       const genero = params.get('genre[]');
       
-        const generoNormalizado = genero.replace(/\s+/g, '-');
+        const generoNormalizado = `${genero.replace(/\s+/g, '-')}-flv`;
         const botonGenero = document.getElementById(generoNormalizado);
         
         if (botonGenero) {
           botonGenero.classList.add('active');
-          const generosActivos = Array.from(document.querySelectorAll('#filtro-genero .btn-filtro-opcion.active'));
+          const generosActivos = Array.from(document.querySelectorAll('#filtro-genero-flv .btn-filtro-opcion.active'));
           if (generosBtn && generosBtn.querySelector('span')) {
             generosBtn.querySelector('span').textContent = generosActivos.length > 0 ? `(${generosActivos.length})` : 'Todos';
           }
@@ -299,42 +302,42 @@ async function cargarAnimesConCache() {
   }
 }
 
-const generosBtn = document.getElementById('btn-filtro-genero');
-const generosOpciones = document.querySelectorAll('#filtro-genero .btn-filtro-opcion');
-const btnFiltrar = document.getElementById('btn-filtrar');
+const generosBtn = document.getElementById('btn-filtro-genero-flv');
+const generosOpciones = document.querySelectorAll('#filtro-genero-flv .btn-filtro-opcion');
+const btnFiltrar = document.getElementById('btn-filtrar-flv');
 
-const anoBtn = document.getElementById('btn-filtro-ano');
-const anosOpciones = document.querySelectorAll('#filtro-ano .btn-filtro-opcion');
+const anoBtn = document.getElementById('btn-filtro-ano-flv');
+const anosOpciones = document.querySelectorAll('#filtro-ano-flv .btn-filtro-opcion');
 
-const tipoBtn = document.getElementById('btn-filtro-tipo');
-const tiposOpciones = document.querySelectorAll('#filtro-tipo .btn-filtro-opcion');
+const tipoBtn = document.getElementById('btn-filtro-tipo-flv');
+const tiposOpciones = document.querySelectorAll('#filtro-tipo-flv .btn-filtro-opcion');
 
-const estadoBtn = document.getElementById('btn-filtro-estado');
-const estadosOpciones = document.querySelectorAll('#filtro-estado .btn-filtro-opcion');
+const estadoBtn = document.getElementById('btn-filtro-estado-flv');
+const estadosOpciones = document.querySelectorAll('#filtro-estado-flv .btn-filtro-opcion');
 
-const ordenBtn = document.getElementById('btn-filtro-orden');
-const ordenesOpciones = document.querySelectorAll('#filtro-orden .btn-filtro-opcion');
+const ordenBtn = document.getElementById('btn-filtro-orden-flv');
+const ordenesOpciones = document.querySelectorAll('#filtro-orden-flv .btn-filtro-opcion');
 
 function actualizarLinkBusqueda() {
     const generosActivos = Array.from(generosOpciones)
         .filter(btn => btn.classList.contains('active'))
-        .map(btn => btn.id);
+        .map(valorFiltroFlv);
 
-    const anosActivos = Array.from(document.querySelectorAll('#filtro-ano .btn-filtro-opcion'))
+    const anosActivos = Array.from(document.querySelectorAll('#filtro-ano-flv .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
-        .map(btn => btn.id);
+        .map(valorFiltroFlv);
 
-    const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo .btn-filtro-opcion'))
+    const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo-flv .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
-        .map(btn => btn.id);
+        .map(valorFiltroFlv);
 
-    const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado .btn-filtro-opcion'))
+    const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado-flv .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
-        .map(btn => btn.id);
+        .map(valorFiltroFlv);
 
-    const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden .btn-filtro-opcion'))
+    const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden-flv .btn-filtro-opcion'))
         .filter(btn => btn.classList.contains('active'))
-        .map(btn => btn.id);
+        .map(valorFiltroFlv);
 
     let link = 'https://backend-animeflv-lite.onrender.com/api/browse?';
     
@@ -468,7 +471,7 @@ btnFiltrar.addEventListener('click', async () => {
         resultadosContainer.innerHTML = '<p>Error al cargar los animes</p>';
     }
 });
-const scrollContainer = document.querySelector('#pagination-directorio');
+const scrollContainer = document.querySelector('#pagination-directorio-flv');
 
 scrollContainer.addEventListener('wheel', (e) => {
   if (e.deltaY !== 0) {
@@ -482,7 +485,7 @@ cargarAnimesConCache();
 
 import { mostrarSeccionDesdesearch } from './index.js';
 
-document.getElementById('btn-fuente-directorio-FLV').addEventListener('click', () => {
+document.getElementById('btn-fuente-directorio-flv').addEventListener('click', () => {
    history.replaceState(null, '', `?DirectorioJK`);
    mostrarSeccionDesdesearch();
 });
