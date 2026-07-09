@@ -984,6 +984,37 @@ const ESTADOS = {
   }
 };
 
+let activeBtn, timeout;
+
+const buttons = [btnViendo, btnPendiente, btnVisto, btnFav].filter(Boolean);
+
+const setHover = btn => {
+  clearTimeout(timeout);
+  if (activeBtn && activeBtn !== btn) activeBtn.classList.remove("touch-hover");
+  activeBtn = btn;
+  btn?.classList.add("touch-hover");
+};
+
+const clearHover = () => {
+  timeout = setTimeout(() => {
+    activeBtn?.classList.remove("touch-hover");
+    activeBtn = null;
+  }, 2000);
+};
+
+buttons.forEach(btn => {
+  btn.addEventListener("touchstart", () => setHover(btn), { passive: true });
+
+  btn.addEventListener("touchmove", e => {
+    setHover(document.elementFromPoint(
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    )?.closest("button"));
+  }, { passive: true });
+
+  btn.addEventListener("touchend", clearHover, { passive: true });
+  btn.addEventListener("touchcancel", clearHover, { passive: true });
+});
 async function actualizarEstadoFirebase(estado) {
   if (estadoToggleInProgress) {
     console.warn('actualizarEstadoFirebase: Operación en progreso, ignorando.');

@@ -304,11 +304,8 @@ header.search-active .logout-modal {
     height: 24px;
   }
   }
-.botones button:hover {
-  transform: translateY(-2px) scale(1.05);
-}
-
-.botones button::after {
+  
+  .botones button::after {
   content: attr(data-text);
   position: absolute;
   bottom: 100%;
@@ -332,11 +329,25 @@ header.search-active .logout-modal {
   margin-bottom: 8px;
   z-index: 10;
 }
-
-.botones button:hover::after {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
+@media (hover: hover) and (pointer: fine) {
+  .botones button:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .botones button:hover {
+    transform: translateY(-2px) scale(1.05);
+  }
+}
+@media (hover: none) {
+  .botones button.touch-hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.botones button:active {
+  transform: translateY(-2px) scale(.9);
 }
 #btn-fav {
   grid-area: fav;
@@ -365,18 +376,18 @@ header.search-active .logout-modal {
 #btn-visto.active {
   background: #00c853;
 }
-#btn-viendo:hover {
-  background-color: rgba(34, 206, 233, 0.25);
+@media (hover: hover) and (pointer: fine), (active) {
+  #btn-viendo:hover {
+    background-color: rgba(34, 206, 233, 0.25);
+  }
+  #btn-pendiente:hover {
+    background-color: rgba(255, 193, 7, 0.25);
+  }
+  #btn-visto:hover {
+    background-color: rgba(0, 200, 83, 0.25);
+  }
 }
 
-#btn-pendiente:hover {
-  background-color: rgba(255, 193, 7, 0.25);
-}
-
-
-#btn-visto:hover {
-  background-color: rgba(0, 200, 83, 0.25);
-}
 
 #btn-progreso {
   grid-area: progreso;
