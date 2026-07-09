@@ -31,6 +31,20 @@
     <button disabled type="button" id="btn-login" class="nouser" style="view-transition-name: login-button">
       <span>Login</span>
     </button>
+    <script>
+      const cachedUserDisplayName = localStorage.getItem('cachedUserDisplayName');
+      const cachedUserPhotoURL = localStorage.getItem('cachedUserPhotoURL');
+      if (cachedUserDisplayName) {
+        const nombres = cachedUserDisplayName.split(' ');
+        const primerNombre = nombres[0] || '';
+        const photoSrc = cachedUserPhotoURL || 'icons/user-solid.svg';
+        const btnLogin = document.getElementById('btn-login');
+        if (btnLogin) {
+          btnLogin.classList.remove('nouser');
+          btnLogin.innerHTML = '<img src="' + photoSrc + '" alt="Foto de perfil"><span>' + primerNombre + '</span>';
+        }
+      }
+    </script>
     <button type="button" id="btn-search" title="Buscar anime"></button>
 
     <button type="button" id="menu-toggle" title="Menú">
