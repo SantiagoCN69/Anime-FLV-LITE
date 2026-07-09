@@ -650,7 +650,7 @@ header.search-active .logout-modal {
   transition: height .5s;
   gap: 0 1rem;
   &.cargado {
-    height: min(calc(var(--caps) * 80px + 8px + 1rem), clamp(296px, calc(100vh - 440px), 1000px));
+    height: min(calc(var(--caps) * (80px + 1rem) + 8px), clamp(296px, calc(100vh - 440px), 1000px));
   }
 }
 
