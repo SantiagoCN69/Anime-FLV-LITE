@@ -253,9 +253,10 @@ async function cargarUltimosCapsVistos() {
         return null;
       }
 
-      const vistos = (cap.episodiosVistos || []).map(Number);
-      const ultimoCapVisto = vistos.length > 0 ? Math.max(...vistos) : 0;
-      const siguienteCapitulo = ultimoCapVisto + 1;
+    const vistos = (cap.episodiosVistos || []).map(Number);
+    if (!vistos.length) return null;
+    const ultimoCapVisto = Math.max(...vistos);
+    const siguienteCapitulo = ultimoCapVisto + 1;
 
       const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
       
