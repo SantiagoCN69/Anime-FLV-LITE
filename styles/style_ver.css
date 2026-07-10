@@ -493,6 +493,7 @@ overflow: hidden;
   overflow: hidden;
 }
 iframe {
+  border: 1px solid var(--br);
   height: 100%;
   width: 100%;
   border-bottom-left-radius: 8px;
