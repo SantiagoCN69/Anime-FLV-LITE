@@ -1187,12 +1187,10 @@ width: 100%;
   border-color: rgba(96, 125, 139, 0.4);
 }
 @media screen and (min-width: 701px) {
-  #main {
+  #main, .sin-resultados {
     margin-top: calc(88px + 6rem);
   }
 }
-
-
-.recomendaciones-ia-busqueda {
-  margin: 1rem;
+.sin-resultados {
+  margin: calc(88px + 2rem) auto 2rem;
 }
