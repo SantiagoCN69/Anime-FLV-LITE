@@ -199,7 +199,7 @@ async function cargarUltimosCapsVistos() {
   if (!ultimosCapsContainer) return;
 
   const renderizarBotones = (datos) => {
-    ultimosCapsContainer.innerHTML = ''; 
+    ultimosCapsContainer.innerHTML = '';
     if (!datos || datos.length === 0) {
       ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
       return;
@@ -207,14 +207,10 @@ async function cargarUltimosCapsVistos() {
     const fragment = document.createDocumentFragment();
     datos.forEach(itemData => {
       const btn = crearElementoSiguienteCapitulo(itemData);
-      if (btn) {
-        fragment.appendChild(btn);
-      }
+      if (btn) fragment.appendChild(btn);
     });
     ultimosCapsContainer.appendChild(fragment);
   };
-
-
 
   if (!userID || userID === "null") {
     ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tus últimos capítulos</p>';
@@ -226,96 +222,63 @@ async function cargarUltimosCapsVistos() {
 
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
-    if (cachedDataString) {
-      cachedData = JSON.parse(cachedDataString);
-      if (Array.isArray(cachedData)) {
-        renderizarBotones(cachedData);
-      } else {
-        cachedData = null;
-        localStorage.removeItem(cacheKey);
-      }
-    }
-  } catch (error) {
-    console.error("Error al leer o parsear caché:", error);
-    cachedData = null;
-    localStorage.removeItem(cacheKey);
-  }
+    if (cachedDataString) cachedData = JSON.parse(cachedDataString);
+  } catch (e) { localStorage.removeItem(cacheKey); }
 
   try {
-    const ref = collection(doc(db, "usuarios", userID), "caps-vistos");
+    console.log("DEBUG: Buscando capítulos vistos para UID:", userID);
+    const ref = collection(db, "usuarios", userID, "caps-vistos");
     const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(8));
     const snap = await getDocs(q);
-    let freshData = [];
 
-    if (!snap.empty) {
-      const capVistos = snap.docs
-        .map(docSnap => ({
-          animeId: docSnap.id,
-          ...docSnap.data()
-        }))
-        .sort((a, b) => {
-          const fechaA = new Date(a.fechaAgregado?.toDate?.() || a.fechaAgregado || 0);
-          const fechaB = new Date(b.fechaAgregado?.toDate?.() || b.fechaAgregado || 0);
-          return fechaB - fechaA; 
-        })
-        .slice(0, 8); 
+    if (snap.empty) {
+      console.log("DEBUG: No hay documentos en caps-vistos.");
+      ultimosCapsContainer.innerHTML = '<p>No tienes capítulos vistos recientemente.</p>';
+      return;
+    }
 
-      const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
-      const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
+    const capVistos = snap.docs.map(docSnap => ({
+      animeId: docSnap.id,
+      ...docSnap.data()
+    }));
 
-      const animeDataMap = {};
-      animeDocsSnap.forEach((docSnap, i) => {
-        if (docSnap.exists()) {
-          animeDataMap[capVistos[i].animeId] = docSnap.data();
-        }
-      });
+    const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
+    const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
 
-      freshData = capVistos.map(cap => {
-        const animeDetails = animeDataMap[cap.animeId];
+    const freshData = capVistos.map((cap, i) => {
+      const animeDetails = animeDocsSnap[i].exists() ? animeDocsSnap[i].data() : null;
 
-        if (!animeDetails || !animeDetails.portada || !animeDetails.episodios || !animeDetails.titulo) {
-          return null;
-        }
-
-        const ultimoCapVisto = Math.max(...(cap.episodiosVistos || []).map(Number), 0);
-        const siguienteCapitulo = ultimoCapVisto + 1;
-        
-        const episodiosDelAnime = typeof animeDetails.episodios === 'object' && animeDetails.episodios !== null ? animeDetails.episodios : {};
-        const siguienteEpisodio = Object.values(episodiosDelAnime)
-          .find(ep => ep.number === siguienteCapitulo);
-
-        if (siguienteEpisodio?.url) {
-          return {
-            id: cap.animeId,
-            portada: animeDetails.portada,
-            titulo: animeDetails.titulo,
-            siguienteCapitulo,
-            siguienteEpisodioUrl: siguienteEpisodio.url
-          };
-        }
+      if (!animeDetails) {
+        console.warn("DEBUG: No existe anime en datos-animes:", cap.animeId);
         return null;
-      }).filter(Boolean);
-    }
-    const freshDataString = JSON.stringify(freshData);
-    const cachedDataString = JSON.stringify(cachedData);
-
-    if (freshDataString !== cachedDataString) {
-      renderizarBotones(freshData);
-      localStorage.setItem(cacheKey, freshDataString);
-    } else {
-      if (cachedData === null && freshData.length === 0) {
-      } else if (cachedData === null && freshData.length > 0) {
-        renderizarBotones(freshData);
-        localStorage.setItem(cacheKey, freshDataString);
-      } else {
       }
-    }
+
+      const vistos = (cap.episodiosVistos || []).map(Number);
+      const ultimoCapVisto = vistos.length > 0 ? Math.max(...vistos) : 0;
+      const siguienteCapitulo = ultimoCapVisto + 1;
+
+      const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
+      
+      const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
+
+      if (siguienteEpisodio) {
+        return {
+          id: cap.animeId,
+          portada: animeDetails.portada,
+          titulo: animeDetails.titulo,
+          siguienteCapitulo: siguienteCapitulo,
+          siguienteCapituloUrl: siguienteEpisodio.url
+        };
+      }
+      return null;
+    }).filter(Boolean);
+
+    console.log("DEBUG: Datos procesados para render:", freshData);
+    renderizarBotones(freshData);
+    localStorage.setItem(cacheKey, JSON.stringify(freshData));
 
   } catch (error) {
-    console.error('Error general al cargar últimos capítulos vistos desde Firestore:', error);
-    if (cachedData === null) {
-      ultimosCapsContainer.innerHTML = '<p>Error al cargar últimos capítulos</p>';
-    }
+    console.error('Error crítico en cargarUltimosCapsVistos:', error);
   }
 }
   // Función para crear tarjeta de anime
