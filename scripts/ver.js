@@ -267,8 +267,13 @@ async function manejarNoticias() {
   } finally {
     initLoadingNoticias.style.display = 'none';
   }
+  contenedorNoticias.addEventListener('wheel', (evento) => {
+    if (evento.deltaY !== 0) {
+      evento.preventDefault();
+      contenedorNoticias.scrollLeft += evento.deltaY;
+    }
+  });
 }
-
 
 manejarNoticias();
 
@@ -754,6 +759,12 @@ function renderizarServidores(servidores) {
     btn.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.classList.add("cargado");
+    controles.addEventListener('wheel', (evento) => {
+      if (evento.deltaY !== 0) {
+        evento.preventDefault();
+        controles.scrollLeft += evento.deltaY; 
+      }
+    });
     controles.appendChild(btn);
   });
 
