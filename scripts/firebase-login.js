@@ -14,7 +14,6 @@ function updateUIForUser(user) {
   if (!btnLogin) return;
   
   if (user) {
-    console.log('[Login] 👤 Actualizando UI con usuario:', user.displayName);
     const nombres = (user.displayName || '').split(' ');
     const primerNombre = nombres[0] || '';
     
@@ -189,7 +188,6 @@ onAuthStateChanged(auth, (user) => {
   }
   
   if (isFirstLoad) {
-    console.log('[Auth] 🔄 Carga inicial de usuario');
     isFirstLoad = false;
   } else {
     console.log('[Auth] Cambio de usuario detectado');
