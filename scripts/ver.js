@@ -281,12 +281,35 @@ function extraerUrlsServidores(servidores) {
     .filter(Boolean)
     .sort();
 }
+function normalizarUrl(url) {
+  if (!url) return "";
+  url = url.trim();
+  if (url.includes("jkanime.net/jkplayer")) {
+    return url.split("?")[0];
+  }
+  url = url.replace(/\/+$/, "");
+  return url;
+}
 
 function servidoresSonIguales(servidoresA, servidoresB) {
-  const urlsA = extraerUrlsServidores(servidoresA);
-  const urlsB = extraerUrlsServidores(servidoresB);
-  if (urlsA.length !== urlsB.length) return false;
-  return urlsA.every((url, i) => url === urlsB[i]);
+  if (!servidoresA || !servidoresB) return false;
+  const urlsA = extraerUrlsServidores(servidoresA).map(normalizarUrl);
+  const urlsB = extraerUrlsServidores(servidoresB).map(normalizarUrl);
+  console.log("[COMPARE NORMALIZADO] A:", urlsA);
+  console.log("[COMPARE NORMALIZADO] B:", urlsB);
+  if (urlsA.length !== urlsB.length) {
+    console.log("[COMPARE] ❌ Diferente cantidad");
+    return false;
+  }
+  const setB = new Set(urlsB);
+  for (let url of urlsA) {
+    if (!setB.has(url)) {
+      console.log("[COMPARE] ❌ Falta en B:", url);
+      return false;
+    }
+  }
+  console.log("[COMPARE] ✅ Son iguales (normalizado)");
+  return true;
 }
 
 function mapearServidoresApi(servidoresApi) {
