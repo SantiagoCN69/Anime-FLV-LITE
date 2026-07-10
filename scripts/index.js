@@ -36,7 +36,6 @@ let horariosCargados = false;
 export function mostrarSeccionDesdesearch() {
   let search = window.location.search;
   
-  // Obtener solo el primer parámetro antes de & o ?
   let id = search.split(/[?&]/)[1] || 'Ultimos-Episodios';
   id = decodeURIComponent(id);
   
@@ -45,21 +44,17 @@ export function mostrarSeccionDesdesearch() {
     id = 'Ultimos-Episodios';
     history.replaceState(null, '', '?Ultimos-Episodios');
   };
-//veirfica si ya esta y temrina  la fucnion 
-if (!document.getElementById(id).classList.contains("hidden")) return;
 
-  // Ocultar todas las secciones
+  if (!document.getElementById(id).classList.contains("hidden")) return;
+
   document.querySelectorAll(".content-section").forEach(sec => {
     sec.classList.toggle("hidden", sec.id !== id);
   });
   
-
-  // Actualizar el menú activo
   document.querySelectorAll('.menu-item').forEach(item => 
     item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
   );
 
-  // Animar el indicador activo
   actualizarIndicadorActivo();
 
 const sectionConfig = {
@@ -136,7 +131,6 @@ window.handlesearchChange = function () {
   }
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
@@ -152,9 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarSeccionDesdesearch();
     });
   });
-
 });
-
 
 function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('a');
@@ -274,7 +266,6 @@ async function cargarUltimosCapsVistos() {
       return null;
     }).filter(Boolean);
 
-    console.log("DEBUG: Datos procesados para render:", freshData);
     renderizarBotones(freshData);
     localStorage.setItem(cacheKey, JSON.stringify(freshData));
 
@@ -337,7 +328,6 @@ function leerCache(key) {
     return null;
 }
 
-// Función auxiliar para verificar y limpiar caché con background.webp o estado no disponible
 function verificarYLimpiarCacheBackground(cacheKey, datos, campoPortada = 'portada', onLimpiar = null, recargarPagina = false) {
   if (!datos || !Array.isArray(datos)) return false;
   
@@ -772,7 +762,6 @@ function cerrarSidebar() {
   document.body.style.overflow = "";
 }
 
-// click en overlay
 document.querySelector(".overlay").addEventListener("click", () => {
   cerrarSidebar();
 });
@@ -790,8 +779,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = sidebar.classList.contains("active") ? "hidden" : "";
     document.querySelector(".overlay").classList.toggle("active");
   });
+  
   let touchStartX = 0;
   let touchEndX = 0;
+  
   const handleSwipe = () => {
     if (sidebar.classList.contains("active")) {
       const dist = touchStartX - touchEndX;
@@ -803,32 +794,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   };
+  
   document.addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
   document.addEventListener("touchend", e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
 
-  // Mapeo de navegación por gestos
   const navigationMap = {
-    'Ultimos-Episodios': {
-      left: 'Populares',
-      right: null,
-    },
-    'Populares': {
-      left: 'Continuar-viendo',
-      right: 'Ultimos-Episodios',
-    },
-    'Continuar-viendo': {
-      left: 'DirectorioJK',
-      right: 'Populares',
-    },
-    'DirectorioJK': {
-      left: 'Lab',
-      right: 'Continuar-viendo',
-    },
-    'Lab': {
-      left: null,
-      right: 'DirectorioJK',
-    }
+    'Ultimos-Episodios': { left: 'Populares', right: null },
+    'Populares': { left: 'Continuar-viendo', right: 'Ultimos-Episodios' },
+    'Continuar-viendo': { left: 'DirectorioJK', right: 'Populares' },
+    'DirectorioJK': { left: 'Lab', right: 'Continuar-viendo' },
+    'Lab': { left: null, right: 'DirectorioJK' }
   };
+  
  const excepciones = [
   '.pagination',
   '#recomendaciones-favoritos',
@@ -852,7 +829,6 @@ mostrarSeccionDesdesearch = function() {
   const id = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
   centrarElementoEnVista(id);
 };
-
 
   function isElementInExceptions(element) {
     if (!element) return false;
@@ -906,7 +882,6 @@ mostrarSeccionDesdesearch = function() {
     }
   }
 
-  // Configurar event listeners para cada sección
   sections.forEach(section => {
     section._touchData = {};
     section.addEventListener('touchstart', handleTouchStart, { passive: true });
@@ -942,27 +917,3 @@ document.addEventListener('click', (e) => {
     }
   }
 });
-
-
-// Código antiguo comentado - IntersectionObserver para paginación fija
-/*
-if (window.innerWidth <= 600) {
-  const trigger = document.createElement('div');
-  document.body.prepend(trigger);
-
-  const observer = new IntersectionObserver(([entry]) => {
-    if (!entry.isIntersecting) {
-      indexpagination.classList.add('fixed');
-    } else {
-      indexpagination.classList.remove('fixed');
-      centrarElementoEnVista(decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios'), false);
-    }
-  }, {
-    root: null,
-    threshold: 0,
-  });
-
-  observer.observe(trigger);
-}
-*/
-
