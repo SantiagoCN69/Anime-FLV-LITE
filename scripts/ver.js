@@ -744,6 +744,9 @@ function renderizarServidores(servidores) {
       controles.appendChild(a);
       return;
     }
+    else {
+      controles.classList.add("sin-descargar");
+    }
 
     // 🔥 RESTO -> button normal
     const btn = document.createElement("button");
