@@ -373,6 +373,32 @@ const createEpisodeButton = (ep, vistos = []) => {
   return li;
 };
 
+function mostrarOverlayCapitulosCompletados() {
+  // Evita duplicados
+  if (capContenedor.querySelector(".caps-completados-overlay")) return;
+
+  const overlay = document.createElement("div");
+  overlay.className = "caps-completados-overlay";
+  overlay.innerHTML = `
+    <div class="caps-completados-card">
+      <div class="caps-completados-icono">🏆</div>
+      <h3>¡Felicidades!</h3>
+      <p>Has visto todos los episodios disponibles.</p>
+    </div>
+  `;
+
+  capContenedor.appendChild(overlay);
+
+  requestAnimationFrame(() => overlay.classList.add("show"));
+
+  setTimeout(() => {
+    overlay.classList.remove("show");
+    overlay.addEventListener("transitionend", () => overlay.remove(), {
+      once: true,
+    });
+  }, 3000);
+}
+
 async function crearBotonesEpisodios(anime) {
   capContenedor.innerHTML = '';
   const episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
@@ -391,7 +417,10 @@ async function crearBotonesEpisodios(anime) {
 
 const hacerScroll = () => {
     const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
-    if (!primerNoVisto) return;
+    if (!primerNoVisto) {
+      mostrarOverlayCapitulosCompletados();
+      return;
+    }
 
     const target = primerNoVisto.closest("li");
     if (!target) return;
@@ -511,6 +540,11 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
     });
 
     actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, [...nuevosEpisodios]);
+    const total = document.querySelectorAll(".episode-btn").length;
+
+    if (esVisto && nuevosEpisodios.size === total && total > 0) {
+        mostrarOverlayCapitulosCompletados();
+    }
     mostrarPildora("capvisto", esVisto, null, episodio);
   } catch (error) {
     console.error("Error al guardar estado del capítulo en Firestore:", error);
