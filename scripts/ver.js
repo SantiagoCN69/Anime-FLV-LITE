@@ -659,17 +659,18 @@ async function cargarVideoDesdeEpisodio(index) {
   actualizarEstadoBotones();
 
   // Pre-cargar siguiente episodio (si existe)
-  const siguiente = episodios.find(e => e.number === index + 1);
 
-  if (siguiente) {
-    sincronizarServidoresConApi(siguiente)
-      .then(servidores => {
-        if (servidores?.length) {
-          siguiente.servidores = servidores;
-        }
-      })
-      .catch(() => {});
-  }
+const siguiente = episodios.find(e => String(e.number) === String(index + 1));
+
+if (siguiente) {
+  sincronizarServidoresConApi(siguiente)
+    .then(servidores => {
+      if (servidores?.length) {
+        siguiente.servidores = servidores;
+      }
+    })
+    .catch(() => {});
+}
 
   return ep;
 }
