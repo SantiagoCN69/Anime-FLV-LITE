@@ -409,15 +409,19 @@ overflow: hidden;
 }
 #controles {
   display: flex;
-  margin-right: 65px;
   border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   height: 50px;
-  border: 1px solid var(--br);
+  margin-right: 0;
+  
   border-bottom: none;
 }
-#controles.sin-descargar {
-  margin-right: 0;
-  border-top-right-radius: 8px;
+#controles.cargado {
+  border: 1px solid var(--br);
+}
+#controles.con-mediafire {
+  border-top-right-radius: 0px;
+  margin-right: 65px;
 }
 #controles  {
   overflow: auto;

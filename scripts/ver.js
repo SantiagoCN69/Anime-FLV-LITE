@@ -744,10 +744,8 @@ function renderizarServidores(servidores) {
   a.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
   a.rel = "noopener noreferrer";
   controles.appendChild(a);
+  controles.classList.add("con-mediafire");
   return;
-  }
-  else {
-    controles.classList.add("sin-descargar");
   }
 
     // 🔥 RESTO -> button normal
