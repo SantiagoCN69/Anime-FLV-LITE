@@ -417,7 +417,7 @@ async function crearBotonesEpisodios(anime) {
 
 const hacerScroll = () => {
     const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
-    if (!primerNoVisto) {
+    if (!primerNoVisto && episodios.length > 1) {
       mostrarOverlayCapitulosCompletados();
       return;
     }
