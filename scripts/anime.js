@@ -388,41 +388,30 @@ async function crearBotonesEpisodios(anime) {
 
   capContenedor.classList.add("cargado");
   capContenedor.style.setProperty("--caps", episodios.length);
-  
-  requestAnimationFrame(() => {
-    console.log('[Episodios] 🎬 requestAnimationFrame optimizando scroll');
-    capContenedor.style.overflowX = "auto";
-    const primerNoVisto = capContenedor.querySelector('.episode-btn.ep-no-visto');
-    if (primerNoVisto) {
-      console.log('[Episodios] ✅ Desplazando al primer episodio no visto');
-      const targetElement = primerNoVisto.parentElement;
-      if (targetElement) { 
-        const anchoColumna = typeof getAnchoColumna === 'function' ? getAnchoColumna() : 0; 
 
-        if (anchoColumna && anchoColumna > 0) {
-          const columnaDelTarget = Math.floor(targetElement.offsetLeft / anchoColumna);
-          let scrollToX = columnaDelTarget * anchoColumna;
-          
-          const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
-          scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
+const hacerScroll = () => {
+    const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
+    if (!primerNoVisto) return;
 
-          capContenedor.scrollTo({
-            left: scrollToX,
-            behavior: 'smooth'
-          });
-        } else {
-          let scrollToX = targetElement.offsetLeft;
-          const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
-          scrollToX = Math.max(0, Math.min(scrollToX, maxScroll));
+    const target = primerNoVisto.closest("li");
+    if (!target) return;
 
-          capContenedor.scrollTo({
-            left: scrollToX,
-            behavior: 'smooth'
-          });
-        }
-      }
-    }
-  });
+    capContenedor.scrollTo({
+        left: target.offsetLeft
+    });
+};
+
+capContenedor.addEventListener(
+    "transitionend",
+    function handler(e) {
+        if (e.propertyName !== "height") return;
+
+        capContenedor.removeEventListener("transitionend", handler);
+
+        requestAnimationFrame(hacerScroll);
+    },
+    { once: true }
+);
 }
 
 capContenedor.addEventListener('wheel', e => {
