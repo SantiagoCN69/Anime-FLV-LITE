@@ -726,7 +726,6 @@ function renderizarServidores(servidores) {
   if (url.includes("mediafire.com")) {
   const a = document.createElement("a");
   a.href = srv.url;
-
   a.innerHTML = `
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path opacity="0.5" d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15"
@@ -735,18 +734,16 @@ function renderizarServidores(servidores) {
         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   `;
-
   a.classList.add("btn-descarga");
-
-      a.target = "_blank";
-      a.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
-      a.rel = "noopener noreferrer";
-      controles.appendChild(a);
-      return;
-    }
-    else {
-      controles.classList.add("sin-descargar");
-    }
+  a.target = "_blank";
+  a.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
+  a.rel = "noopener noreferrer";
+  controles.appendChild(a);
+  return;
+  }
+  else {
+    controles.classList.add("sin-descargar");
+  }
 
     // 🔥 RESTO -> button normal
     const btn = document.createElement("button");
@@ -756,7 +753,7 @@ function renderizarServidores(servidores) {
 
     btn.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
     btn.onclick = () => mostrarVideo(srv, btn);
-
+    controles.classList.add("cargado");
     controles.appendChild(btn);
   });
 
