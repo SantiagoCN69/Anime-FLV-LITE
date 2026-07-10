@@ -295,8 +295,6 @@ function servidoresSonIguales(servidoresA, servidoresB) {
   if (!servidoresA || !servidoresB) return false;
   const urlsA = extraerUrlsServidores(servidoresA).map(normalizarUrl);
   const urlsB = extraerUrlsServidores(servidoresB).map(normalizarUrl);
-  console.log("[COMPARE NORMALIZADO] A:", urlsA);
-  console.log("[COMPARE NORMALIZADO] B:", urlsB);
   if (urlsA.length !== urlsB.length) {
     console.log("[COMPARE] ❌ Diferente cantidad");
     return false;
@@ -534,7 +532,6 @@ async function cargarEpisodios() {
       const data = docSnap.data();
       console.log('Datos de Firestore:', data);
       episodios = data.episodios || [];
-      console.log('Llamando aplicarFondoAnime con datos de Firestore');
       aplicarFondoAnime(data);
       if (episodios.length) {
         await cargarVideoDesdeEpisodio(episodioActualIndex);
@@ -589,9 +586,6 @@ function aplicarFondoAnime(anime) {
   const imagenUrl = anime.portada || anime.banner;
   if (imagenUrl) {
     document.body.style.backgroundImage = `url('${imagenUrl}')`;
-    console.log('Fondo aplicado:', imagenUrl);
-  } else {
-    console.log('No hay imagen para fondo');
   }
 }
 
