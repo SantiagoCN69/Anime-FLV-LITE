@@ -1192,5 +1192,5 @@ width: 100%;
   }
 }
 .sin-resultados {
-  margin: calc(88px + 2rem) auto 2rem;
+  margin-top: calc(88px + 2rem);
 }
