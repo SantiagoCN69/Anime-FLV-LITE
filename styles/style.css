@@ -1154,10 +1154,9 @@ margin-top: 10px;
 
 .sin-resultados {
   padding: 0px !important;
-  padding-bottom: 12px !important;
   flex: 1 !important;
   overflow: hidden !important;
-  display: grid !important;
+  display: grid;
   align-content: center !important;
   gap: 1rem !important;
   grid-template-columns: 1fr auto !important;
@@ -1236,8 +1235,8 @@ margin-top: 10px;
 
   gap: 1rem !important;
   padding: 8px !important;
-  padding-top: 1rem !important;
-  min-height: 170px !important;
+
+  min-height: 207px !important;
   height: fit-content !important;
 }
 
