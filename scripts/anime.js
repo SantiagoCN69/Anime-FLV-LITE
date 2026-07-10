@@ -767,100 +767,25 @@ async function cargarAnime(idauxiliar) {
       actualizarCache(id, anime);
       renderAnime(anime);
     }
-  } catch (err) {
-    console.error('Error carga anime:', err)
-    const container = document.querySelector('.anime-details');
-    container.classList.add('sin-resultados');
     
-    container.innerHTML = `
-    <img src="/img/cat.png" id="img-sin-resultados" alt="sin resultados">
-    <div id="text-sin-resultados">
-      <span id="span-sin-resultados">No se encontraron resultados</span>
-      <span id="span-sin-resultados2">Prueba buscando de otra manera.</span>
-    </div>
-    <div id="sugerencias-sin-resultados">
-      <h2>Sugerencias</h2>
-      <div id="anime-grid-sin-resultados">
-      <span class="span-carga">cargando...</span></div>
-    </div>
-    ${IA_SECTION_HTML.trim()}
-  `;
-
-  const scrollHorizontal = document.querySelector('#anime-grid-sin-resultados');
-
-scrollHorizontal.addEventListener('wheel', (e) => {
-  if (e.deltaY !== 0) {
-    e.preventDefault();
-    scrollHorizontal.scrollLeft += e.deltaY;
-  }
-});
-
-  
-    const search = document.getElementById("busqueda"); 
-    search.classList.add("active");
-    document.querySelector('header').classList.add('search-active');
-    search.focus();
-
-    const porcentajeARecortar = Math.ceil(id.length * 0.4); 
-    const recortado = id.slice(0, -porcentajeARecortar);
-    cargarSugerenciasSinResultados(recortado);
-    cargarRecomendacionesIAAnime(id);
+    if (data.message === 'Anime no encontrado en ninguna fuente') {
+    const inputBusqueda = document.getElementById('busqueda');
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (inputBusqueda) {
+    document.querySelector('header')?.classList.add('search-active');
+    
+    inputBusqueda.value = id; 
+    
+    inputBusqueda.dispatchEvent(new Event('input'));
+}}
+   }
+    catch (err) {
+    console.error('Error carga anime:', err)
   }
 };
 cargarAnime();
 
-let currentIaControllerAnime = null;
 
-async function cargarRecomendacionesIAAnime(searchTerm) {
-  if (currentIaControllerAnime) currentIaControllerAnime.abort();
-  currentIaControllerAnime = new AbortController();
-
-  const grid = document.getElementById('anime-grid-ia-busqueda');
-  if (!grid) return;
-
-  attachIaGridWheelScroll(grid);
-
-  await loadIaRecommendationsIntoGrid({
-    searchTerm,
-    grid,
-    signal: currentIaControllerAnime.signal,
-    crearAnimeCard,
-    observerAnimeCards
-  });
-}
-
-
-async function cargarSugerenciasSinResultados(id) {
-
-  document.title = "AniZen - " + "Sin Resultados";
-      console.log(id);
-      try {
-        const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${id}`);
-        console.log('fetch sugerencias:', response);
-        if (!response.ok) throw new Error('Error al cargar el anime');
-        
-        const animeData = await response.json();
-        if (animeData.length === 0) {
-          const porcentajeARecortar = Math.ceil(id.length * 0.4); 
-          const recortado = id.slice(0, -porcentajeARecortar);
-          if (recortado.length >= 1) { 
-            cargarSugerenciasSinResultados(recortado);
-          }
-          return;
-        }
-        const animeGrid = document.getElementById('anime-grid-sin-resultados');
-        animeGrid.innerHTML = '';
-        animeData.forEach(anime => {
-          const animeCard = crearAnimeCard(anime);
-          animeGrid.appendChild(animeCard);
-          observerAnimeCards()
-        });
-      } catch (error) {
-            console.error('Error al cargar sugerencias:', error);
-        }
-    }
-
-  
 // Toggle búsqueda de capítulos
 document.getElementById('btn-search-capitulo').addEventListener('click', function () {
   document.querySelector('.header-caps').classList.add('search-active');
