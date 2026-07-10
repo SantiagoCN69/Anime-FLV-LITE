@@ -655,7 +655,8 @@ header.search-active .logout-modal {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   scroll-behavior: smooth;
   height: 0px;
   transition: height .5s;
@@ -867,6 +868,7 @@ min-height: 241px;
   overflow-x: auto;
   flex-direction: row;
   padding-bottom: 5px;
+  padding-right: 30px;
 }
 #relacionados .anime-card {
 width: 250px;
