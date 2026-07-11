@@ -22,13 +22,16 @@ cards.forEach(card => {
 
 // Manejar el scroll para el efecto del header
 const header = document.querySelector('header');
+const sidebar = document.querySelector('.sidebar');
 const scrollOffset = 30;
 
 const handleScroll = () => {
   if (window.scrollY > scrollOffset) {
     header.classList.add('scrolled');
+    sidebar.classList.add('scrolled');
   } else {
     header.classList.remove('scrolled');
+    sidebar.classList.remove('scrolled');
   }
 };
 
@@ -78,20 +81,7 @@ export function observerAnimeCards() {
     });
 }
 
-// INDICADOR sidebar scroll
-document.addEventListener('DOMContentLoaded', () => {
-const sidebar = document.querySelector('.sidebar');
-if (!localStorage.key("indicador") && window.innerWidth < 600 && localStorage.key('userID')) {
-const indicator = document.createElement('div');
-indicator.classList.add('scroll-indicator');
-sidebar.appendChild(indicator);
 
-sidebar.addEventListener('scroll', () => {
-  indicator.style.opacity = '0';
-  localStorage.setItem('indicador', 'true');
-});
-}
-});
 //INDICADOR funcion cambiar tema
 document.addEventListener('authStateReady', function() {
   const btnLogin = document.getElementById('btn-login');
