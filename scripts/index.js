@@ -73,12 +73,10 @@ const sectionConfig = {
 
 const config = sectionConfig[id];
 if (config && !config.flag()) {
-  console.log('[Index] 📂 Cargando sección:', id);
   config.load();
   config.setFlag();
-  console.log('[Index] ✅ Sección cargada');
 } else if (config) {
-  console.log('[Index] ⚡ Sección ya cargada (caché):', id);
+
 }
 
 cerrarSidebar();
@@ -210,53 +208,82 @@ async function cargarUltimosCapsVistos() {
   }
 
   const cacheKey = `ultimosCapsVistosCache_` + userID;
+  const cacheStateKey = `estadoHistorialCache_` + userID; 
+  
   let cachedData = null;
+  let cachedState = null;
 
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
+    const cachedStateString = localStorage.getItem(cacheStateKey);
     if (cachedDataString) cachedData = JSON.parse(cachedDataString);
-  } catch (e) { localStorage.removeItem(cacheKey); }
+    if (cachedStateString) cachedState = JSON.parse(cachedStateString);
+  } catch (e) { 
+    localStorage.removeItem(cacheKey); 
+    localStorage.removeItem(cacheStateKey);
+  }
+
+  // 1. Render instantáneo desde caché
+  if (cachedData && cachedData.length > 0) {
+    console.log("DEBUG: Mostrando botones desde el caché temporalmente.");
+    renderizarBotones(cachedData);
+  }
 
   try {
-    console.log("DEBUG: Buscando capítulos vistos para UID:", userID);
+    console.log("DEBUG: Buscando historial en Firebase...");
     const ref = collection(db, "usuarios", userID, "caps-vistos");
     const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(8));
     const snap = await getDocs(q);
 
     if (snap.empty) {
-      console.log("DEBUG: No hay documentos en caps-vistos.");
+      console.log("DEBUG: Historial vacío.");
       ultimosCapsContainer.innerHTML = '<p>No tienes capítulos vistos recientemente.</p>';
+      localStorage.removeItem(cacheKey);
+      localStorage.removeItem(cacheStateKey);
       return;
     }
 
-    const capVistos = snap.docs.map(docSnap => ({
-      animeId: docSnap.id,
-      ...docSnap.data()
-    }));
+    // 2. Extraemos el mapa EXACTO filtrando los que no tienen capítulos vistos (lo que pediste)
+    const currentState = [];
+    snap.docs.forEach(docSnap => {
+      const data = docSnap.data();
+      const vistos = (data.episodiosVistos || []).map(Number);
+      
+      // Si NO está vacío, lo agregamos al estado actual. 
+      // Si está vacío (no hay capítulos vistos), se ignora por completo.
+      if (vistos.length > 0) {
+        currentState.push({
+          id: docSnap.id,
+          ultimoVisto: Math.max(...vistos)
+        });
+      }
+    });
 
-    const animeRefs = capVistos.map(cap => doc(db, "datos-animes", cap.animeId));
+    // 3. Comprobación estricta de estado
+    if (cachedState && JSON.stringify(currentState) === JSON.stringify(cachedState)) {
+      console.log("DEBUG: El historial no ha cambiado. Se detienen las descargas.");
+      return; 
+    }
+
+    // 4. Si hay cambios, procedemos a buscar las portadas (solo de los que pasaron el filtro)
+    console.log("DEBUG: Hay capítulos nuevos o cambios. Descargando datos de animes...");
+    
+    // Ahora mapeamos sobre currentState, ahorrando peticiones a animes sin caps vistos
+    const animeRefs = currentState.map(cap => doc(db, "datos-animes", cap.id));
     const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
 
-    const freshData = capVistos.map((cap, i) => {
+    const freshData = currentState.map((cap, i) => {
       const animeDetails = animeDocsSnap[i].exists() ? animeDocsSnap[i].data() : null;
+      if (!animeDetails) return null;
 
-      if (!animeDetails) {
-        console.warn("DEBUG: No existe anime en datos-animes:", cap.animeId);
-        return null;
-      }
-
-    const vistos = (cap.episodiosVistos || []).map(Number);
-    if (!vistos.length) return null;
-    const ultimoCapVisto = Math.max(...vistos);
-    const siguienteCapitulo = ultimoCapVisto + 1;
-
+      // cap.ultimoVisto ya viene filtrado y seguro desde currentState
+      const siguienteCapitulo = cap.ultimoVisto + 1;
       const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
-      
       const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
 
       if (siguienteEpisodio) {
         return {
-          id: cap.animeId,
+          id: cap.id,
           portada: animeDetails.portada,
           titulo: animeDetails.titulo,
           siguienteCapitulo: siguienteCapitulo,
@@ -266,8 +293,10 @@ async function cargarUltimosCapsVistos() {
       return null;
     }).filter(Boolean);
 
+    // 5. Render final y renovación de cachés
     renderizarBotones(freshData);
     localStorage.setItem(cacheKey, JSON.stringify(freshData));
+    localStorage.setItem(cacheStateKey, JSON.stringify(currentState));
 
   } catch (error) {
     console.error('Error crítico en cargarUltimosCapsVistos:', error);
