@@ -534,3 +534,15 @@ document.getElementById("text-random").addEventListener("click", () => {
 });
 
 btnGenerarPersonalizadas.click()
+
+// Selecciona todos los elementos con esas clases
+const contenedores = document.querySelectorAll(".grid-animes.lab");
+
+    contenedores.forEach((contenedor) => {
+      contenedor.addEventListener('wheel', (evento) => {
+        if (evento.deltaY !== 0) {
+          evento.preventDefault();
+          contenedor.scrollLeft += evento.deltaY; 
+        }
+      });
+    });
