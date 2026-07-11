@@ -225,18 +225,15 @@ async function cargarUltimosCapsVistos() {
 
   // 1. Render instantáneo desde caché
   if (cachedData && cachedData.length > 0) {
-    console.log("DEBUG: Mostrando botones desde el caché temporalmente.");
     renderizarBotones(cachedData);
   }
 
   try {
-    console.log("DEBUG: Buscando historial en Firebase...");
     const ref = collection(db, "usuarios", userID, "caps-vistos");
     const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(8));
     const snap = await getDocs(q);
 
     if (snap.empty) {
-      console.log("DEBUG: Historial vacío.");
       ultimosCapsContainer.innerHTML = '<p>No tienes capítulos vistos recientemente.</p>';
       localStorage.removeItem(cacheKey);
       localStorage.removeItem(cacheStateKey);
@@ -261,12 +258,10 @@ async function cargarUltimosCapsVistos() {
 
     // 3. Comprobación estricta de estado
     if (cachedState && JSON.stringify(currentState) === JSON.stringify(cachedState)) {
-      console.log("DEBUG: El historial no ha cambiado. Se detienen las descargas.");
       return; 
     }
 
     // 4. Si hay cambios, procedemos a buscar las portadas (solo de los que pasaron el filtro)
-    console.log("DEBUG: Hay capítulos nuevos o cambios. Descargando datos de animes...");
     
     // Ahora mapeamos sobre currentState, ahorrando peticiones a animes sin caps vistos
     const animeRefs = currentState.map(cap => doc(db, "datos-animes", cap.id));
