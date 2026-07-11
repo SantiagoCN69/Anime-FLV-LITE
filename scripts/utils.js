@@ -52,8 +52,10 @@ export function observerAnimeCards() {
     cards.forEach((card, index) => {
         const row = Math.floor(index / columns);
         const col = index % columns;
-        card.style.transitionDelay = `${(row + col) * 0.03}s`;
+        card.style.transitionDelay = `${(row + col) * 0.05}s`;
     });
+
+    document.body.offsetHeight;
 
     const observer = new IntersectionObserver((entries, obs) => {
         for (const entry of entries) {
@@ -68,10 +70,12 @@ export function observerAnimeCards() {
         }
     }, {
         threshold: 0.05,
-        rootMargin: "0px 0px -5% 0px"
+        rootMargin: "0px 0px -1% 0px"
     });
 
-    cards.forEach(card => observer.observe(card));
+    requestAnimationFrame(() => {
+        cards.forEach(card => observer.observe(card));
+    });
 }
 
 // INDICADOR sidebar scroll
