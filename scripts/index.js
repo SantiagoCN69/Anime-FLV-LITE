@@ -273,8 +273,54 @@ async function cargarUltimosCapsVistos() {
     console.error('Error crítico en cargarUltimosCapsVistos:', error);
   }
 }
-  // Función para crear tarjeta de anime
-  function createAnimeCard(anime, siguienteEpisodioUrl) {
+
+// ----------------------------------------------------
+// UTILS DE FLIP OPTIMIZADO
+// ----------------------------------------------------
+function renderFlipOptimizado(container, renderCallback) {
+  // 1. FIRST: Capturamos posiciones actuales
+  const posicionesAnteriores = new Map();
+  Array.from(container.children).forEach(el => {
+    if (el.dataset.id) {
+      posicionesAnteriores.set(el.dataset.id, el.getBoundingClientRect());
+    }
+  });
+
+  // 2. DOM UPDATE: Ejecutamos los cambios en el DOM
+  renderCallback();
+
+  // 3. INVERT & PLAY: Animamos el estado final desde el inicial
+  Array.from(container.children).forEach(el => {
+    if (!el.dataset.id) return;
+    
+    const posAnterior = posicionesAnteriores.get(el.dataset.id);
+    
+    if (posAnterior) {
+      // Elemento existente, calculamos desplazamiento
+      const posActual = el.getBoundingClientRect();
+      const deltaX = posAnterior.left - posActual.left;
+      const deltaY = posAnterior.top - posActual.top;
+
+      if (deltaX !== 0 || deltaY !== 0) {
+        el.animate([
+          { transform: `translate(${deltaX}px, ${deltaY}px)` },
+          { transform: 'translate(0, 0)' }
+        ], { duration: 300, easing: 'ease-out' });
+      }
+    } else {
+      // Elemento nuevo (Fade In + Slide Up)
+      el.animate([
+        { opacity: 0, transform: 'translateY(15px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ], { duration: 300, easing: 'ease-out' });
+    }
+  });
+}
+
+// ----------------------------------------------------
+// Modificación: Agregamos div.dataset.id
+// ----------------------------------------------------
+function createAnimeCard(anime, siguienteEpisodioUrl) {
     const div = document.createElement('div');
     let chapterHtml = ''; 
     let estadoHtml = '';
@@ -282,6 +328,7 @@ async function cargarUltimosCapsVistos() {
     let linkbase =  `<a href="anime.html?id=${anime.id}" id="anime-${anime.id}">`;
   
     div.className = 'anime-card';
+    div.dataset.id = anime.id; // ¡CLAVE PARA EL FLIP!
     
     if (anime.siguienteCapitulo) {chapterHtml = `<span id="chapter">Episodio ${anime.siguienteCapitulo}</span>`;}
     if (anime.estado) {if (anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
@@ -373,47 +420,49 @@ async function cargarUltimosCapitulos() {
     const cacheKey = 'ultimosEpisodiosGeneralesCache';
     const docId = 'ultimosCapitulos'; 
   
-    // Función para renderizar los capítulos
+    // ----------------------------------------------------
+    // Modificación: Integrado renderFlipOptimizado
+    // ----------------------------------------------------
     const render = (datos) => {
       document.querySelectorAll('.init-loading-servidores').forEach(el => el.style.display = 'none');
-      container.innerHTML = '';
-  
-      if (!datos?.length) {
-        container.innerHTML = '<p>No se encontraron últimos episodios.</p>';
-        return;
-      }
+      
+      renderFlipOptimizado(container, () => {
+        container.innerHTML = '';
     
-    const getIdFromUrl = (url) => {
-      if (!url) return '';
-
-      const clean = url.replace(/\/+$/, '');
-      const parts = clean.split('/');
-
-      let last = parts[parts.length - 1];
-
-      if (/^\d+$/.test(last)) {
-        last = parts[parts.length - 2] || '';
-      } else {
-        last = last.replace(/-\d+$/, '');
-      }
-
-      return last;
-    };
-      const fragment = document.createDocumentFragment();
-      datos.forEach(anime => {
-        const card = createAnimeCard({
-          id: getIdFromUrl(anime.url),
-          portada: anime.cover || '',
-          titulo: anime.title || 'Sin título',
-          siguienteCapitulo: anime.chapter?.toString() || ''
+        if (!datos?.length) {
+          container.innerHTML = '<p>No se encontraron últimos episodios.</p>';
+          return;
+        }
+      
+        const getIdFromUrl = (url) => {
+          if (!url) return '';
+          const clean = url.replace(/\/+$/, '');
+          const parts = clean.split('/');
+          let last = parts[parts.length - 1];
+          if (/^\d+$/.test(last)) {
+            last = parts[parts.length - 2] || '';
+          } else {
+            last = last.replace(/-\d+$/, '');
+          }
+          return last;
+        };
+        
+        const fragment = document.createDocumentFragment();
+        datos.forEach(anime => {
+          const card = createAnimeCard({
+            id: getIdFromUrl(anime.url),
+            portada: anime.cover || '',
+            titulo: anime.title || 'Sin título',
+            siguienteCapitulo: anime.chapter?.toString() || ''
+          });
+          if (card) fragment.appendChild(card);
         });
-        if (card) fragment.appendChild(card);
+        container.appendChild(fragment);
       });
-      container.appendChild(fragment);
+      
       observerAnimeCards();
     };
   
-    // 1. Cargar desde caché local
     let cached = leerCache(cacheKey);
     if (cached) {
       if (verificarYLimpiarCacheBackground(cacheKey, cached, 'cover', null, true)) {
@@ -433,7 +482,6 @@ async function cargarUltimosCapitulos() {
         }), {});
       };
     
-    // 2. Intentar cargar desde Firestore
     try {
       const docRef = doc(db, 'ultimos-capitulos', docId);
       const docSnap = await getDoc(docRef);
@@ -450,7 +498,6 @@ async function cargarUltimosCapitulos() {
       console.error('Error al obtener datos de Firestore:', err);
     }
   
-    // 3. Cargar desde la API si es necesario
     try {
       const res = await fetch('https://backend-animeflv-lite.onrender.com/api/latest');
       const apiData = await res.json();
@@ -461,13 +508,11 @@ async function cargarUltimosCapitulos() {
   
       if (JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(cached))) {
         if(apiData.length > 0) {
-        render(apiData);
-        guardarCache(cacheKey, apiData);
-        cached = apiData;
+          render(apiData);
+          guardarCache(cacheKey, apiData);
+          cached = apiData;
         }
-        // Actualizar Firestore con los nuevos datos
         try {
-          // Solo guardar en Firestore si hay datos
           if (apiData && apiData.length > 0) {
             const docRef = doc(db, 'ultimos-capitulos', docId);
             await setDoc(docRef, { 
@@ -489,11 +534,9 @@ async function cargarhistorial() {
   const historialh2 = document.getElementById('historialh2');
   if (!historialContainer) return;
 
-  historialContainer.innerHTML = '';
   const claves = Object.keys(localStorage);
   const animesRecientes = [];
   
-  // Filtrar solo las claves que empiezan con 'anime_'
   const clavesAnime = claves.filter(clave => clave.startsWith('anime_'));
   
   for (const clave of clavesAnime) {
@@ -514,13 +557,10 @@ async function cargarhistorial() {
     }
   }
   
-  // Ordenar por fecha
   animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
   const animesAMostrar = animesRecientes.slice(0, 20);
   
-  // Mostrar u ocultar según si hay animes
   if (animesAMostrar.length > 0) {
-    // Verificar si hay portadas background.webp y borrar cachés individuales
     if (verificarYLimpiarCacheBackground(null, animesAMostrar, 'portada', (items) => {
       items.forEach(anime => localStorage.removeItem('anime_' + anime.id));
     }, true)) {
@@ -530,12 +570,19 @@ async function cargarhistorial() {
     historialh2.classList.remove('hidden');
     historialContainer.classList.remove('hidden');
     
-    const fragment = document.createDocumentFragment();
-    animesAMostrar.forEach(anime => {
-      const card = createAnimeCard(anime);
-      if (card) fragment.appendChild(card);
+    // ----------------------------------------------------
+    // Modificación: Integrado renderFlipOptimizado
+    // ----------------------------------------------------
+    renderFlipOptimizado(historialContainer, () => {
+      historialContainer.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+      animesAMostrar.forEach(anime => {
+        const card = createAnimeCard(anime);
+        if (card) fragment.appendChild(card);
+      });
+      historialContainer.appendChild(fragment);
     });
-    historialContainer.appendChild(fragment);
+    
     observerAnimeCards();
   } else {
     historialh2.classList.add('hidden');
@@ -550,7 +597,6 @@ function guardarCache2(key, data) {
       console.log('No hay datos para guardar en caché');
       return;
     }
-    // Guardar solo los primeros 3 para depuración
     const dataToCache = data.slice(0, 10);
     localStorage.setItem(key, JSON.stringify(dataToCache));
   } catch (e) {
@@ -559,12 +605,17 @@ function guardarCache2(key, data) {
 }
 
 function agregarAnimesAlContenedor(animes, contenedor) {
-  const fragment = document.createDocumentFragment();
-  animes.forEach(anime => {
-      const card = createAnimeCard(anime);
-      if (card) fragment.appendChild(card);
+  // ----------------------------------------------------
+  // Modificación: Integrado renderFlipOptimizado aquí también
+  // ----------------------------------------------------
+  renderFlipOptimizado(contenedor, () => {
+    const fragment = document.createDocumentFragment();
+    animes.forEach(anime => {
+        const card = createAnimeCard(anime);
+        if (card) fragment.appendChild(card);
+    });
+    contenedor.appendChild(fragment);
   });
-  contenedor.appendChild(fragment);
   observerAnimeCards();
 }
 
@@ -587,25 +638,20 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   if (!userID || userID === "null") {
     container.innerHTML = '<p>Inicia sesión para ver tus animes en ' + container.id + '</p>';
     return;
-}
+  }
+  
   const btnAnterior = container.querySelector('.ver-mas-btn');
   if (btnAnterior) {
     btnAnterior.textContent = "cargando...";
   }
   
   const h2 = document.querySelector('#' + container.id + 'h2');
-  if (!userID || userID === "null") {
-    container.innerHTML = '<p>Inicia sesión para ver tus animes en ' + container.id + '</p>';
-    return;
-}
 
   const cacheKey = `${container.id}Cache_${userID}`;
   const cachedData = leerCache(cacheKey);
 
-  // Mostrar caché si es la primera carga
   if (cachedData && offset === 0) {
     if (verificarYLimpiarCacheBackground(cacheKey, cachedData, 'portada', null, true)) {
-      // Caché borrado, continuar con carga desde Firestore
     } else {
       agregarAnimesAlContenedor(cachedData, container);
       h2.dataset.text = "Disponibles: " + cachedData.length;
@@ -613,7 +659,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   }
 
   try {
-      // Obtener lista de favoritos
       const Doc = await getDoc(DocRef);
       let titulos = Doc.exists() ? [...(Doc.data().animes || [])].filter(titulo => titulo != null).reverse() : [];
       h2.dataset.text = "Disponibles: " + titulos.length;
@@ -624,7 +669,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           return;
       }
 
-      // Verificar caché solo si es primera página
       if (offset === 0 && cachedData) {
           const ultimosTitulos = titulos.slice(0, limite).toString();
           const titulosCache = cachedData.map(a => a.id).slice(0, limite).toString();
@@ -634,12 +678,11 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
               return;
           } 
         }
-      // Obtener los IDs de los animes a buscar
+        
       const idsABuscar = titulos.slice(offset, offset + limite);
       let animes = [];
       const idsNoEncontrados = [];
       
-      // Obtener cada documento por su ID
       for (const id of idsABuscar) {
         const docSnap = await getDoc(doc(db, "datos-animes", id));
         if (docSnap.exists()) {
@@ -657,7 +700,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
         }
       }
       
-      // Si hay IDs no encontrados, actualizar la lista del usuario
       if (idsNoEncontrados.length > 0) {
         const nuevosTitulos = titulos.filter(id => !idsNoEncontrados.includes(id));
         if (nuevosTitulos.length !== titulos.length) {
@@ -669,7 +711,8 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           }
         }
       }
-      // Actualizar caché si es primera página
+      
+// Actualizar caché si es primera página
       if (offset === 0) {
         const cacheAnimes = animes.slice(0, limite);
         const animesOrdenados = titulos
@@ -677,11 +720,23 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
             .map(id => cacheAnimes.find(a => a.id === id))
             .filter(Boolean);
         guardarCache2(cacheKey, animesOrdenados);
-        container.innerHTML = '';
-        agregarAnimesAlContenedor(animesOrdenados, container);
+        
+        // ✅ CORRECCIÓN: Borrar lo viejo e insertar lo nuevo en el mismo ciclo FLIP
+        renderFlipOptimizado(container, () => {
+          container.innerHTML = '';
+          const fragment = document.createDocumentFragment();
+          animesOrdenados.forEach(anime => {
+              const card = createAnimeCard(anime);
+              if (card) fragment.appendChild(card);
+          });
+          container.appendChild(fragment);
+        });
+        
         manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length);
+        observerAnimeCards(); 
         return;
       }
+      
       agregarAnimesAlContenedor(animes, container);
       manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animes.length);
 
@@ -696,7 +751,7 @@ async function cargarContinuarViendo() {
   const h2 = document.getElementById('continuarviendoh2');
   const cachekey = "ultimosCapsVistosCache_" + userID;
   if (!container) return;
-  container.innerHTML = '';
+  
   if(localStorage.getItem(cachekey) === null) {
     return;
   }
@@ -706,10 +761,17 @@ async function cargarContinuarViendo() {
      return;
    }
    
-   datos.forEach(data => {
-    container.appendChild(createAnimeCard(data, data.siguienteCapitulo));
-    observerAnimeCards();
-   })
+   // ----------------------------------------------------
+   // Modificación: Integrado renderFlipOptimizado
+   // ----------------------------------------------------
+   renderFlipOptimizado(container, () => {
+     container.innerHTML = '';
+     datos.forEach(data => {
+       container.appendChild(createAnimeCard(data, data.siguienteCapitulo));
+     });
+   });
+   observerAnimeCards();
+   
    h2.dataset.text = "Disponibles: " + datos.length;
 }
 
