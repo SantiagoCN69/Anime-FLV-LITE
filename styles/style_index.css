@@ -21,20 +21,10 @@
   #menu-toggle {
     display: none !important;
   }
-  .title {
-  border-bottom: 1px solid var(--br);
-  position: absolute;
-  inset: 0;
-  max-height: 88px;
-  display: flex;
-  align-items: center;
-  }
+
   @media (min-width: 601px) {
 
-header {
-    margin-left: 230px;
-    width: calc(100% - 230px);
-}
+
 .content-section {
   margin-left: calc(230px + 2rem);
 }}
@@ -53,8 +43,6 @@ header {
   .sidebar {
     transform: translateX(-100%);
     position: fixed;
-    margin: 0;
-    height: 100dvh;
   }
 }
 

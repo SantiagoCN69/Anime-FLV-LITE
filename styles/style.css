@@ -79,7 +79,7 @@ header {
 }
  .scrolled div {
   border-color: rgba(var(--bgt), .3) !important;
-}
+ }
 .scrolled #busqueda {
     border: 1px solid rgba(var(--bgt), .3) !important;
 }
@@ -142,12 +142,7 @@ header #busqueda{
 #btn-lab { 
   display: block;
 }
-.search-container1 {
-  min-width: 50px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
+
 #busqueda {
   min-width: 50px;
   flex: 1;
@@ -233,6 +228,150 @@ header #busqueda{
   display: none;
 }
 
+.title {
+  margin-right: calc(3rem - 7.5px);
+}
+header {
+  padding-left: calc(2rem - 9.5px);
+  justify-content: space-between;
+}
+header div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.search, #busqueda {
+  flex: 1;
+  display: flex;
+}
+
+.search {
+  position: relative;
+}
+.search::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  left: 12px;
+  top:50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none;
+  background-color: var(--t2);
+  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
+  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
+}
+
+
+@media (max-width: 717px) {
+  .title {
+  margin-right: 0rem;
+}
+  header {
+    padding-inline: 1rem;
+    position: fixed;
+    top: 0;
+    z-index: 10 !important;
+  }
+  .search-active {
+    top: 0;
+   z-index: 9;
+  }
+  .search-active .search {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  #btn-search, #btn-close-search {
+    display: block;
+    
+  }
+
+#btn-search {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#btn-search::before {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background-color: var(--t2); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
+}
+  
+  
+/* Al hacer clic en el search */
+header.search-active .title,
+header.search-active #btn-directorio,
+header.search-active #btn-search,
+header.search-active #btn-login,
+header.search-active #menu-toggle {
+  transform: translateY(-100px);
+}
+
+.search {
+  left: 0;
+  position: absolute !important;
+  width: calc(100% - 2rem);
+  margin: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:10px;
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+header.search-active .search {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+header.search-active .logout-modal {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Botón de cerrar búsqueda */
+#btn-close-search {
+  background: none;
+  border: none;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+#btn-close-search::after {
+  content: "";
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--t2); 
+  -webkit-mask-size: contain;
+  -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center;
+  mask-size: contain;
+  mask: url('../icons/xmark-solid.svg') no-repeat center;
+}
+}
 /* Esconde el botón de menú en PC */
 #menu-toggle {
   display: block;
@@ -264,11 +403,12 @@ header #busqueda{
   height: 100dvh;
   z-index: 9;
   position: fixed;
-  top:0;
+  top: 88px;
   transform: translateX(-100%);
   width: 220px;
   color: var(--t1);
   min-width: 230px;
+  height: calc(100vh - 88px);
   left: 0;
   overflow-y: auto;
   border-right: 1px solid var(--br);
@@ -278,7 +418,6 @@ header #busqueda{
   will-change: transform;
   -ms-overflow-style: none; 
   scrollbar-width: none; 
-  padding-top: calc(88px + 1rem);
   &::-webkit-scrollbar {
     display: none;
   }
@@ -309,7 +448,7 @@ header #busqueda{
 .sidebar ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 1rem 0;
   position: relative;
   color: var(--t2);
 }
@@ -370,23 +509,7 @@ header #busqueda{
 .sidebar {
   transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease;
 }
-.search-container1 {
-  position: relative;
-}
-.search-container1::after {
-  content: "";
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  left: 12px;
-  top:50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  pointer-events: none;
-  background-color: var(--t2);
-  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
-  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
-}
+
 @media screen and (max-width: 600px) {
   .no-results {
     top: 25%;
@@ -850,7 +973,6 @@ section.content-section h2:first-of-type::after {
 .continuar-viendo {
   border-top: 1px solid var(--br);
   height: auto;
-  margin-top: 1em;
   margin-bottom: 2rem;
   padding-top: 1rem;
   padding-inline: 1rem;
@@ -937,11 +1059,11 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   cursor: pointer;
   text-align: center;
-  transition: transform .5s, opacity .5s;
   height: fit-content;
   opacity: 0;
   transform: translate(30px, 30px) scale(.9);
   transition: opacity 0.4s ease, transform 0.4s ease;
+  will-change: transform, opacity;
 }
 .anime-card:hover {
   transform: scale(1.02);
@@ -949,6 +1071,15 @@ section.content-section h2:first-of-type::after {
 .anime-card.show {
   opacity: 1;
   transform: translate(0, 0) scale(1);
+}
+
+.anime-card.anime-card-entering {
+  opacity: 0;
+}
+
+.anime-card.anime-card-leaving {
+  pointer-events: none;
+  z-index: 1;
 }
 
 

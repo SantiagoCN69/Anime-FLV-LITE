@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AnimeFLV Lite - Anime Online Sin Anuncios | Streaming Gratis HD</title>
+    <title>Anime Lite - Anime Online Sin Anuncios | Streaming Gratis HD</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AnimeFLV Lite: Disfruta de anime online gratis en HD sin anuncios ni pop-ups. Miles de series y películas de anime en español. Alternativa a AnimeFLV sin publicidad.">
+    <meta name="description" content="Anime Lite: Disfruta de anime online gratis en HD sin anuncios ni pop-ups. Miles de series y películas de anime en español. Alternativa a AnimeFLV sin publicidad.">
     <meta name="keywords" content="anime online, anime gratis, anime sin anuncios, anime HD, AnimeFLV sin ads, streaming anime, anime español, series anime, películas anime, anime sin publicidad, anime online gratis, ver anime online, anime sin pop-ups, AnimeFLV alternativa, anime en HD, anime latino">
     <meta name="author" content="Santiago Cardona Nossa">
     <meta name="robots" content="index, follow">
@@ -12,16 +12,16 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://animeflvlite.netlify.app/">
-    <meta property="og:title" content="AnimeFLV Lite - Anime Online Sin Anuncios | Streaming Gratis HD">
+    <meta property="og:title" content="Anime Lite - Anime Online Sin Anuncios | Streaming Gratis HD">
     <meta property="og:description" content="Disfruta de miles de series y películas de anime en HD sin interrupciones ni anuncios. La mejor alternativa a AnimeFLV.">
     <meta property="og:image" content="https://animeflvlite.netlify.app/icons/ogimagen.png">
-    <meta property="og:site_name" content="AnimeFLV Lite">
+    <meta property="og:site_name" content="Anime Lite">
     <meta property="og:locale" content="es_ES">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://animeflvlite.netlify.app/">
-    <meta name="twitter:title" content="AnimeFLV Lite - Anime Online Sin Anuncios">
+    <meta name="twitter:title" content="Anime Lite - Anime Online Sin Anuncios">
     <meta name="twitter:description" content="El mejor repositorio de anime sin anuncios ni publicidad. Miles de series en HD gratis.">
     <meta name="twitter:image" content="https://animeflvlite.netlify.app/icons/ogimagen.png">
     
@@ -30,8 +30,8 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "AnimeFLV Lite",
-      "alternateName": ["AnimeFLV sin anuncios", "Anime online gratis", "Anime HD sin publicidad"],
+      "name": "Anime Lite",
+      "alternateName": ["Anime sin anuncios", "Anime online gratis", "Anime HD sin publicidad"],
       "url": "https://animeflvlite.netlify.app/",
       "description": "Disfruta de anime online gratis en HD sin anuncios ni pop-ups. Miles de series y películas de anime en español.",
       "potentialAction": {
@@ -41,7 +41,7 @@
       },
       "publisher": {
         "@type": "Organization",
-        "name": "AnimeFLV Lite"
+        "name": "Anime Lite"
       }
     }
     </script>
@@ -94,7 +94,6 @@ if (isFixed && window.innerWidth <= 600 && indexpagination) {
   </script>
 
   <aside class="sidebar">
-    <h1 class="title"><a href="index.html">AnimeFLV<span> Lite</span></a></h1>
           <ul>
             <div class="active-indicator"></div>
             <li class="menu-item" data-target="Ultimos-Episodios">
@@ -137,16 +136,15 @@ if (isFixed && window.innerWidth <= 600 && indexpagination) {
 
   <main>
     <header>
-        <button type="button" id="menu-toggle" title="Menú">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <div class="search-container1">
-          <input type="text" id="busqueda" placeholder="Buscar anime...">
-        </div>
-  
+      <h1 class="title"><a href="index.html">AnimeFLV<span> Lite</span></a></h1>
+      <div class="search">
+        <input type="text" id="busqueda" placeholder="Buscar anime...">
+        <button id="btn-close-search" title="Cerrar búsqueda"></button>
+      </div>
+      <div>
+        
+        <button type="button" id="btn-search" title="Buscar anime"></button>
+        
         <button disabled type="button" id="btn-login" class="nouser" style="view-transition-name: login-button">
           <span>Login</span>
         </button>
@@ -163,9 +161,13 @@ if (isFixed && window.innerWidth <= 600 && indexpagination) {
               btnLogin.innerHTML = '<img src="' + photoSrc + '" alt="Foto de perfil"><span>' + primerNombre + '</span>';
             }
           }
-        </script>
-
-
+          </script>
+          <button type="button" id="menu-toggle" title="Menú">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+      </div>
     </header>
 
     <section id="Busqueda-Resultados" class="content-section hidden">

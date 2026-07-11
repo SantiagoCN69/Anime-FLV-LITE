@@ -776,8 +776,13 @@ document.addEventListener("DOMContentLoaded", () => {
   menuBtn.addEventListener("click", () => {
     sidebar.classList.toggle("active");
     menuBtn.classList.toggle("active");
-    document.body.style.overflow = sidebar.classList.contains("active") ? "hidden" : "";
-    document.querySelector(".overlay").classList.toggle("active");
+  });
+  sections.forEach(section => {
+    section.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      menuBtn.classList.remove("active");
+      document.body.style.overflow = "";
+    });
   });
   
   let touchStartX = 0;
