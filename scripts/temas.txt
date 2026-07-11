@@ -1,0 +1,64 @@
+/**
+
+* 🎨 Sistema de variables de diseño (Design Tokens)
+*
+* Estas variables representan colores y valores reutilizables
+* que definen la apariencia visual de una interfaz.
+* No dependen de un componente específico, sino de su propósito.
+*
+* La idea es separar "qué es" del "dónde se usa",
+* para mantener consistencia, escalabilidad y facilidad de cambios.
+  */
+
+p (panel):
+// Representa superficies secundarias dentro de la interfaz.
+// Son capas por encima del fondo principal.
+// Ejemplo: tarjetas, menús, sidebars, headers.
+
+b (background):
+// Fondo base de toda la aplicación.
+// Es la capa más profunda sobre la que se construye todo.
+
+t1 (texto principal):
+// Color de texto de alta prioridad.
+// Debe tener máximo contraste y ser fácil de leer.
+// Se usa para contenido importante.
+
+t2 (texto/acento activo):
+// Color para elementos interactivos en estado activo.
+// No es para lectura continua.
+// Se usa para resaltar selección o foco visual.
+
+br (border):
+// Color para separaciones visuales.
+// Define límites entre elementos sin ser demasiado llamativo.
+
+btn (color primario de acción):
+// Color principal de interacción.
+// Representa acciones importantes (clic, confirmación, foco).
+
+btn2 (color secundario de acción):
+// Color complementario al principal.
+// Se usa en gradientes o variaciones visuales.
+
+f (filter):
+// Valor numérico usado para aplicar efectos visuales.
+// Ejemplo: brillo, contraste o intensidad en hover/animaciones.
+
+bgt (background transparente claro):
+// Valores RGB para generar transparencias claras.
+// Se usa con rgba() para overlays suaves sobre fondos oscuros.
+
+bgti (background transparente oscuro):
+// Valores RGB para transparencias oscuras.
+// Se usa para overlays, blur o capas encima de contenido claro.
+
+/**
+
+* 💡 Beneficios de este sistema:
+*
+* * Permite cambiar todo el diseño modificando pocas variables
+* * Mantiene consistencia visual en toda la app
+* * Facilita crear temas (dark, light, personalizados)
+* * Mejora la organización del código CSS/JS
+    */

@@ -259,7 +259,7 @@ if (btnLogin) {
 export { app, auth, db };
 
 const THEME_CONFIG = {
-  themes: ['dark', 'nocturno', 'sakura', 'cyberpunk'],
+  themes: ['dark', 'nocturno', 'sakura', 'cyberpunk', 'sunset'],
   defaultTheme: 'dark',
   saveDelay: 10000
 };
