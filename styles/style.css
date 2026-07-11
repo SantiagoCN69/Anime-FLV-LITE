@@ -62,7 +62,7 @@ header {
   padding: 2rem;
   width: 100%;
   margin: 0 auto;
-  height:5.5rem;
+  height:88px;
   background: var(--p);
   gap:15px;
   border-bottom: 1px solid var(--br);
@@ -90,6 +90,7 @@ header #busqueda{
 }
 
 .title {
+  font-weight: bolder;
   letter-spacing: 1px ;
   font-size: 2rem;
   white-space: nowrap;
@@ -230,12 +231,9 @@ header #busqueda{
 }
 
 .title {
-  margin-right: calc(3rem - 7.5px);
+margin-right: 2rem;
 }
-header {
-  padding-left: calc(2rem - 9.5px);
-  justify-content: space-between;
-}
+
 header div {
   display: flex;
   align-items: center;
