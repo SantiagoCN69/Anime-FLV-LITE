@@ -46,6 +46,7 @@ a {
 svg {
   pointer-events: none;
 }
+
 /* Scrollbar styles */
 ::-webkit-scrollbar {width: 7px;}
 ::-webkit-scrollbar-track {background: transparent;}
@@ -496,7 +497,7 @@ header.search-active .logout-modal {
 }
 .sidebar h2 {
   font-size: 1.2rem;
-  color: var(--t2);
+  color: var(--t1);
 }
 .sidebar svg {
   margin-bottom: -4px;
@@ -741,8 +742,6 @@ header.search-active .logout-modal {
 #indexpagination.bottom .active-menu-item::after { display: none; }
 
 /* ================= LAYOUT ================= */
-#indexpagination.floating ~ main { margin-bottom: 6rem; }
-#indexpagination.bottom ~ main { margin-bottom: 70px; }
 
 @media (max-width: 600px) {
   #indexpagination.floating ~ main { margin-bottom: 6rem; }
@@ -816,7 +815,8 @@ main {
 
 .span-carga {
   text-align: center;
-  color: var(--t2);
+  color: var(--t1);
+  opacity: 0.7;
   position: relative;
   display: block;
   width: 100%;
@@ -876,7 +876,7 @@ main {
     grid-column: 2;
     grid-row: 1;
     margin: 0;
-    color: var(--t2);
+    color: var(--t1);
   }
   
   span {
@@ -1078,6 +1078,7 @@ section.content-section h2:first-of-type::after {
 .texto-episodio {
   color: var(--t1);
   font-size: 0.8rem;
+  opacity: 0.7;
 }
 
 #ultimos-episodios .anime-card img {
@@ -1501,12 +1502,9 @@ margin-top: 10px;
   flex: 1;
   width: 100%;
   height: 100%;
-
   grid-column: 1 / -1;
   grid-row: 1 / -1;
-
   place-self: center;
-
   display: flex;
   justify-content: center;
   align-items: center;

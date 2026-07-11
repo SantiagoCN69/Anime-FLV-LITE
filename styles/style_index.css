@@ -50,7 +50,7 @@
   justify-content: center;
   gap: 5px;   
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: var(--p);
   color: var(--t1);
   border: none;
@@ -86,7 +86,8 @@ nav.filtros {
   transform: rotate(180deg);
 }
 .btn-filtro span {
-  color: var(--t2);
+  color: var(--t1);
+  opacity: 0.7;
 }
 .btn-filtro img {
   width: 12px;
@@ -450,10 +451,6 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   margin-bottom: 1.3rem;
 }
 
-#nav-populares button.active {
-  border-color: var(--btn);
-}
-
 #nav-populares button.active + div {
   opacity: 1;
   transform: translateX(-50%) scale(1);
@@ -461,7 +458,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
 }
 
 #nav-populares div {
-  z-index: 10;
+  z-index: 9;
   position: absolute;
   top: 56px;
   left: 50%;
@@ -482,7 +479,8 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   cursor: pointer;
   border: none;
   margin-left: 3px;
-  color: var(--br);
+  color: var(--t1);
+  opacity: .7;
   position: absolute;
   top: 10px;
   left: 135px;
@@ -517,7 +515,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
 }
 
 #modal-populares p {
-  color: var(--t2);
+  color: var(--t1);
 }
 
 #modal-populares .close-modal {
@@ -803,7 +801,6 @@ justify-content: space-between;
   justify-content: center;
   align-items: center;
   padding: 40px;
-  color: var(--t2);
   font-size: 1.2rem;
 }
 
@@ -874,7 +871,7 @@ justify-content: space-between;
 .search-input {
   width: 100%;
   max-width: 500px;
-  padding: 0.8rem 1.2rem;
+  padding: 0.7rem 1.2rem;
   border-radius: 8px;
   border: 1px solid var(--br);
   background-color: var(--p);

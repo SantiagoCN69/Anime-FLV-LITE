@@ -57,7 +57,7 @@ body::after {
   top: calc(88px + 2rem);
   font-weight: 600;
   left: 2rem;
-  background: #000a;
+  background: var(--p);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   border: none;
@@ -441,7 +441,8 @@ body::after {
 .anime-description {
   min-height: 2lh;
   position: relative;
-  color: var(--t2);
+  color: var(--t1);
+  opacity: .7;
   font-size: .9rem;
   overflow: auto;
   display: -webkit-box;
@@ -539,14 +540,14 @@ body::after {
   min-height: 80px;
 }
 .episode-btn.ep-visto {
-  color: var(--t1);
+  color: var(--t2);
 }
 .episode-btn {
   background: var(--p);
   border:none;
   border-top: 1px solid var(--br);
   border-radius: 12px;
-  color: var(--t2);
+  color: var(--t1);
   font-size: 1rem;
   cursor: pointer;
   transition: transform 0.2s;

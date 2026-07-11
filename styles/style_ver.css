@@ -131,7 +131,8 @@ main section:nth-child(2) {
 .noticia-fecha {
   top: 20px;
   background-color: var(--btn);
-  color: var(--t2);
+  color: var(--t1);
+  opacity: .8;
   padding: 3px 8px;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -141,10 +142,11 @@ main section:nth-child(2) {
   text-decoration: none;
 }
 .btn-volver {
-  color: var(--t2);
+  color: var(--t1);
   font-weight: 600;
   width: fit-content;
-  transition: transform .3s, color .3s;
+  transition: transform .3s, color .3s, opacity .3s;
+  opacity: .7;
 }
 #btn-volver-inicio::before {
   transition: background-color .3s;
@@ -153,7 +155,7 @@ main section:nth-child(2) {
   height: 16px;
   display: inline-block;
   margin-inline-end: 5px;
-  background-color: var(--t2);
+  background-color: var(--t1);
   -webkit-mask: url('/icons/house-solid.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask: url('/icons/house-solid.svg') no-repeat center;
@@ -162,6 +164,7 @@ main section:nth-child(2) {
 
 .btn-volver:hover {
   color: var(--btn);
+  opacity: 1;
 }
 #btn-volver-inicio:hover::before {
   background-color: var(--btn);
@@ -176,7 +179,7 @@ main section:nth-child(2) {
 .btn-cap, h3 {
   font-weight: bold;
   font-size: 1.5rem;
-  color: var(--btn);
+  color: var(--t1);
   margin-right: 10px;
 }
 #btn-estado-capitulo {
@@ -187,24 +190,35 @@ main section:nth-child(2) {
   transition: opacity 0.3s ease;
   display: flex;
   align-items: end;
+  transition: transform .3s;
+}
+@media (hover: hover) {
+  #btn-estado-capitulo:hover {
+    color: var(--t2) !important;
+  }
 }
 .texto-estado-capitulo {
   font-size: 0.9rem;
   margin-right: 5px;
-  color: var(--t2);
+  color: var(--t1);
+  opacity: .6;
   font-weight: bold;
+  transition: opacity .3s, color .3s;
 }
 
 .visto .texto-estado-capitulo {
-  color: var(--t1);
+  color: var(--t2);
+  opacity: 1;
 }
 
 #btn-estado-capitulo::after {
+  transition: opacity .3s, color .3s;
   content: "";
   width: 16px;
   height: 16px;
   display: inline-block;
-  background-color: var(--t2); 
+  background-color: var(--t1);
+  opacity: .6;
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/eye-slash-solid.svg') no-repeat center;
   mask-size: contain;
@@ -213,7 +227,8 @@ main section:nth-child(2) {
 #btn-estado-capitulo.visto::after {
   content: "";
   -webkit-mask-size: contain;
-  background-color: var(--t1);
+  background-color: var(--t2);
+  opacity: 1;
   -webkit-mask: url('../icons/eye-solid.svg') no-repeat center;
   mask-size: contain;
   mask: url('../icons/eye-solid.svg') no-repeat center;
@@ -296,17 +311,17 @@ overflow: hidden;
   color: var(--t1);
   border-right: 1px solid var(--br);
 }
-#controles button:first-child {
-  border-top-left-radius: 8px;
-}
+
 #controles a {
   display: flex;
   align-items: center;
   justify-content: center;
   background: #3ca0e7;
+  border: 1px solid #64bfff;
   text-decoration: none;
   opacity: 1;
   right: 0;
+  top: 0;
   height: 50px;
   position: absolute;
   border-top-right-radius: 8px;
