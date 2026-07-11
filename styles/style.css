@@ -568,21 +568,17 @@ header.search-active .logout-modal {
   left: 50%;
   transform: translateX(-50%);
   z-index: 9;
-
   width: 100%;
   margin-inline: auto;
   padding: 1.5rem 1rem;
   gap: 10px;
-
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-
-  /* Animar 'border-color' es mejor para el rendimiento que animar 'border' completo */
+  scrollbar-width: none;
   transition: backdrop-filter .3s, background-color .3s, border-color .3s;
   will-change: transform, opacity;
 }
 
-#indexpagination::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+#indexpagination::-webkit-scrollbar { display: none; }
 #indexpagination span { pointer-events: none; }
 
 /* BOTONES BASE */
@@ -590,19 +586,14 @@ header.search-active .logout-modal {
   display: flex;
   align-items: center;
   gap: 5px;
-
   padding: 10px;
   border-radius: 18px;
   border: 1px solid transparent;
-
   font-size: 1rem;
   color: var(--t1);
   background-color: var(--p);
-
   position: relative;
   white-space: nowrap;
-
-  /* Centralizamos las transiciones aquí (incluyendo la del padding de .floating) */
   transition: transform .3s, padding .3s;
   will-change: transform;
 }
@@ -621,38 +612,31 @@ header.search-active .logout-modal {
   left: 50%;
   width: calc(100% - 1px);
   height: calc(100% - 1px);
-
-  border-radius: inherit; /* Hereda los 18px del botón automáticamente */
+  border-radius: inherit;
   border: 1px solid var(--btn);
   background-color: var(--p);
   z-index: -2;
-
   animation: aparecer .3s forwards;
 }
 
 /* ================= TOP ================= */
 #indexpagination.top {
   top: 88px;
-  transition-duration: 0.1s; /* Sobrescribe solo la duración en lugar de repetir las propiedades */
+  transition-duration: 0.1s;
 }
 
 /* ================= FLOATING ================= */
 #indexpagination.floating {
   position: fixed;
   bottom: 14px;
-  /* left y transform ya se heredan del contenedor base */
-  
   width: calc(100% - 1rem);
   padding: 10px;
   gap: 0;
   justify-content: center;
-
   border-radius: 30px;
   background-color: rgba(var(--bgti), .3);
-
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
   animation: aparecer2 .3s forwards;
 }
 
@@ -661,19 +645,17 @@ header.search-active .logout-modal {
   flex: 1;
   flex-direction: column;
   justify-content: center;
-
   height: 60px;
   width: fit-content;
   padding: 5px 0;
   gap: 3px;
-
   font-size: .8rem;
   border-radius: 20px;
   background: none;
 }
 
 #indexpagination.floating button.active-menu-item { padding: 5px 10px; }
-#indexpagination.floating span:nth-of-type(2) { display: none; }
+#indexpagination.floating span:nth-of-type(2), #indexpagination.bottom span:nth-of-type(2) { display: none; }
 
 #indexpagination.floating .active-menu-item::after {
   border: none;
@@ -691,12 +673,10 @@ header.search-active .logout-modal {
   padding: 1px;
   border-radius: inherit;
   z-index: -1;
-
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
-  
   filter: brightness(1.2);
 }
 
@@ -711,17 +691,13 @@ header.search-active .logout-modal {
 /* ================= BOTTOM (YouTube) ================= */
 #indexpagination.bottom {
   position: fixed;
-  bottom: 0;
-  /* left y transform ya se heredan del contenedor base */
-  
+  bottom: 0; 
   width: 100%;
   padding: 8px 5px;
   gap: 0;
   justify-content: space-around;
-
   background-color: var(--b);
   border-top: 1px solid rgba(var(--bgt), .1);
-
   animation: aparecer2 .25s ease;
 }
 
@@ -730,7 +706,6 @@ header.search-active .logout-modal {
   flex: 1;
   flex-direction: column;
   justify-content: center;
-
   padding: 6px 0;
   gap: 2px;
   font-size: .75rem;
