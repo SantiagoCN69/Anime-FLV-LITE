@@ -25,11 +25,11 @@ body::before {
 }
 
 header {
-  padding-left: calc(2rem - 10px);
+  padding-left: calc(2rem - 9.5px);
   justify-content: space-between;
 }
 .title {
-  margin-right: calc(3rem - 7px);
+  margin-right: calc(3rem - 7.5px);
 }
 .sidebar {
   top: 88px;
