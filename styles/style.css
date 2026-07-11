@@ -442,7 +442,6 @@ header.search-active .logout-modal {
 }
 .sidebar.active {
   transform: translateX(0);
-  z-index:12;
 }
 
 .sidebar ul {
