@@ -311,7 +311,6 @@ if (busquedaInput) {
     }
 
     busquedaTimer = setTimeout(() => {
-      const queryNormalizada = normalizarTexto(valor);
       let countdown = 22;
 
       initialDelayTimer = setTimeout(() => {
@@ -335,7 +334,7 @@ if (busquedaInput) {
       }, 100);
 
       currentController = new AbortController();
-      fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(valor)}`, { signal: currentController.signal })
+      fetch(`http://localhost:3001/api/search?q=${encodeURIComponent(valor)}`, { signal: currentController.signal })
         .then(res => {
           if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
           return res.json();
@@ -346,14 +345,11 @@ if (busquedaInput) {
           clearInterval(busquedaCountdownInterval);
           if (isIndexPage && loadingSpan) loadingSpan.style.display = 'none';
           
-          console.log('[Search] 🔍 Pre-normalizando', resData.length, 'animes...');
-          const dataNormalizada = (resData || []).map(anime => ({
-            ...anime,
-            titleNorm: normalizarTexto(anime.title || anime.name || '')
-          }));
-          const filtrados = dataNormalizada.filter(anime => anime.titleNorm.includes(queryNormalizada));
-          console.log('[Search] ✅ Filtrado completado:', filtrados.length, 'resultados');
-          mostrarResultados(filtrados, valor, searchId);
+          const resultados = resData || [];
+          console.log('[Search] ✅ Enviando', resultados.length, 'resultados directamente a mostrarResultados');
+          
+          // Se envía la respuesta del servidor directamente sin filtrar en el frontend
+          mostrarResultados(resultados, valor, searchId);
         })
         .catch(err => {
           if (err.name === 'AbortError') return;
