@@ -68,7 +68,7 @@ export function observerAnimeCards() {
         }
     }, {
         threshold: 0.05,
-        rootMargin: "0px 0px -10% 0px"
+        rootMargin: "0px 0px -5% 0px"
     });
 
     cards.forEach(card => observer.observe(card));
