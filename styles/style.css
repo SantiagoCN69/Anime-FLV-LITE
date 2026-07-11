@@ -159,7 +159,7 @@ header #busqueda{
   border-color: var(--btn);
 }
 #busqueda::placeholder {
-  color: var(--t2);
+  color: var(--t1);
   opacity: 0.7;
 }
 
@@ -259,7 +259,8 @@ header div {
   transform: translateY(-50%);
   z-index: 10;
   pointer-events: none;
-  background-color: var(--t2);
+  background-color: var(--t1);
+  opacity: 0.7; 
   -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
   mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
 }
@@ -497,7 +498,7 @@ header.search-active .logout-modal {
 }
 .sidebar h2 {
   font-size: 1.2rem;
-  color: var(--t1);
+  color: var(--t2);
 }
 .sidebar svg {
   margin-bottom: -4px;
@@ -831,12 +832,13 @@ main {
     grid-column: 2;
     grid-row: 1;
     margin: 0;
+    color: var(--t2);
   }
   
   span {
     grid-column: 2;
     grid-row: 2;
-    color: var(--t2);
+    color: var(--t1);
     opacity: .7;
     font-size: 0.9rem;
   }
@@ -945,6 +947,7 @@ span {
   }
 }
 section.content-section h2:first-of-type::after {
+  color: var(--t1);
   content: attr(data-text);
   display: block;
   border-radius: 12px;
