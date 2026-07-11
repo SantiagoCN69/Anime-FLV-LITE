@@ -1192,5 +1192,11 @@ width: 100%;
   }
 }
 .sin-resultados {
-  margin-top: calc(88px + 2rem);
+  margin: unset !important;
+  margin-inline: 1rem !important;
+  margin-top: calc(88px + 2rem) !important;
+}
+.recomendaciones-ia-busqueda {
+  margin: 1rem;
+  margin-bottom: 2rem;
 }

@@ -727,6 +727,13 @@ iframe {
   background: linear-gradient(135deg, rgba(255, 87, 85, 0.30), rgba(198, 40, 40, 0.30));
   border-color: rgba(255, 87, 85, 0.4);
 }
+
+.sin-resultados {
+  margin: unset !important;
+  margin-inline: 1rem !important;
+  margin-top: calc(88px + 2rem) !important;
+}
 .recomendaciones-ia-busqueda {
   margin: 1rem;
+  margin-bottom: 2rem;
 }
