@@ -382,33 +382,15 @@ function reordenarServidores(servidores) {
   return orderedEmbeds;
 }
 
-function convertirUrlAjkanime(url) {
-  // Si ya es de jkanime, retornarla tal cual
-  if (url.includes('jkanime.net')) {
-    return url;
-  }
-
-  // Convertir de animeflv a jkanime
-  // animeflv: https://www3.animeflv.net/ver/nanatsu-no-taizai-1
-  // jkanime: https://jkanime.net/nanatsu-no-taizai/1/
-  if (url.includes('animeflv.net/ver/')) {
-    const match = url.match(/animeflv\.net\/ver\/(.+)-(\d+)$/);
-    if (match) {
-      const animeName = match[1];
-      const episodeNumber = match[2];
-      return `https://jkanime.net/${animeName}/${episodeNumber}/`;
-    }
-  }
-
-  return url;
-}
-
 async function obtenerServidoresDesdeApi(episodio) {
-  const urlEpisodio = convertirUrlAjkanime(episodio.url);
-
-  const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?url=${encodeURIComponent(urlEpisodio)}`);
+  console.log(episodio);
+  console.log("animeId", animeId);
+  console.log("index", episodio.number);
+  // https://backend-animeflv-lite.onrender.com/api/episode?animeid=sono-bisque-doll-wa-koi-wo-suru&cap=17
+  console.log(`https://backend-animeflv-lite.onrender.com/api/episode?animeid=${animeId}&cap=${episodio.number}`);
+  const res = await fetch(`http://localhost:3001/api/episode?animeid=${animeId}&cap=${episodio.number}`);
   if (!res.ok) {
-    console.warn(`[API episode] API respondió ${res.status} para: ${urlEpisodio}`);
+    console.warn(`[API episode] API respondió ${res.status} para: ${episodio.url}`);
     return null; // Retornar null en lugar de lanzar error
   }
 
@@ -708,6 +690,7 @@ if (siguiente) {
 }
 
 function renderizarServidores(servidores) {
+  console.log("renderizarServidores", servidores);
   if (!servidores?.length) {
     document.getElementById("video").innerHTML = "No hay servidores disponibles.";
     document.getElementById("controles").innerHTML = "";
