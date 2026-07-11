@@ -1,7 +1,7 @@
 {
     "name": "Anime FLV Lite",
     "short_name": "AnimeFLV",
-    "version": "6.0.5",
+    "version": "6.0.6",
     "description": "Aplicación web para ver anime",
     "start_url": "/index.html",
     "display": "standalone",
