@@ -354,7 +354,7 @@ function createAnimeCard(anime, siguienteEpisodioUrl) {
     div.className = 'anime-card';
     div.dataset.id = anime.id; // ¡CLAVE PARA EL FLIP!
     
-    if (anime.siguienteCapitulo) {chapterHtml = `<span id="chapter">Episodio ${anime.siguienteCapitulo}</span>`;}
+    if (anime.Capitulo) {chapterHtml = `<span id="chapter">Episodio ${anime.Capitulo}</span>`;}
     if (anime.estado) {if (anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
       else {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;}
     }
@@ -474,10 +474,10 @@ async function cargarUltimosCapitulos() {
         const fragment = document.createDocumentFragment();
         datos.forEach(anime => {
           const card = createAnimeCard({
-            id: getIdFromUrl(anime.url),
-            portada: anime.cover || '',
+            id: anime.id || getIdFromUrl(anime.url),
+            portada: anime.image || anime.cover || '',
             titulo: anime.title || 'Sin título',
-            siguienteCapitulo: anime.chapter?.toString() || ''
+            Capitulo: anime.chapter?.toString() || anime.episode?.toString() || ''
           });
           if (card) fragment.appendChild(card);
         });
