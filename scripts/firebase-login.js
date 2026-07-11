@@ -78,13 +78,16 @@ function crearmodal(user = false) {
   const loginButton = document.getElementById('btn-login');
   if (!loginButton) return;
 
+  // Limpiar modal existente
   const modalExistente = loginButton.querySelector('.logout-modal');
   if (modalExistente) modalExistente.remove();
 
+  // Crear nuevo modal
   const modal = document.createElement('div');
   modal.className = 'logout-modal';
   modal.innerHTML = `
-    <button id="export-data">Exportar datos</button>
+  <button id="export-data">Exportar datos</button>
+  <button id="clear-cache">Eliminar cache</button>
     <button id="theme-toggle">Cambiar tema</button>
     <button id="config">Navegación</button>
   `;
@@ -97,21 +100,91 @@ function crearmodal(user = false) {
   
   loginButton.appendChild(modal);
   
-  const logoutButton = modal.querySelector('#confirm-logout');
-  if (logoutButton) {
-    logoutButton.addEventListener('click', async () => await logoutConGoogle());
-  }
-  
+  // ==========================================
+  // EVENTOS DEL MODAL (Todos con stopPropagation)
+  // ==========================================
+
+  // 1. Botón Login
   const loginButtonModal = modal.querySelector('#confirm-login');
   if (loginButtonModal) {
-    loginButtonModal.addEventListener('click', async () => await loginConGoogle());
+    loginButtonModal.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      await loginConGoogle();
+    });
   }
 
+  // 2. Botón Logout
+  const logoutButton = modal.querySelector('#confirm-logout');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      await logoutConGoogle();
+    });
+  }
+
+  // 3. Botón Cambiar Tema
+  const themeBtn = modal.querySelector('#theme-toggle');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const current = localStorage.getItem('theme') || THEME_CONFIG.defaultTheme;
+      const idx = THEME_CONFIG.themes.indexOf(current);
+      const next = THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
+
+      localStorage.setItem('theme', next);
+      window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
+
+      if (auth.currentUser) {
+        setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
+          theme: next,
+          lastUpdated: serverTimestamp()
+        }, { merge: true }).catch(err => console.error("Error guardando tema:", err));
+      }
+    });
+  }
+
+  // 4. Botón Limpiar Caché
+  const clearCacheBtn = modal.querySelector('#clear-cache');
+  if (clearCacheBtn) {
+    clearCacheBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const originalText = clearCacheBtn.textContent;
+      clearCacheBtn.textContent = 'Limpiando...';
+      clearCacheBtn.disabled = true;
+
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+        }
+        
+        clearCacheBtn.textContent = '¡Listo!';
+        setTimeout(() => window.location.reload(), 1000);
+      } catch (error) {
+        console.error('Error al limpiar caché:', error);
+        clearCacheBtn.textContent = 'Error';
+        setTimeout(() => {
+          clearCacheBtn.textContent = originalText;
+          clearCacheBtn.disabled = false;
+        }, 2000);
+      }
+    });
+  }
+
+  // 5. Botón Exportar Datos (Tu lógica original con stopPropagation añadido)
   const exportButton = modal.querySelector('#export-data');
   if (exportButton) {
     exportButton.addEventListener('click', async (e) => {
       e.preventDefault();
-      e.stopPropagation(); 
+      e.stopPropagation();
       const originalText = exportButton.textContent;
       
       try {
@@ -231,6 +304,9 @@ const btnLogin = document.getElementById('btn-login');
 if (btnLogin) {
   const handleClickOutside = (event) => {
     const modal = document.querySelector('.logout-modal');
+    if (event.target.closest('#config')) {
+      return; 
+    }
     if (modal && !modal.contains(event.target) && !btnLogin.contains(event.target)) {
       modal.classList.remove('show');
       document.removeEventListener('click', handleClickOutside);
@@ -238,6 +314,9 @@ if (btnLogin) {
   };
 
   btnLogin.addEventListener('click', (e) => {
+    if (e.target.closest('.logout-modal')) {
+      return; 
+    }
     const modal = document.querySelector('.logout-modal');
     if (!modal) return;
 
