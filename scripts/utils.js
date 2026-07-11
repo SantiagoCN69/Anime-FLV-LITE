@@ -23,15 +23,22 @@ cards.forEach(card => {
 // Manejar el scroll para el efecto del header
 const header = document.querySelector('header');
 const sidebar = document.querySelector('.sidebar');
+const indexpagination = document.querySelector('#indexpagination');
 const scrollOffset = 30;
 
 const handleScroll = () => {
   if (window.scrollY > scrollOffset) {
     header.classList.add('scrolled');
     sidebar.classList.add('scrolled');
+    if (indexpagination) {
+      indexpagination.classList.add('scrolled');
+    }
   } else {
     header.classList.remove('scrolled');
     sidebar.classList.remove('scrolled');
+    if (indexpagination) {
+      indexpagination.classList.remove('scrolled');
+    }
   }
 };
 

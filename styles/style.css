@@ -563,165 +563,256 @@ header.search-active .logout-modal {
   #btn-lab {display: none;}
   #btn-directorio2 {display: none;}
 }
-#indexpagination:not(.fixed) {
-  top: 88px;
-}
+/* ================= BASE ================= */
 #indexpagination {
-  will-change: transform, opacity;
   position: absolute;
-  z-index: 9;
-  gap: 10px;
-  padding-block: 1.5rem;
-  padding-inline: .3rem;
-  margin-inline: auto;
   left: 50%;
   transform: translateX(-50%);
-  width: 98%;
+  z-index: 9;
+
+  width: 100%;
+  margin-inline: auto;
+  padding: 1.5rem 1rem;
+  gap: 10px;
+
   overflow-x: auto;
-  -ms-overflow-style: none; 
-  scrollbar-width: none; 
-  &::-webkit-scrollbar {
-  display: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  transition: backdrop-filter .3s, background-color .3s, border .3s;
+  will-change: transform, opacity;
 }
-button {
-  will-change: transform;
-  border: 1px solid transparent;
-  font-size: 1rem;
-  background-color: var(--p); 
+
+#indexpagination::-webkit-scrollbar { display: none; }
+
+#indexpagination span { pointer-events: none; }
+
+/* BOTONES BASE */
+#indexpagination button {
   display: flex;
   align-items: center;
   gap: 5px;
-  position: relative;
-  color: var(--t1);
+
   padding: 10px;
-  white-space: nowrap;
   border-radius: 18px;
+  border: 1px solid transparent;
+
+  font-size: 1rem;
+  color: var(--t1);
+  background-color: var(--p);
+
+  position: relative;
+  white-space: nowrap;
+
   transition: transform .3s;
-  &.active-menu-item {
-    background: none;
-  }
-  &:active {
-    transform: scale(.95);
-  }
-  svg {
+  will-change: transform;
+}
+
+#indexpagination button:active {
+  transform: scale(.95);
+}
+
+#indexpagination button svg {
   width: 20px;
   height: 20px;
-
-  }
-  }
-  span {
-    pointer-events: none;
-  }
-}
-#indexpagination.fixed {
-  padding: 10px;
-  gap: 0px;
-  justify-content: center;
-  background-color: rgba(var(--bgti), .3);
-  border-radius: 30px;
-  position: fixed;
-  bottom: 14px;
-  left: 50%; 
-  z-index: 8;
-  animation: aparecer2 .3s forwards;
-  width:calc(100% - 1rem);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  button {
-    padding: 5px 0px;
-    flex: 1;
-    gap: 3px;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: .8rem;
-    background: none;
-    width: fit-content;
-    height:60px;
-    transition: padding .3s, transform .3s;
-    &.active-menu-item {
-      padding: 5px 10px;
-    }
-  }
-
-}
-#indexpagination.fixed::before, #indexpagination.fixed::after {
-  content: "";
-  position: absolute;
-  border-radius: inherit;
-  inset: 0;
- z-index: -1;
- padding: 1px;
-
- background-image: conic-gradient(from 100deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: destination-out;
-  mask-composite: exclude;
-  filter: brightness(1.2);
-}
-#indexpagination.fixed::before {
-  background-image: conic-gradient(from 280deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57% 100%);
-}
-#indexpagination.fixed span:nth-of-type(2) {
-  display: none;
 }
 
-#indexpagination.fixed .menu-item.active-menu-item::after {
-  border-radius: 30px !important;
-  border: none !important;
-  background-color: rgba(var(--bgti), .2);
-  box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
-}
-
-main {
-  transition: padding-top .3s;
-}
+/* ACTIVO BASE */
 #indexpagination .menu-item.active-menu-item {
   color: var(--btn);
-  path {
-    stroke: var(--btn);
-  }
 }
+
+#indexpagination .menu-item.active-menu-item path {
+  stroke: var(--btn);
+}
+
 #indexpagination .menu-item.active-menu-item::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: calc(100% - 1px);
   width: calc(100% - 1px);
+  height: calc(100% - 1px);
+
   border-radius: 18px;
   border: 1px solid var(--btn);
   background-color: var(--p);
-  padding: 2px;
   z-index: -2;
+
   animation: aparecer .3s forwards;
 }
 
-#indexpagination.fixed ~ main {
+/* ================= TOP ================= */
+#indexpagination.top {
+  top: 88px;
+  transition: backdrop-filter 0.1s, background-color 0.1s, border 0.1s;
+}
+
+/* ================= FLOATING ================= */
+#indexpagination.floating {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+
+  width: calc(100% - 1rem);
+  padding: 10px;
+  gap: 0;
+  justify-content: center;
+
+  border-radius: 30px;
+  background-color: rgba(var(--bgti), .3);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  z-index: 8;
+  animation: aparecer2 .3s forwards;
+}
+
+/* botones floating */
+#indexpagination.floating button {
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 60px;
+  width: fit-content;
+
+  padding: 5px 0;
+  gap: 3px;
+
+  font-size: .8rem;
+  border-radius: 20px;
+  background: none;
+
+  transition: padding .3s, transform .3s;
+}
+
+#indexpagination.floating button.active-menu-item {
+  padding: 5px 10px;
+}
+
+/* efectos floating */
+#indexpagination.floating::before,
+#indexpagination.floating::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  z-index: -1;
+
+  background-image: conic-gradient(from 100deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57%);
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+
+  filter: brightness(1.2);
+}
+
+#indexpagination.floating::before {
+  background-image: conic-gradient(from 280deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57%);
+}
+
+#indexpagination.floating span:nth-of-type(2) {
+  display: none;
+}
+
+#indexpagination.floating .menu-item.active-menu-item::after {
+  border: none;
+  border-radius: 30px;
+  background-color: rgba(var(--bgti), .2);
+  box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
+}
+
+/* ================= BOTTOM (YouTube) ================= */
+#indexpagination.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 100%;
+  padding: 8px 5px;
+  gap: 0;
+  justify-content: space-around;
+
+  background-color: var(--b);
+  border-top: 1px solid rgba(var(--bgt), .1);
+
+  animation: aparecer2 .25s ease;
+}
+
+/* botones bottom */
+#indexpagination.bottom button {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 0;
+  gap: 2px;
+
+  font-size: .75rem;
+  border-radius: 0;
+  background: none;
+}
+
+#indexpagination.bottom button svg {
+  width: 22px;
+  height: 22px;
+}
+
+#indexpagination.bottom .menu-item.active-menu-item::after {
+  display: none;
+}
+
+/* ================= LAYOUT ================= */
+
+#indexpagination.floating ~ main {
   margin-bottom: 6rem;
 }
+
+#indexpagination.bottom ~ main {
+  margin-bottom: 70px;
+}
+
+@media (max-width: 600px) {
+  #indexpagination.top ~ main {
+    padding-top: calc(90px - 1.5rem);
+  }
+}
+
+/* ================= ANIMACIONES ================= */
 @keyframes aparecer2 {
   from {
-    transform: translate(-50%, 100%) scale(0.8);
+    transform: translate(-50%, 100%) scale(.8);
     opacity: 0;
   }
   to {
-    transform: translate(-50%, 0%) scale(1);
+    transform: translate(-50%, 0) scale(1);
     opacity: 1;
   }
 }
 
 @keyframes aparecer {
-  0% {opacity: 0; transform: translate(-50%, -50%) scale(.9);}
-  100% {opacity: 1; transform: translate(-50%, -50%) scale(1);}
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 /* Estructura principal */
@@ -732,13 +823,8 @@ main {
   margin-inline: auto;
   width: 100%;
   position: relative;
+  transition: padding-top .3s;
 }
-@media screen and (max-width: 600px) {
-  #indexpagination:not(.fixed) ~ main {
-    padding-top: calc(90px - 1.5rem);
-  }
-}
-
 /* Contenido principal */
 .content-section {
   margin-top:calc(88px + 1.5rem) !important;

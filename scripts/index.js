@@ -911,14 +911,44 @@ mostrarSeccionDesdesearch = function() {
 
 const indexpagination = document.getElementById('indexpagination');
 
+
+
+const NAV_POSITIONS = {
+  TOP: 'top',
+  BOTTOM: 'bottom',
+  FLOATING: 'floating'
+};
+
+// toma primero localStorage, si no, usa la clase del HTML
+let currentPosition =
+  localStorage.getItem('indexpaginationPosition') ||
+  [...indexpagination.classList].find(cls =>
+    Object.values(NAV_POSITIONS).includes(cls)
+  ) ||
+  NAV_POSITIONS.TOP;
+
+function applyNavigationPosition() {
+  indexpagination.classList.remove('top', 'bottom', 'floating', 'fixed'); // 👈 importante
+
+  indexpagination.classList.add(currentPosition);
+}
+
+// aplicar al iniciar
+applyNavigationPosition();
+
+// cambiar modo al hacer click en config
 document.addEventListener('click', (e) => {
   if (e.target.closest('#config')) {
-    if (window.innerWidth <= 600) {
-      indexpagination.classList.toggle('fixed');
-      localStorage.setItem(
-        'indexpaginationFixed',
-        indexpagination.classList.contains('fixed')
-      );
+
+    if (currentPosition === NAV_POSITIONS.TOP) {
+      currentPosition = NAV_POSITIONS.BOTTOM;
+    } else if (currentPosition === NAV_POSITIONS.BOTTOM) {
+      currentPosition = NAV_POSITIONS.FLOATING;
+    } else {
+      currentPosition = NAV_POSITIONS.TOP;
     }
+
+    localStorage.setItem('indexpaginationPosition', currentPosition);
+    applyNavigationPosition();
   }
 });
