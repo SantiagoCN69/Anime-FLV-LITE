@@ -753,18 +753,12 @@ function centrarElementoEnVista(seccionId, smooth = true) {
 function cerrarSidebar() {
   const sidebar = document.querySelector(".sidebar");
   const menuBtn = document.getElementById("menu-toggle");
-  const overlay = document.querySelector(".overlay");
 
   sidebar.classList.remove("active");
   menuBtn.classList.remove("active");
-  overlay.classList.remove("active");
 
   document.body.style.overflow = "";
 }
-
-document.querySelector(".overlay").addEventListener("click", () => {
-  cerrarSidebar();
-});
 
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menu-toggle");
@@ -784,7 +778,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.overflow = "";
     });
   });
-  
   let touchStartX = 0;
   let touchEndX = 0;
   
@@ -794,8 +787,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dist > 50) {
         sidebar.classList.remove("active")
         menuBtn.classList.remove("active")
-        document.body.style.overflow = "";
-        document.querySelector(".overlay").classList.remove("active");
       }
     }
   };
@@ -883,7 +874,6 @@ mostrarSeccionDesdesearch = function() {
       sidebar.classList.add('active');
       menuBtn.classList.add('active');
       document.body.style.overflow = "hidden";
-      document.querySelector(".overlay").classList.add("active");
     }
   }
 
