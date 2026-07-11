@@ -576,15 +576,14 @@ header.search-active .logout-modal {
   gap: 10px;
 
   overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  scrollbar-width: none; /* Firefox */
 
-  transition: backdrop-filter .3s, background-color .3s, border .3s;
+  /* Animar 'border-color' es mejor para el rendimiento que animar 'border' completo */
+  transition: backdrop-filter .3s, background-color .3s, border-color .3s;
   will-change: transform, opacity;
 }
 
-#indexpagination::-webkit-scrollbar { display: none; }
-
+#indexpagination::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 #indexpagination span { pointer-events: none; }
 
 /* BOTONES BASE */
@@ -604,38 +603,27 @@ header.search-active .logout-modal {
   position: relative;
   white-space: nowrap;
 
-  transition: transform .3s;
+  /* Centralizamos las transiciones aquí (incluyendo la del padding de .floating) */
+  transition: transform .3s, padding .3s;
   will-change: transform;
 }
 
-#indexpagination button:active {
-  transform: scale(.95);
-}
-
-#indexpagination button svg {
-  width: 20px;
-  height: 20px;
-}
+#indexpagination button:active { transform: scale(.95); }
+#indexpagination button svg { width: 20px; height: 20px; }
 
 /* ACTIVO BASE */
-#indexpagination .menu-item.active-menu-item {
-  color: var(--btn);
-}
+#indexpagination .active-menu-item { color: var(--btn); }
+#indexpagination .active-menu-item path { stroke: var(--btn); }
 
-#indexpagination .menu-item.active-menu-item path {
-  stroke: var(--btn);
-}
-
-#indexpagination .menu-item.active-menu-item::after {
+#indexpagination .active-menu-item::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   width: calc(100% - 1px);
   height: calc(100% - 1px);
 
-  border-radius: 18px;
+  border-radius: inherit; /* Hereda los 18px del botón automáticamente */
   border: 1px solid var(--btn);
   background-color: var(--p);
   z-index: -2;
@@ -646,15 +634,15 @@ header.search-active .logout-modal {
 /* ================= TOP ================= */
 #indexpagination.top {
   top: 88px;
-  transition: backdrop-filter 0.1s, background-color 0.1s, border 0.1s;
+  transition-duration: 0.1s; /* Sobrescribe solo la duración en lugar de repetir las propiedades */
 }
 
 /* ================= FLOATING ================= */
 #indexpagination.floating {
   position: fixed;
   bottom: 14px;
-  left: 50%;
-
+  /* left y transform ya se heredan del contenedor base */
+  
   width: calc(100% - 1rem);
   padding: 10px;
   gap: 0;
@@ -666,35 +654,36 @@ header.search-active .logout-modal {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  z-index: 8;
   animation: aparecer2 .3s forwards;
 }
 
-/* botones floating */
+/* Botones floating */
 #indexpagination.floating button {
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
 
   height: 60px;
   width: fit-content;
-
   padding: 5px 0;
   gap: 3px;
 
   font-size: .8rem;
   border-radius: 20px;
   background: none;
-
-  transition: padding .3s, transform .3s;
 }
 
-#indexpagination.floating button.active-menu-item {
-  padding: 5px 10px;
+#indexpagination.floating button.active-menu-item { padding: 5px 10px; }
+#indexpagination.floating span:nth-of-type(2) { display: none; }
+
+#indexpagination.floating .active-menu-item::after {
+  border: none;
+  border-radius: 30px;
+  background-color: rgba(var(--bgti), .2);
+  box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
 }
 
-/* efectos floating */
+/* Efectos floating: unificamos before y after */
 #indexpagination.floating::before,
 #indexpagination.floating::after {
   content: "";
@@ -704,43 +693,28 @@ header.search-active .logout-modal {
   border-radius: inherit;
   z-index: -1;
 
-  background-image: conic-gradient(from 100deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57%);
-
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
-
+  
   filter: brightness(1.2);
+}
+
+#indexpagination.floating::after {
+  background-image: conic-gradient(from 100deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57%);
 }
 
 #indexpagination.floating::before {
   background-image: conic-gradient(from 280deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57%);
 }
 
-#indexpagination.floating span:nth-of-type(2) {
-  display: none;
-}
-
-#indexpagination.floating .menu-item.active-menu-item::after {
-  border: none;
-  border-radius: 30px;
-  background-color: rgba(var(--bgti), .2);
-  box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
-}
-
 /* ================= BOTTOM (YouTube) ================= */
 #indexpagination.bottom {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
+  /* left y transform ya se heredan del contenedor base */
+  
   width: 100%;
   padding: 8px 5px;
   gap: 0;
@@ -752,39 +726,25 @@ header.search-active .logout-modal {
   animation: aparecer2 .25s ease;
 }
 
-/* botones bottom */
+/* Botones bottom */
 #indexpagination.bottom button {
   flex: 1;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
 
   padding: 6px 0;
   gap: 2px;
-
   font-size: .75rem;
   border-radius: 0;
   background: none;
 }
 
-#indexpagination.bottom button svg {
-  width: 22px;
-  height: 22px;
-}
-
-#indexpagination.bottom .menu-item.active-menu-item::after {
-  display: none;
-}
+#indexpagination.bottom button svg { width: 22px; height: 22px; }
+#indexpagination.bottom .active-menu-item::after { display: none; }
 
 /* ================= LAYOUT ================= */
-
-#indexpagination.floating ~ main {
-  margin-bottom: 6rem;
-}
-
-#indexpagination.bottom ~ main {
-  margin-bottom: 70px;
-}
+#indexpagination.floating ~ main { margin-bottom: 6rem; }
+#indexpagination.bottom ~ main { margin-bottom: 70px; }
 
 @media (max-width: 600px) {
   #indexpagination.top ~ main {
@@ -799,7 +759,7 @@ header.search-active .logout-modal {
     opacity: 0;
   }
   to {
-    transform: translate(-50%, 0) scale(1);
+    transform: translate(-50%, 0) scale(1); /* Mantiene el translateX(-50%) original */
     opacity: 1;
   }
 }
