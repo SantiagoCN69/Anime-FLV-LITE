@@ -1087,7 +1087,6 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   cursor: pointer;
   text-align: center;
-  height: fit-content;
   opacity: 0;
   transform: translate(30px, 30px) scale(.9);
   transition: opacity 0.4s ease, transform 0.4s ease;
