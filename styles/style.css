@@ -745,9 +745,9 @@ header.search-active .logout-modal {
 #indexpagination.bottom ~ main { margin-bottom: 70px; }
 
 @media (max-width: 600px) {
-  #indexpagination.top ~ main {
-    padding-top: calc(90px - 1.5rem);
-  }
+  #indexpagination.floating ~ main { margin-bottom: 6rem; }
+  #indexpagination.bottom ~ main { margin-bottom: 70px; }
+  #indexpagination.top ~ main {padding-top: calc(90px - 1.5rem);}
 }
 
 /* ================= ANIMACIONES ================= */
