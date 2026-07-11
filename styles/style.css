@@ -684,7 +684,6 @@ main {
 }
 #indexpagination .menu-item.active-menu-item {
   color: var(--btn);
-  font-weight: bold;
   path {
     stroke: var(--btn);
   }
