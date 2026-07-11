@@ -867,7 +867,7 @@ justify-content: space-between;
   flex: 1;
   background-color: var(--p);
   color: var(--t2);
-  border: 1px solid var(--br);
+  border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   cursor: pointer;
@@ -883,7 +883,6 @@ justify-content: space-between;
 
 .btn-day.active {
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-  border-color: var(--t1);
   color: var(--t1);
 }
 
