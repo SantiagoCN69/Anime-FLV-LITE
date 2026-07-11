@@ -507,7 +507,7 @@ header.search-active .logout-modal {
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
-  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease;
+  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease, height 0.3s ease, padding-bottom 0.3s ease;
 }
 
 @media screen and (max-width: 600px) {
@@ -696,7 +696,7 @@ header.search-active .logout-modal {
   padding: 8px 5px;
   gap: 0;
   justify-content: space-around;
-  background-color: var(--b);
+  background-color: var(--p);
   border-top: 1px solid rgba(var(--bgt), .1);
   animation: aparecer2 .25s ease;
 }
@@ -722,6 +722,9 @@ header.search-active .logout-modal {
   #indexpagination.floating ~ main { margin-bottom: 6rem; }
   #indexpagination.bottom ~ main { margin-bottom: 70px; }
   #indexpagination.top ~ main {padding-top: calc(90px - 1.5rem);}
+  #indexpagination.bottom ~ .sidebar {height: calc(100vh - 88px - 69px);}
+  #indexpagination.floating ~ .sidebar {padding-bottom: 6rem;}
+  #indexpagination.floating, #indexpagination.bottom {z-index: 1000;}
 }
 
 /* ================= ANIMACIONES ================= */
@@ -996,9 +999,7 @@ section.content-section h2:first-of-type::after {
 .continuar-viendo {
   border-top: 1px solid var(--br);
   height: auto;
-  margin-bottom: 2rem;
-  padding-top: 1rem;
-  padding-inline: 1rem;
+  padding: 1rem 1rem 2rem 1rem;
 }
 #ultimos-caps-viendo {
   margin-top: 1rem;
