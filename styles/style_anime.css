@@ -49,10 +49,6 @@ body::after {
   z-index: -1;
   pointer-events: none;
 }
-header {
-  padding-left: calc(2rem - 9.5px);
-  justify-content: space-between;
-}
 
 #btn-volver {
   z-index: 1;
