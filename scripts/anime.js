@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards, aplicarViewTransition } from "./utils.js";
 import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from "./ai-recommendations.js";
@@ -400,49 +400,83 @@ function mostrarOverlayCapitulosCompletados() {
 }
 
 async function crearBotonesEpisodios(anime) {
-  capContenedor.innerHTML = '';
-  const episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
-  const vistos = await obtenerCapitulosVistos(id) || [];
-  const fragment = document.createDocumentFragment();
-  episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
-  capContenedor.appendChild(fragment);
+    capContenedor.innerHTML = '';
+    const episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
+    
+    // 1. Obtenemos los vistos originales
+    let vistosOriginales = await obtenerCapitulosVistos(id) || [];
+    
+    // 2. Creamos un Set con los números de episodios que SÍ existen para validación rápida
+    const numerosValidos = new Set(episodios.map(ep => ep.number));
+    
+    // 3. Filtramos: solo dejamos los que existen en el Set
+    const vistos = vistosOriginales.filter(num => numerosValidos.has(num));
 
-  if (initLoadingCap) initLoadingCap.style.display = 'none';
-  if (episodios.length > 0) {
-    actualizarProgresoCapitulos(episodios.length, vistos);
-  }
+    // 4. (Opcional pero recomendado) Si hubo cambios, actualiza en Firebase
+    if (vistos.length !== vistosOriginales.length) {
+        console.log("Se detectaron episodios antiguos o inválidos, limpiando...");
+        // Reemplaza 'actualizarCapitulosVistos' por el nombre real de tu función de guardado
+        await actualizarCapitulosVistos(id, vistos); 
+    }
 
-  capContenedor.classList.add("cargado");
-  capContenedor.style.setProperty("--caps", episodios.length);
+    const fragment = document.createDocumentFragment();
+    episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
+    capContenedor.appendChild(fragment);
 
-const hacerScroll = () => {
-    const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
-    if (!primerNoVisto && episodios.length > 1) {
-      mostrarOverlayCapitulosCompletados();
+    if (initLoadingCap) initLoadingCap.style.display = 'none';
+    if (episodios.length > 0) {
+        actualizarProgresoCapitulos(episodios.length, vistos);
+    }
+
+    capContenedor.classList.add("cargado");
+    capContenedor.style.setProperty("--caps", episodios.length);
+
+    const hacerScroll = () => {
+        const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
+        if (!primerNoVisto && episodios.length > 1) {
+            mostrarOverlayCapitulosCompletados();
+            return;
+        }
+
+        const target = primerNoVisto.closest("li");
+        if (!target) return;
+
+        capContenedor.scrollTo({
+            left: target.offsetLeft
+        });
+    };
+
+    capContenedor.addEventListener(
+        "transitionend",
+        function handler(e) {
+            if (e.propertyName !== "height") return;
+            capContenedor.removeEventListener("transitionend", handler);
+            requestAnimationFrame(hacerScroll);
+        },
+        { once: true }
+    );
+}
+async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
+  try {
+    const user = localStorage.getItem("userID");
+    if (!user) {
+      console.warn("No hay usuario autenticado.");
       return;
     }
 
-    const target = primerNoVisto.closest("li");
-    if (!target) return;
-
-    capContenedor.scrollTo({
-        left: target.offsetLeft
+    const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
+    
+    // Usamos updateDoc para actualizar solo el array de episodiosVistos
+    // manteniendo intactos el 'titulo' y 'fechaAgregado' que ya existen.
+    await updateDoc(ref, {
+      episodiosVistos: episodiosLimpios
     });
-};
-
-capContenedor.addEventListener(
-    "transitionend",
-    function handler(e) {
-        if (e.propertyName !== "height") return;
-
-        capContenedor.removeEventListener("transitionend", handler);
-
-        requestAnimationFrame(hacerScroll);
-    },
-    { once: true }
-);
+    
+    console.log("Base de datos limpia: episodios inválidos eliminados con éxito.");
+  } catch (error) {
+    console.error("Error al limpiar los capítulos en Firestore:", error);
+  }
 }
-
 capContenedor.addEventListener('wheel', e => {
   e.preventDefault();
 
