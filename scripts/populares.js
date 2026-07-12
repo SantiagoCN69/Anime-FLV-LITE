@@ -99,19 +99,32 @@ async function cargarPopulares() {
     if (!container) return;
     
     container.innerHTML = '<span class="span-carga">Cargando animes populares...</div>';
-		let url = `https://api.jikan.moe/v4/top/anime?limit=24&page=${currentPage}`;
-		if (type) url += `&type=${type}`;
-		if (filters) url += `&filter=${filters}`;
+		let url = 'https://api.jikan.moe/v4/top/anime';
+		const params = new URLSearchParams();
+		if (type) params.append('type', type);
+		if (filters) params.append('filter', filters);
+		if (filters !== 'upcoming' && type !== 'ova' && type !== 'ona') {
+			params.append('page', currentPage);
+		}
+		url += '?' + params.toString();
 		const response = await fetch(url);
 		if (!response.ok) {
       console.error("Error al cargar los datos:", response.status);
+      let errorMessage = 'Error al cargar los animes.';
+      if (response.status === 504) {
+        errorMessage = 'La API no da respuestas válidas. Intenta más tarde.';
+      } else if (response.status === 429) {
+        errorMessage = 'Has hecho demasiadas solicitudes. Espera un momento antes de intentar de nuevo.';
+      } else if (response.status >= 500) {
+        errorMessage = 'Error en el servidor de la API. Intenta más tarde.';
+      } else if (response.status === 404) {
+        errorMessage = 'No se encontraron resultados.';
+      }
+      container.innerHTML = `<span class="span-carga">${errorMessage}</span>`;
+      return;
 		}
 		const data = await response.json();
-    const animesFiltrados = data.data.filter(anime =>
-      (anime.type ?? '').toLowerCase() !== 'ona' && (anime.type ?? '').toLowerCase() !== 'music'
-    );
-    
-    const animes = animesFiltrados || [];
+    const animes = data.data || [];
 
     container.innerHTML = '';
     
@@ -127,15 +140,19 @@ async function cargarPopulares() {
       observerAnimeCards();
     }    });
     
-    updatePagination(data.pagination);
-    centrarPaginacion();
+    if (filters !== 'upcoming' && type !== 'ova' && type !== 'ona') {
+      updatePagination(data.pagination);
+      centrarPaginacion();
+    } else {
+      document.getElementById('pagination-populares').innerHTML = '';
+    }
     
     
   } catch (error) {
     console.error('Error al cargar populares:', error);
     const container = document.getElementById('populares');
     if (container) {
-      container.innerHTML = '<span class="span-carga">Error al cargar los animes. Intenta recargar la página.</span>';
+      container.innerHTML = '<span class="span-carga">Error al cargar los animes. Api en mantenimiento.</span>';
     }
   }
 
@@ -152,7 +169,7 @@ btns.forEach(btn => {
     });
 
 // Función para manejar los botones de filtro
-function setupFilterButtons(buttonsSelector, targetButtonId) {
+function setupFilterButtons(buttonsSelector, targetButtonId, filterType) {
     const buttons = document.querySelectorAll(buttonsSelector);
     const targetButton = document.getElementById(targetButtonId);
     
@@ -168,19 +185,20 @@ function setupFilterButtons(buttonsSelector, targetButtonId) {
                 }
             }
             
-            if (buttonsSelector.includes('type-section')) {
-                type = btn.dataset.type;
-            } else {
-                filters = btn.dataset.type;
+            if (filterType === 'type') {
+                type = btn.dataset.type || null;
+            } else if (filterType === 'filter') {
+                filters = btn.dataset.type || null;
             }
             
+            currentPage = 1;
             cargarPopulares();
         });
     });
 }
 
-setupFilterButtons('#nav-populares-type-section > button', 'btn-populares-filtro-type');
-setupFilterButtons('#nav-populares-filtro-section > button', 'btn-populares-filtro-filters');
+setupFilterButtons('#nav-populares-type-section > button', 'btn-populares-filtro-type', 'type');
+setupFilterButtons('#nav-populares-filtro-section > button', 'btn-populares-filtro-filters', 'filter');
 
 const btnAlert = document.getElementById('btn-populares-alert');
 const modal = document.getElementById('modal-populares');
