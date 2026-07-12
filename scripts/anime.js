@@ -433,8 +433,12 @@ async function crearBotonesEpisodios(anime) {
 
     const hacerScroll = () => {
         const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
-        if (!primerNoVisto && episodios.length > 1) {
+
+    // 🔴 si no hay ninguno, salimos SIEMPRE
+    if (!primerNoVisto) {
+        if (episodios.length > 1) {
             mostrarOverlayCapitulosCompletados();
+        }
             return;
         }
 
@@ -445,7 +449,6 @@ async function crearBotonesEpisodios(anime) {
             left: target.offsetLeft
         });
     };
-
     capContenedor.addEventListener(
         "transitionend",
         function handler(e) {
