@@ -204,10 +204,6 @@ body::after {
   align-items: center;
   justify-content: center;
   position: relative;
-  &:hover {
-    filter: brightness(1.2);
-    box-shadow: 3px 3px 20px #f222;
-  }
 }
 
 #btn-fav.favorito {
@@ -299,49 +295,32 @@ body::after {
   color:var(--t1);
   z-index: 1;
 }
-#status {
-  width: fit-content;
-  padding: 5px 10px;
-  border-radius: 12px;
-  font-size: .8rem;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  color: #ff2929;
-  background-color: #ff29295b;
-}
-.en-emision {
-  color: #63E6BE;
-  background-color: #63e6bf5b;
-}
-.estrenando {
-  color: #e6dd63;
-  background-color: #e6dd635b;
-}
-#anime-proximo-estrenar {
-  height: 100%;
+#info1 {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 1rem auto;
-  background: linear-gradient(135deg, #ff6b6b22, #ffb34722);
-  border: 1px solid #ffb347;
-  color: #fff;
-  padding: 16px 20px;
-  border-radius: 14px;
-  font-size: 15px;
-  text-align: center;
-  max-width: 450px;
-  box-shadow: 0 0 25px rgba(255, 179, 71, 0.25);
+  gap: 10px;
 }
-#status img {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
+#info1 p {
+  font-size: .9rem;
+  font-weight: bold;
 }
-#titulocargando, #ratingcargando, .genre-link-cargando, #portadacarga, #statuscargando {
+#info1 p:nth-child(3) {
+  position: relative;
+}
+#info1 img {
+  position: absolute;
+  top: -3px;
+  right: -10px;
+  width: 10px;
+  height: 10px;
+  animation: brightness 2s infinite;
+}
+@keyframes brightness {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.5); }
+  100% { filter: brightness(1); }
+}
+#titulocargando, #ratingcargando, .genre-link-cargando, #portadacarga, #statuscargando, #anocargando, #categoriacargando {
   display: inline-block;
   width: 230px;
   height: 1lh;
@@ -354,8 +333,9 @@ body::after {
 #ratingcargando {
   width: 30px;
 } 
-#statuscargando {
-  width: 100px;
+
+#anocargando, #categoriacargando, #statuscargando {
+  width: 70px;
   height: 15px;
   margin: 0;
 }
@@ -367,7 +347,7 @@ body::after {
   height: calc(1lh + 10px);
 }
 /* Shimmer diagonal */
-#titulocargando::before, #ratingcargando::before, .genre-link-cargando::before, #portadacarga::before, #statuscargando::before {
+#titulocargando::before, #ratingcargando::before, .genre-link-cargando::before, #portadacarga::before, #statuscargando::before, #anocargando::before, #categoriacargando::before {
   content: "";
   position: absolute;
   top: 0;
@@ -833,10 +813,7 @@ position: relative;
 width: 100%;
 height: auto;
 }
-.botones {
-justify-content: center;
-}
-.genero {
+.botones, .genero, #info1 {
 justify-content: center;
 }
 #btn-estado {
@@ -858,6 +835,7 @@ padding-bottom: 1px;
 }
 .anime-title {
 font-size: 1.3rem;
+margin-inline: auto;
 max-width: 100%;
 }
 .anime-rating {

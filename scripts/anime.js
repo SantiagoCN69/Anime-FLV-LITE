@@ -76,6 +76,7 @@ const capContenedor = document.getElementById("capitulos");
 const filtroCapitulo = document.getElementById("filtro-capitulo");
 const ratingEl = document.getElementById("rating");
 const initLoadingCap = document.getElementById("init-loading-cap");
+const info1El = document.getElementById("info1");
 
 function quitarTildesYEspacios(texto) {
   return texto
@@ -120,7 +121,6 @@ const formatTitleFromSlug = (slug) => {
 };
 
 function renderRelacionados(anime) {
-  console.log('renderRelacionados - anime:', anime);
   const relacionadosContainer = document.getElementById('animes-relacionados');
   const relacionadosSection = document.getElementById('relacionados');
   const initLoading = document.getElementById('init-loading-relacionados');
@@ -314,10 +314,38 @@ async function aplicarFondoAnime(anime) {
   }
 }
 const renderAnime = anime => {
-  anime.estado === "En emision"
-  ? (statusEl.innerHTML = `<img src="../icons/circle-solid-blue.svg">${anime.estado}`, statusEl.classList.add("en-emision"))
-  : (statusEl.innerHTML = `<img src="../icons/circle-solid.svg">${anime.estado}`, statusEl.classList.remove("en-emision"));
-
+  console.log(anime);
+  
+  // Build info1 content dynamically
+  const infoParts = [];
+  
+  // Add year
+  if (anime.startDate) {
+    const yearMatch = String(anime.startDate).match(/(\d{4})/);
+    const year = yearMatch ? yearMatch[1] : anime.startDate;
+    infoParts.push(`<p class="span-text-anime1">${year}</p>`);
+  }
+  
+  // Add category
+  if (anime.category) {
+    infoParts.push(`<p class="span-text-anime1">${anime.category}</p>`);
+  }
+  
+  // Add status with icon
+  let statusIcon;
+  if (anime.estado === "Finalizado") {
+    statusIcon = "../icons/circle-solid.svg";
+  } else if (anime.estado === "En emision") {
+    statusIcon = "../icons/circle-solid-blue.svg";
+  } else if (anime.estado === "Por estrenar") {
+    statusIcon = "../icons/circle-solid-yellow.svg";
+  } else {
+    statusIcon = "../icons/circle-solid-blue.svg";
+  }
+  infoParts.push(`<p class="span-text-anime1"><img src="${statusIcon}">${anime.estado}</p>`);
+  
+  // Join with bullet points
+  info1El.innerHTML = infoParts.join(' • ');
 
   tituloEl.textContent = anime.titulo;
   document.getElementById("portadacarga").classList.add("cargado");
@@ -331,12 +359,9 @@ const renderAnime = anime => {
     ratingEl.textContent = anime.rating + "/5";
   }
   if (anime.estado === "Por estrenar") {
-    statusEl.innerHTML = `<img src="../icons/circle-solid-yellow.svg">${anime.estado}`;
-    statusEl.classList.add("estrenando");
     document.getElementsByClassName("anime-container3")[0].innerHTML = "<span id='anime-proximo-estrenar'>Próximamente en estreno. Los capítulos aún no están disponibles.</span>";
     return;
   } else {
-    statusEl.classList.remove("estrenando");
     const mensajeProximoEstrenar = document.getElementById('anime-proximo-estrenar');
     if (mensajeProximoEstrenar) {
       mensajeProximoEstrenar.remove();
@@ -696,7 +721,9 @@ function compararDatos(a, b) {
     ['banner', strEqual],
     ['descripcion', strEqual],
     ['rating', strEqual],
-    ['estado', strEqual]
+    ['estado', strEqual],
+    ['category', strEqual],
+    ['startDate', strEqual]
   ];
 
   if (camposBasicos.some(([campo, comparar]) => 
@@ -752,6 +779,8 @@ function normalizarDatosAPI(data) {
       generos: sourceData?.genres || data.genres || [],
       rating: data.rating || null,
       estado: sourceData?.status || data.status || null,
+      category: data.category || null,
+      startDate: data.startDate || null,
       episodios: (sourceData?.episodes || data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
       relacionados: (data.relations || [])
         .filter(ep => ep && ep.slug)
@@ -767,6 +796,8 @@ function normalizarDatosAPI(data) {
     generos: data.genres || [],
     rating: data.rating || null,
     estado: data.status || null,
+    category: data.category || null,
+    startDate: data.startDate || null,
     episodios: (data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
     relacionados: (data.relations || [])
       .filter(ep => ep && ep.slug)
