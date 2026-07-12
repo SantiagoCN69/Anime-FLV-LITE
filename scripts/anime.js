@@ -319,16 +319,16 @@ const renderAnime = anime => {
   // Build info1 content dynamically
   const infoParts = [];
   
+  // Add category
+  if (anime.category) {
+    infoParts.push(`<p class="span-text-anime1">${anime.category}</p>`);
+  }
+  
   // Add year
   if (anime.startDate) {
     const yearMatch = String(anime.startDate).match(/(\d{4})/);
     const year = yearMatch ? yearMatch[1] : anime.startDate;
     infoParts.push(`<p class="span-text-anime1">${year}</p>`);
-  }
-  
-  // Add category
-  if (anime.category) {
-    infoParts.push(`<p class="span-text-anime1">${anime.category}</p>`);
   }
   
   // Add status with icon
