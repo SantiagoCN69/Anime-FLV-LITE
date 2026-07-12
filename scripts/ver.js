@@ -268,7 +268,7 @@ async function manejarNoticias() {
     initLoadingNoticias.style.display = 'none';
   }
   contenedorNoticias.addEventListener('wheel', (evento) => {
-    if (evento.deltaY !== 0) {
+    if (evento.deltaY !== 0 && window.innerWidth <= 1100) {
       evento.preventDefault();
       contenedorNoticias.scrollLeft += evento.deltaY;
     }
