@@ -44,6 +44,152 @@
 }
 
  /*Directorio*/
+ /* =========================================
+   1. ESTILOS DEL FILTRO DE LETRAS (A-Z)
+   ========================================= */
+.filtro-letras {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(30, 30, 30, 0.6);
+    border-radius: 8px;
+}
+
+.btn-letra {
+    background-color: #2b2b2b;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-letra:hover {
+    background-color: #3a3a3a;
+    border-color: #e50914; /* Color rojo estilo Netflix/AnimeFLV */
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-letra.active {
+    background-color: #e50914;
+    color: #fff;
+    border-color: #e50914;
+    box-shadow: 0 4px 8px rgba(229, 9, 20, 0.4);
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   2. ESTILOS DEL DESLIZABLE DE AÑOS (SLIDER)
+   ========================================= */
+.rango-anos-container {
+    padding: 10px 15px;
+    background-color: rgba(30, 30, 30, 0.6);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.rango-anos-container label {
+    font-size: 15px;
+    color: #fff;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.rango-anos-container label span {
+    color: #e50914; /* Resaltar los números en rojo */
+}
+
+.slider-dual {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+/* Fondo de la barra (el "riel" por donde corren las bolitas) */
+.slider-dual::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 6px;
+    background-color: #444;
+    border-radius: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0;
+}
+
+/* Resetear los inputs originales y hacerlos invisibles */
+.slider-dual input[type="range"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%;
+    position: absolute;
+    background: transparent;
+    pointer-events: none; /* Desactiva clics en la barra invisible */
+    outline: none;
+    margin: 0;
+}
+
+/* =========================================
+   Estilo de las bolitas (Thumbs) - Chrome / Safari / Edge
+   ========================================= */
+.slider-dual input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background-color: #e50914;
+    cursor: pointer;
+    pointer-events: auto; /* Reactiva los clics SOLAMENTE en la bolita */
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+    border: 2px solid #fff;
+    transition: transform 0.1s ease;
+}
+
+.slider-dual input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2); /* Efecto de crecimiento al pasar el mouse */
+}
+
+.slider-dual input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.1);
+    background-color: #ff1e2a;
+}
+
+/* =========================================
+   Estilo de las bolitas (Thumbs) - Firefox
+   ========================================= */
+.slider-dual input[type="range"]::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background-color: #e50914;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+    border: 2px solid #fff;
+    transition: transform 0.1s ease;
+}
+
+.slider-dual input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
 .btn-filtro, #btn-filtrar, #btn-filtrar-av1, .btn-filtro-opcion {
   display: flex;
   align-items: center;
