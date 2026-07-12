@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directorio</title>
+<head>
+  <script>
+    window.location.href = "https://animeav1lite.netlify.app/?directorioav1";
+  </script>
+</head>
+<body>
+  <main class="anime-details" id="main-directorio-av1">
+    <div class="header-directorio">
+        <div>
+            <svg class="svg-header" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 21 21"><g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.206c0-1.3 2.5-2.741 6-2.706s6 1.553 6 2.853v10.294c0 1.3-2.5 2.853-6 2.853s-6-1.7-6-3V5.206z"/><path d="M4.5 5.5c0 1.38 2 3 6 3s6-1.637 6-3.018M4.5 10.5c0 1.38 2 3 6 3s6-1.637 6-3.018"/></g></svg>
+        <h1 class="section-title">Directorio de AnimeAV1</h1>
+        </div>
+        <button id="btn-fuente-directorio-av1" class="btn-fuente-directorios">
+            <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#fff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#fff" d="M118.656 438.656a32 32 0 0 1 0-45.248L416 96l4.48-3.776A32 32 0 0 1 461.248 96l3.712 4.48a32.064 32.064 0 0 1-3.712 40.832L218.56 384H928a32 32 0 1 1 0 64H141.248a32 32 0 0 1-22.592-9.344zM64 608a32 32 0 0 1 32-32h786.752a32 32 0 0 1 22.656 54.592L608 928l-4.48 3.776a32.064 32.064 0 0 1-40.832-49.024L805.632 640H96a32 32 0 0 1-32-32z"></path></g></svg><span>Animeav1</span></button>
+     </div>
+        <nav class="filtros">
+
+            <section class="filtro-letras" id="filtro-letras-av1">
+        <button class="btn-letra" data-letra="A">A</button>
+        <button class="btn-letra" data-letra="B">B</button>
+        <button class="btn-letra" data-letra="C">C</button>
+        <button class="btn-letra" data-letra="D">D</button>
+        <button class="btn-letra" data-letra="E">E</button>
+        <button class="btn-letra" data-letra="F">F</button>
+        <button class="btn-letra" data-letra="G">G</button>
+        <button class="btn-letra" data-letra="H">H</button>
+        <button class="btn-letra" data-letra="I">I</button>
+        <button class="btn-letra" data-letra="J">J</button>
+        <button class="btn-letra" data-letra="K">K</button>
+        <button class="btn-letra" data-letra="L">L</button>
+        <button class="btn-letra" data-letra="M">M</button>
+        <button class="btn-letra" data-letra="N">N</button>
+        <button class="btn-letra" data-letra="O">O</button>
+        <button class="btn-letra" data-letra="P">P</button>
+        <button class="btn-letra" data-letra="Q">Q</button>
+        <button class="btn-letra" data-letra="R">R</button>
+        <button class="btn-letra" data-letra="S">S</button>
+        <button class="btn-letra" data-letra="T">T</button>
+        <button class="btn-letra" data-letra="U">U</button>
+        <button class="btn-letra" data-letra="V">V</button>
+        <button class="btn-letra" data-letra="W">W</button>
+        <button class="btn-letra" data-letra="X">X</button>
+        <button class="btn-letra" data-letra="Y">Y</button>
+        <button class="btn-letra" data-letra="Z">Z</button>
+             </section>
+
+            <section class="filtro-section rango-anos-container">
+        <label style="color: white; font-weight: bold; margin-bottom: 10px; display: block;">
+            Año: <span id="ano-min-val">1990</span> - <span id="ano-max-val">2025</span>
+        </label>
+        <div class="slider-dual" style="position: relative; height: 30px; width: 100%;">
+            <input type="range" id="ano-min" min="1990" max="2025" value="1990" style="position: absolute; width: 100%; pointer-events: none;">
+            <input type="range" id="ano-max" min="1990" max="2025" value="2025" style="position: absolute; width: 100%; pointer-events: none;">
+        </div>
+            </section>
+    
+                        <section class="filtro-section">
+            <button type="button" id="btn-filtro-genero-av1" class="btn-filtro" title="Genero">Genero: <span>Todos</span></button>
+            <nav id="filtro-genero-av1" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="accion-av1">Acción 💥</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="artes-marciales-av1">Artes Marciales 🥊</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="aventura-av1">Aventura 🏞️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="carreras-av1">Carreras 🏎️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ciencia-ficcion-av1">Ciencia Ficción 🚀</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="comedia-av1">Comedia 😂</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="demencia-av1">Demencia 🤯</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="demonios-av1">Demonios 👿</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="deportes-av1">Deportes 🏀</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="drama-av1">Drama 😭</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ecchi-av1">Ecchi 🔞</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="escolares-av1">Escolares 🏫</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="espacial-av1">Espacial 🌌</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="fantasia-av1">Fantasía 🔮</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="harem-av1">Harem 👫</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="historico-av1">Histórico 🏛️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="infantil-av1">Infantil 👶</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="josei-av1">Josei 👩‍❤️‍👨</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="juegos-av1">Juegos 🎮</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="magia-av1">Magia ✨</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="mecha-av1">Mecha 🤖</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="militar-av1">Militar 🪖</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="misterio-av1">Misterio 🕵️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="musica-av1">Música 🎵</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="parodia-av1">Parodia 🤪</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="policia-av1">Policía 👮</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="psicologico-av1">Psicológico 🧠</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="recuentos-de-la-vida-av1">Recuentos de la vida 🏠</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="romance-av1">Romance ❤️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="samurai-av1">Samurai 🗡️</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="seinen-av1">Seinen 👨‍🦳</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shoujo-av1">Shoujo 👩‍🦱</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shounen-av1">Shounen 👦</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="sobrenatural-av1">Sobrenatural 👻</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="superpoderes-av1">Superpoderes 🦸</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="suspenso-av1">Suspenso 🤐</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="terror-av1">Terror 👹</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="vampiros-av1">Vampiros 🧛</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="yaoi-av1">Yaoi 👨‍❤️‍👨</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="yuri-av1">Yuri 👩‍❤️‍👩</button></li>
+                </ul>
+            </nav>
+            </section>
+
+            <style>
+    .slider-dual input[type=range]::-webkit-slider-thumb {
+        pointer-events: all;
+        position: relative;
+        z-index: 1;
+    }
+    .btn-letra { padding: 5px 10px; margin: 2px; cursor: pointer; background: #333; color: white; border: none; border-radius: 4px;}
+    .btn-letra.active { background: #e50914; font-weight: bold; }
+            </style>
+
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-tipo-av1" class="btn-filtro" title="Tipo">Tipo: <span>Todos</span></button>
+            <nav id="filtro-tipo-av1" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="tv-av1">TV</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="movie-av1">Película</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="special-av1">Especial</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ova-av1">OVA</button></li>
+                </ul>
+            </nav>
+            </section>
+
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-estado-av1" class="btn-filtro" title="Estado">Estado: <span>Todos</span></button>
+            <nav id="filtro-estado-av1" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="1-av1">En emisión</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="2-av1">Finalizado</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="3-av1">Próximamente</button></li>
+                </ul>
+            </nav>
+            </section>
+
+            <section class="filtro-section">
+            <button type="button" id="btn-filtro-orden-av1" class="btn-filtro" title="Orden">Orden: <span>Por defecto</span></button>
+            <nav id="filtro-orden-av1" class="filtro-opciones">
+                <ul>
+                    <li><button type="button" class="btn-filtro-opcion" id="default-av1">Por defecto</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="updated-av1">Actualizados</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="added-av1">Agregados</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="title-av1">Nombre A-Z</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="rating-av1">Calificación</button></li>
+                </ul>
+            </nav>
+            </section>
+
+            <section class="filtro-section">
+            <button type="button" id="btn-filtrar-av1" title="Filtrar">FILTRAR</button>
+            </section>
+        </nav>
+        <div id="resultados-av1" class="grid-animes">
+            <!-- Aquí se insertarán los resultados dinámicamente -->
+            <span id="init-loading-av1" class="span-carga">Iniciando servidores... <span id="contador-av1"></span></span>
+        </div>
+        <div id="pagination-directorio-av1" class="pagination">
+        </div>
+  </main>
+</body>

@@ -27,7 +27,7 @@ let pendientesCargados = false;
 let completadosCargados = false;
 let ultimosCapsCargados = false;
 let continuarViendoCargado = false;
-let directorioflvCargado = false;
+let directorioAV1Cargado = false;
 let directorioJkCargado = false;
 let labCargado = false;
 let popularesCargados = false;
@@ -64,7 +64,7 @@ const sectionConfig = {
   'Completados': { flag: () => completadosCargados, setFlag: () => { completadosCargados = true; }, load: () => cargarDatos(document.getElementById('completados'), doc(db, "usuarios", userID, "estados", "visto")) },
   'Ultimos-Episodios': { flag: () => ultimosCapsCargados, setFlag: () => { ultimosCapsCargados = true; }, load: () => { cargarUltimosCapitulos(); cargarhistorial(); } },
   'Continuar-viendo': { flag: () => continuarViendoCargado, setFlag: () => { continuarViendoCargado = true; }, load: () => cargarContinuarViendo() },
-  'DirectorioFLV': { flag: () => directorioflvCargado, setFlag: () => { directorioflvCargado = true; }, load: () => cargarFetch("DirectorioFLV") },
+  'DirectorioAV1': { flag: () => directorioAV1Cargado, setFlag: () => { directorioAV1Cargado = true; }, load: () => cargarFetch("DirectorioAV1") },
   'DirectorioJK': { flag: () => directorioJkCargado, setFlag: () => { directorioJkCargado = true; }, load: () => cargarFetch("DirectorioJK") },
   'Lab': { flag: () => labCargado, setFlag: () => { labCargado = true; }, load: () => cargarFetch("lab") },
   'Populares': { flag: () => popularesCargados, setFlag: () => { popularesCargados = true; }, load: () => cargarFetch("populares") },

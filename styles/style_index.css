@@ -44,7 +44,7 @@
 }
 
  /*Directorio*/
-.btn-filtro, #btn-filtrar, #btn-filtrar-flv, .btn-filtro-opcion {
+.btn-filtro, #btn-filtrar, #btn-filtrar-av1, .btn-filtro-opcion {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,7 +68,7 @@ nav.filtros {
   display: flex;
   flex:1 1 0;
 }
-.btn-filtro, #btn-filtrar, #btn-filtrar-flv {
+.btn-filtro, #btn-filtrar, #btn-filtrar-av1 {
   width: fit-content;
   cursor: pointer;
   position: relative;
@@ -92,7 +92,7 @@ nav.filtros {
 .btn-filtro img {
   width: 12px;
 }
-#btn-filtrar, #btn-filtrar-flv {
+#btn-filtrar, #btn-filtrar-av1 {
     background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
     color: var(--t1);
 }
@@ -119,12 +119,12 @@ nav.filtros {
 }
 
 @media screen and (max-width: 688px) {
-   #filtro-tipo, #filtro-tipo-flv {
+   #filtro-tipo, #filtro-tipo-av1 {
     right: 0;
   }
 }
 @media screen and (max-width: 790px) {
-   #filtro-ano, #filtro-ano-flv {
+   #filtro-ano, #filtro-ano-av1 {
     right: 0;
   }
 }
@@ -151,7 +151,7 @@ nav.filtros {
     max-width: 90vw;
   }
 }
-#filtro-genero ul, #filtro-genero-flv ul {
+#filtro-genero ul, #filtro-genero-av1 ul {
   grid-template-columns: repeat(auto-fill, 120px);
 }
 @media (max-width: 1000px) {
@@ -164,7 +164,7 @@ nav.filtros {
     right: 0;
   }
 }
-#filtro-ano ul, #filtro-ano-flv ul, #filtro-letra ul {
+#filtro-ano ul, #filtro-ano-av1 ul, #filtro-letra ul {
   grid-template-columns: repeat(auto-fill, 62px);
 }
 #btn-filtro-demografia {
@@ -194,7 +194,7 @@ nav.filtros {
   background-color: var(--btn);
 }
     
-#resultados, #resultados-flv, #populares {
+#resultados, #resultados-av1, #populares {
   position: relative;
   flex: 1;
 }

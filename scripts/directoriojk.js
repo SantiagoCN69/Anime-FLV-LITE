@@ -28,7 +28,7 @@ const filtroMenus = [
 const filtroKeys = filtroMenus.map(([_, __, key]) => key);
 
 $('btn-fuente-directorio-JK')?.addEventListener('click', () => {
-   history.replaceState(null, '', `?DirectorioFLV`);
+   history.replaceState(null, '', `?DirectorioAV1`);
    mostrarSeccionDesdesearch();
 });
 

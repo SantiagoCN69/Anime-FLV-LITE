@@ -1,20 +1,20 @@
 import { observerAnimeCards, aplicarViewTransition } from './utils.js';
 
-const valorFiltroFlv = (btn) => btn.id.replace(/-flv$/, '');
+const valorFiltroav1 = (btn) => btn.id.replace(/-av1$/, '');
 
 // constantes botones filtro
-const btnFiltroGenero = document.getElementById('btn-filtro-genero-flv');
+const btnFiltroGenero = document.getElementById('btn-filtro-genero-av1');
 
-const btnFiltroTipo = document.getElementById('btn-filtro-tipo-flv');
-const btnFiltroEstado = document.getElementById('btn-filtro-estado-flv');
-const btnFiltroOrden = document.getElementById('btn-filtro-orden-flv');
+const btnFiltroTipo = document.getElementById('btn-filtro-tipo-av1');
+const btnFiltroEstado = document.getElementById('btn-filtro-estado-av1');
+const btnFiltroOrden = document.getElementById('btn-filtro-orden-av1');
 
 // constantes filtros
-const filtroGenero = document.getElementById('filtro-genero-flv');
+const filtroGenero = document.getElementById('filtro-genero-av1');
 
-const filtroTipo = document.getElementById('filtro-tipo-flv');
-const filtroEstado = document.getElementById('filtro-estado-flv');
-const filtroOrden = document.getElementById('filtro-orden-flv');
+const filtroTipo = document.getElementById('filtro-tipo-av1');
+const filtroEstado = document.getElementById('filtro-estado-av1');
+const filtroOrden = document.getElementById('filtro-orden-av1');
 
 const filtros = [
     { btn: btnFiltroGenero, filtro: filtroGenero },
@@ -59,7 +59,7 @@ filtros.forEach(({ filtro }) => {
 });
 
 // contador 
-const contador = document.getElementById('contador-flv');
+const contador = document.getElementById('contador-av1');
 let count = 100;
 setInterval(() => {
     count--;
@@ -70,8 +70,8 @@ setInterval(() => {
 }, 230);
 
 // carga inicial 
-const initLoading = document.getElementById('init-loading-flv');
-const resultadosContainer = document.getElementById('resultados-flv');
+const initLoading = document.getElementById('init-loading-av1');
+const resultadosContainer = document.getElementById('resultados-av1');
 
 function crearAnimeCardResultados(anime) {
 console.log(anime);
@@ -104,7 +104,7 @@ console.log(anime);
 
 
 function centrarPaginacion() {
-  const paginationContainer = document.getElementById('pagination-directorio-flv');
+  const paginationContainer = document.getElementById('pagination-directorio-av1');
   const botones = paginationContainer.querySelectorAll('button');
   const botonActual = botones[currentPage - 1];
 
@@ -130,7 +130,7 @@ localStorage.removeItem("animes_cache");
 const CACHE_KEY = 'animes_cache_directorio';
 
 // Inicializar elementos del DOM
-const paginationContainer = document.getElementById('pagination-directorio-flv');
+const paginationContainer = document.getElementById('pagination-directorio-av1');
 
 let currentPage = 1;
 let totalPages = 1;
@@ -198,12 +198,12 @@ async function cargarAnimesConCache() {
     if (params.has('genre[]')) {
       const genero = params.get('genre[]');
       
-        const generoNormalizado = `${genero.replace(/\s+/g, '-')}-flv`;
+        const generoNormalizado = `${genero.replace(/\s+/g, '-')}-av1`;
         const botonGenero = document.getElementById(generoNormalizado);
         
         if (botonGenero) {
           botonGenero.classList.add('active');
-          const generosActivos = Array.from(document.querySelectorAll('#filtro-genero-flv .btn-filtro-opcion.active'));
+          const generosActivos = Array.from(document.querySelectorAll('#filtro-genero-av1 .btn-filtro-opcion.active'));
           if (generosBtn && generosBtn.querySelector('span')) {
             generosBtn.querySelector('span').textContent = generosActivos.length > 0 ? `(${generosActivos.length})` : 'Todos';
           }
@@ -309,21 +309,21 @@ async function cargarAnimesConCache() {
   }
 }
 
-const generosBtn = document.getElementById('btn-filtro-genero-flv');
-const generosOpciones = document.querySelectorAll('#filtro-genero-flv .btn-filtro-opcion');
-const btnFiltrar = document.getElementById('btn-filtrar-flv');
+const generosBtn = document.getElementById('btn-filtro-genero-av1');
+const generosOpciones = document.querySelectorAll('#filtro-genero-av1 .btn-filtro-opcion');
+const btnFiltrar = document.getElementById('btn-filtrar-av1');
 
-const anoBtn = document.getElementById('btn-filtro-ano-flv');
-const anosOpciones = document.querySelectorAll('#filtro-ano-flv .btn-filtro-opcion');
+const anoBtn = document.getElementById('btn-filtro-ano-av1');
+const anosOpciones = document.querySelectorAll('#filtro-ano-av1 .btn-filtro-opcion');
 
-const tipoBtn = document.getElementById('btn-filtro-tipo-flv');
-const tiposOpciones = document.querySelectorAll('#filtro-tipo-flv .btn-filtro-opcion');
+const tipoBtn = document.getElementById('btn-filtro-tipo-av1');
+const tiposOpciones = document.querySelectorAll('#filtro-tipo-av1 .btn-filtro-opcion');
 
-const estadoBtn = document.getElementById('btn-filtro-estado-flv');
-const estadosOpciones = document.querySelectorAll('#filtro-estado-flv .btn-filtro-opcion');
+const estadoBtn = document.getElementById('btn-filtro-estado-av1');
+const estadosOpciones = document.querySelectorAll('#filtro-estado-av1 .btn-filtro-opcion');
 
-const ordenBtn = document.getElementById('btn-filtro-orden-flv');
-const ordenesOpciones = document.querySelectorAll('#filtro-orden-flv .btn-filtro-opcion');
+const ordenBtn = document.getElementById('btn-filtro-orden-av1');
+const ordenesOpciones = document.querySelectorAll('#filtro-orden-av1 .btn-filtro-opcion');
 
 // --- Lógica del Slider Doble de Años ---
 const inputMinAno = document.getElementById('ano-min');
@@ -372,22 +372,22 @@ function actualizarLinkBusqueda() {
     }
 
     // 3. Géneros
-    const generosActivos = Array.from(generosOpciones).filter(btn => btn.classList.contains('active')).map(valorFiltroFlv);
+    const generosActivos = Array.from(generosOpciones).filter(btn => btn.classList.contains('active')).map(valorFiltroav1);
     if (generosActivos.length > 0) generosActivos.forEach(g => params.append('genre', g));
 
     // 4. Tipos
     const mapaTipos = { 'tv': 'tv', 'movie': 'pelicula', 'special': 'especial', 'ova': 'ova' };
-    const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo-flv .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaTipos[valorFiltroFlv(btn)] || valorFiltroFlv(btn));
+    const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo-av1 .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaTipos[valorFiltroav1(btn)] || valorFiltroav1(btn));
     if (tiposActivos.length > 0) tiposActivos.forEach(t => params.append('category', t));
 
     // 5. Estados
     const mapaEstados = { '1': 'emision', '2': 'finalizado', '3': 'proximamente' };
-    const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado-flv .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaEstados[valorFiltroFlv(btn)] || valorFiltroFlv(btn));
+    const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado-av1 .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaEstados[valorFiltroav1(btn)] || valorFiltroav1(btn));
     if (estadosActivos.length > 0) estadosActivos.forEach(e => params.append('status', e));
 
     // 6. Orden
     const mapaOrden = { 'default': '', 'updated': 'updated', 'added': 'added', 'title': 'title', 'rating': 'score' };
-    const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden-flv .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaOrden[valorFiltroFlv(btn)] !== undefined ? mapaOrden[valorFiltroFlv(btn)] : valorFiltroFlv(btn));
+    const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden-av1 .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaOrden[valorFiltroav1(btn)] !== undefined ? mapaOrden[valorFiltroav1(btn)] : valorFiltroav1(btn));
     if (ordenesActivos.length > 0 && ordenesActivos[0] !== '') params.append('order', ordenesActivos[0]);
 
     return `https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&${params.toString()}`;
@@ -475,7 +475,7 @@ botonesLetras.forEach(btn => {
 });
 
 // --- Eventos extras y Carga Inicial ---
-const scrollContainer = document.querySelector('#pagination-directorio-flv');
+const scrollContainer = document.querySelector('#pagination-directorio-av1');
 if (scrollContainer) {
     scrollContainer.addEventListener('wheel', (e) => {
         if (e.deltaY !== 0) {
@@ -487,7 +487,7 @@ if (scrollContainer) {
 
 import { mostrarSeccionDesdesearch } from './index.js';
 
-document.getElementById('btn-fuente-directorio-flv').addEventListener('click', () => {
+document.getElementById('btn-fuente-directorio-av1').addEventListener('click', () => {
    history.replaceState(null, '', `?DirectorioJK`);
    mostrarSeccionDesdesearch();
 });
