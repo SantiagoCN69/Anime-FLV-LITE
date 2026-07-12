@@ -358,6 +358,9 @@ function createAnimeCard(anime, siguienteEpisodioUrl) {
     if (anime.estado) {if (anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
       else {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;}
     }
+    if (!anime.estado && siguienteEpisodioUrl) {
+      estadoHtml = `<span class="estado">Capitulo ${siguienteEpisodioUrl}</span>`;
+    }
     if (anime.rating) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;}
     
     if (siguienteEpisodioUrl) {linkbase = `<a href="ver.html?id=${anime.id}&url=${siguienteEpisodioUrl}">`;
