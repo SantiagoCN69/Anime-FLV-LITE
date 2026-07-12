@@ -1069,7 +1069,7 @@ section.content-section h2:first-of-type::after {
     min-height: 267px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    grid-template-rows: auto;
+    grid-template-rows: max-content;
     gap: 17px;
 }
 #main {
@@ -1086,6 +1086,7 @@ section.content-section h2:first-of-type::after {
   border-radius: 15px;
   overflow: hidden;
   cursor: pointer;
+  height: fit-content;
   text-align: center;
   opacity: 0;
   transform: translate(30px, 30px) scale(.9);

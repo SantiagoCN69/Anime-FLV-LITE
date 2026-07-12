@@ -48,41 +48,38 @@
    1. ESTILOS DEL FILTRO DE LETRAS (A-Z)
    ========================================= */
 .filtro-letras {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: rgba(30, 30, 30, 0.6);
-    border-radius: 8px;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  gap: 8px;
+  justify-content: center;
+  padding: 15px;
+  background-color: var(--p);
+  border-radius: 8px;
 }
 
 .btn-letra {
-    background-color: #2b2b2b;
-    color: #e0e0e0;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-size: 14px;
-    font-family: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+  background-color: var(--br);
+  color: var(--t1);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
 .btn-letra:hover {
-    background-color: #3a3a3a;
-    border-color: #e50914; /* Color rojo estilo Netflix/AnimeFLV */
-    color: #fff;
+    background-color: var(--btn2);
+    color: var(--t1);
     transform: translateY(-2px);
 }
 
 .btn-letra.active {
-    background-color: #e50914;
-    color: #fff;
-    border-color: #e50914;
-    box-shadow: 0 4px 8px rgba(229, 9, 20, 0.4);
+    background-color: var(--btn);
     transform: translateY(-2px);
 }
 
@@ -90,10 +87,8 @@
    2. ESTILOS DEL DESLIZABLE DE AÑOS (SLIDER)
    ========================================= */
 .rango-anos-container {
-    padding: 10px 15px;
-    background-color: rgba(30, 30, 30, 0.6);
+    background-color: var(--p);
     border-radius: 8px;
-    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
@@ -101,15 +96,16 @@
 .rango-anos-container label {
     font-size: 15px;
     color: #fff;
-    margin-bottom: 15px;
+    margin-block: 8px;
     text-align: center;
 }
 
 .rango-anos-container label span {
-    color: #e50914; /* Resaltar los números en rojo */
+    color: var(--btn)
 }
 
 .slider-dual {
+  padding-inline: 10px;
     position: relative;
     width: 100%;
     height: 30px;
@@ -121,9 +117,9 @@
 .slider-dual::before {
     content: "";
     position: absolute;
-    width: 100%;
+    width: calc(100% - 20px);
     height: 6px;
-    background-color: #444;
+    background-color: var(--br);
     border-radius: 3px;
     top: 50%;
     transform: translateY(-50%);
@@ -135,7 +131,7 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: 100%;
+    width: calc(100% - 20px) !important;
     position: absolute;
     background: transparent;
     pointer-events: none; /* Desactiva clics en la barra invisible */
@@ -151,7 +147,7 @@
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background-color: #e50914;
+    background-color: var(--btn);
     cursor: pointer;
     pointer-events: auto; /* Reactiva los clics SOLAMENTE en la bolita */
     position: relative;
@@ -167,7 +163,7 @@
 
 .slider-dual input[type="range"]:active::-webkit-slider-thumb {
     transform: scale(1.1);
-    background-color: #ff1e2a;
+    background-color: var(--btn2);
 }
 
 /* =========================================
@@ -177,7 +173,7 @@
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background-color: #e50914;
+    background-color: var(--btn);
     cursor: pointer;
     pointer-events: auto;
     position: relative;
@@ -207,7 +203,6 @@ nav.filtros {
   flex-wrap: wrap;
   gap: 10px;
   margin-block: 1rem;
-  width: fit-content;
 }
 .filtro-section {
   position: relative;
