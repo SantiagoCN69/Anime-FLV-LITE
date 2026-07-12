@@ -334,7 +334,7 @@ if (busquedaInput) {
       }, 100);
 
       currentController = new AbortController();
-      fetch(`http://localhost:3001/api/search?q=${encodeURIComponent(valor)}`, { signal: currentController.signal })
+      fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(valor)}`, { signal: currentController.signal })
         .then(res => {
           if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
           return res.json();
