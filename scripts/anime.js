@@ -139,7 +139,7 @@ async function renderRelacionados(anime) {
     // Hacer todas las peticiones en paralelo
     const resultados = await Promise.allSettled(
       relacionesUnicas.map(relacionado =>
-        fetch(`http://localhost:3001/api/search?q=${encodeURIComponent(relacionado.title)}`)
+        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`)
           .then(res => {
             console.log('fetch relacionado:', res);
             return res.ok ? res.json() : Promise.reject(`HTTP Error: ${res.status}`);
@@ -307,6 +307,10 @@ const renderAnime = anime => {
     return;
   } else {
     statusEl.classList.remove("estrenando");
+    const mensajeProximoEstrenar = document.getElementById('anime-proximo-estrenar');
+    if (mensajeProximoEstrenar) {
+      mensajeProximoEstrenar.remove();
+    }
   }
   crearBotonesEpisodios(anime);
   renderRelacionados(anime);
@@ -769,7 +773,7 @@ async function cargarAnime(idauxiliar) {
 
   // 3. Cargar desde API externa y actualizar todo
   try {
-    const res = await fetch(`http://localhost:3001/api/anime?id=${id}`);
+    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     const anime = normalizarDatosAPI(data);
 
