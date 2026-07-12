@@ -109,115 +109,144 @@ let isRendering = false;
 let capituloToggleInProgress = false;
 let estadoToggleInProgress = false;
 
-async function renderRelacionados(anime) {
+// Función auxiliar para convertir el slug en un título legible
+// Ej: "kabushikigaisha-magi-lumiere" -> "Kabushikigaisha Magi Lumiere"
+const formatTitleFromSlug = (slug) => {
+  if (!slug) return 'Sin título';
+  return slug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+function renderRelacionados(anime) {
+  console.log('renderRelacionados - anime:', anime);
   const relacionadosContainer = document.getElementById('animes-relacionados');
   const relacionadosSection = document.getElementById('relacionados');
   const initLoading = document.getElementById('init-loading-relacionados');
-  
-  // Validaciones iniciales
-  if (!relacionadosContainer || !anime?.relacionados?.length) {
+
+  // Soporte por si tu objeto usa la propiedad 'relacionados' o 'relations'
+  const listaRelaciones = anime?.relacionados || anime?.relations;
+
+  if (!relacionadosContainer || !listaRelaciones?.length) {
     if (relacionadosSection) relacionadosSection.style.display = 'none';
     return;
   }
 
-  // Prevenir múltiples renderizados simultáneos
-  if (isRendering) return;
+  if (typeof isRendering !== 'undefined' && isRendering) return;
   isRendering = true;
 
-  // Mostrar sección y loading
   if (relacionadosSection) relacionadosSection.style.display = 'flex';
   if (initLoading) initLoading.style.display = 'block';
   relacionadosContainer.innerHTML = '';
 
-  try {
-    // Crear un Set para evitar duplicados
-    const titulosUnicos = new Set();
-    const relacionesUnicas = anime.relacionados.filter(rel => {
-      const esUnico = !titulosUnicos.has(rel.title);
-      if (esUnico) titulosUnicos.add(rel.title);
-      return esUnico;
-    });
-    // Hacer todas las peticiones en paralelo
-    const resultados = await Promise.allSettled(
-      relacionesUnicas.map(relacionado =>
-        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`)
-          .then(res => {
-            console.log('fetch relacionado:', res);
-            return res.ok ? res.json() : Promise.reject(`HTTP Error: ${res.status}`);
-          })
-          .then(data => ({
-            data: data[0],
-            relation: relacionado.relation
-          }))
-      )
-    );
+  const getRelationText = (type) => {
+    const types = {
+      1: 'Precuela', 2: 'Secuela', 4: 'Versión alternativa',
+      5: 'Historia paralela', 6: 'Resumen', 8: 'Historia principal', 10: 'Otro'
+    };
+    return types[type] || `Tipo ${type}`; 
+  };
 
-    // Crear fragmento para mejor rendimiento
-    const fragment = document.createDocumentFragment();
+  try {
+    const animesProcesados = [];
     const idsAgregados = new Set();
 
-    resultados.forEach(({ status, value }, index) => {
-      if (status === 'fulfilled' && value?.data && !idsAgregados.has(value.data.id)) {
-        idsAgregados.add(value.data.id);
-        const card = crearAnimeCard(value.data);
-        const relationSpan = document.createElement('span');
-        relationSpan.className = 'relation-tag';
-        relationSpan.textContent = value.relation;
-        card.appendChild(relationSpan);
-        if (card) {
-        fragment.appendChild(card);
+    listaRelaciones.forEach(relacionado => {
+      // Evitamos procesar duplicados
+      if (!relacionado.id || idsAgregados.has(relacionado.id)) return;
+      idsAgregados.add(relacionado.id);
+
+      // Extraemos el año
+      let yearStr = 'Desconocido';
+      let rawYear = 9999;
+      if (relacionado.startDate) {
+        const dateMatch = String(relacionado.startDate).match(/(\d{4})/);
+        if (dateMatch) {
+          yearStr = dateMatch[1];
+          rawYear = parseInt(yearStr);
         }
       }
+
+      animesProcesados.push({
+        id: relacionado.id,
+        slug: relacionado.slug,
+        title: formatTitleFromSlug(relacionado.slug),
+        relation: getRelationText(relacionado.type),
+        coverImage: `https://cdn.animeav1.com/covers/${relacionado.id}.jpg`,
+        yearStr,
+        rawYear
+      });
     });
-    
-    if (fragment.children.length > 0) {
-    relacionadosContainer.appendChild(fragment);
-    observerAnimeCards();
-    }
-    else {
+
+    // Ordenamos cronológicamente
+    animesProcesados.sort((a, b) => a.rawYear - b.rawYear);
+
+    if (animesProcesados.length > 0) {
+      const fragment = document.createDocumentFragment();
+      const timelineContainer = document.createElement('div');
+      timelineContainer.className = 'timeline-container';
+      
+      // Validamos si hay más de 1 anime para decidir si mostramos la línea
+      const mostrarLinea = animesProcesados.length > 1;
+      
+      animesProcesados.forEach((item, index) => {
+        const node = document.createElement('div');
+        node.className = 'timeline-node';
+        
+
+        const lineaHtml = (index < animesProcesados.length - 1) ? '<div class="timeline-line"></div>' : '';
+        
+        node.innerHTML = `
+          <div class="timeline-head">
+            <span class="timeline-year">${item.yearStr}</span>
+            ${lineaHtml}
+          </div>
+          <a href="anime.html?id=${item.slug}" class="timeline-card-link" id="anime-${item.id}">
+            <div class="timeline-card-horizontal">
+              <img src="${item.coverImage}" alt="${item.title}" class="timeline-cover" onerror="this.src='img/loading.png'">
+              <div class="timeline-info">
+                <h4 class="timeline-title">${item.title}</h4>
+                <span class="timeline-relation">${item.relation}</span>
+              </div>
+            </div>
+          </a>
+        `;
+        
+        node.querySelector('.timeline-card-link').addEventListener('click', () => {
+          if (typeof aplicarViewTransition === 'function') {
+            aplicarViewTransition(item.id, ''); 
+          }
+        });
+
+        timelineContainer.appendChild(node);
+      });
+      
+      fragment.appendChild(timelineContainer);
+      relacionadosContainer.appendChild(fragment);
+      
+// CÓDIGO CORREGIDO
+      timelineContainer.addEventListener('wheel', (evento) => {
+        if (evento.deltaY !== 0) {
+          evento.preventDefault();
+          timelineContainer.scrollLeft += evento.deltaY;
+        }
+      });
+      
+      if (typeof observerAnimeCards === 'function') {
+        observerAnimeCards();
+      }
+    } else {
       if (relacionadosSection) relacionadosSection.style.display = 'none';
     }
+
   } catch (error) {
-    
     if (relacionadosSection) relacionadosSection.style.display = 'none';
-    console.error('Error al cargar animes relacionados:', error);
+    console.error('Error al renderizar animes relacionados:', error);
   } finally {
     if (initLoading) initLoading.style.display = 'none';
     isRendering = false;
   }
-}
-
-function crearAnimeCard(anime) {
-  const coverImage = anime.cover || anime.image || 'img/loading.png';
-  let animeId = anime.id;
-  if (!animeId && anime.url) {
-    const urlParts = anime.url.replace(/\/$/, '').split('/');
-    animeId = urlParts[urlParts.length - 1];
-  }
-  if (!animeId) {
-    animeId = anime.title?.toLowerCase().replace(/\s+/g, '-');
-  }
-  const div = document.createElement('div');
-  let ratingHtml = '';
-  if (anime.rating) {
-    ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
-  }
-  div.className = 'anime-card';
-  div.style.setProperty('--cover', `url(${coverImage})`);
-  div.innerHTML = `
-  <a href="anime.html?id=${animeId}" id="anime-${animeId}">
-  <div class="container-img">
-    <img src="${coverImage}" class="cover" alt="${anime.title || anime.name}">
-    <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-    ${ratingHtml}
-    <span class="estado">${anime.type || ''}</span>
-  </div>
-  <strong>${anime.title || anime.name}</strong>
-</a>`;
-  div.addEventListener('click', () => {
-    aplicarViewTransition(anime.id, ratingHtml);
-  });
-  return div;
 }
 
 const BANNER_PESO_MIN_BYTES = 7 * 1024;
@@ -705,7 +734,7 @@ function compararDatos(a, b) {
   // Comparar episodios y relacionados
   return (
     compararArrays(a.episodios || [], b.episodios || [], ['number', 'url']) &&
-    compararArrays(a.relacionados || [], b.relacionados || [], ['title', 'relation'])
+    compararArrays(a.relacionados || [], b.relacionados || [], ['slug', 'type', 'startDate', 'id'])
   );
 }
 
@@ -724,7 +753,9 @@ function normalizarDatosAPI(data) {
       rating: data.rating || null,
       estado: sourceData?.status || data.status || null,
       episodios: (sourceData?.episodes || data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
-      relacionados: (data.related || []).map(ep => ({ title: ep.title, relation: ep.relation })) || [],
+      relacionados: (data.relations || [])
+        .filter(ep => ep && ep.slug)
+        .map(ep => ({ slug: ep.slug, type: ep.type, startDate: ep.startDate, id: ep.id })) || [],
     };
   }
   // Formato antiguo (directo)
@@ -737,7 +768,9 @@ function normalizarDatosAPI(data) {
     rating: data.rating || null,
     estado: data.status || null,
     episodios: (data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
-    relacionados: (data.related || []).map(ep => ({ title: ep.title, relation: ep.relation })) || [],
+    relacionados: (data.relations || [])
+      .filter(ep => ep && ep.slug)
+      .map(ep => ({ slug: ep.slug, type: ep.type, startDate: ep.startDate, id: ep.id })) || [],
   };
 }
 
@@ -774,7 +807,7 @@ async function cargarAnime(idauxiliar) {
 
   // 3. Cargar desde API externa y actualizar todo
   try {
-    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
+    const res = await fetch(`http://localhost:3001/api/anime?id=${id}`);
     const data = await res.json();
     const anime = normalizarDatosAPI(data);
 
