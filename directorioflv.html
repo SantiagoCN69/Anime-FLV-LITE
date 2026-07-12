@@ -5,7 +5,7 @@
     <title>Directorio</title>
 <head>
   <script>
-    window.location.href = "https://animeflvlite.netlify.app/?directorioflv";
+    window.location.href = "https://animeflvlite.netlify.app/?directorioav1";
   </script>
 </head>
 <body>
@@ -19,7 +19,47 @@
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#fff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#fff" d="M118.656 438.656a32 32 0 0 1 0-45.248L416 96l4.48-3.776A32 32 0 0 1 461.248 96l3.712 4.48a32.064 32.064 0 0 1-3.712 40.832L218.56 384H928a32 32 0 1 1 0 64H141.248a32 32 0 0 1-22.592-9.344zM64 608a32 32 0 0 1 32-32h786.752a32 32 0 0 1 22.656 54.592L608 928l-4.48 3.776a32.064 32.064 0 0 1-40.832-49.024L805.632 640H96a32 32 0 0 1-32-32z"></path></g></svg><span>AnimeFLV</span></button>
      </div>
         <nav class="filtros">
-            <section class="filtro-section">
+
+            <section class="filtro-letras" id="filtro-letras-flv">
+        <button class="btn-letra" data-letra="A">A</button>
+        <button class="btn-letra" data-letra="B">B</button>
+        <button class="btn-letra" data-letra="C">C</button>
+        <button class="btn-letra" data-letra="D">D</button>
+        <button class="btn-letra" data-letra="E">E</button>
+        <button class="btn-letra" data-letra="F">F</button>
+        <button class="btn-letra" data-letra="G">G</button>
+        <button class="btn-letra" data-letra="H">H</button>
+        <button class="btn-letra" data-letra="I">I</button>
+        <button class="btn-letra" data-letra="J">J</button>
+        <button class="btn-letra" data-letra="K">K</button>
+        <button class="btn-letra" data-letra="L">L</button>
+        <button class="btn-letra" data-letra="M">M</button>
+        <button class="btn-letra" data-letra="N">N</button>
+        <button class="btn-letra" data-letra="O">O</button>
+        <button class="btn-letra" data-letra="P">P</button>
+        <button class="btn-letra" data-letra="Q">Q</button>
+        <button class="btn-letra" data-letra="R">R</button>
+        <button class="btn-letra" data-letra="S">S</button>
+        <button class="btn-letra" data-letra="T">T</button>
+        <button class="btn-letra" data-letra="U">U</button>
+        <button class="btn-letra" data-letra="V">V</button>
+        <button class="btn-letra" data-letra="W">W</button>
+        <button class="btn-letra" data-letra="X">X</button>
+        <button class="btn-letra" data-letra="Y">Y</button>
+        <button class="btn-letra" data-letra="Z">Z</button>
+             </section>
+
+            <section class="filtro-section rango-anos-container">
+        <label style="color: white; font-weight: bold; margin-bottom: 10px; display: block;">
+            Año: <span id="ano-min-val">1990</span> - <span id="ano-max-val">2025</span>
+        </label>
+        <div class="slider-dual" style="position: relative; height: 30px; width: 100%;">
+            <input type="range" id="ano-min" min="1990" max="2025" value="1990" style="position: absolute; width: 100%; pointer-events: none;">
+            <input type="range" id="ano-max" min="1990" max="2025" value="2025" style="position: absolute; width: 100%; pointer-events: none;">
+        </div>
+            </section>
+    
+                        <section class="filtro-section">
             <button type="button" id="btn-filtro-genero-flv" class="btn-filtro" title="Genero">Genero: <span>Todos</span></button>
             <nav id="filtro-genero-flv" class="filtro-opciones">
                 <ul>
@@ -66,49 +106,17 @@
                 </ul>
             </nav>
             </section>
-            <section class="filtro-section" id="filtro-ano-section-flv">
-            <button type="button" id="btn-filtro-ano-flv" class="btn-filtro" title="Año">Año: <span>Todos</span></button>
-            <nav id="filtro-ano-flv" class="filtro-opciones">
-                <ul>
-                    <li><button type="button" class="btn-filtro-opcion" id="2025-flv">2025</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2024-flv">2024</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2023-flv">2023</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2022-flv">2022</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2021-flv">2021</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2020-flv">2020</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2019-flv">2019</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2018-flv">2018</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2017-flv">2017</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2016-flv">2016</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2015-flv">2015</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2014-flv">2014</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2013-flv">2013</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2012-flv">2012</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2011-flv">2011</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2010-flv">2010</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2009-flv">2009</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2008-flv">2008</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2007-flv">2007</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2006-flv">2006</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2005-flv">2005</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2004-flv">2004</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2003-flv">2003</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2002-flv">2002</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2001-flv">2001</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2000-flv">2000</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1999-flv">1999</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1998-flv">1998</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1997-flv">1997</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1996-flv">1996</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1995-flv">1995</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1994-flv">1994</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1993-flv">1993</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1992-flv">1992</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1991-flv">1991</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="1990-flv">1990</button></li>
-                </ul>
-            </nav>
-            </section>
+
+            <style>
+    .slider-dual input[type=range]::-webkit-slider-thumb {
+        pointer-events: all;
+        position: relative;
+        z-index: 1;
+    }
+    .btn-letra { padding: 5px 10px; margin: 2px; cursor: pointer; background: #333; color: white; border: none; border-radius: 4px;}
+    .btn-letra.active { background: #e50914; font-weight: bold; }
+            </style>
+
             <section class="filtro-section">
             <button type="button" id="btn-filtro-tipo-flv" class="btn-filtro" title="Tipo">Tipo: <span>Todos</span></button>
             <nav id="filtro-tipo-flv" class="filtro-opciones">
@@ -120,6 +128,7 @@
                 </ul>
             </nav>
             </section>
+
             <section class="filtro-section">
             <button type="button" id="btn-filtro-estado-flv" class="btn-filtro" title="Estado">Estado: <span>Todos</span></button>
             <nav id="filtro-estado-flv" class="filtro-opciones">
@@ -130,6 +139,7 @@
                 </ul>
             </nav>
             </section>
+
             <section class="filtro-section">
             <button type="button" id="btn-filtro-orden-flv" class="btn-filtro" title="Orden">Orden: <span>Por defecto</span></button>
             <nav id="filtro-orden-flv" class="filtro-opciones">
@@ -142,6 +152,7 @@
                 </ul>
             </nav>
             </section>
+
             <section class="filtro-section">
             <button type="button" id="btn-filtrar-flv" title="Filtrar">FILTRAR</button>
             </section>

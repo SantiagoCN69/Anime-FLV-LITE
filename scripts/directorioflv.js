@@ -4,21 +4,21 @@ const valorFiltroFlv = (btn) => btn.id.replace(/-flv$/, '');
 
 // constantes botones filtro
 const btnFiltroGenero = document.getElementById('btn-filtro-genero-flv');
-const btnFiltroAno = document.getElementById('btn-filtro-ano-flv');
+
 const btnFiltroTipo = document.getElementById('btn-filtro-tipo-flv');
 const btnFiltroEstado = document.getElementById('btn-filtro-estado-flv');
 const btnFiltroOrden = document.getElementById('btn-filtro-orden-flv');
 
 // constantes filtros
 const filtroGenero = document.getElementById('filtro-genero-flv');
-const filtroAno = document.getElementById('filtro-ano-flv');
+
 const filtroTipo = document.getElementById('filtro-tipo-flv');
 const filtroEstado = document.getElementById('filtro-estado-flv');
 const filtroOrden = document.getElementById('filtro-orden-flv');
 
 const filtros = [
     { btn: btnFiltroGenero, filtro: filtroGenero },
-    { btn: btnFiltroAno, filtro: filtroAno },
+
     { btn: btnFiltroTipo, filtro: filtroTipo },
     { btn: btnFiltroEstado, filtro: filtroEstado },
     { btn: btnFiltroOrden, filtro: filtroOrden }
@@ -74,6 +74,8 @@ const initLoading = document.getElementById('init-loading-flv');
 const resultadosContainer = document.getElementById('resultados-flv');
 
 function crearAnimeCardResultados(anime) {
+console.log(anime);
+
     const coverImage = anime.cover || anime.image || 'img/loading.png';
     const div = document.createElement('div');
     div.className = 'anime-card';
@@ -169,7 +171,7 @@ function cambiarPagina(page) {
   currentPage = page;
   const link = window.location.search.substring(1);
   resultadosContainer.innerHTML = `<span class="span-carga">Cargando servidores...</span>`;
-  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${link}&page=${currentPage}`)
+  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&${link}&page=${currentPage}`)
     .then(response => {
       return response.json();
     })
@@ -208,7 +210,7 @@ async function cargarAnimesConCache() {
         }
 
       
-      fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default&genre[]=${genero}`)
+      fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&order=default&genre[]=${genero}`)
       .then(response => response.json())
       .then(data => {
         resultadosContainer.innerHTML = '';
@@ -241,19 +243,25 @@ async function cargarAnimesConCache() {
         updatePagination({ animes: data, PaginasTotales });
 
         //compara con la api para ver si hay cambios
-        await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default&page=${currentPage}`)
+
+        await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&order=default&page=${currentPage}`)
         .then(response => response.json())
         .then(data => {
           const parsedCache = JSON.parse(cachedData);
-          if (data.animes[0].title === parsedCache.data[0].title && data.animes[1].title === parsedCache.data[1].title) {
-            //console.log('iguales');
-            //console.log(data.animes[0].title);
-            //console.log(parsedCache.data[0].title);
-            return;
-          } else {
-            console.log('distintos');
-            console.log(data.animes[0].title);
-            console.log(parsedCache.data[0].title);
+          
+          // Validamos de forma segura si ambas fuentes tienen información
+          const hayDatosNuevos = data && data.animes && data.animes.length > 0;
+          const hayDatosViejos = parsedCache && parsedCache.data && parsedCache.data.length > 0;
+
+          // Si ambos tienen datos y el primero coincide, todo está al día
+          if (hayDatosNuevos && hayDatosViejos && data.animes[0].title === parsedCache.data[0].title) {
+              return; // Son iguales, no hacemos nada
+          }
+          
+          // Si llegamos a esta línea, es porque la caché está vieja o vacía. Actualizamos.
+          if (hayDatosNuevos) {
+            console.log('Cambios detectados. Actualizando la pantalla y la caché...');
+            
             localStorage.setItem(CACHE_KEY, JSON.stringify({
               data: data.animes,
               page: currentPage,
@@ -265,19 +273,18 @@ async function cargarAnimesConCache() {
               const card = crearAnimeCardResultados(anime);
               resultadosContainer.appendChild(card);
             });
+            
             observerAnimeCards();
             updatePagination(data);
           }
         })
         .catch(error => {
           console.error('Error detallado:', error);
-          console.error('Error en la petición:', error.message);
-          console.error('Stack trace:', error.stack);
         });
       }
     }
     else {
-      fetch(`https://backend-animeflv-lite.onrender.com/api/browse?order=default`)
+      fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&order=default`)
       .then(response => response.json())
       .then(data => {
         resultadosContainer.innerHTML = '';
@@ -318,148 +325,93 @@ const estadosOpciones = document.querySelectorAll('#filtro-estado-flv .btn-filtr
 const ordenBtn = document.getElementById('btn-filtro-orden-flv');
 const ordenesOpciones = document.querySelectorAll('#filtro-orden-flv .btn-filtro-opcion');
 
-function actualizarLinkBusqueda() {
-    const generosActivos = Array.from(generosOpciones)
-        .filter(btn => btn.classList.contains('active'))
-        .map(valorFiltroFlv);
+// --- Lógica del Slider Doble de Años ---
+const inputMinAno = document.getElementById('ano-min');
+const inputMaxAno = document.getElementById('ano-max');
+const valMinAno = document.getElementById('ano-min-val');
+const valMaxAno = document.getElementById('ano-max-val');
 
-    const anosActivos = Array.from(document.querySelectorAll('#filtro-ano-flv .btn-filtro-opcion'))
-        .filter(btn => btn.classList.contains('active'))
-        .map(valorFiltroFlv);
-
-    const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo-flv .btn-filtro-opcion'))
-        .filter(btn => btn.classList.contains('active'))
-        .map(valorFiltroFlv);
-
-    const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado-flv .btn-filtro-opcion'))
-        .filter(btn => btn.classList.contains('active'))
-        .map(valorFiltroFlv);
-
-    const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden-flv .btn-filtro-opcion'))
-        .filter(btn => btn.classList.contains('active'))
-        .map(valorFiltroFlv);
-
-    let link = 'https://backend-animeflv-lite.onrender.com/api/browse?';
+function actualizarTextosSlider() {
+    let min = parseInt(inputMinAno.value);
+    let max = parseInt(inputMaxAno.value);
     
-    if (generosActivos.length > 0) {
-        link += 'genre%5B%5D=' + generosActivos.join('&genre%5B%5D=');
+    if (min > max) {
+        let temp = min;
+        min = max;
+        max = temp;
     }
-
-    if (anosActivos.length > 0) {
-        if (generosActivos.length > 0) link += '&';
-        link += 'year%5B%5D=' + anosActivos.join('&year%5B%5D=');
-    }
-
-    if (tiposActivos.length > 0) {
-        if (generosActivos.length > 0 || anosActivos.length > 0) link += '&';
-        link += 'type%5B%5D=' + tiposActivos.join('&type%5B%5D=');
-    }
-
-    if (estadosActivos.length > 0) {
-        if (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0) link += '&';
-        link += 'status%5B%5D=' + estadosActivos.join('&status%5B%5D=');
-    }
-
-    if (ordenesActivos.length > 0) {
-      if (generosActivos.length > 0 || anosActivos.length > 0 || tiposActivos.length > 0 || estadosActivos.length > 0) link += '&';
-      link += 'order=' + ordenesActivos[0];
-  }
-    return link;
+    valMinAno.textContent = min;
+    valMaxAno.textContent = max;
 }
 
-generosOpciones.forEach(btn => {
-    btn.addEventListener('click', () => {
-        btn.classList.toggle('active');
-        const generosActivos = Array.from(generosOpciones)
-            .filter(btn => btn.classList.contains('active'));
-        
-        if (generosActivos.length > 0) {
-            generosBtn.querySelector('span').textContent = `(${generosActivos.length})`;
-        } else {
-            generosBtn.querySelector('span').textContent = 'Todos';
-        }
-        
-        actualizarLinkBusqueda();
-    });
-});
+if (inputMinAno && inputMaxAno) {
+    inputMinAno.addEventListener('input', actualizarTextosSlider);
+    inputMaxAno.addEventListener('input', actualizarTextosSlider);
+}
 
-anosOpciones.forEach(btn => {
-    btn.addEventListener('click', () => {
-        btn.classList.toggle('active');
-        const anosActivos = Array.from(anosOpciones)
-            .filter(btn => btn.classList.contains('active'));
-        
-        if (anosActivos.length > 0) {
-            anoBtn.querySelector('span').textContent = `(${anosActivos.length})`;
-        } else {
-            anoBtn.querySelector('span').textContent = 'Todos';
-        }
-        
-        actualizarLinkBusqueda();
-    });
-});
-tiposOpciones.forEach(btn => {
-    btn.addEventListener('click', () => {
-        btn.classList.toggle('active');
-        const tiposActivos = Array.from(tiposOpciones)
-            .filter(btn => btn.classList.contains('active'));
-        
-        if (tiposActivos.length > 0) {
-            tipoBtn.querySelector('span').textContent = `(${tiposActivos.length})`;
-        } else {
-            tipoBtn.querySelector('span').textContent = 'Todos';
-        }
-        
-        actualizarLinkBusqueda();
-    });
-});
+// --- Función para construir la URL ---
+function actualizarLinkBusqueda() {
+    const params = new URLSearchParams();
 
-estadosOpciones.forEach(btn => {
-    btn.addEventListener('click', () => {
-        btn.classList.toggle('active');
-        const estadosActivos = Array.from(estadosOpciones)
-            .filter(btn => btn.classList.contains('active'));
-        
-        if (estadosActivos.length > 0) {
-            estadoBtn.querySelector('span').textContent = `(${estadosActivos.length})`;
-        } else {
-            estadoBtn.querySelector('span').textContent = 'Todos';
-        }
-        
-        actualizarLinkBusqueda();
-    });
-});
-ordenesOpciones.forEach(btn => {
-  btn.addEventListener('click', () => {
-      ordenesOpciones.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      ordenBtn.querySelector('span').textContent = btn.textContent;
-      actualizarLinkBusqueda();
-  });
-});
+    // 1. Letras
+    const letraActiva = document.querySelector('.btn-letra.active');
+    if (letraActiva) {
+        params.append('letter', letraActiva.dataset.letra);
+    }
 
-btnFiltrar.addEventListener('click', async () => {
+    // 2. Años desde el Slider
+    if (inputMinAno && inputMaxAno) {
+        let minYear = parseInt(inputMinAno.value);
+        let maxYear = parseInt(inputMaxAno.value);
+        if (minYear > maxYear) [minYear, maxYear] = [maxYear, minYear];
+        
+        if (minYear !== 1990 || maxYear !== 2025) {
+            params.append('minYear', minYear);
+            params.append('maxYear', maxYear);
+        }
+    }
+
+    // 3. Géneros
+    const generosActivos = Array.from(generosOpciones).filter(btn => btn.classList.contains('active')).map(valorFiltroFlv);
+    if (generosActivos.length > 0) generosActivos.forEach(g => params.append('genre', g));
+
+    // 4. Tipos
+    const mapaTipos = { 'tv': 'tv', 'movie': 'pelicula', 'special': 'especial', 'ova': 'ova' };
+    const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo-flv .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaTipos[valorFiltroFlv(btn)] || valorFiltroFlv(btn));
+    if (tiposActivos.length > 0) tiposActivos.forEach(t => params.append('category', t));
+
+    // 5. Estados
+    const mapaEstados = { '1': 'emision', '2': 'finalizado', '3': 'proximamente' };
+    const estadosActivos = Array.from(document.querySelectorAll('#filtro-estado-flv .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaEstados[valorFiltroFlv(btn)] || valorFiltroFlv(btn));
+    if (estadosActivos.length > 0) estadosActivos.forEach(e => params.append('status', e));
+
+    // 6. Orden
+    const mapaOrden = { 'default': '', 'updated': 'updated', 'added': 'added', 'title': 'title', 'rating': 'score' };
+    const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden-flv .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaOrden[valorFiltroFlv(btn)] !== undefined ? mapaOrden[valorFiltroFlv(btn)] : valorFiltroFlv(btn));
+    if (ordenesActivos.length > 0 && ordenesActivos[0] !== '') params.append('order', ordenesActivos[0]);
+
+    return `https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&${params.toString()}`;
+}
+
+// --- Función central para ejecutar la búsqueda ---
+async function ejecutarBusqueda() {
     const link = actualizarLinkBusqueda();
     resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
     
     try {
         const response = await fetch(link);
         const data = await response.json();
-        console.log(link);
         resultadosContainer.innerHTML = '';
         
         const linkSolo = link.split('/browse?')[1]; 
-        console.log(linkSolo);
         linkSolo && history.pushState({}, '', '?Directorio&' + linkSolo);
-
-        
         
         if (data.animes && data.animes.length > 0) {
             data.animes.forEach(anime => {
                 const card = crearAnimeCardResultados(anime);
                 resultadosContainer.appendChild(card);
             });
-            observerAnimeCards()
+            observerAnimeCards();
         } else {
             resultadosContainer.innerHTML = '<span class="span-carga">No se encontraron resultados</span>';
         }
@@ -470,18 +422,68 @@ btnFiltrar.addEventListener('click', async () => {
         console.error('Error al cargar animes:', error);
         resultadosContainer.innerHTML = '<p>Error al cargar los animes</p>';
     }
+}
+
+// --- Actualización visual de los botones de filtro ---
+generosOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const activos = Array.from(generosOpciones).filter(b => b.classList.contains('active'));
+        generosBtn.querySelector('span').textContent = activos.length > 0 ? `(${activos.length})` : 'Todos';
+        actualizarLinkBusqueda();
+    });
 });
+
+tiposOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const activos = Array.from(tiposOpciones).filter(b => b.classList.contains('active'));
+        tipoBtn.querySelector('span').textContent = activos.length > 0 ? `(${activos.length})` : 'Todos';
+        actualizarLinkBusqueda();
+    });
+});
+
+estadosOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const activos = Array.from(estadosOpciones).filter(b => b.classList.contains('active'));
+        estadoBtn.querySelector('span').textContent = activos.length > 0 ? `(${activos.length})` : 'Todos';
+        actualizarLinkBusqueda();
+    });
+});
+
+ordenesOpciones.forEach(btn => {
+    btn.addEventListener('click', () => {
+        ordenesOpciones.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ordenBtn.querySelector('span').textContent = btn.textContent;
+        actualizarLinkBusqueda();
+    });
+});
+
+// --- Eventos de Búsqueda (Botón y Letras) ---
+btnFiltrar.addEventListener('click', ejecutarBusqueda);
+
+const botonesLetras = document.querySelectorAll('.btn-letra');
+botonesLetras.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const estabaActivo = btn.classList.contains('active');
+        botonesLetras.forEach(b => b.classList.remove('active'));
+        if (!estabaActivo) btn.classList.add('active');
+        ejecutarBusqueda(); // Búsqueda automática al presionar letra
+    });
+});
+
+// --- Eventos extras y Carga Inicial ---
 const scrollContainer = document.querySelector('#pagination-directorio-flv');
-
-scrollContainer.addEventListener('wheel', (e) => {
-  if (e.deltaY !== 0) {
-    e.preventDefault();
-    scrollContainer.scrollLeft += e.deltaY;
-  }
-}, { passive: false });
-
-
-cargarAnimesConCache(); 
+if (scrollContainer) {
+    scrollContainer.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+            e.preventDefault();
+            scrollContainer.scrollLeft += e.deltaY;
+        }
+    }, { passive: false });
+}
 
 import { mostrarSeccionDesdesearch } from './index.js';
 
@@ -490,3 +492,4 @@ document.getElementById('btn-fuente-directorio-flv').addEventListener('click', (
    mostrarSeccionDesdesearch();
 });
 
+cargarAnimesConCache();
