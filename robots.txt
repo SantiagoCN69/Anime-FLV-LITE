@@ -25,7 +25,7 @@ Allow: /*.webp$
 Allow: /*.svg$
 
 # Sitemap
-Sitemap: https://animeflvlite.netlify.app/sitemap.xml
+Sitemap: https://anizenlite.netlify.app/sitemap.xml
 
 # Retraso de rastreo (opcional, en segundos)
 Crawl-delay: 10

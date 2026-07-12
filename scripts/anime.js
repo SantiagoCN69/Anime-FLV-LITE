@@ -221,7 +221,7 @@ function crearAnimeCard(anime) {
 
 const BANNER_PESO_MIN_BYTES = 7 * 1024;
 const BANNER_PESO_PROXIES = [
-  'https://animeflvlite.netlify.app/.netlify/functions/banner-peso',
+  'https://anizenlite.netlify.app/.netlify/functions/banner-peso',
   // Puedes agregar tu localhost aquí
 ];
 
@@ -1250,6 +1250,6 @@ document.getElementById("btn-volver").addEventListener("click", () => {
   if (history.length > 1) {
     history.back();
   } else {
-    window.location.href = "https://animeflvlite.netlify.app/";
+    window.location.href = "https://anizenlite.netlify.app/";
   }
 });
