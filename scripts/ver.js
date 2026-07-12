@@ -391,11 +391,6 @@ function reordenarServidores(servidores) {
 }
 
 async function obtenerServidoresDesdeApi(episodio) {
-  console.log(episodio);
-  console.log("animeId", animeId);
-  console.log("index", episodio.number);
-  // https://backend-animeflv-lite.onrender.com/api/episode?animeid=sono-bisque-doll-wa-koi-wo-suru&cap=17
-  console.log(`https://backend-animeflv-lite.onrender.com/api/episode?animeid=${animeId}&cap=${episodio.number}`);
   const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?animeid=${animeId}&cap=${episodio.number}`);
   if (!res.ok) {
     console.warn(`[API episode] API respondió ${res.status} para: ${episodio.url}`);
@@ -410,7 +405,6 @@ async function obtenerServidoresDesdeApi(episodio) {
   }
 
   const servidoresMapeados = mapearServidoresApi(data.servidores);
-  console.log("[API episode] Servidores mapeados:", servidoresMapeados);
   return servidoresMapeados;
 }
 
@@ -700,7 +694,6 @@ if (siguiente) {
 }
 
 function renderizarServidores(servidores) {
-  console.log("renderizarServidores", servidores);
   if (!servidores?.length) {
     document.getElementById("video").innerHTML = "No hay servidores disponibles.";
     document.getElementById("controles").innerHTML = "";
