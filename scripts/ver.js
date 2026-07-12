@@ -585,6 +585,8 @@ function aplicarFondoAnime(anime) {
 
 
 async function cargarVideoDesdeEpisodio(index) {
+  const controles = document.getElementById("controles");
+  controles.classList.remove("con-mediafire");
   btnCap.textContent = `Episodio ${index}`;
   const ep = episodios.find(ep => String(ep.number) === String(index));
   if (!ep) {
