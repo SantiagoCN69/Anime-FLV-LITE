@@ -99,6 +99,7 @@
 }
 
 .slider-dual {
+  background: var(--p);
   padding-inline: 15px;
   position: relative;
   width: 100%;
