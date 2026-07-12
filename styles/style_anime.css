@@ -126,7 +126,6 @@ body::after {
   display: inline-block;
 }
 .botones {
-  margin-top: 1rem;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -152,7 +151,7 @@ body::after {
   }
   }
 .btn-estados {
-  border: 1px solid var(--br) !important;
+  border: 1px solid var(--br);
 }
   .botones button::after {
   content: attr(data-text);
@@ -278,7 +277,7 @@ body::after {
   display: flex;
   flex-direction: column;
   grid-area: container2;
-  gap: 12px;
+  gap: 20px;
   height: fit-content;
   span {
     margin-top: 10px;
@@ -427,7 +426,6 @@ body::after {
 }
   
 .genero a {
-  border: 1px solid var(--t1);
   color: var(--t1);
   opacity: .7;
   padding: 5px 12px;
@@ -440,7 +438,10 @@ body::after {
     opacity: 1;
   }
   }
+.genero .cargado {
+  border: 1px solid var(--t1);
 
+}
 .anime-description {
   min-height: 2lh;
   position: relative;
