@@ -4,6 +4,7 @@ const valorFiltroav1 = (btn) => btn.id.replace(/-av1$/, '');
 
 // constantes botones filtro
 const btnFiltroGenero = document.getElementById('btn-filtro-genero-av1');
+const btnFiltroAnos = document.getElementById('btn-filtro-anos-av1');
 
 const btnFiltroTipo = document.getElementById('btn-filtro-tipo-av1');
 const btnFiltroEstado = document.getElementById('btn-filtro-estado-av1');
@@ -11,14 +12,14 @@ const btnFiltroOrden = document.getElementById('btn-filtro-orden-av1');
 
 // constantes filtros
 const filtroGenero = document.getElementById('filtro-genero-av1');
-
+const filtroAnos = document.getElementById('filtro-anos-av1');
 const filtroTipo = document.getElementById('filtro-tipo-av1');
 const filtroEstado = document.getElementById('filtro-estado-av1');
 const filtroOrden = document.getElementById('filtro-orden-av1');
 
 const filtros = [
     { btn: btnFiltroGenero, filtro: filtroGenero },
-
+    { btn: btnFiltroAnos, filtro: filtroAnos },
     { btn: btnFiltroTipo, filtro: filtroTipo },
     { btn: btnFiltroEstado, filtro: filtroEstado },
     { btn: btnFiltroOrden, filtro: filtroOrden }
@@ -40,7 +41,12 @@ filtros.forEach(({ btn, filtro }) => {
         filtro.classList.toggle('active');
     });
 });
-
+  document.getElementById('filtro-letras-av1').addEventListener('wheel', (evento) => {
+    if (evento.deltaY !== 0) {
+      evento.preventDefault();
+      document.getElementById('filtro-letras-av1').scrollLeft += evento.deltaY;
+    }
+  });
 // Cerrar filtros al hacer clic fuera
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.btn-filtro') && !e.target.closest('.filtro-opciones')) {
@@ -74,7 +80,6 @@ const initLoading = document.getElementById('init-loading-av1');
 const resultadosContainer = document.getElementById('resultados-av1');
 
 function crearAnimeCardResultados(anime) {
-console.log(anime);
 
     const coverImage = anime.cover || anime.image || 'img/loading.png';
     const div = document.createElement('div');

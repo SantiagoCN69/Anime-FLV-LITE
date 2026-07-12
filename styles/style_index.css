@@ -50,15 +50,16 @@
 .filtro-letras {
   max-width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  overflow-y: auto;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 8px;
-  justify-content: center;
   padding: 15px;
   background-color: var(--p);
   border-radius: 8px;
 }
-
+.filtro-letras::-webkit-scrollbar {
+  display: none;           /* Chrome, Safari */
+}
 .btn-letra {
   background-color: var(--br);
   color: var(--t1);
@@ -94,30 +95,23 @@
 }
 
 .rango-anos-container label {
-    font-size: 15px;
-    color: #fff;
-    margin-block: 8px;
-    text-align: center;
-}
-
-.rango-anos-container label span {
-    color: var(--btn)
+    width: 100%;
 }
 
 .slider-dual {
-  padding-inline: 10px;
-    position: relative;
-    width: 100%;
-    height: 30px;
-    display: flex;
-    align-items: center;
+  padding-inline: 15px;
+  position: relative;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 /* Fondo de la barra (el "riel" por donde corren las bolitas) */
 .slider-dual::before {
     content: "";
     position: absolute;
-    width: calc(100% - 20px);
+    width: calc(100% - 30px);
     height: 6px;
     background-color: var(--br);
     border-radius: 3px;
@@ -131,7 +125,7 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: calc(100% - 20px) !important;
+    width: calc(100% - 30px) !important;
     position: absolute;
     background: transparent;
     pointer-events: none; /* Desactiva clics en la barra invisible */
@@ -208,6 +202,7 @@ nav.filtros {
   position: relative;
   display: flex;
   flex:1 1 0;
+  min-width: 173px;
 }
 .btn-filtro, #btn-filtrar, #btn-filtrar-av1 {
   width: fit-content;
@@ -261,6 +256,11 @@ nav.filtros {
 
 @media screen and (max-width: 688px) {
    #filtro-tipo, #filtro-tipo-av1 {
+    right: 0;
+  }
+}
+@media screen and (max-width: 1023px) {
+  .filtro-opciones {
     right: 0;
   }
 }
