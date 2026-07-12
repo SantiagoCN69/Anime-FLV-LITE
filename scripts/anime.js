@@ -139,7 +139,7 @@ async function renderRelacionados(anime) {
     // Hacer todas las peticiones en paralelo
     const resultados = await Promise.allSettled(
       relacionesUnicas.map(relacionado =>
-        fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(relacionado.title)}`)
+        fetch(`http://localhost:3001/api/search?q=${encodeURIComponent(relacionado.title)}`)
           .then(res => {
             console.log('fetch relacionado:', res);
             return res.ok ? res.json() : Promise.reject(`HTTP Error: ${res.status}`);
@@ -219,11 +219,10 @@ function crearAnimeCard(anime) {
   return div;
 }
 
-/** Placeholder negro de AnimeFLV ≈ 6767 bytes (1280×370). El navegador no puede medirlo por CORS. */
 const BANNER_PESO_MIN_BYTES = 7 * 1024;
 const BANNER_PESO_PROXIES = [
-  '/.netlify/functions/banner-peso',
   'https://animeflvlite.netlify.app/.netlify/functions/banner-peso',
+  // Puedes agregar tu localhost aquí
 ];
 
 async function obtenerPesoBanner(url) {
@@ -237,64 +236,54 @@ async function obtenerPesoBanner(url) {
       const { bytes } = await res.json();
       if (typeof bytes === 'number' && bytes > 0) return bytes;
     } catch {
-      /* probar siguiente proxy (local → deploy en Netlify) */
+      /* Pasa al siguiente proxy si este falla */
     }
   }
   return null;
 }
 
-async function esBannerOscuroPorMuestra(url) {
+function verificarCargaImagen(url) {
   return new Promise(resolve => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        const sw = Math.min(80, img.naturalWidth);
-        const sh = Math.min(40, img.naturalHeight);
-        canvas.width = sw;
-        canvas.height = sh;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        ctx.drawImage(img, 0, 0, sw, sh);
-        const { data } = ctx.getImageData(0, 0, sw, sh);
-        let sum = 0;
-        const n = data.length / 4;
-        for (let i = 0; i < data.length; i += 4) sum += data[i] + data[i + 1] + data[i + 2];
-        resolve(sum / (n * 3) < 38);
-      } catch {
-        resolve(false);
-      }
-    };
+    
+    img.onload = () => resolve(true);
     img.onerror = () => resolve(false);
+
     img.src = url;
   });
 }
 
-async function esBannerPlaceholder(url) {
-  const peso = await obtenerPesoBanner(url);
-  if (peso !== null) return peso < BANNER_PESO_MIN_BYTES;
-  return esBannerOscuroPorMuestra(url);
+async function esBannerValido(url) {
+  const [peso, cargaOk] = await Promise.all([
+    obtenerPesoBanner(url),
+    verificarCargaImagen(url)
+  ]);
+
+  if (!peso || peso < BANNER_PESO_MIN_BYTES) return false;
+  
+  if (!cargaOk) return false;
+
+  return true;
 }
 
 async function aplicarFondoAnime(anime) {
-  const portada = anime.portada;
+  const portada = anime.portada || anime.cover;
   const banner = anime.banner;
-
+  document.body.style.backgroundImage = `url(${banner})`;
   if (!banner) {
     document.body.style.backgroundImage = portada ? `url(${portada})` : '';
     return;
   }
 
-  document.body.style.backgroundImage = `url(${banner})`;
+  const bannerValido = await esBannerValido(banner);
 
-  const usarPortada = await esBannerPlaceholder(banner);
-  if (usarPortada && portada) {
-    document.body.style.backgroundImage = `url(${portada})`;
+  if (bannerValido) {
+    document.body.style.backgroundImage = `url(${banner})`;
+  } else {
+    document.body.style.backgroundImage = portada ? `url(${portada})` : '';
   }
 }
-
 const renderAnime = anime => {
-  console.log(anime);
   anime.estado === "En emision"
   ? (statusEl.innerHTML = `<img src="../icons/circle-solid-blue.svg">${anime.estado}`, statusEl.classList.add("en-emision"))
   : (statusEl.innerHTML = `<img src="../icons/circle-solid.svg">${anime.estado}`, statusEl.classList.remove("en-emision"));
@@ -431,24 +420,24 @@ async function crearBotonesEpisodios(anime) {
     capContenedor.classList.add("cargado");
     capContenedor.style.setProperty("--caps", episodios.length);
 
-    const hacerScroll = () => {
-        const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
+const hacerScroll = () => {
+    const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 
     // 🔴 si no hay ninguno, salimos SIEMPRE
     if (!primerNoVisto) {
         if (episodios.length > 1) {
             mostrarOverlayCapitulosCompletados();
         }
-            return;
-        }
+        return;
+    }
 
-        const target = primerNoVisto.closest("li");
-        if (!target) return;
+    const target = primerNoVisto.closest("li");
+    if (!target) return;
 
-        capContenedor.scrollTo({
-            left: target.offsetLeft
-        });
-    };
+    capContenedor.scrollTo({
+        left: target.offsetLeft
+    });
+};
     capContenedor.addEventListener(
         "transitionend",
         function handler(e) {
@@ -780,9 +769,8 @@ async function cargarAnime(idauxiliar) {
 
   // 3. Cargar desde API externa y actualizar todo
   try {
-    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
+    const res = await fetch(`http://localhost:3001/api/anime?id=${id}`);
     const data = await res.json();
-    console.log(data);
     const anime = normalizarDatosAPI(data);
 
     if (!compararDatos(cached, anime)) {

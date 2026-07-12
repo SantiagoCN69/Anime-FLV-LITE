@@ -1,40 +1,47 @@
-const ALLOWED_HOST = /^https:\/\/(www\d*\.)?animeflv\.net\//i;
+const ALLOWED_HOST = /^https:\/\/cdn\.animeav1\.com\//i;
 
 export const handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json',
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers, body: '' };
-  }
-
   const url = event.queryStringParameters?.url;
-  if (!url || !ALLOWED_HOST.test(url)) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'URL no válida' }) };
+  if (!url) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'URL requerida' }) };
   }
 
   try {
-    const res = await fetch(url, { method: 'HEAD', redirect: 'follow' });
-    let bytes = Number(res.headers.get('content-length')) || 0;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+      redirect: 'follow'
+    });
 
-    if (!bytes) {
-      const full = await fetch(url, { redirect: 'follow' });
-      if (!full.ok) {
-        return { statusCode: full.status, headers, body: JSON.stringify({ error: 'No se pudo obtener la imagen' }) };
-      }
-      const buf = await full.arrayBuffer();
-      bytes = buf.byteLength;
+    if (!res.ok) {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ ok: false, bytes: 0 })
+      };
     }
 
-    return { statusCode: 200, headers, body: JSON.stringify({ bytes }) };
-  } catch (err) {
+    const buf = await res.arrayBuffer();
+
     return {
-      statusCode: 502,
+      statusCode: 200,
       headers,
-      body: JSON.stringify({ error: err.message || 'Error al consultar el banner' }),
+      body: JSON.stringify({
+        ok: true,
+        bytes: buf.byteLength
+      })
+    };
+
+  } catch {
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ ok: false, bytes: 0 })
     };
   }
 };
