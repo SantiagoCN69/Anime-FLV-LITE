@@ -325,40 +325,38 @@ function mapearServidoresApi(servidoresApi) {
 function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
 
-  let jkPlayers = [];
-  let mp4uploadServer = null;
+  const players = []; 
+  let youruploadServer = null;
   let megaServer = null;
-  let yourUploadServer = null;
+  let mp4uploadServer = null;
   const mediafireServers = [];
   const otherServers = [];
 
+  // 1. Clasificación
   servidores.forEach(srv => {
     if (srv && typeof srv.url === "string") {
-
       const url = srv.url.toLowerCase();
 
-      if (srv.type === "player" || url.includes("jkplayer")) {
-        jkPlayers.push(srv);
-      }
-
-      else if (srv.url.includes('mp4upload.com')) {
-        mp4uploadServer = srv;
-
-      } else if (srv.url.includes('mega.nz/')) {
+      // Detecta JKPlayer, Zilla-Networks, o cualquier type="player"
+      if (srv.type === "player" || url.includes("jkplayer") || url.includes("zilla-networks.com")) {
+        players.push(srv);
+      } 
+      else if (url.includes('yourupload.com/embed/')) {
+        youruploadServer = srv;
+      } 
+      else if (url.includes('mega.nz/')) {
         megaServer = srv;
-
-      } else if (srv.url.includes('yourupload.com/embed/')) {
-        yourUploadServer = srv;
-
-      }
-
+      } 
+      else if (url.includes('mp4upload.com')) {
+        mp4uploadServer = srv;
+      } 
       else if (url.includes('mediafire.com')) {
         mediafireServers.push({
           ...srv,
           name: "Descargar"
         });
-
-      } else {
+      } 
+      else {
         otherServers.push(srv);
       }
 
@@ -369,14 +367,24 @@ function reordenarServidores(servidores) {
 
   const orderedEmbeds = [];
 
-  orderedEmbeds.push(...jkPlayers);
+  // --- 2. Ensamblaje en el nuevo orden ---
 
-  if (mp4uploadServer) orderedEmbeds.push(mp4uploadServer);
+  // 1ro: Todos los players (Zilla, JKPlayer, etc.)
+  orderedEmbeds.push(...players);
+
+  // 2do: YourUpload
+  if (youruploadServer) orderedEmbeds.push(youruploadServer);
+
+  // 3ro: Mega
   if (megaServer) orderedEmbeds.push(megaServer);
-  if (yourUploadServer) orderedEmbeds.push(yourUploadServer);
 
+  // 4to: Mp4Upload
+  if (mp4uploadServer) orderedEmbeds.push(mp4uploadServer);
+
+  // 5to: Todos los demás (los que no coinciden con las reglas de arriba)
   orderedEmbeds.push(...otherServers);
 
+  // 6to y último: Mediafire
   orderedEmbeds.push(...mediafireServers);
 
   return orderedEmbeds;
