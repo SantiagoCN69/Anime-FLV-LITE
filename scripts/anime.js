@@ -97,6 +97,7 @@ const renderGeneros = (container, generos) => {
 
 
       container.appendChild(a);
+      a.classList.add('cargado');
     });
   } else {
     container.textContent = 'Géneros no disponibles.';
