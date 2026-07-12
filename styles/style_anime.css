@@ -241,7 +241,9 @@ body::after {
   grid-area: progreso;
   background: rgba(var(--bgt), .3);
   height: 35px;
-  width: 30%;
+  flex: 1;
+  min-width: 100px;
+  max-width: 250px;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
@@ -277,7 +279,7 @@ body::after {
   display: flex;
   flex-direction: column;
   grid-area: container2;
-  gap: 20px;
+  gap: 25px;
   height: fit-content;
   span {
     margin-top: 10px;
@@ -285,22 +287,6 @@ body::after {
     font-weight: bold;
     color: var(--t1);
   }
-}
-
-.info1 {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-  justify-content: space-between;
-  position: relative;
-  gap: 10px;
-}
-.info11 {
-  display:flex;
-  gap:10px;
-  align-items: center;
-  height: 27px;
 }
 
 .anime-title {
@@ -313,7 +299,8 @@ body::after {
   color:var(--t1);
   z-index: 1;
 }
-.anime-status {
+#status {
+  width: fit-content;
   padding: 5px 10px;
   border-radius: 12px;
   font-size: .8rem;
@@ -349,7 +336,7 @@ body::after {
   max-width: 450px;
   box-shadow: 0 0 25px rgba(255, 179, 71, 0.25);
 }
-.anime-status img {
+#status img {
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -859,10 +846,6 @@ justify-content: center;
 width: 100%;
 padding: 0;
 height: var(--altura-container-1);
-}
-.info1 {
-gap: 5px;
-align-items: start;
 }
 
 .anime-description {
