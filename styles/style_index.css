@@ -589,6 +589,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
 #nav-populares {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 1.3rem;
 }
