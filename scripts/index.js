@@ -893,7 +893,8 @@ document.addEventListener("DOMContentLoaded", () => {
   '#recomendaciones-favoritos',
   '#recomendaciones-personalizadas',
   '#sugerencias-sin-resultados',
-  '#anime-grid-ia-busqueda'
+  '#anime-grid-ia-busqueda',
+  '#filtro-letras-av1'
  ]
 
 function handleSectionNavigation(sectionId, direction) {
