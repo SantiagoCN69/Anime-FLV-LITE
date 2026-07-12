@@ -57,7 +57,7 @@ main {
 }
 
 main section:nth-child(1) {
-  width: 100%;
+  width: calc(100% - 263px - 20px);
   display: flex;
   flex-direction: column;
   gap:15px;
@@ -508,6 +508,7 @@ iframe {
   }
   main section:nth-child(1) {
     height: unset;
+    width: 100%;
   }
   main section:nth-child(2) {
     height: unset;

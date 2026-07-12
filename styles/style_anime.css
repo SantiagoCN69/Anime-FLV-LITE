@@ -100,10 +100,7 @@ body::after {
 .anime-container1 img {
   cursor: pointer;
   border-radius: 12px;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  aspect-ratio: 26/37;
+
 }
   
 .anime-rating {
@@ -399,6 +396,7 @@ body::after {
   animation: shimmer 1.5s infinite;
 }
 #portadacarga {
+  border-radius: 12px;
   pointer-events: none;
   width: 100%;
   position: absolute;
