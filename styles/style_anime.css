@@ -316,9 +316,9 @@ body::after {
   animation: brightness 2s infinite;
 }
 @keyframes brightness {
-  0% { filter: brightness(1); }
+  0% { filter: brightness(1.1); }
   50% { filter: brightness(0.5); }
-  100% { filter: brightness(1); }
+  100% { filter: brightness(1.1); }
 }
 #titulocargando, #ratingcargando, .genre-link-cargando, #portadacarga, #statuscargando, #anocargando, #categoriacargando {
   display: inline-block;
