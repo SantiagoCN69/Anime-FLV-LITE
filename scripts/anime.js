@@ -807,7 +807,7 @@ async function cargarAnime(idauxiliar) {
 
   // 3. Cargar desde API externa y actualizar todo
   try {
-    const res = await fetch(`http://localhost:3001/api/anime?id=${id}`);
+    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     const anime = normalizarDatosAPI(data);
 
