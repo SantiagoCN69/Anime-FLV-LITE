@@ -14,10 +14,10 @@ let episodios = [];
 let episodioActualIndex = parseInt(episodioUrl);
 let embeds = [];
 let bloquearAnuncios = true;
-let censuraActiva = false;
+let modoDoblado = false;
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
-const btnCensura = document.getElementById("btn-censura");
+
 
 btnBloquear.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
@@ -32,13 +32,50 @@ btnBloquear.addEventListener("click", () => {
     }
   }
 });
+// Variable global para controlar el idioma
 
-btnCensura.addEventListener("click", () => {
-  censuraActiva = !censuraActiva;
-  btnCensura.textContent = `Censura: ${censuraActiva ? "ON" : "OFF"}`;
-  btnCensura.classList.toggle("activo", censuraActiva);
-  document.querySelector(".reproductor-container").classList.toggle("censure", censuraActiva);
-});
+// Evento para el botón de cambio de servidores
+const btnCambioServers = document.getElementById("btn-cambio-servers");
+if (btnCambioServers) {
+  btnCambioServers.addEventListener("click", function() {
+    modoDoblado = !modoDoblado;
+    
+    // Cambiamos el texto del botón según el estado
+    this.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+    this.classList.toggle("activo", modoDoblado); // Por si quieres darle estilos CSS extra
+    
+    // Al cambiar de modo, recargamos la vista del episodio actual (usará caché, así que es instantáneo)
+    if (typeof episodioActualIndex !== 'undefined' && episodioActualIndex !== null) {
+      cargarVideoDesdeEpisodio(episodioActualIndex);
+    }
+  });
+}
+function actualizarEstadoBotonDoblado(servidores) {
+  const btn = document.getElementById("btn-cambio-servers");
+  if (!btn) return;
+
+  // Verificamos si existe al menos un servidor que contenga "(lat)" en su nombre
+  const tieneDoblados = servidores.some(s => 
+    (s.name || "").toLowerCase().includes("(lat)")
+  );
+
+  // Si no hay doblados, deshabilitamos el botón y lo dejamos en modo "Subtitulado"
+  if (!tieneDoblados) {
+    btn.disabled = true;
+    btn.style.opacity = "0.5"; // Lo hacemos ver deshabilitado
+    btn.style.cursor = "not-allowed";
+    // Forzamos el modo subtitulado si el botón se deshabilita
+    if (modoDoblado) {
+      modoDoblado = false;
+      btn.textContent = "Server Doblado";
+    }
+  } else {
+    // Si hay doblados, lo habilitamos
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+  }
+}
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
@@ -278,6 +315,16 @@ async function manejarNoticias() {
 manejarNoticias();
 
 
+function filtrarServidores(servidores, soloDoblados = false) {
+  if (!servidores) return [];
+  return servidores.filter(servidor => {
+    // Buscamos en 'name' (el de la API original)
+    const nombreOriginal = (servidor.name || "").toLowerCase();
+    const tieneLat = nombreOriginal.includes('(lat)');
+    
+    return soloDoblados ? tieneLat : !tieneLat;
+  });
+}
 
 function extraerUrlsServidores(servidores) {
   if (!Array.isArray(servidores)) return [];
@@ -298,6 +345,14 @@ function normalizarUrl(url) {
 
 function servidoresSonIguales(servidoresA, servidoresB) {
   if (!servidoresA || !servidoresB) return false;
+
+  // 🔥 NUEVO: Si los datos de Firestore no tienen el campo 'name', forzamos la actualización
+  const formatoViejo = servidoresA.some(s => s.nombre && s.name === undefined);
+  if (formatoViejo) {
+    console.log("[COMPARE] ❌ Formato antiguo detectado. Forzando actualización.");
+    return false;
+  }
+
   const urlsA = extraerUrlsServidores(servidoresA).map(normalizarUrl);
   const urlsB = extraerUrlsServidores(servidoresB).map(normalizarUrl);
   if (urlsA.length !== urlsB.length) {
@@ -318,6 +373,8 @@ function servidoresSonIguales(servidoresA, servidoresB) {
 function mapearServidoresApi(servidoresApi) {
   return servidoresApi.map((servidor, index) => ({
     nombre: `Servidor ${index + 1}`,
+    name: servidor.name || "", // 🔥 NUEVO: Conservamos el nombre original para saber si tiene (Lat)
+    type: servidor.type || "", // 🔥 NUEVO: Conservamos el tipo (player, download)
     url: typeof servidor === "string" ? servidor : servidor.url
   }));
 }
@@ -326,9 +383,9 @@ function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
 
   const players = []; 
-  let youruploadServer = null;
-  let megaServer = null;
-  let mp4uploadServer = null;
+  const youruploadServers = [];
+  const megaServers = [];
+  const mp4uploadServers = [];
   const mediafireServers = [];
   const otherServers = [];
 
@@ -342,13 +399,13 @@ function reordenarServidores(servidores) {
         players.push(srv);
       } 
       else if (url.includes('yourupload.com/embed/')) {
-        youruploadServer = srv;
+        youruploadServers.push(srv); // AHORA ES UN ARREGLO
       } 
       else if (url.includes('mega.nz/')) {
-        megaServer = srv;
+        megaServers.push(srv); // AHORA ES UN ARREGLO
       } 
       else if (url.includes('mp4upload.com')) {
-        mp4uploadServer = srv;
+        mp4uploadServers.push(srv); // AHORA ES UN ARREGLO
       } 
       else if (url.includes('mediafire.com')) {
         mediafireServers.push({
@@ -372,16 +429,16 @@ function reordenarServidores(servidores) {
   // 1ro: Todos los players (Zilla, JKPlayer, etc.)
   orderedEmbeds.push(...players);
 
-  // 2do: YourUpload
-  if (youruploadServer) orderedEmbeds.push(youruploadServer);
+  // 2do: YourUpload (Todos los que haya)
+  orderedEmbeds.push(...youruploadServers);
 
-  // 3ro: Mega
-  if (megaServer) orderedEmbeds.push(megaServer);
+  // 3ro: Mega (Todos los que haya)
+  orderedEmbeds.push(...megaServers);
 
-  // 4to: Mp4Upload
-  if (mp4uploadServer) orderedEmbeds.push(mp4uploadServer);
+  // 4to: Mp4Upload (Todos los que haya)
+  orderedEmbeds.push(...mp4uploadServers);
 
-  // 5to: Todos los demás (los que no coinciden con las reglas de arriba)
+  // 5to: Todos los demás
   orderedEmbeds.push(...otherServers);
 
   // 6to y último: Mediafire
@@ -429,10 +486,6 @@ async function guardarServidoresEnFirestore(ep, servidores) {
 const serverCache = new Map();
 const CACHE_TTL = 5 * 60 * 1000;
 
-function getServerCacheKey(url) {
-  return `servers_${url}`;
-}
-
 async function sincronizarServidoresConApi(ep) {
   const cacheKey = `servers_${animeId}_${ep.number}`;
  
@@ -448,8 +501,15 @@ async function sincronizarServidoresConApi(ep) {
       const episodioGuardado = animeDatos.episodios?.find(e => e.url === ep.url);
       
       if (episodioGuardado?.servidores?.length) {
-        servidoresFirestore = episodioGuardado.servidores;
-        console.log(`[Servidores] ✅ Firestore encontrado: ${servidoresFirestore.length} servidores.`);
+        // 🔥 NUEVO: Rechazar formato viejo en segundo plano también
+        const esFormatoViejo = episodioGuardado.servidores.some(s => s.nombre && s.name === undefined);
+        
+        if (!esFormatoViejo) {
+          servidoresFirestore = episodioGuardado.servidores;
+          console.log(`[Servidores] ✅ Firestore encontrado: ${servidoresFirestore.length} servidores.`);
+        } else {
+          console.log("[Servidores] ⚠️ Firestore: Formato viejo, se actualizará desde la API.");
+        }
       } else {
         console.log("[Servidores] ⚠️ Firestore: Episodio sin servidores guardados.");
       }
@@ -577,7 +637,6 @@ function aplicarFondoAnime(anime) {
   }
 }
 
-
 async function cargarVideoDesdeEpisodio(index) {
   const controles = document.getElementById("controles");
   controles.classList.remove("con-mediafire");
@@ -618,8 +677,15 @@ async function cargarVideoDesdeEpisodio(index) {
     const episodioGuardado = animeDatos.episodios?.find(e => e.url === ep.url);
 
     if (episodioGuardado?.servidores?.length) {
-      servidoresFirestore = episodioGuardado.servidores;
-      console.log("[cargarVideoDesdeEpisodio] Servidores cargados de Firestore:", servidoresFirestore.length);
+      // 🔥 NUEVO: Solo cargamos de Firestore si NO es el formato viejo
+      const esFormatoViejo = episodioGuardado.servidores.some(s => s.nombre && s.name === undefined);
+      
+      if (!esFormatoViejo) {
+        servidoresFirestore = episodioGuardado.servidores;
+        console.log("[cargarVideoDesdeEpisodio] Servidores cargados de Firestore:", servidoresFirestore.length);
+      } else {
+        console.log("[cargarVideoDesdeEpisodio] ⚠️ Formato viejo ignorado, usando API...");
+      }
     }
   } catch (error) {
     console.error("[cargarVideoDesdeEpisodio] Error al leer servidores de Firestore:", error);
@@ -693,66 +759,72 @@ if (siguiente) {
   return ep;
 }
 
-function renderizarServidores(servidores) {
+function renderizarServidores(todosLosServidores) {
+  // 🔥 PASO NUEVO: Filtramos los servidores antes de renderizarlos
+  const servidores = filtrarServidores(todosLosServidores, modoDoblado);
+
   if (!servidores?.length) {
-    document.getElementById("video").innerHTML = "No hay servidores disponibles.";
+    document.getElementById("video").innerHTML = modoDoblado 
+      ? "<p class='span-carga'>No hay servidores doblados disponibles para este episodio.</p>" 
+      : "<p class='span-carga'>No hay servidores disponibles.</p>";
     document.getElementById("controles").innerHTML = "";
     return;
   }
 
-  embeds = servidores;
+  // Clonamos el array para no mutar los datos en caché con los nuevos nombres
+  embeds = [...servidores]; 
 
-  // Reasignar nombres de servidor según el nuevo orden
+  // Reasignar nombres de servidor según el nuevo orden (solo en la UI)
   embeds.forEach((srv, i) => {
     srv.nombre = `Servidor ${i + 1}`;
   });
 
   const controles = document.getElementById("controles");
   controles.innerHTML = "";
+  
   embeds.forEach((srv, i) => {
-
     const url = srv.url?.toLowerCase?.() || "";
 
     // 🔥 MEDIAFIRE -> <a> DESCARGAR
-  if (url.includes("mediafire.com")) {
-  const a = document.createElement("a");
-  a.href = srv.url;
-  a.innerHTML = `
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path opacity="0.5" d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15"
-        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M12 3V16M12 16L16 11.625M12 16L8 11.625"
-        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  `;
-  a.classList.add("btn-descarga");
-  a.target = "_blank";
-  a.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
-  a.rel = "noopener noreferrer";
-  controles.appendChild(a);
-  controles.classList.add("con-mediafire");
-  return;
-  }
+    if (url.includes("mediafire.com")) {
+      const a = document.createElement("a");
+      a.href = srv.url;
+      a.innerHTML = `
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.5" d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 3V16M12 16L16 11.625M12 16L8 11.625"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+      a.classList.add("btn-descarga");
+      a.target = "_blank";
+      a.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
+      a.rel = "noopener noreferrer";
+      controles.appendChild(a);
+      controles.classList.add("con-mediafire");
+      return;
+    }
 
     // 🔥 RESTO -> button normal
     const btn = document.createElement("button");
-    btn.textContent = srv.nombre
-      ? srv.nombre.replace("Servidor ", "")
-      : `${i + 1}`;
-
+    btn.textContent = srv.nombre ? srv.nombre.replace("Servidor ", "") : `${i + 1}`;
     btn.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.classList.add("cargado");
+    
+    // Rueda del ratón para scroll horizontal
     controles.addEventListener('wheel', (evento) => {
       if (evento.deltaY !== 0) {
         evento.preventDefault();
         controles.scrollLeft += evento.deltaY; 
       }
     });
+    
     controles.appendChild(btn);
   });
 
-  // 🔥 primer video igual que antes
+  // 🔥 Primer video por defecto
   if (embeds && embeds.length > 0) {
     const firstPlayable = embeds.find(s => !s.url?.includes("mediafire.com"));
     const buttons = controles.querySelectorAll("button");
@@ -760,13 +832,12 @@ function renderizarServidores(servidores) {
     if (buttons.length > 0) {
       mostrarVideo(firstPlayable || embeds[0], buttons[0]);
     } else {
-      document.getElementById("video").innerHTML =
-        "No se encontraron botones de servidor.";
+      document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
     }
   } else {
-    document.getElementById("video").innerHTML =
-      "No hay servidores disponibles para mostrar.";
+    document.getElementById("video").innerHTML = "No hay servidores disponibles para mostrar.";
   }
+  actualizarEstadoBotonDoblado(todosLosServidores);
 }
 
 const controles = document.getElementById("controles");
