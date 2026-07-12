@@ -206,7 +206,7 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
 
   try {
     console.log("Consultando API... ", params);
-    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${params}`);
+    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=jkanime&${params}`);
     const data = await res.json();
 
     totalPaginas = Number(data.PaginasTotales || 1);
