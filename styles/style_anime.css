@@ -151,7 +151,9 @@ body::after {
     height: 24px;
   }
   }
-  
+.btn-estados {
+  border: 1px solid var(--br) !important;
+}
   .botones button::after {
   content: attr(data-text);
   position: absolute;
@@ -425,14 +427,17 @@ body::after {
 }
   
 .genero a {
-  background-color: var(--p);
+  border: 1px solid var(--t1);
   color: var(--t1);
-  padding: 10px 10px;
-  border-radius: 12px;
-  border: none;
+  opacity: .7;
+  padding: 5px 12px;
+  border-radius: 999px;
   font-size: .8rem;
+  transition: all .2s ease;
   &:hover {
-    filter: brightness(1.5);
+    border-color: var(--t2);
+    color: var(--t2);
+    opacity: 1;
   }
   }
 
