@@ -396,7 +396,7 @@ async function obtenerServidoresDesdeApi(episodio) {
   console.log("index", episodio.number);
   // https://backend-animeflv-lite.onrender.com/api/episode?animeid=sono-bisque-doll-wa-koi-wo-suru&cap=17
   console.log(`https://backend-animeflv-lite.onrender.com/api/episode?animeid=${animeId}&cap=${episodio.number}`);
-  const res = await fetch(`http://localhost:3001/api/episode?animeid=${animeId}&cap=${episodio.number}`);
+  const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?animeid=${animeId}&cap=${episodio.number}`);
   if (!res.ok) {
     console.warn(`[API episode] API respondió ${res.status} para: ${episodio.url}`);
     return null; // Retornar null en lugar de lanzar error
