@@ -1198,7 +1198,7 @@ section.content-section h2:first-of-type::after {
   position: relative;
   z-index: 1;
 }
-.play-icon {
+.anime-card .play-icon, .play-icon-anime {
   position: absolute;
   bottom: 3px;
   right: 3px;

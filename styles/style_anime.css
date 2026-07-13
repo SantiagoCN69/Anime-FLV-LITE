@@ -714,7 +714,7 @@ body::after {
   -webkit-mask: url('../icons/eye-slash-solid.svg') no-repeat center;
   mask: url('../icons/eye-slash-solid.svg') no-repeat center;
 }
-.play-icon {
+.play-icon-anime {
   transform: translate(50%, 50%);
   bottom: 50%;
   right: 50%;
@@ -724,7 +724,7 @@ body::after {
   .episode-btn:hover {color: var(--btn2);transform: translateY(-3px);}
   .icon-eye:hover {filter: brightness(1.2);}
 
-  .episode-btn:hover .play-icon {width: 50px;height: 50px;
+  .episode-btn:hover .play-icon-anime {width: 50px;height: 50px;
   border: 1px solid #fff2;opacity: 1;}
   .episode-btn:hover .episode-thumb {filter: brightness(0.5);}
 }
@@ -1038,7 +1038,7 @@ max-height: 500px;
     padding: 0;
     background: var(--br);
   }
-  .play-icon {
+  .play-icon-anime {
     display: none;
   }
   @media screen and (hover:hover) {

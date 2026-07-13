@@ -408,7 +408,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
 }`;
   const playIcon = document.createElement('img');
   playIcon.src = "./icons/play-solid-trasparent.svg";
-  playIcon.className = "play-icon";
+  playIcon.className = "play-icon play-icon-anime";
   playIcon.alt = "ver";
   const icon = document.createElement('button');
   icon.className = 'icon-eye';
