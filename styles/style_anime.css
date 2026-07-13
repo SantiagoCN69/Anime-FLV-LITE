@@ -246,13 +246,15 @@ body::after {
 }
 #contenedor-barra-progreso {
   display: flex;
+  flex: 1;
   flex-direction: column;
   font-size: .7rem;
   align-items: start;
-  padding: 5px 8px;
+  padding: 5px 10px;
   gap: 5px;
   justify-content: start;
   min-width: 156px;
+  max-width: 250px;
 }
 #btn-progreso {
   position: relative;
@@ -285,7 +287,7 @@ body::after {
   display: flex;
   flex-direction: column;
   grid-area: container2;
-  gap: 15px;
+  gap: 20px;
   height: fit-content;
   span {
     margin-top: 10px;
@@ -373,9 +375,9 @@ body::after {
   animation: brightness 2s infinite;
 }
 @keyframes brightness {
-  0% { filter: brightness(1); }
+  0% { filter: brightness(1.1); }
   50% { filter: brightness(0.6); }
-  100% { filter: brightness(1); }
+  100% { filter: brightness(1.1); }
 }
 #titulo {
   height: 1lh;
