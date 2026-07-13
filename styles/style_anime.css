@@ -1,8 +1,3 @@
-:root {
-  /* Colores del brillo neón */
-  --neon-glow: conic-gradient(from 0deg, #ff007f, #7f00ff, #00f0ff, #ff007f);
-}
-
 body {
   overflow-x: hidden !important;
   overflow-y: auto;
@@ -101,50 +96,12 @@ body::after {
   position: relative;
   width: 100%;
   aspect-ratio: 5/7;
-  overflow: hidden;
-  justify-content: center;
-  align-items: center;
-}
-
-/* El truco del brillo: un fondo que gira por detrás */
-.anime-container1::before {
-  content: '';
-  position: absolute;
-  width: 150%;
-  height: 150%;
-  background: var(--neon-glow);
-  animation: rotateGlow 4s linear infinite;
-  z-index: 1;
-}
-
-/* El contenedor interno para tapar el centro y dejar solo el borde */
-.anime-container1::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  background: var(--p);
-  border-radius: 9px;
-  z-index: 2;
 }
 
 .anime-container1 img {
   cursor: pointer;
-  border-radius: 9px;
-  position: relative;
-  z-index: 3;
-  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
 }
-
-/* Animación de rotación */
-@keyframes rotateGlow {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
   
 .anime-rating {
   display: flex;
