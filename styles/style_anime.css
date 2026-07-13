@@ -324,6 +324,7 @@ body::after {
   p {
     min-height: 1lh;
     font-size: .8rem;
+    text-align: center;
   }
   }
   #btn-progreso {
@@ -335,12 +336,13 @@ body::after {
     border-radius: 12px;
   }
   #progreso-text {
-    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     margin: 0;
+    bottom: calc(15px + 12px);
     z-index: 1;
     width: fit-content ;
+    height: 1lh !important;
     font-weight: bold;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
