@@ -1475,7 +1475,7 @@ margin-top: 10px;
   height: 8px;
 }
 .episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb, #anime-grid-ia-busqueda::-webkit-scrollbar-thumb {
-  background-color: var(--btn);
+  background-color: var(--p);
   border-radius: 5px;
 }
 .span-carga {

@@ -1001,18 +1001,22 @@ async function obtenerFavoritosAnime() {
 
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
   const progreso = (episodiosVistos.length / totalEpisodios) * 100;
+  const progresoFixed = progreso.toFixed(0);
 
   const progresoBtn = document.getElementById('btn-progreso');
   if (progresoBtn) {
-    progresoBtn.style.setProperty('--progreso', progreso.toFixed(0));
-    progresoBtn.style.setProperty('--progreso-text', `"${progreso.toFixed(0)}%"`);
+    progresoBtn.style.setProperty('--progreso', progresoFixed);
+  }
+
+  const progresoText = document.getElementById('progreso-text');
+  if (progresoText) {
+    progresoText.textContent = `${progresoFixed}%`;
   }
 
   const progresoElement = document.getElementById('progreso');
   if (progresoElement) {
     progresoElement.style.width = `${progreso}%`;
   }
-
 }
 
 const btnViendo = document.getElementById('btn-viendo');

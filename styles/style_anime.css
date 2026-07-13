@@ -125,35 +125,37 @@ body::after {
   height: 17px;
   display: inline-block;
 }
-.botones {
+#botones-estado {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
   width: 100%;
+  margin-top: 1rem;
 }
   
-.botones button {
+.btn-estado {
   cursor: pointer;
   padding: 15px;
-  border-radius: 12px;
+  border-radius: 8px;
   border: none;
   color: var(--t1);
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   height: 40px !important;
   background: var(--p);
+  box-shadow: 0 0px 30px rgba(var(--bgt), 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-  }
-.btn-estados {
-  border: 1px solid var(--br);
 }
-  .botones button::after {
+
+.btn-estado svg {
+  width: 24px;
+  height: 24px;
+  color: var(--t1);
+  }
+
+.btn-estado::after {
   content: attr(data-text);
   position: absolute;
   bottom: 100%;
@@ -177,29 +179,36 @@ body::after {
   margin-bottom: 8px;
   z-index: 10;
 }
+#contenedor-barra-progreso {
+  cursor: default;
+}
+.btn-estado#contenedor-barra-progreso::after {
+  display: none;
+}
 @media (hover: hover) and (pointer: fine) {
-  .botones button:hover::after {
+  .btn-estado:hover::after {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
   }
-  .botones button:hover {
-    transform: translateY(-2px) scale(1.05);
+  .btn-estado:not(#contenedor-barra-progreso):hover {
+    transform: translateY(-2px);
   }
 }
 @media (hover: none) {
-  .botones button.touch-hover::after {
+  .btn-estado.touch-hover::after {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
   }
 }
-.botones button:active {
-  transform: translateY(-2px) scale(.9);
+.btn-estado:not(#contenedor-barra-progreso):active {
+  transform: translateY(-2px) scale(.9) !important;
 }
 #btn-fav {
   grid-area: fav;
   background: #5a131aad;
+  border: 1px solid #5a131aad;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,53 +230,53 @@ body::after {
   background: #00c853;
 }
 @media (hover: hover) and (pointer: fine), (active) {
-  #btn-viendo:hover {
+  #btn-viendo:not(.active):hover {
     background-color: rgba(34, 206, 233, 0.25);
+    border-color: #22cee9;
   }
-  #btn-pendiente:hover {
+  #btn-pendiente:not(.active):hover {
     background-color: rgba(255, 193, 7, 0.25);
+    border-color: #ffc107;
   }
-  #btn-visto:hover {
+  #btn-visto:not(.active):hover {
     background-color: rgba(0, 200, 83, 0.25);
+    border-color: #00c853;
   }
 }
-
-
+#contenedor-barra-progreso {
+  display: flex;
+  flex-direction: column;
+  font-size: .7rem;
+  align-items: start;
+  padding: 5px 8px;
+  gap: 5px;
+  justify-content: start;
+  min-width: 156px;
+}
 #btn-progreso {
-  grid-area: progreso;
-  background: rgba(var(--bgt), .3);
-  height: 35px;
-  flex: 1;
-  min-width: 100px;
-  max-width: 250px;
-  border-radius: 12px;
-  overflow: hidden;
   position: relative;
-  --progreso-text: "0%";
+  background: var(--br);
+  height: 8px;
+  width: calc(100% - 25px);
+  max-width: 250px;
+  border-radius: 99px;
   --progreso: 0;
 }
 #progreso {
-  max-width: 100%;
   position: absolute;
   inset: 0;
-  transition: width .5s;
   width: calc(var(--progreso) * 1%);
-  height: 100%;
-  background-color: var(--btn);
-  border-radius: 5px;
-  overflow: hidden;
+  background: linear-gradient(to right, var(--btn), var(--btn2));
+  border-radius: 99px;
+  transition: width .5s;
 }
-#btn-progreso:hover {
-  transform: scale(1);
-}
-#progreso-text::before {
-  content: var(--progreso-text);
+#progreso-text {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  right: -28px;
+  top: 0;
+  font-weight: 500;
+  transform: translateY(-100%);
+  font-size: .7rem;
   color: var(--t1);
 }
 
@@ -275,7 +284,7 @@ body::after {
   display: flex;
   flex-direction: column;
   grid-area: container2;
-  gap: 25px;
+  gap: 13px;
   height: fit-content;
   span {
     margin-top: 10px;
@@ -303,6 +312,7 @@ body::after {
 #info1 p {
   font-size: .9rem;
   font-weight: bold;
+  opacity: .9;
 }
 #info1 p:nth-child(3) {
   position: relative;
@@ -387,7 +397,7 @@ body::after {
 
 .genero {
   display: flex;
-  gap: 5px;
+  gap: 10px;
   flex-wrap: wrap;
   min-height: fit-content;
 }
@@ -395,7 +405,7 @@ body::after {
 .genero a {
   color: var(--t1);
   opacity: .7;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 999px;
   font-size: .8rem;
   transition: all .2s ease;
@@ -493,7 +503,7 @@ body::after {
   height: 8px;
 }
 .episodes-list::-webkit-scrollbar-thumb, .timeline-containe::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb {
-  background-color: var(--btn);
+  background-color: var(--p);
   border-radius: 5px;
 }
 .anime-description {
@@ -674,7 +684,6 @@ body::after {
 }
 #relacionados {
 display: none;
-width: fit-content;
 max-width: 1150px;
 grid-area: container4;
 flex-direction: column;
@@ -813,7 +822,7 @@ position: relative;
 width: 100%;
 height: auto;
 }
-.botones, .genero, #info1 {
+#botones-estado, .genero, #info1 {
 justify-content: center;
 }
 #btn-estado {
@@ -848,9 +857,6 @@ anime-container3 {
 width: 100%;
 max-height: 500px;
 }
-#relacionados {
-width: 100%;
-    }
 .episodes-list {
   max-height: clamp(420px, calc(100vh - 550px), 1000px);
   }
