@@ -95,7 +95,8 @@ body::after {
   grid-area: container1;
   position: relative;
   width: 100%;
-  aspect-ratio: 17 / 25;
+  justify-content: center;
+  aspect-ratio: 200 / 281;
 }
 
 .anime-container1 img {
@@ -516,7 +517,7 @@ body::after {
 
 .genero {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   flex-wrap: wrap;
   min-height: fit-content;
 }
