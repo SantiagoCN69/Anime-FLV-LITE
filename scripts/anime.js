@@ -401,7 +401,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   img.src = `https://cdn.animeav1.com/screenshots/${internalId}/${ep.number}.jpg`;
   img.alt = `Episodio ${ep.number}`;
   img.loading = 'lazy';
-  img.style.setProperty('view-transition-name', `${id}-${ep.number}`);
+  
   
   const textSpan = document.createElement('span');
   textSpan.className = 'episode-text';
@@ -428,6 +428,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
     if (btn.classList.contains("ep-no-visto")) {
       await manejarEstadoEpisodio(btn, icon, ep);
     }
+    img.style.setProperty('view-transition-name', `${id}-${ep.number}`);
     window.location.href = `ver.html?id=${id}&url=${ep.number}`;
   });
 
