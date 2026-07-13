@@ -77,7 +77,7 @@ body::after {
   margin-bottom: 2rem;
   display: grid;
   grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
-  grid-template-rows: auto auto auto;
+  /* grid-template-rows: auto auto auto; */
   grid-template-areas: 
     "container1 container2"
     "container3 container3"
@@ -557,7 +557,7 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-height: 166px;
+  min-height: 220px;
   position: relative;
 }
 
@@ -602,25 +602,19 @@ body::after {
   grid-area: episodios;
   margin:auto;
   list-style-type: none;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap:10px;
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  padding-top: 10px;
+  overflow-y: auto;
   scroll-behavior: smooth;
-  height: 0px;
   transition: height .5s;
-  gap: 0 1rem;
-  &.cargado {
-    height: min(calc(var(--caps) * (80px + 1rem) + 8px), clamp(296px, calc(100vh - 440px), 1000px));
-  }
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
 .episodes-list::-webkit-scrollbar, .timeline-containe::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar {
-  height: 8px;
+  width: 8px;
 }
 .episodes-list::-webkit-scrollbar-thumb, .timeline-containe::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb {
   background-color: var(--p);
@@ -633,77 +627,106 @@ body::after {
   width: 4px;
 }
 .episodes-list li {
-  margin-bottom: 1rem;
   width: 100%;
   display: flex;
-  flex:1 ;
-  max-height: 80px;
-  min-height: 80px;
-}
+  height: 150px;
+} 
 .episode-btn.ep-visto {
-  color: var(--t2);
+  color: var(--btn2);
 }
 .episode-btn {
-  background: var(--p);
   border:none;
-  border-top: 1px solid var(--br);
-  border-radius: 12px;
+  background: none;
   color: var(--t1);
   font-size: 1rem;
   cursor: pointer;
   transition: transform 0.2s;
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   position: relative;
-  padding-inline: 20px;
+  overflow: hidden;
   &:active {
-    opacity: .8;
     color: var(--btn);
-    background-color: var(--p);
-    filter: brightness(1.5);
+    transform: translateY(-3px);
   }
 }
-.icon-eye {
-  width: 25px;
-  height: 25px;
-  opacity: 0;
+
+.episode-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--br);
+  transition: transform 0.2s, filter 0.2s;
+  transform-origin: bottom center; 
+  
+  border-radius: 12px;
 }
-.ep-visto::after, .ep-no-visto::after {
+
+.episode-text {
+  padding: 8px;
+  font-weight: 600;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 0;
+  background: var(--p);
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.icon-eye {
+  width: 35px;
+  height: 35px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  background-color: rgb(var(--bgti),.4);
+  backdrop-filter: blur(10px);
+  transition: filter 0.2s, background-color 0.2s;
+}
+.ep-visto .icon-eye::after, .ep-no-visto .icon-eye::after {
   content: "";
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   position: absolute;
   top: 50%;
-  right: 20px;
+  left: 50%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
-  transform: translateY(-50%);
   -webkit-mask-size: contain;
   mask-size: contain;
-
 }
-.ep-visto::after {
-  background-color: var(--btn); 
+.ep-visto .icon-eye::after {
+  background-color: var(--t1); 
   -webkit-mask: url('../icons/eye-solid.svg') no-repeat center;
   mask: url('../icons/eye-solid.svg') no-repeat center;
  }
-.ep-no-visto::after {
-  background-color: rgb(var(--bgt),.3); 
+.ep-no-visto .icon-eye::after {
+  background-color: rgb(var(--bgt),.4); 
   -webkit-mask: url('../icons/eye-slash-solid.svg') no-repeat center;
   mask: url('../icons/eye-slash-solid.svg') no-repeat center;
 }
-@media screen and (hover:hover) {
-  .episode-btn {
-    width: calc(100% - 6px);
-  }
-.episode-btn:hover {
-    color: var(--btn);
-    background-color: var(--p);
-    filter: brightness(1.2);
-
-    transform: translateX(3px);
+.play-icon {
+  transform: translate(50%, 50%);
+  bottom: 50%;
+  right: 50%;
+  opacity: 0;
 }
+@media screen and (hover:hover) {
+  .episode-btn {width: calc(100% - 6px);}
+  .episode-btn:hover {color: var(--btn2);transform: translateY(-3px);}
+  .icon-eye:hover {filter: brightness(1.2);}
+
+  .episode-btn:hover .play-icon {width: 50px;height: 50px;
+  border: 1px solid #fff2;opacity: 1;}
+  .episode-btn:hover .episode-thumb {filter: brightness(0.5);}
 }
 .caps-completados-overlay{
     position:absolute;
@@ -804,7 +827,6 @@ body::after {
 }
 #relacionados {
 display: none;
-max-width: 1150px;
 grid-area: container4;
 flex-direction: column;
 position: relative;
@@ -980,8 +1002,50 @@ width: 100%;
 max-height: 500px;
 }
 .episodes-list {
-  max-height: clamp(420px, calc(100vh - 550px), 1000px);
+  grid-template-columns: 1fr;
   }
+  
+  .episodes-list li {
+    min-height: 80px;
+    max-height: 80px;
+  }
+  
+  .episode-btn {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    background: var(--p);
+    border-radius: 12px;
+  }
+  
+  .episode-thumb {
+    width: 100px;
+    height: 100%;
+    border-radius: 10px;
+
+  }
+  
+  .episode-text {
+    flex: 1;
+    padding: 0 15px;
+    justify-content: start;
+    position: static;
+  }
+  
+  .icon-eye {
+    position: static;
+    background: none;
+    padding: 0;
+    background: var(--br);
+  }
+  @media screen and (hover:hover) {
+.episode-btn:hover img {
+    transform: scale(1);
+}
+.episode-btn:hover .icon-eye {
+background: var(--p);
+}
+}
 }
 /* Ocultar botones por defecto */
 #btn-search-capitulo,

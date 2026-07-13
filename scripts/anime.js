@@ -387,22 +387,36 @@ const debounce = (fn, delay = 200) => {
   };
 };
 
-const createEpisodeButton = (ep, vistos = []) => {
+const createEpisodeButton = (ep, vistos = [], internalId) => {
   const li = document.createElement('li');
   const btn = document.createElement('button');
   const visto = vistos.includes(ep.number.toString());
   btn.className = `episode-btn ${visto ? 'ep-visto' : 'ep-no-visto'}`;
-  btn.textContent = `Episodio ${
+  
+  const img = document.createElement('img');
+  img.className = 'episode-thumb';
+  img.src = `https://cdn.animeav1.com/screenshots/${internalId}/${ep.number}.jpg`;
+  img.alt = `Episodio ${ep.number}`;
+  img.loading = 'lazy';
+  
+  const textSpan = document.createElement('span');
+  textSpan.className = 'episode-text';
+  textSpan.textContent = `Episodio ${
   ep.number !== undefined && ep.number !== null ? 
   ep.number : 
   (ep.title || 'desconocido')
 }`;
-
-  const icon = document.createElement('img');
+  const playIcon = document.createElement('img');
+  playIcon.src = "./icons/play-solid-trasparent.svg";
+  playIcon.className = "play-icon";
+  playIcon.alt = "ver";
+  const icon = document.createElement('button');
   icon.className = 'icon-eye';
-  icon.src = visto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
   icon.alt = 'visto';
 
+  btn.appendChild(img);
+  btn.appendChild(textSpan);
+  btn.appendChild(playIcon);
   btn.appendChild(icon);
   li.appendChild(btn);
 
@@ -468,7 +482,7 @@ async function crearBotonesEpisodios(anime) {
     }
 
     const fragment = document.createDocumentFragment();
-    episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos)));
+    episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos, anime.internalId)));
     capContenedor.appendChild(fragment);
 
     if (initLoadingCap) initLoadingCap.style.display = 'none';
@@ -479,6 +493,53 @@ async function crearBotonesEpisodios(anime) {
     capContenedor.classList.add("cargado");
     capContenedor.style.setProperty("--caps", episodios.length);
 
+   // Calcular altura dinámica del contenedor
+const calcularAlturaContenedor = () => {
+    // Si no hay episodios o el contenedor no existe, no hacemos nada
+    if (!capContenedor || episodios.length === 0) return;
+
+    const isMobile = window.innerWidth <= 700;
+    const itemHeight = isMobile ? 80 : 150; 
+    const gap = 16; 
+    const paddingTop = 10; 
+    
+    // Espacio fijo que ocupan tu header/footer/etc.
+    const offsetPantalla = isMobile ? 550 : 440; 
+
+    // Calcular elementos por fila (mínimo 1 para evitar dividir por cero)
+    let itemsPerRow = isMobile ? 1 : Math.floor(capContenedor.offsetWidth / 160);
+    if (itemsPerRow < 1) itemsPerRow = 1;
+
+    // Total de filas reales que existen
+    const totalRows = Math.ceil(episodios.length / itemsPerRow);
+
+    // Espacio real en píxeles que tenemos disponible en la pantalla
+    const availableHeight = window.innerHeight - offsetPantalla;
+
+    // ¿Cuántas filas ENTERAS caben en ese espacio?
+    // Despejamos la fórmula exacta para que no sobre ni un píxel a la mitad
+    let rowsThatFit = Math.floor((availableHeight + gap - paddingTop) / (itemHeight + gap));
+
+    // LÓGICA DE FILAS:
+    // 1. Math.max(3, rowsThatFit): Queremos las que quepan, pero MÍNIMO 3 (incluso en pantallas diminutas).
+    // 2. Math.min(totalRows, ...): Pero si solo hay 2 filas de episodios en total, mostramos 2, no forzamos 3 vacías.
+    const targetRows = Math.min(totalRows, Math.max(3, rowsThatFit));
+
+    // Calcular la altura EN PÍXELES de las filas objetivo (sin cortes)
+    // Se usa (targetRows - 1) para los gaps, porque la última fila no tiene gap por debajo.
+    let calculatedHeight = (targetRows * itemHeight) + ((targetRows - 1) * gap) + paddingTop;
+
+    // Aplicar la altura
+    capContenedor.style.height = `${calculatedHeight}px`;
+};
+
+// Ejecutar cálculo inicial
+requestAnimationFrame(calcularAlturaContenedor);
+
+// Recalcular al cambiar tamaño de ventana
+window.addEventListener('resize', () => {
+    requestAnimationFrame(calcularAlturaContenedor);
+});
 const hacerScroll = () => {
     const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 
@@ -528,37 +589,6 @@ async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
     console.error("Error al limpiar los capítulos en Firestore:", error);
   }
 }
-capContenedor.addEventListener('wheel', e => {
-  e.preventDefault();
-
-  const ancho = getAnchoColumna();
-  if (!ancho) return;
-
-  const dir = e.deltaY > 0 ? 1 : -1;
-  const curr = capContenedor.scrollLeft;
-
-  const col = Math.round(curr / ancho);
-  const target = (col + dir) * ancho;
-
-  const maxScroll = capContenedor.scrollWidth - capContenedor.clientWidth;
-
-  capContenedor.scrollTo({
-    left: Math.max(0, Math.min(target, maxScroll)),
-    behavior: 'smooth'
-  });
-
-}, { passive: false });
-
-let scrollTimeout;
-capContenedor.addEventListener('scroll', () => {
-  clearTimeout(scrollTimeout);
-  scrollTimeout = setTimeout(() => {
-    const ancho = getAnchoColumna();
-    if (!ancho) return;
-    const col = Math.round(capContenedor.scrollLeft / ancho);
-    capContenedor.scrollTo({ left: col * ancho, behavior: 'smooth' });
-  }, 100);
-});
 
 filtroCapitulo.addEventListener('input', debounce(() => {
   const filtro = filtroCapitulo.value.toLowerCase();
@@ -723,7 +753,8 @@ function compararDatos(a, b) {
     ['rating', strEqual],
     ['estado', strEqual],
     ['category', strEqual],
-    ['startDate', strEqual]
+    ['startDate', strEqual],
+    ['internalId', strEqual]
   ];
 
   if (camposBasicos.some(([campo, comparar]) => 
@@ -773,6 +804,7 @@ function normalizarDatosAPI(data) {
     // Usar datos de sources[0].data si existen, si no usar datos del nivel superior
     return {
       titulo: sourceData?.title || data.title || '',
+      internalId: sourceData?.internalId || data.internalId || '',
       portada: sourceData?.cover || data.cover || '',
       banner: data.banner || '',
       descripcion: sourceData?.synopsis || data.synopsis || '',
@@ -790,6 +822,7 @@ function normalizarDatosAPI(data) {
   // Formato antiguo (directo)
   return {
     titulo: data.title || '',
+    internalId: data.internalId || '',
     portada: data.cover || '',
     banner: data.banner || '',
     descripcion: data.synopsis || '',
