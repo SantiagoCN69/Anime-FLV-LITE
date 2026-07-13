@@ -11,6 +11,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let id = new URLSearchParams(location.search).get("id");
+let animeActual = null; // Guardar referencia al anime actual para invertir orden
+let ordenInvertido = false; // Estado del orden de capítulos
 
 document.title = "AniZen - " + id;
 
@@ -367,6 +369,7 @@ const renderAnime = anime => {
       mensajeProximoEstrenar.remove();
     }
   }
+  animeActual = anime; // Guardar referencia al anime actual
   crearBotonesEpisodios(anime);
   renderRelacionados(anime);
 };
@@ -461,9 +464,13 @@ function mostrarOverlayCapitulosCompletados() {
   }, 3000);
 }
 
-async function crearBotonesEpisodios(anime) {
+async function crearBotonesEpisodios(anime, invertirOrden = false) {
     capContenedor.innerHTML = '';
-    const episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
+    let episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
+    
+    if (invertirOrden) {
+        episodios = [...episodios].reverse();
+    }
     
     // 1. Obtenemos los vistos originales
     let vistosOriginales = await obtenerCapitulosVistos(id) || [];
@@ -540,6 +547,32 @@ requestAnimationFrame(calcularAlturaContenedor);
 window.addEventListener('resize', () => {
     requestAnimationFrame(calcularAlturaContenedor);
 });
+function setupInvertirButton() {
+    const btnInvertirCaps = document.getElementById('btn-invertir-caps');
+    if (btnInvertirCaps) {
+        // Remover listeners anteriores si existen
+        const newBtn = btnInvertirCaps.cloneNode(true);
+        btnInvertirCaps.parentNode.replaceChild(newBtn, btnInvertirCaps);
+ 
+        newBtn.addEventListener('click', () => {
+            console.log('Botón invertir clickeado, ordenInvertido:', ordenInvertido);
+            if (animeActual) {
+                ordenInvertido = !ordenInvertido;
+                console.log('Nuevo ordenInvertido:', ordenInvertido);
+                crearBotonesEpisodios(animeActual, ordenInvertido);
+            } else {
+                console.log('animeActual es null');
+            }
+        });
+    }
+}
+ 
+// Configurar el botón cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupInvertirButton);
+} else {
+    setupInvertirButton();
+}
 const hacerScroll = () => {
     const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 

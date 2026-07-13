@@ -74,7 +74,6 @@ body::after {
 .anime-details {
   padding-top: 225px;
   padding-inline: 4rem;
-  margin-bottom: 2rem;
   display: grid;
   grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
   /* grid-template-rows: auto auto auto; */
@@ -561,14 +560,22 @@ body::after {
   position: relative;
 }
 
-.header-caps {
+.header-caps, .header-caps div {
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: fit-content;
-  }
-
+  gap: 10px;
+  width: 100%;
+}
+.header-caps div {
+  width: fit-content;
+  margin-inline: 5px;
+  transition: width .3s ease;
+  justify-content: end;
+}
 #titulo-lista-caps {
+  flex: 1;
   color: var(--t1);
   font-size: 1.5rem;
   overflow: hidden;
@@ -576,6 +583,29 @@ body::after {
   white-space: nowrap;
   width: fit-content;
   font-weight: bold;
+}
+
+#btn-invertir-caps {
+  background: var(--p);
+  border: 1px solid var(--br);
+  border-radius: 8px;
+  padding: 11px;
+  cursor: pointer;
+  color: var(--t1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+#btn-invertir-caps svg {
+  width: 20px;
+  height: 20px;
+}
+
+#btn-invertir-caps:hover {
+  background: var(--br);
+  color: var(--btn);
 }
 
 .search-caps {
@@ -830,13 +860,13 @@ display: none;
 grid-area: container4;
 flex-direction: column;
 position: relative;
+margin-bottom: 2rem;
 }
 /* Contenedor principal desplazable */
 .timeline-container {
   display: flex;
   gap: 20px;
   overflow-x: auto;
-  padding: 10px 0 20px 0;
 }
 .timeline-container::-webkit-scrollbar, .timeline-container::-webkit-scrollbar-thumb {
   height: 6px;
@@ -1060,24 +1090,39 @@ max-height: 500px;
     display: block;
   }
 
-  .header-caps {
-    position: relative;
-    overflow: hidden;
-    height: 45px;
-  }
-
+.header-caps div, .header-caps {
+  position: relative;
+  overflow: hidden;
+  height: 45px;
+  width: 100%;
+}
+.header-caps {
+  width: calc(100% - 15px);
+}
+.header-caps div {
+  width: 80px;
+  margin-inline: unset;
+  margin-left: auto;
+}
   /* Elementos normales */
   .header-caps span,
   #btn-search-capitulo {
     transition: transform 0.2s;
     transform: translateY(0);
+    position: static;
   }
 
   /* Cuando se activa búsqueda */
   .header-caps.search-active span,
   .header-caps.search-active #btn-search-capitulo {
-    transform: translateY(-40px);
+    transform: translateY(-42px);
   }
+  .header-caps.search-active #btn-invertir-caps {
+        transform: translateX(-1000%);
+  }
+    .header-caps.search-active span{
+      position: absolute;
+    }
   /* Caja de búsqueda */
   .header-caps .search-caps {
     position: absolute;
@@ -1090,7 +1135,10 @@ max-height: 500px;
     transition: opacity 0.3s ease, transform 0.3s ease;
     will-change: transform;
   }
-
+  .header-caps.search-active div {
+    justify-content: end;
+    width: 100%;
+  }
   .header-caps.search-active .search-caps {
     opacity: 1;
     transform: translateY(0);
@@ -1134,7 +1182,7 @@ max-height: 500px;
   width: 24px;
   height: 24px;
   padding-left: 3px;
-  background-color: var(--btn); /* Color del SVG */
+  background-color: var(--t1); /* Color del SVG */
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
   mask-size: contain;
