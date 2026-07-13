@@ -95,14 +95,30 @@ body::after {
   grid-area: container1;
   position: relative;
   width: 100%;
-  aspect-ratio: 5/7;
 }
 
 .anime-container1 img {
   cursor: pointer;
   border-radius: 12px;
+  position: relative;
+  z-index: 1;
 }
-  
+
+.anime-container1::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: scale(1.02);
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px);
+  opacity: 0.3;
+  border-radius: 12px;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .anime-rating {
   display: flex;
   align-items: center;
