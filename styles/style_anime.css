@@ -664,9 +664,11 @@ body::after {
 } 
 .episode-btn.ep-visto {
   color: var(--btn2);
+  background: var(--br);
 }
 .episode-btn {
-  border:none;
+  border: none;
+  border-radius: 12px;
   background: none;
   color: var(--t1);
   font-size: 1rem;
@@ -680,6 +682,7 @@ body::after {
   &:active {
     color: var(--btn);
     transform: translateY(-3px);
+    border: 1px solid var(--btn2)
   }
 }
 
@@ -1060,6 +1063,7 @@ max-height: 500px;
     padding: 0 15px;
     justify-content: start;
     position: static;
+    background: none;
   }
   
   .icon-eye {
@@ -1067,6 +1071,9 @@ max-height: 500px;
     background: none;
     padding: 0;
     background: var(--br);
+  }
+  .ep-visto .icon-eye {
+    background: var(--p);
   }
   .play-icon-anime {
     display: none;
@@ -1089,7 +1096,9 @@ max-height: 500px;
   #btn-close-search-capitulo {
     display: block;
   }
-
+#btn-invertir-caps {
+  padding: 7px;
+}
 .header-caps div, .header-caps {
   position: relative;
   overflow: hidden;
@@ -1152,7 +1161,6 @@ max-height: 500px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    margin-left: 10px;
   }
 
   #btn-close-search-capitulo::before {
