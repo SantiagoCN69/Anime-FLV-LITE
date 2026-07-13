@@ -500,7 +500,7 @@ const calcularAlturaContenedor = () => {
 
     const isMobile = window.innerWidth <= 700;
     const itemHeight = isMobile ? 80 : 150; 
-    const gap = 16; 
+    const gap = 15; 
     const paddingTop = 10; 
     
     // Espacio fijo que ocupan tu header/footer/etc.

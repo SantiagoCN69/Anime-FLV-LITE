@@ -604,7 +604,7 @@ body::after {
   list-style-type: none;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap:10px;
+  gap:15px;
   width: 100%;
   padding-top: 10px;
   overflow-y: auto;
@@ -720,7 +720,6 @@ body::after {
   opacity: 0;
 }
 @media screen and (hover:hover) {
-  .episode-btn {width: calc(100% - 6px);}
   .episode-btn:hover {color: var(--btn2);transform: translateY(-3px);}
   .icon-eye:hover {filter: brightness(1.2);}
 
