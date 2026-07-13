@@ -415,10 +415,10 @@ body::after {
   -webkit-mask-size: contain;
   mask-size: contain;
 }
-.emisión {
+.emisión, .emision{
   color: #49c985;
 }
-.emisión::before {
+.emisión::before, .emision::before {
   background-color: #3ec87f !important;
   animation: brightness 2s infinite;
 }
