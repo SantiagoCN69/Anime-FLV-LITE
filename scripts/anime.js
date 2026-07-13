@@ -919,14 +919,17 @@ btnFav.addEventListener("click", async () => {
   // Deshabilitamos para evitar spam de clics
   btnFav.disabled = true;
 
+  // Guardar estado anterior de la UI
+  const eraActivo = btnFav.classList.contains("favorito");
+
   try {
     // --- RESPUESTA VISUAL INSTANTÁNEA ---
-    if (btnFav.classList.contains("activo")) {
-      btnFav.classList.remove("activo");
+    if (eraActivo) {
+      btnFav.classList.remove("favorito");
       btnFav.classList.add("desaparecer");
       setTimeout(() => btnFav.classList.remove("desaparecer"), 500);
     } else {
-      btnFav.classList.add("activo");
+      btnFav.classList.add("favorito");
       btnFav.classList.add("aparecer");
       setTimeout(() => btnFav.classList.remove("aparecer"), 500);
     }
@@ -937,9 +940,15 @@ btnFav.addEventListener("click", async () => {
     // --- ESTADO FINAL ---
     actualizarEstadoFavorito();
 
-
   } catch (err) {
     console.error("❌ Error al cambiar favorito:", err);
+    // Revertir UI en caso de error
+    if (eraActivo) {
+      btnFav.classList.add("favorito");
+    } else {
+      btnFav.classList.remove("favorito");
+    }
+    actualizarEstadoFavorito();
   } finally {
     btnFav.disabled = false;
   }
@@ -1139,7 +1148,10 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
   }
 
   if (btnSeleccionado.classList.contains('active')) {
-    // Desactivar estado
+    // Desactivar estado - UI INSTANTÁNEA
+    const estadoAnterior = btnSeleccionado.classList.contains('active');
+    btnSeleccionado.classList.remove('active');
+    
     try {
       const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoId);
       const estadoDoc = await getDoc(estadoRef);
@@ -1152,20 +1164,22 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
           mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');
         }
       }
-      btnSeleccionado.classList.remove('active');
     } catch (error) {
       console.error('Error al eliminar el estado:', error);
       // Revertir UI en caso de error
+      btnSeleccionado.classList.add('active');
       await refrescarEstadoBotones();
     }
     return;
   }
 
-  // Activar nuevo estado
+  // Activar nuevo estado - UI INSTANTÁNEA
+  const estadoAnteriorBtn = document.querySelector('#btn-viendo.active, #btn-pendiente.active, #btn-visto.active');
+  [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
+  btnSeleccionado.classList.add('active');
+  
   try {
     await actualizarEstadoFirebase(estadoId.toUpperCase());
-    [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
-    btnSeleccionado.classList.add('active');
   } catch (error) {
     console.error('Error al cambiar estado:', error);
     // Revertir UI en caso de error
