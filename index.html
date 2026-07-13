@@ -86,10 +86,13 @@
         <span>Lab</span><span>- Beta</span></button>
   </nav>
   <script>
-const indexpagination = document.querySelector('#indexpagination');
-const isFixed = localStorage.getItem('indexpaginationFixed') === 'true';
-if (isFixed && window.innerWidth <= 600 && indexpagination) {
-  indexpagination.classList.add('fixed');
+const indexpagination = document.getElementById("indexpagination");
+if (indexpagination) {
+  const position = localStorage.getItem("indexpaginationPosition");
+  if (position) {
+    indexpagination.classList.remove("top", "bottom", "floating", "fixed");
+    indexpagination.classList.add(position);
+  }
 }
   </script>
 
@@ -255,7 +258,7 @@ if (isFixed && window.innerWidth <= 600 && indexpagination) {
           <h2 id="continuarviendoh2" data-text="cargando..">Continuar viendo</h2>
           <div id="continuar-viendo" class="grid-animes"></div>
         </section>
-
+de acue
         <section id="DirectorioAV1" class="content-section hidden">
           <span class="span-carga">Cargando...</span>
         </section>
