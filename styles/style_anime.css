@@ -607,6 +607,7 @@ body::after {
   gap:15px;
   width: 100%;
   padding-top: 10px;
+  padding-right: 10px;
   overflow-y: auto;
   scroll-behavior: smooth;
   transition: height .5s;
@@ -1037,12 +1038,12 @@ max-height: 500px;
     padding: 0;
     background: var(--br);
   }
+  .play-icon {
+    display: none;
+  }
   @media screen and (hover:hover) {
 .episode-btn:hover img {
     transform: scale(1);
-}
-.episode-btn:hover .icon-eye {
-background: var(--p);
 }
 }
 }
