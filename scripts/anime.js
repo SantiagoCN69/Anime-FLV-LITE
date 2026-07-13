@@ -321,14 +321,14 @@ const renderAnime = anime => {
   
   // Add category
   if (anime.category) {
-    infoParts.push(`<p class="span-text-anime1">${anime.category}</p>`);
+    infoParts.push(`<p class="span-text-anime1" id="categoriacargado">${anime.category}</p>`);
   }
   
   // Add year
   if (anime.startDate) {
     const yearMatch = String(anime.startDate).match(/(\d{4})/);
     const year = yearMatch ? yearMatch[1] : anime.startDate;
-    infoParts.push(`<p class="span-text-anime1">${year}</p>`);
+    infoParts.push(`<p class="span-text-anime1" id="anocargado">${year}</p>`);
   }
   
   // Add status with icon
@@ -342,7 +342,7 @@ const renderAnime = anime => {
   } else {
     statusIcon = "../icons/circle-solid-blue.svg";
   }
-  infoParts.push(`<p class="span-text-anime1"><img src="${statusIcon}">${anime.estado}</p>`);
+  infoParts.push(`<p class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado"><img src="${statusIcon}">${anime.estado}</p>`);
   
   // Join with bullet points
   info1El.innerHTML = infoParts.join(' • ');
