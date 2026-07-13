@@ -129,7 +129,7 @@ body::after {
 #botones-estado {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 8px;
   width: 100%;
   margin-top: 1rem;
 }
@@ -137,7 +137,7 @@ body::after {
 .btn-estado {
   cursor: pointer;
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: none;
   color: var(--t1);
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
@@ -307,9 +307,9 @@ body::after {
 }
 #info1 {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  height: 22px;
 }
 #info1 p {
   font-size: .9rem;
@@ -398,7 +398,7 @@ body::after {
 }
 #anocargando, #categoriacargando, #statuscargando {
   width: 70px;
-  height: 22px;
+  height: 21.5px;
   margin: 0;
 }
 #statuscargando::before {
@@ -449,7 +449,7 @@ body::after {
 
 .genero {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   min-height: fit-content;
 }
