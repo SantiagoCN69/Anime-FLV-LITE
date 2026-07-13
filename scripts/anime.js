@@ -89,7 +89,16 @@ function quitarTildesYEspacios(texto) {
 const renderGeneros = (container, generos) => {
   container.innerHTML = '';
   if (generos && generos.length) {
-    generos.slice(0, 5).forEach(g => {
+    const generosUnicos = [
+      ...new Map(
+        generos.map(g => [
+          quitarTildesYEspacios(g).toLowerCase(),
+          g
+        ])
+      ).values()
+    ];
+
+    generosUnicos.slice(0, 5).forEach(g => {
       const a = document.createElement('a');
       a.textContent = g;
       a.className = 'genre-link';
