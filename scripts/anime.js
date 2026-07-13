@@ -332,17 +332,7 @@ const renderAnime = anime => {
   }
   
   // Add status with icon
-  let statusIcon;
-  if (anime.estado === "Finalizado") {
-    statusIcon = "../icons/circle-solid.svg";
-  } else if (anime.estado === "En emision") {
-    statusIcon = "../icons/circle-solid-blue.svg";
-  } else if (anime.estado === "Por estrenar") {
-    statusIcon = "../icons/circle-solid-yellow.svg";
-  } else {
-    statusIcon = "../icons/circle-solid-blue.svg";
-  }
-  infoParts.push(`<p class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado"><img src="${statusIcon}">${anime.estado}</p>`);
+  infoParts.push(`<p class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</p>`);
   
   // Join with bullet points
   info1El.innerHTML = infoParts.join(' • ');
