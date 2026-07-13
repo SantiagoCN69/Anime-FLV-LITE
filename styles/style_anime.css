@@ -286,26 +286,25 @@ body::after {
 
 #btn-progreso {
   position: relative;
+  overflow: hidden;
   background: var(--br);
   height: 8px;
-  width: calc(100% - 25px);
+  width: calc(100% - 30px);
   border-radius: 99px;
   --progreso: 0;
 }
 #progreso {
   position: absolute;
   inset: 0;
-  width: calc(var(--progreso) * 1% - 25px);
+  width: calc(var(--progreso) * 1%);
   background: linear-gradient(to right, var(--btn), var(--btn2));
-  border-radius: 99px;
   transition: width .5s;
 }
 #progreso-text {
   position: absolute;
-  right: -28px;
-  top: 0px;
+  right: 10px;
+  bottom: 5px;
   font-weight: 500;
-  transform: translateY(-100%);
   font-size: .7rem;
   color: var(--t1);
 }
