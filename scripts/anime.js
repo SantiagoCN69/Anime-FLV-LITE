@@ -398,9 +398,9 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   
   const img = document.createElement('img');
   if (internalId) {
-  img.className = 'episode-thumb';
-  img.src = `https://cdn.animeav1.com/screenshots/${internalId}/${ep.number}.jpg`;
-  img.alt = `Episodio ${ep.number}`;
+    img.className = 'episode-thumb';
+    img.src = `https://cdn.animeav1.com/screenshots/${internalId}/${ep.number}.jpg`;
+    img.alt = `Episodio ${ep.number}`;
     img.loading = 'lazy';
   }
   else {
@@ -581,9 +581,8 @@ if (document.readyState === 'loading') {
 const hacerScroll = () => {
     const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 
-    // 🔴 si no hay ninguno, salimos SIEMPRE
     if (!primerNoVisto) {
-        if (episodios.length > 1) {
+        if (episodios.length > 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
             mostrarOverlayCapitulosCompletados();
         }
         return;
@@ -592,19 +591,52 @@ const hacerScroll = () => {
     const target = primerNoVisto.closest("li");
     if (!target) return;
 
+    // 1. Obtenemos las medidas exactas
+    const targetRect = target.getBoundingClientRect();
+    const containerRect = capContenedor.getBoundingClientRect();
+
+    // 2. Calculamos la posición exacta interna donde debe quedar
+    const posicionTopReal = (targetRect.top - containerRect.top) + capContenedor.scrollTop;
+
+    // 3. Le restamos 15px de padding para que no quede pegado al techo del contenedor
+    const posicionDestino = Math.max(0, posicionTopReal - 15);
+
+    // 4. Si YA está en la posición superior (con un margen de tolerancia de 10px 
+    // por si ya está acomodado), cancelamos para evitar parpadeos.
+    if (Math.abs(capContenedor.scrollTop - posicionDestino) < 10) {
+        return; 
+    }
+
+    // 5. Hacemos el scroll para llevarlo sí o sí hacia arriba
     capContenedor.scrollTo({
-        left: target.offsetLeft
+        top: posicionDestino,
+        left: 0, 
+        behavior: "smooth"
     });
 };
-    capContenedor.addEventListener(
-        "transitionend",
-        function handler(e) {
-            if (e.propertyName !== "height") return;
-            capContenedor.removeEventListener("transitionend", handler);
-            requestAnimationFrame(hacerScroll);
-        },
-        { once: true }
-    );
+
+// 4. Ejecutar el scroll de forma más segura
+// Depender del "transitionend" a veces falla si el alto (height) no cambió realmente.
+// Es mejor intentar el scroll tras la transición, PERO con un setTimeout de respaldo
+// por si la transición no se dispara.
+
+let scrollEjecutado = false;
+
+const ejecutarScrollSeguro = () => {
+    if (scrollEjecutado) return;
+    scrollEjecutado = true;
+    requestAnimationFrame(hacerScroll);
+};
+
+capContenedor.addEventListener("transitionend", function handler(e) {
+    if (e.propertyName !== "height") return;
+    capContenedor.removeEventListener("transitionend", handler);
+    ejecutarScrollSeguro();
+}, { once: true });
+
+// Si por alguna razón la animación de "height" dura 0 segundos y no dispara el evento, 
+// forzamos el scroll después de 300ms (tiempo suficiente para que cargue la interfaz).
+setTimeout(ejecutarScrollSeguro, 300);
 }
 async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
   try {
