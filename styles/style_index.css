@@ -970,7 +970,7 @@ justify-content: space-between;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
@@ -991,7 +991,8 @@ justify-content: space-between;
 .btn-day {
   flex: 1;
   background-color: var(--p);
-  color: var(--t2);
+  color: var(--t1);
+  opacity: .7;
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
@@ -1009,13 +1010,14 @@ justify-content: space-between;
 .btn-day.active {
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
   color: var(--t1);
+  opacity: 1;
 }
 
 .search-input {
-  width: 100%;
+  width: 90%;
   max-width: 500px;
-  padding: 0.7rem 1.2rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 99px;
   border: 1px solid var(--br);
   background-color: var(--p);
   color: var(--t1);
