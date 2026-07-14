@@ -23,7 +23,7 @@ body::before {
   z-index: -1;
   scale: 2.2;
 }
-@media (min-width: 700px) {
+@media (max-width: 600px) {
 header {
   background: transparent;
   border-color: transparent;
