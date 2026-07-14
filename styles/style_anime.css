@@ -645,8 +645,8 @@ header {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap:15px;
   width: 100%;
-  padding-top: 10px;
-  padding-right: 10px;
+  padding-top: 15px;
+  padding-right: 5px;
   overflow-y: auto;
   scroll-behavior: smooth;
   transition: height .5s;
@@ -895,6 +895,7 @@ margin-bottom: 2rem;
   display: flex;
   gap: 20px;
   overflow-x: auto;
+  padding-bottom: 5px;
 }
 .timeline-container::-webkit-scrollbar, .timeline-container::-webkit-scrollbar-thumb {
   height: 6px;
@@ -1135,7 +1136,7 @@ max-height: 500px;
   width: 100%;
 }
 .header-caps {
-  width: calc(100% - 15px);
+  width: calc(100% - 12px);
 }
 .header-caps div {
   width: 80px;
