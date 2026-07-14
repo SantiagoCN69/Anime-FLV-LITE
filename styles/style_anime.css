@@ -430,10 +430,10 @@ header {
   background-color: #3ec87f !important;
   animation: brightness 2s infinite;
 }
-.finalizado {
+.finalizado, .concluido {
   color: #f64f4f;
 }
-.finalizado::before {
+.finalizado::before, .concluido::before {
   background-color: #cc4646 !important;
   -webkit-mask: url('../icons/check.svg') no-repeat center !important;
   mask: url('../icons/check.svg') no-repeat center !important;
@@ -565,7 +565,7 @@ header {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-height: 151px;
+  min-height: 156px;
   position: relative;
 }
 
