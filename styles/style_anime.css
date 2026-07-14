@@ -1087,10 +1087,7 @@ max-height: 500px;
     height: 100%;
     border-radius: 10px;
   }
-  
-  .ep-visto .episode-thumb {
-    border: 1px solid var(--p);
-  }
+
   .episode-text {
     flex: 1;
     padding: 0 15px;
@@ -1302,13 +1299,13 @@ max-height: 500px;
   left: 50%;
   transform: translateX(-50%);
   padding: 12px 24px;
-  border-radius: 999px;
+  border-radius: 99px;
   font-size: 14px;
   font-weight: 600;
   color: var(--t1);
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  z-index: 9999;
+  z-index: 998;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);

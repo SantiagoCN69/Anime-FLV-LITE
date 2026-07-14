@@ -843,6 +843,7 @@ justify-content: space-between;
   overflow: hidden;
   text-overflow: ellipsis;
   border: none;
+  text-align: start;
 }
 
 #card-synopsis {
