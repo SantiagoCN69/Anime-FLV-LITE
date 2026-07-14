@@ -608,6 +608,9 @@ header {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 #btn-invertir-caps svg {
@@ -617,7 +620,6 @@ header {
 
 #btn-invertir-caps:hover {
   background: var(--br);
-  color: var(--btn);
 }
 
 .search-caps {
