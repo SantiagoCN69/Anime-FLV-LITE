@@ -397,11 +397,14 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   btn.className = `episode-btn ${visto ? 'ep-visto' : 'ep-no-visto'}`;
   
   const img = document.createElement('img');
+  if (internalId) {
   img.className = 'episode-thumb';
   img.src = `https://cdn.animeav1.com/screenshots/${internalId}/${ep.number}.jpg`;
   img.alt = `Episodio ${ep.number}`;
-  img.loading = 'lazy';
-  
+  }
+  else {
+    img.className = 'episode-thumb no-thumb';
+  }
   
   const textSpan = document.createElement('span');
   textSpan.className = 'episode-text';
@@ -410,8 +413,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   ep.number : 
   (ep.title || 'desconocido')
 }`;
-  const playIcon = document.createElement('img');
-  playIcon.src = "./icons/play-solid-trasparent.svg";
+  const playIcon = document.createElement('div');
   playIcon.className = "play-icon play-icon-anime";
   playIcon.alt = "ver";
   const icon = document.createElement('button');
