@@ -331,7 +331,7 @@ const renderAnime = anime => {
   const infoParts = [];
   
   // Add category
-  if (anime.category) {
+  if (anime.category && !anime.category.includes('Desconocido')) {
     infoParts.push(`<p class="span-text-anime1" id="categoriacargado">${anime.category}</p>`);
   }
   
