@@ -482,17 +482,21 @@ let resizeListenerAñadido = false;
 const calcularAlturaContenedor = (episodiosLength, capContenedor) => {
     if (!capContenedor || episodiosLength === 0) return;
 
-    const isMobile = window.innerWidth <= 700;
+    const isMobile = window.innerWidth < 700;
     const itemHeight = isMobile ? 80 : 150; 
     const gap = 15; 
     const paddingTop = 15; 
     const offsetPantalla = isMobile ? 550 : 440; 
 
-    let itemsPerRow = Math.max(1, Math.floor(capContenedor.offsetWidth / 160));
+    // CORRECCIÓN CLAVE: Si es móvil, va 1 botón por fila. Si es PC, calculamos cuántos caben.
+    let itemsPerRow = isMobile ? 1 : Math.max(1, Math.floor(capContenedor.offsetWidth / 160));
+    
     const totalRows = Math.ceil(episodiosLength / itemsPerRow);
     const availableHeight = window.innerHeight - offsetPantalla;
 
     let rowsThatFit = Math.floor((availableHeight + gap - paddingTop) / (itemHeight + gap));
+    
+    // Con esto aseguramos que targetRows sea como mínimo 3 (siempre que totalRows sea al menos 3)
     const targetRows = Math.min(totalRows, Math.max(3, rowsThatFit));
 
     let calculatedHeight = (targetRows * itemHeight) + ((targetRows - 1) * gap) + paddingTop;
