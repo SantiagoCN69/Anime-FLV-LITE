@@ -13,6 +13,7 @@ const db = getFirestore(app);
 let id = new URLSearchParams(location.search).get("id");
 let animeActual = null; // Guardar referencia al anime actual para invertir orden
 let ordenInvertido = false; // Estado del orden de capítulos
+let overlayCompletadosActivo = false; // Evitar overlay duplicado al invertir
 
 document.title = "AniZen - " + id;
 
@@ -444,8 +445,11 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
 };
 
 function mostrarOverlayCapitulosCompletados() {
-  // Evita duplicados
+  // Evita duplicados usando el flag global
+  if (overlayCompletadosActivo) return;
   if (capContenedor.querySelector(".caps-completados-card")) return;
+
+  overlayCompletadosActivo = true;
 
   const overlay = document.createElement("div");
   overlay.className = "caps-completados-card";
@@ -463,7 +467,10 @@ function mostrarOverlayCapitulosCompletados() {
 
   setTimeout(() => {
     overlay.classList.remove("show");
-    overlay.addEventListener("transitionend", () => overlay.remove(), {
+    overlay.addEventListener("transitionend", () => {
+      overlay.remove();
+      overlayCompletadosActivo = false;
+    }, {
       once: true,
     });
   }, 3000);
@@ -591,6 +598,8 @@ async function crearBotonesEpisodios(anime, invertirOrden = false) {
 // ==========================================
 // 3. CONFIGURACIÓN DE BOTONES FUERA DE LA FUNCIÓN
 // ==========================================
+let invertirDebounceTimer = null;
+
 function setupInvertirButton() {
     const btnInvertirCaps = document.getElementById('btn-invertir-caps');
     if (btnInvertirCaps) {
@@ -599,9 +608,16 @@ function setupInvertirButton() {
         btnInvertirCaps.parentNode.replaceChild(newBtn, btnInvertirCaps);
 
         newBtn.addEventListener('click', () => {
-            if (animeActual) { // Asumiendo que animeActual es global
+            if (invertirDebounceTimer) return; // Ignorar clicks durante debounce
+
+            if (animeActual) {
                 ordenInvertido = !ordenInvertido;
                 crearBotonesEpisodios(animeActual, ordenInvertido);
+
+                // Debounce de 300ms para evitar spam
+                invertirDebounceTimer = setTimeout(() => {
+                    invertirDebounceTimer = null;
+                }, 300);
             }
         });
     }
