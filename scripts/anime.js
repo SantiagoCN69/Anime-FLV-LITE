@@ -401,6 +401,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   img.className = 'episode-thumb';
   img.src = `https://cdn.animeav1.com/screenshots/${internalId}/${ep.number}.jpg`;
   img.alt = `Episodio ${ep.number}`;
+    img.loading = 'lazy';
   }
   else {
     img.className = 'episode-thumb no-thumb';
