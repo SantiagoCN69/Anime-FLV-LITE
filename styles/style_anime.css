@@ -687,9 +687,7 @@ header {
   overflow: hidden;
   border: 1px solid var(--br);
   &:active {
-    color: var(--btn);
-    transform: translateY(-3px);
-    border: 1px solid var(--btn2)
+    transform: scale(.96);
   }
 }
 .episode-btn.ep-visto {
