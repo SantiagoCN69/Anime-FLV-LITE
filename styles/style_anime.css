@@ -49,7 +49,16 @@ body::after {
   z-index: -1;
   pointer-events: none;
 }
-
+@media (max-width: 600px) {
+header {
+  background: transparent;
+  border-color: transparent;
+}
+.sidebar.active ~ header {
+  background: var(--p);
+  border-color: var(--br);
+}
+}
 #btn-volver {
   z-index: 1;
   position: absolute;
@@ -556,7 +565,7 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-height: 220px;
+  min-height: 151px;
   position: relative;
 }
 
@@ -662,13 +671,10 @@ body::after {
   display: flex;
   height: 150px;
 } 
-.episode-btn.ep-visto {
-  color: var(--btn2);
-  background: var(--br);
-}
+
 .episode-btn {
   border: none;
-  border-radius: 12px;
+  border-radius: 9px;
   background: none;
   color: var(--t1);
   font-size: 1rem;
@@ -679,22 +685,31 @@ body::after {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--br);
   &:active {
     color: var(--btn);
     transform: translateY(-3px);
     border: 1px solid var(--btn2)
   }
 }
-
+.episode-btn.ep-visto {
+  color: var(--btn2);
+  background: var(--br);
+}
 .episode-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: 1px solid var(--br);
   transition: transform 0.2s, filter 0.2s;
   transform-origin: bottom center; 
-  
-  border-radius: 12px;
+}
+.no-thumb {
+  display: none;
+}
+.no-thumb ~ .play-icon-anime {
+  width: 60px;
+  height: 60px;
+  opacity: 1;
 }
 
 .episode-text {
@@ -710,20 +725,26 @@ body::after {
   bottom: 0;
   background: var(--p);
   border-top-right-radius: 12px;
-  border-bottom-left-radius: 12px;
+}
+.ep-visto .episode-text {
+  color: var(--t1);
+  background:var(--btn);
 }
 .icon-eye {
-  width: 35px;
-  height: 35px;
+  width: 45px;
+  height: 40px;
   position: absolute;
   top: 5px;
   right: 5px;
   border: none;
-  border-radius: 99px;
+  border-radius: 12px;
   cursor: pointer;
-  background-color: rgb(var(--bgti),.4);
+  background-color: var(--p);
   backdrop-filter: blur(10px);
   transition: filter 0.2s, background-color 0.2s;
+}
+.ep-visto .icon-eye {
+  background-color: var(--br);
 }
 .ep-visto .icon-eye::after, .ep-no-visto .icon-eye::after {
   content: "";
@@ -748,6 +769,10 @@ body::after {
   mask: url('../icons/eye-slash-solid.svg') no-repeat center;
 }
 .play-icon-anime {
+   background-image: url('../icons/play-solid-trasparent.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain; 
   transform: translate(50%, 50%);
   bottom: 50%;
   right: 50%;
@@ -757,7 +782,7 @@ body::after {
   .episode-btn:hover {color: var(--btn2);transform: translateY(-3px);}
   .icon-eye:hover {filter: brightness(1.2);}
 
-  .episode-btn:hover .play-icon-anime {width: 50px;height: 50px;
+  .episode-btn:hover .play-icon-anime {width: 60px;height: 60px;
   border: 1px solid #fff2;opacity: 1;}
   .episode-btn:hover .episode-thumb {filter: brightness(0.5);}
 }
@@ -1037,7 +1062,9 @@ max-height: 500px;
 .episodes-list {
   grid-template-columns: 1fr;
   }
-  
+  .episode-btn.ep-visto, .episode-btn {
+  border: none
+}
   .episodes-list li {
     min-height: 80px;
     max-height: 80px;
@@ -1055,25 +1082,27 @@ max-height: 500px;
     width: 100px;
     height: 100%;
     border-radius: 10px;
-
+    border: 1px solid var(--br);
   }
   
+  .ep-visto .episode-thumb {
+    border: 1px solid var(--p);
+  }
   .episode-text {
     flex: 1;
     padding: 0 15px;
     justify-content: start;
     position: static;
-    background: none;
+    background: none !important;
   }
   
   .icon-eye {
     position: static;
     background: none;
     padding: 0;
-    background: var(--br);
-  }
-  .ep-visto .icon-eye {
-    background: var(--p);
+    width: 55px;
+    height: 55px;
+    filter: brightness(1.2);
   }
   .play-icon-anime {
     display: none;

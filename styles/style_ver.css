@@ -23,8 +23,16 @@ body::before {
   z-index: -1;
   scale: 2.2;
 }
-
-
+@media (min-width: 700px) {
+header {
+  background: transparent;
+  border-color: transparent;
+}
+.sidebar.active ~ header {
+  background: var(--p);
+  border-color: var(--br);
+}
+}
 #btn-volver {
   z-index: 1;
   position: absolute;
