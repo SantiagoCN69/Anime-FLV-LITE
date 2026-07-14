@@ -469,6 +469,37 @@ function mostrarOverlayCapitulosCompletados() {
   }, 3000);
 }
 
+// ==========================================
+// 1. FUNCIONES AUXILIARES GLOBALES
+// ==========================================
+
+// Variable global para controlar si el resize ya tiene un listener
+let resizeListenerAñadido = false;
+
+// Sacamos el cálculo de altura fuera para que el evento resize no acumule listeners
+const calcularAlturaContenedor = (episodiosLength, capContenedor) => {
+    if (!capContenedor || episodiosLength === 0) return;
+
+    const isMobile = window.innerWidth <= 700;
+    const itemHeight = isMobile ? 80 : 150; 
+    const gap = 15; 
+    const paddingTop = 15; 
+    const offsetPantalla = isMobile ? 550 : 440; 
+
+    let itemsPerRow = Math.max(1, Math.floor(capContenedor.offsetWidth / 160));
+    const totalRows = Math.ceil(episodiosLength / itemsPerRow);
+    const availableHeight = window.innerHeight - offsetPantalla;
+
+    let rowsThatFit = Math.floor((availableHeight + gap - paddingTop) / (itemHeight + gap));
+    const targetRows = Math.min(totalRows, Math.max(3, rowsThatFit));
+
+    let calculatedHeight = (targetRows * itemHeight) + ((targetRows - 1) * gap) + paddingTop;
+    capContenedor.style.height = `${calculatedHeight}px`;
+};
+
+// ==========================================
+// 2. FUNCIÓN PRINCIPAL OPTIMIZADA
+// ==========================================
 async function crearBotonesEpisodios(anime, invertirOrden = false) {
     capContenedor.innerHTML = '';
     let episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
@@ -477,22 +508,19 @@ async function crearBotonesEpisodios(anime, invertirOrden = false) {
         episodios = [...episodios].reverse();
     }
     
-    // 1. Obtenemos los vistos originales
+    // NOTA: 'id' parece ser una variable global. Asegúrate de que exista.
     let vistosOriginales = await obtenerCapitulosVistos(id) || [];
     
-    // 2. Creamos un Set con los números de episodios que SÍ existen para validación rápida
+    // Validación rápida con Set (Excelente práctica)
     const numerosValidos = new Set(episodios.map(ep => ep.number));
-    
-    // 3. Filtramos: solo dejamos los que existen en el Set
     const vistos = vistosOriginales.filter(num => numerosValidos.has(num));
 
-    // 4. (Opcional pero recomendado) Si hubo cambios, actualiza en Firebase
     if (vistos.length !== vistosOriginales.length) {
         console.log("Se detectaron episodios antiguos o inválidos, limpiando...");
-        // Reemplaza 'actualizarCapitulosVistos' por el nombre real de tu función de guardado
         await actualizarCapitulosVistos(id, vistos); 
     }
 
+    // Renderizado en bloque con DocumentFragment
     const fragment = document.createDocumentFragment();
     episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos, anime.internalId)));
     capContenedor.appendChild(fragment);
@@ -505,139 +533,78 @@ async function crearBotonesEpisodios(anime, invertirOrden = false) {
     capContenedor.classList.add("cargado");
     capContenedor.style.setProperty("--caps", episodios.length);
 
-   // Calcular altura dinámica del contenedor
-const calcularAlturaContenedor = () => {
-    // Si no hay episodios o el contenedor no existe, no hacemos nada
-    if (!capContenedor || episodios.length === 0) return;
+    // Ejecutar cálculo de altura
+    requestAnimationFrame(() => calcularAlturaContenedor(episodios.length, capContenedor));
 
-    const isMobile = window.innerWidth <= 700;
-    const itemHeight = isMobile ? 80 : 150; 
-    const gap = 15; 
-    const paddingTop = 10; 
-    
-    // Espacio fijo que ocupan tu header/footer/etc.
-    const offsetPantalla = isMobile ? 550 : 440; 
+    // Añadir el listener de resize SOLO UNA VEZ
+    if (!resizeListenerAñadido) {
+        window.addEventListener('resize', () => {
+            requestAnimationFrame(() => calcularAlturaContenedor(episodios.length, capContenedor));
+        });
+        resizeListenerAñadido = true;
+    }
 
-    // Calcular elementos por fila (mínimo 1 para evitar dividir por cero)
-    let itemsPerRow = isMobile ? 1 : Math.floor(capContenedor.offsetWidth / 160);
-    if (itemsPerRow < 1) itemsPerRow = 1;
+    // Lógica de Scroll
+    let scrollEjecutado = false;
+    const hacerScroll = () => {
+        const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 
-    // Total de filas reales que existen
-    const totalRows = Math.ceil(episodios.length / itemsPerRow);
+        if (!primerNoVisto) {
+            if (episodios.length > 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
+                mostrarOverlayCapitulosCompletados();
+            }
+            return;
+        }
 
-    // Espacio real en píxeles que tenemos disponible en la pantalla
-    const availableHeight = window.innerHeight - offsetPantalla;
+        const target = primerNoVisto.closest("li");
+        if (!target) return;
 
-    // ¿Cuántas filas ENTERAS caben en ese espacio?
-    // Despejamos la fórmula exacta para que no sobre ni un píxel a la mitad
-    let rowsThatFit = Math.floor((availableHeight + gap - paddingTop) / (itemHeight + gap));
+        const targetRect = target.getBoundingClientRect();
+        const containerRect = capContenedor.getBoundingClientRect();
+        const posicionTopReal = (targetRect.top - containerRect.top) + capContenedor.scrollTop;
+        const posicionDestino = Math.max(0, posicionTopReal - 15);
 
-    // LÓGICA DE FILAS:
-    // 1. Math.max(3, rowsThatFit): Queremos las que quepan, pero MÍNIMO 3 (incluso en pantallas diminutas).
-    // 2. Math.min(totalRows, ...): Pero si solo hay 2 filas de episodios en total, mostramos 2, no forzamos 3 vacías.
-    const targetRows = Math.min(totalRows, Math.max(3, rowsThatFit));
+        if (Math.abs(capContenedor.scrollTop - posicionDestino) < 10) return; 
 
-    // Calcular la altura EN PÍXELES de las filas objetivo (sin cortes)
-    // Se usa (targetRows - 1) para los gaps, porque la última fila no tiene gap por debajo.
-    let calculatedHeight = (targetRows * itemHeight) + ((targetRows - 1) * gap) + paddingTop;
+        capContenedor.scrollTo({ top: posicionDestino, left: 0, behavior: "smooth" });
+    };
 
-    // Aplicar la altura
-    capContenedor.style.height = `${calculatedHeight}px`;
-};
+    const ejecutarScrollSeguro = () => {
+        if (scrollEjecutado) return;
+        scrollEjecutado = true;
+        requestAnimationFrame(hacerScroll);
+    };
 
-// Ejecutar cálculo inicial
-requestAnimationFrame(calcularAlturaContenedor);
+    capContenedor.addEventListener("transitionend", function handler(e) {
+        if (e.propertyName !== "height") return;
+        capContenedor.removeEventListener("transitionend", handler);
+        ejecutarScrollSeguro();
+    }, { once: true }); // 'once: true' evita que el listener se quede pegado
 
-// Recalcular al cambiar tamaño de ventana
-window.addEventListener('resize', () => {
-    requestAnimationFrame(calcularAlturaContenedor);
-});
+    setTimeout(ejecutarScrollSeguro, 300);
+}
+
+// ==========================================
+// 3. CONFIGURACIÓN DE BOTONES FUERA DE LA FUNCIÓN
+// ==========================================
 function setupInvertirButton() {
     const btnInvertirCaps = document.getElementById('btn-invertir-caps');
     if (btnInvertirCaps) {
-        // Remover listeners anteriores si existen
+        // Clonar para limpiar listeners viejos
         const newBtn = btnInvertirCaps.cloneNode(true);
         btnInvertirCaps.parentNode.replaceChild(newBtn, btnInvertirCaps);
- 
+
         newBtn.addEventListener('click', () => {
-            console.log('Botón invertir clickeado, ordenInvertido:', ordenInvertido);
-            if (animeActual) {
+            if (animeActual) { // Asumiendo que animeActual es global
                 ordenInvertido = !ordenInvertido;
-                console.log('Nuevo ordenInvertido:', ordenInvertido);
                 crearBotonesEpisodios(animeActual, ordenInvertido);
-            } else {
-                console.log('animeActual es null');
             }
         });
     }
 }
- 
-// Configurar el botón cuando el DOM esté listo
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupInvertirButton);
-} else {
-    setupInvertirButton();
-}
-const hacerScroll = () => {
-    const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 
-    if (!primerNoVisto) {
-        if (episodios.length > 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
-            mostrarOverlayCapitulosCompletados();
-        }
-        return;
-    }
-
-    const target = primerNoVisto.closest("li");
-    if (!target) return;
-
-    // 1. Obtenemos las medidas exactas
-    const targetRect = target.getBoundingClientRect();
-    const containerRect = capContenedor.getBoundingClientRect();
-
-    // 2. Calculamos la posición exacta interna donde debe quedar
-    const posicionTopReal = (targetRect.top - containerRect.top) + capContenedor.scrollTop;
-
-    // 3. Le restamos 15px de padding para que no quede pegado al techo del contenedor
-    const posicionDestino = Math.max(0, posicionTopReal - 15);
-
-    // 4. Si YA está en la posición superior (con un margen de tolerancia de 10px 
-    // por si ya está acomodado), cancelamos para evitar parpadeos.
-    if (Math.abs(capContenedor.scrollTop - posicionDestino) < 10) {
-        return; 
-    }
-
-    // 5. Hacemos el scroll para llevarlo sí o sí hacia arriba
-    capContenedor.scrollTo({
-        top: posicionDestino,
-        left: 0, 
-        behavior: "smooth"
-    });
-};
-
-// 4. Ejecutar el scroll de forma más segura
-// Depender del "transitionend" a veces falla si el alto (height) no cambió realmente.
-// Es mejor intentar el scroll tras la transición, PERO con un setTimeout de respaldo
-// por si la transición no se dispara.
-
-let scrollEjecutado = false;
-
-const ejecutarScrollSeguro = () => {
-    if (scrollEjecutado) return;
-    scrollEjecutado = true;
-    requestAnimationFrame(hacerScroll);
-};
-
-capContenedor.addEventListener("transitionend", function handler(e) {
-    if (e.propertyName !== "height") return;
-    capContenedor.removeEventListener("transitionend", handler);
-    ejecutarScrollSeguro();
-}, { once: true });
-
-// Si por alguna razón la animación de "height" dura 0 segundos y no dispara el evento, 
-// forzamos el scroll después de 300ms (tiempo suficiente para que cargue la interfaz).
-setTimeout(ejecutarScrollSeguro, 300);
-}
+// Inicializar cuando el DOM cargue
+document.addEventListener('DOMContentLoaded', setupInvertirButton);
 async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
   try {
     const user = localStorage.getItem("userID");
@@ -1099,8 +1066,6 @@ async function obtenerFavoritosAnime() {
     ? favoritosDoc.data().animes 
     : [];
 }
-
-
 
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
   const progreso = (episodiosVistos.length / totalEpisodios) * 100;
