@@ -445,18 +445,16 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
 
 function mostrarOverlayCapitulosCompletados() {
   // Evita duplicados
-  if (capContenedor.querySelector(".caps-completados-overlay")) return;
+  if (capContenedor.querySelector(".caps-completados-card")) return;
 
   const overlay = document.createElement("div");
-  overlay.className = "caps-completados-overlay";
+  overlay.className = "caps-completados-card";
   overlay.innerHTML = `
-    <div class="caps-completados-card">
       <div class="caps-completados-icono">🏆</div>
       <div>
         <h3>¡Felicidades!</h3>
         <p>Has visto todos los episodios disponibles.</p>
       </div>
-    </div>
   `;
 
   capContenedor.appendChild(overlay);
