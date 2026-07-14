@@ -1086,7 +1086,6 @@ max-height: 500px;
     width: 100px;
     height: 100%;
     border-radius: 10px;
-    border: 1px solid var(--br);
   }
   
   .ep-visto .episode-thumb {
