@@ -288,9 +288,10 @@ function slug(str) {
   const clean = str
     .toLowerCase()
     .trim()
-    .replace(/[:'".,!?]/g, '')
-    .replace(/\s+/g, '-');
-  return `${clean}`;
+    .replace(/[:'".,!?/]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+  return clean;
 }
 
 const renderAnime = (animes) => {
