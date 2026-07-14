@@ -452,8 +452,10 @@ function mostrarOverlayCapitulosCompletados() {
   overlay.innerHTML = `
     <div class="caps-completados-card">
       <div class="caps-completados-icono">🏆</div>
-      <h3>¡Felicidades!</h3>
-      <p>Has visto todos los episodios disponibles.</p>
+      <div>
+        <h3>¡Felicidades!</h3>
+        <p>Has visto todos los episodios disponibles.</p>
+      </div>
     </div>
   `;
 
@@ -550,7 +552,7 @@ async function crearBotonesEpisodios(anime, invertirOrden = false) {
         const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 
         if (!primerNoVisto) {
-            if (episodios.length > 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
+            if (episodios.length >= 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
                 mostrarOverlayCapitulosCompletados();
             }
             return;
