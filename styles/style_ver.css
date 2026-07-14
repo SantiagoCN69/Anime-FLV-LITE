@@ -92,7 +92,7 @@ main section:nth-child(2) {
   height: 8px;
 }
 #noticias_container::-webkit-scrollbar-thumb {
-  background-color: var(--btn);
+  background-color: var(--p);
   border-radius: 5px;
 }
 .tarjeta-noticia {
