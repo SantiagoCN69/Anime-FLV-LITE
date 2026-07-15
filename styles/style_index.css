@@ -713,6 +713,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  min-height: 63px;
 }
 #subheader > div {
   flex: 1;
@@ -729,7 +730,7 @@ justify-content: space-between;
   padding: 10px 0;
   color: var(--t2);
   font-size: 16px;
-  min-height: 20px;
+  min-height: 55px;
 }
 
 .filtro-activo {
