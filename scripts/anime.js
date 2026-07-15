@@ -773,8 +773,7 @@ function compararDatos(a, b) {
   }
 
   // Comparación de arrays de géneros
-  if (a.generos?.length !== b.generos?.length || 
-      !a.generos.every((g, i) => strEqual(g, b.generos[i]))) {
+  if (a.generos?.length !== b.generos?.length || !(a.generos || []).every((g, i) => strEqual(g, b.generos[i]))) {
     return false;
   }
 
@@ -1040,7 +1039,15 @@ async function obtenerFavoritosAnime() {
 }
 
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
-  const progreso = (episodiosVistos.length / totalEpisodios) * 100;
+  // Evitamos dividir por cero si no hay episodios
+  if (!totalEpisodios || totalEpisodios === 0) return;
+
+  // Verificamos si recibimos un Array (para usar .length) o un Número directo
+  const cantidadVistos = Array.isArray(episodiosVistos) 
+    ? episodiosVistos.length 
+    : Number(episodiosVistos);
+
+  const progreso = (cantidadVistos / totalEpisodios) * 100;
   const progresoFixed = progreso.toFixed(0);
 
   const progresoBtn = document.getElementById('btn-progreso');
@@ -1269,7 +1276,7 @@ async function obtenerEstadoActual() {
 obtenerEstadoActual().then(estado => {
   if (estado) {
     const btnSeleccionado = document.getElementById(`btn-${estado.toLowerCase()}`);
-    if (btnSeleccionado) manejarEstadoSeleccionado(btnSeleccionado);
+    if (btnSeleccionado) btnSeleccionado.classList.add('active'); // Solo UI
   }
 });
 
