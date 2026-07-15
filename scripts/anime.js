@@ -1,10 +1,12 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+
+// Agregamos arrayUnion y arrayRemove al final de esta línea
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards, aplicarViewTransition } from "./utils.js";
 import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from "./ai-recommendations.js";
-
 // Inicializar Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -625,21 +627,21 @@ function setupInvertirButton() {
 
 // Inicializar cuando el DOM cargue
 document.addEventListener('DOMContentLoaded', setupInvertirButton);
+// 1. Limpieza de capítulos (Corregido con setDoc + merge para evitar caídas si no existe el doc)
 async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
   try {
-    const user = localStorage.getItem("userID");
-    if (!user) {
+    const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+    if (!userId) {
       console.warn("No hay usuario autenticado.");
       return;
     }
 
-    const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
+    const ref = doc(db, 'usuarios', userId, 'caps-vistos', animeId);
     
-    // Usamos updateDoc para actualizar solo el array de episodiosVistos
-    // manteniendo intactos el 'titulo' y 'fechaAgregado' que ya existen.
-    await updateDoc(ref, {
+    // setDoc con merge es más seguro que updateDoc aquí
+    await setDoc(ref, {
       episodiosVistos: episodiosLimpios
-    });
+    }, { merge: true });
     
     console.log("Base de datos limpia: episodios inválidos eliminados con éxito.");
   } catch (error) {
@@ -647,6 +649,7 @@ async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
   }
 }
 
+// 2. Filtro de búsqueda (Excelente uso de debounce y scrollIntoView)
 filtroCapitulo.addEventListener('input', debounce(() => {
   const filtro = filtroCapitulo.value.toLowerCase();
   const botones = capContenedor.querySelectorAll('.episode-btn');
@@ -654,140 +657,89 @@ filtroCapitulo.addEventListener('input', debounce(() => {
   if (idx >= 0) botones[idx].parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }));
 
+// 3. Manejador de clicks (Optimistic UI - Impecable)
 async function manejarEstadoEpisodio(btn, icon, ep) {
-  const user = localStorage.getItem("userID");
-  if (!user) {
-    return;
-  }
-  if (capituloToggleInProgress) {
-    console.warn('manejarEstadoEpisodio: Operación en progreso, ignorando clic.');
-    return;
-  }
+  const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+  if (!userId || capituloToggleInProgress) return;
 
-  const nuevo = !btn.classList.contains('ep-visto');
+  const animeId = id; 
+  const tituloAnime = tituloEl.textContent;
+  const marcandoComoVisto = !btn.classList.contains('ep-visto');
   
+  // UI Optimista: Cambia al instante
+  btn.classList.toggle('ep-visto', marcandoComoVisto);
+  btn.classList.toggle('ep-no-visto', !marcandoComoVisto);
+  icon.src = marcandoComoVisto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
+
   try {
-    const titulo = tituloEl.textContent;
-    await toggleCapituloVisto(id, titulo, ep.number, nuevo);
-    // Actualizar UI después de confirmar con Firebase
-    btn.classList.toggle('ep-visto', nuevo);
-    btn.classList.toggle('ep-no-visto', !nuevo);
-    icon.src = nuevo ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
+    await toggleCapituloVisto(animeId, tituloAnime, ep.number, marcandoComoVisto);
   } catch (e) {
-    console.error('Error al cambiar estado del episodio:', e);
-    // Revertir UI en caso de error
-    await refrescarEstadoEpisodio(btn, icon, ep);
+    console.error('Error al cambiar estado, revirtiendo UI:', e);
+    // Reversión local instantánea si falla el internet/servidor
+    btn.classList.toggle('ep-visto', !marcandoComoVisto);
+    btn.classList.toggle('ep-no-visto', marcandoComoVisto);
+    icon.src = !marcandoComoVisto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
   }
 }
 
+// 4. Guardado en Firestore (Operación atómica ultra-eficiente)
 async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
-  if (capituloToggleInProgress) {
-    console.warn('toggleCapituloVisto: Operación en progreso, ignorando.');
-    return;
-  }
-
   capituloToggleInProgress = true;
 
   try {
-    const user = localStorage.getItem("userID");
-    if (!user) {
-      console.warn('toggleCapituloVisto: No hay usuario autenticado.');
-      return;
-    }
+    const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+    if (!userId) throw new Error("Usuario no autenticado");
 
-    const ref = doc(db, 'usuarios', user, 'caps-vistos', animeId);
-    const { episodiosVistos = [] } = (await getDoc(ref)).data() || {};
-
-    const nuevosEpisodios = new Set(episodiosVistos.filter(ep => ep && ep !== "undefined"));
-    if (esVisto) {
-      nuevosEpisodios.add(episodio.toString());
-    } else {
-      nuevosEpisodios.delete(episodio.toString());
-    }
+    const ref = doc(db, 'usuarios', userId, 'caps-vistos', animeId);
+    
+    const actualizacion = esVisto 
+      ? arrayUnion(episodio.toString()) 
+      : arrayRemove(episodio.toString());
 
     await setDoc(ref, {
       titulo,
       fechaAgregado: serverTimestamp(),
-      episodiosVistos: [...nuevosEpisodios]
-    });
+      episodiosVistos: actualizacion
+    }, { merge: true });
 
-    actualizarProgresoCapitulos(document.querySelectorAll('.episode-btn').length, [...nuevosEpisodios]);
+    // Lógicas de UI post-confirmación
     const total = document.querySelectorAll(".episode-btn").length;
+    const vistosEnUI = document.querySelectorAll(".episode-btn.ep-visto").length;
 
-    if (esVisto && nuevosEpisodios.size === total && total > 0) {
+    actualizarProgresoCapitulos(total, vistosEnUI);
+
+    if (esVisto && vistosEnUI === total && total > 0) {
         mostrarOverlayCapitulosCompletados();
     }
     mostrarPildora("capvisto", esVisto, null, episodio);
+
   } catch (error) {
-    console.error("Error al guardar estado del capítulo en Firestore:", error);
-    throw error;
+    console.error("Error guardando en Firestore:", error);
+    throw error; // Re-lanzamos para que manejarEstadoEpisodio ejecute el catch de reversión
   } finally {
     capituloToggleInProgress = false;
   }
-} 
-
-
-async function refrescarEstadoEpisodio(btn, icon, ep) {
-  const user = localStorage.getItem("userID");
-  if (!user) return;
-
-  try {
-    const ref = doc(db, 'usuarios', user, 'caps-vistos', id);
-    const snap = await getDoc(ref);
-    const episodiosVistos = snap.exists() ? snap.data().episodiosVistos || [] : [];
-    const visto = episodiosVistos.includes(ep.number.toString());
-
-    btn.classList.toggle('ep-visto', visto);
-    btn.classList.toggle('ep-no-visto', !visto);
-    icon.src = visto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
-  } catch (error) {
-    console.error('Error al refrescar estado del episodio:', error);
-  }
 }
 
+// 5. Carga inicial (Optimizado con authStateReady de Firebase v11)
 async function obtenerCapitulosVistos(animeId) {
-  return new Promise((resolve, reject) => { 
-    const fetchChaptersLogic = async (userInstance) => {
-      if (!userInstance) {
-        console.warn("obtenerCapitulosVistos: No hay instancia de usuario. Retornando [].");
-        resolve([]); 
-        return;
-      }
-      try {
-        const ref = doc(db, 'usuarios', userInstance.uid, 'caps-vistos', animeId);
-        const snap = await getDoc(ref);
-        resolve(snap.exists() ? snap.data().episodiosVistos || [] : []); 
-      } catch (error) {
-        console.error("Error al obtener capítulos vistos:", error);
-        reject(error); 
-      }
-    };
+  try {
+    await auth.authStateReady(); 
 
-    let resolved = false; 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      unsubscribe(); 
-      if (!resolved) {
-        resolved = true;
-        await fetchChaptersLogic(user); 
-      }
-    }, (error) => {
-      if (!resolved) {
-         resolved = true;
-         console.error("Error en onAuthStateChanged:", error);
-         reject(error); 
-         unsubscribe(); 
-      }
-    });
+    if (!auth.currentUser) {
+      console.warn("obtenerCapitulosVistos: No hay instancia de usuario. Retornando [].");
+      return [];
+    }
 
-    setTimeout(() => {
-      if (!resolved) {
-        resolved = true;
-        unsubscribe(); 
-        console.warn("obtenerCapitulosVistos timed out esperando estado de auth. Retornando [].");
-        resolve([]); 
-      }
-    }, 10000); 
-  });
+    const ref = doc(db, 'usuarios', auth.currentUser.uid, 'caps-vistos', animeId);
+    const snap = await getDoc(ref);
+    
+    return snap.exists() ? snap.data().episodiosVistos || [] : [];
+    
+  } catch (error) {
+    console.error("Error al obtener capítulos vistos:", error);
+    return []; 
+  }
 }
 
 //comparar datos antes de jecutar renderAnime
