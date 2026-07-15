@@ -436,12 +436,29 @@ header {
 .finalizado, .concluido {
   color: #f64f4f;
 }
+.estrenar {
+  color: #FFFF66;
+}
+.estrenar::before {
+  background-color: #FFFF66 !important;
+  -webkit-mask: url('../icons/movie.svg') no-repeat center !important;
+  mask: url('../icons/movie.svg') no-repeat center !important;
+  -webkit-mask-size: contain !important;
+  mask-size: contain !important;
+}
 .finalizado::before, .concluido::before {
   background-color: #cc4646 !important;
   -webkit-mask: url('../icons/check.svg') no-repeat center !important;
   mask: url('../icons/check.svg') no-repeat center !important;
   -webkit-mask-size: contain !important;
   mask-size: contain !important;
+}
+#anime-proximo-estrenar {
+  text-align: center;
+  margin-top: 1rem;
+  border: 1px solid #FFFF66;
+  border-radius: 8px;
+  padding: 1rem;
 }
 #info1 img {
   position: absolute;
