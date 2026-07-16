@@ -1055,24 +1055,15 @@ cargarEpisodios()
 
 function mostrarPildora(estado = true, cap = null) {
   const pillAnterior = document.querySelector('.pildora');
-  if (pillAnterior) {
-    pillAnterior.remove();
-  }
+  if (pillAnterior) pillAnterior.remove();
   
-  if (cap) {
-    cap = ` ${cap}`;
-  }
   const pill = document.createElement("div");
-  pill.classList.add("pildora");
-  
-  if (!estado) {
-    pill.classList.add("pildora-eliminado");
-  } else {
-    pill.classList.add("pildora-visto");
-  }
+  pill.className = `pildora pildora-${estado ? 'visto' : 'eliminado'}`;
 
-  const accion = estado ? `Capítulo ${cap} marcado como visto` : `Capítulo ${cap} eliminado de vistos`;
-  pill.textContent = accion;
+  const capTexto = cap ? ` ${cap}` : "";
+  pill.textContent = estado 
+    ? `Capítulo${capTexto} marcado como visto` 
+    : `Capítulo${capTexto} eliminado de vistos`;
 
   document.body.appendChild(pill);
 
@@ -1082,7 +1073,6 @@ function mostrarPildora(estado = true, cap = null) {
 
   setTimeout(() => {
     pill.classList.remove("mostrar");
-    pill.addEventListener('transitionend', () => pill.remove());
+    pill.addEventListener('transitionend', () => pill.remove(), { once: true });
   }, 3000);
 }
-

@@ -230,13 +230,10 @@ function crearAnimeCard(anime, isLink = false) {
 // Función para mostrar alertas flotantes
 function mostrarPildora(mensaje, tipo = "default") {
   const pillAnterior = document.querySelector('.pildora');
-  if (pillAnterior) {
-    pillAnterior.remove();
-  }
+  if (pillAnterior) pillAnterior.remove();
 
   const pill = document.createElement("div");
-  pill.classList.add("pildora");
-  pill.classList.add(`pildora-${tipo}`);
+  pill.className = `pildora pildora-${tipo}`;
   pill.textContent = mensaje;
 
   document.body.appendChild(pill);
@@ -247,7 +244,7 @@ function mostrarPildora(mensaje, tipo = "default") {
 
   setTimeout(() => {
     pill.classList.remove("mostrar");
-    setTimeout(() => pill.remove(), 400);
+    pill.addEventListener('transitionend', () => pill.remove(), { once: true });
   }, 3000);
 }
 

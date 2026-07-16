@@ -1328,56 +1328,43 @@ window.addEventListener('scroll', () => {
 
 //pildora visual check 
 function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
-
   const pillAnterior = document.querySelector('.pildora');
-  if (pillAnterior) {
-    pillAnterior.remove();
-  }
-  
-  console.log("pildora")
+  if (pillAnterior) pillAnterior.remove();
 
   const pill = document.createElement("div");
   pill.classList.add("pildora");
 
   const accion = estado ? "Agregado a" : "Eliminado de";
 
-  switch (opcion) {
-    case "fav":
-      pill.classList.add("pildora-fav");
-      pill.textContent = `${anime} ${accion} favoritos`;
-      break;
-    case "pendiente":
-      pill.classList.add("pildora-pendiente");
-      pill.textContent = `${anime} ${accion} pendientes`;
-      break;
-    case "visto":
-      pill.classList.add("pildora-visto");
-      pill.textContent = `${anime} ${accion} vistos`;
-      break;
-    case "viendo":
-      pill.classList.add("pildora-viendo");
-      pill.textContent = `${anime} ${accion} viendo`;
-      break;
-      case "capvisto":
-        pill.classList.add("pildora-visto");
-        pill.textContent = `Capítulo ${cap} ${accion} vistos`;
-        break;
-    default:
-      pill.classList.add("pildora-default");
-      pill.textContent = estado ? "Acción realizada" : "Acción revertida";
+  // Mapeo de textos y clases según la opción
+  const opciones = {
+    fav: { clase: "pildora-fav", texto: `${anime} ${accion} favoritos` },
+    pendiente: { clase: "pildora-pendiente", texto: `${anime} ${accion} pendientes` },
+    visto: { clase: "pildora-visto", texto: `${anime} ${accion} vistos` },
+    viendo: { clase: "pildora-viendo", texto: `${anime} ${accion} viendo` },
+    capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` }
+  };
+
+  const config = opciones[opcion];
+
+  if (config) {
+    pill.textContent = config.texto;
+    // Si el estado es falso, forzamos la clase 'eliminado' (rojo translúcido)
+    pill.classList.add(estado ? config.clase : "pildora-eliminado");
+  } else {
+    pill.textContent = estado ? "Acción realizada" : "Acción revertida";
+    pill.classList.add(estado ? "pildora-default" : "pildora-eliminado");
   }
-  if (!estado) {
-    pill.style.filter = "grayscale(1) brightness(0.7)";
-  }
+
   document.body.appendChild(pill);
 
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     pill.classList.add("mostrar");
-  }, 50);
+  });
 
   setTimeout(() => {
     pill.classList.remove("mostrar");
-    setTimeout(() => pill.remove(), 400); 
+    pill.addEventListener('transitionend', () => pill.remove(), { once: true });
   }, 3000);
 }
 document.getElementById("btn-volver").addEventListener("click", () => {
