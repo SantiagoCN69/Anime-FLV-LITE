@@ -667,9 +667,17 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
     return;
   }
   
+  // Prevenir cargas simultáneas del mismo contenedor
+  const cargaKey = `${container.id}_${offset}`;
+  if (cargando.has(cargaKey)) {
+    return;
+  }
+  cargando.add(cargaKey);
+  
   const btnAnterior = container.querySelector('.ver-mas-btn');
   if (btnAnterior) {
     btnAnterior.textContent = "cargando...";
+    btnAnterior.disabled = true;
   }
   
   const h2 = document.querySelector('#' + container.id + 'h2');
@@ -770,6 +778,8 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   } catch (error) {
       console.error('Error al cargar favoritos:', error);
       container.innerHTML = '<p>Error al cargar los favoritos</p>';
+  } finally {
+    cargando.delete(cargaKey);
   }
 }
 
