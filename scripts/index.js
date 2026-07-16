@@ -190,7 +190,7 @@ async function cargarUltimosCapsVistos() {
   if (!ultimosCapsContainer) return;
 
   // Variable centralizada para el texto de cuando no hay nada
-  const textoVacio = '<p>No hay capítulos para continuar viendo.</p>';
+  const textoVacio = '<p>No hay capítulos disponibles para continuar viendo.</p>';
 
   if (!userID || userID === "null") {
     ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tu registro de animes!.</p>';
@@ -825,6 +825,11 @@ async function cargarContinuarViendo() {
    let datos = JSON.parse(localStorage.getItem(cachekey));
    
    if (verificarYLimpiarCacheBackground(cachekey, datos, 'portada', null, true)) {
+     return;
+    }
+  h2.dataset.text = "Disponibles: " + datos.length;
+  if (datos.length === 0) {
+   container.innerHTML = '<span class="span-carga">No hay capítulos disponibles para continuar viendo.</span>';
      return;
    }
    
