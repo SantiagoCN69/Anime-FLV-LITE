@@ -726,6 +726,7 @@ justify-content: space-between;
 #filtrosseleccionados {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
   padding: 10px 0;
   color: var(--t2);
