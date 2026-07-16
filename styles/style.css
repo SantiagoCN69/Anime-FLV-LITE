@@ -1206,7 +1206,7 @@ section.content-section h2:first-of-type::after {
   border-color: transparent;
   backdrop-filter: blur(5px);
   border-radius: 50%;
-  z-index: 20;
+  z-index: 8;
   transition: transform .3s, inset .3s, width .3s, height .3s, border .3s;
 }
 
