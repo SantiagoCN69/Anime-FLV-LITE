@@ -33,6 +33,9 @@ let labCargado = false;
 let popularesCargados = false;
 let horariosCargados = false;
 
+// Flags para prevenir cargas simultáneas
+const cargando = new Set();
+
 export function mostrarSeccionDesdesearch() {
   let search = window.location.search;
   
@@ -133,9 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
   ])
-  if(localStorage.getItem("ultimosCapsVistosCache_" + userID) === null) {
-    document.getElementById("Continuar-viendo").innerHTML = '<span class="span-carga">Inicia sesión para ver los animes que estás viendo actualmente</span>'
-  }
   const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
@@ -185,13 +185,22 @@ function crearElementoSiguienteCapitulo(itemData) {
 }
 
 async function cargarUltimosCapsVistos() {
+  console.log("cargarUltimosCapsVistos");
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
   if (!ultimosCapsContainer) return;
+
+  // Variable centralizada para el texto de cuando no hay nada
+  const textoVacio = '<p>No hay capítulos para continuar viendo.</p>';
+
+  if (!userID || userID === "null") {
+    ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tu registro de animes!.</p>';
+    return;
+  }
 
   const renderizarBotones = (datos) => {
     ultimosCapsContainer.innerHTML = '';
     if (!datos || datos.length === 0) {
-      ultimosCapsContainer.innerHTML = '<p>No tienes capítulos siguientes disponibles.</p>';
+      ultimosCapsContainer.innerHTML = textoVacio;
       return;
     }
     const fragment = document.createDocumentFragment();
@@ -202,16 +211,11 @@ async function cargarUltimosCapsVistos() {
     ultimosCapsContainer.appendChild(fragment);
   };
 
-  if (!userID || userID === "null") {
-    ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tus últimos capítulos</p>';
-    return;
-  }
-
   const cacheKey = `ultimosCapsVistosCache_` + userID;
   const cacheStateKey = `estadoHistorialCache_` + userID; 
   
-  let cachedData = null;
-  let cachedState = null;
+  let cachedData = [];
+  let cachedState = [];
 
   try {
     const cachedDataString = localStorage.getItem(cacheKey);
@@ -223,8 +227,8 @@ async function cargarUltimosCapsVistos() {
     localStorage.removeItem(cacheStateKey);
   }
 
-  // 1. Render instantáneo desde caché
-  if (cachedData && cachedData.length > 0) {
+  // 1. Render instantáneo
+  if (Array.isArray(cachedData)) {
     renderizarBotones(cachedData);
   }
 
@@ -233,21 +237,18 @@ async function cargarUltimosCapsVistos() {
     const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(8));
     const snap = await getDocs(q);
 
+    // Si el usuario no tiene historial en Firebase
     if (snap.empty) {
-      ultimosCapsContainer.innerHTML = '<p>No tienes capítulos vistos recientemente.</p>';
-      localStorage.removeItem(cacheKey);
-      localStorage.removeItem(cacheStateKey);
+      ultimosCapsContainer.innerHTML = textoVacio;
+      localStorage.setItem(cacheKey, JSON.stringify([])); 
+      localStorage.setItem(cacheStateKey, JSON.stringify([]));
       return;
     }
 
-    // 2. Extraemos el mapa EXACTO filtrando los que no tienen capítulos vistos (lo que pediste)
     const currentState = [];
     snap.docs.forEach(docSnap => {
       const data = docSnap.data();
       const vistos = (data.episodiosVistos || []).map(Number);
-      
-      // Si NO está vacío, lo agregamos al estado actual. 
-      // Si está vacío (no hay capítulos vistos), se ignora por completo.
       if (vistos.length > 0) {
         currentState.push({
           id: docSnap.id,
@@ -256,45 +257,73 @@ async function cargarUltimosCapsVistos() {
       }
     });
 
-    // 3. Comprobación estricta de estado
-    if (cachedState && JSON.stringify(currentState) === JSON.stringify(cachedState)) {
+    // Validamos si TODO está exactamente igual (ahorra ejecución)
+    if (cachedState && cachedData.length > 0 && JSON.stringify(currentState) === JSON.stringify(cachedState)) {
       return; 
     }
 
-    // 4. Si hay cambios, procedemos a buscar las portadas (solo de los que pasaron el filtro)
-    
-    // Ahora mapeamos sobre currentState, ahorrando peticiones a animes sin caps vistos
-    const animeRefs = currentState.map(cap => doc(db, "datos-animes", cap.id));
-    const animeDocsSnap = await Promise.all(animeRefs.map(ref => getDoc(ref)));
+    // --- 2. OPTIMIZACIÓN: Solo pedir a Firebase los animes que cambiaron ---
+    const promesasFetch = [];
+    const indicesFetch = [];
+    const freshData = new Array(currentState.length).fill(null);
 
-    const freshData = currentState.map((cap, i) => {
-      const animeDetails = animeDocsSnap[i].exists() ? animeDocsSnap[i].data() : null;
-      if (!animeDetails) return null;
-
-      // cap.ultimoVisto ya viene filtrado y seguro desde currentState
-      const siguienteCapitulo = cap.ultimoVisto + 1;
-      const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
-      const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
-
-      if (siguienteEpisodio) {
-        return {
-          id: cap.id,
-          portada: animeDetails.portada,
-          titulo: animeDetails.titulo,
-          siguienteCapitulo: siguienteCapitulo,
-          siguienteCapituloUrl: siguienteEpisodio.url
-        };
+    currentState.forEach((cap, index) => {
+      // ¿Este anime y su último capítulo visto ya estaban en la caché?
+      const estadoAnterior = cachedState.find(c => c.id === cap.id && c.ultimoVisto === cap.ultimoVisto);
+      
+      if (estadoAnterior && Array.isArray(cachedData)) {
+        // Rescatamos los datos visuales (portada, título) de la caché
+        const datosCacheados = cachedData.find(d => d.id === cap.id);
+        if (datosCacheados) {
+          freshData[index] = datosCacheados; // Reutilizamos sin gastar lecturas
+          return; // Saltamos a la siguiente iteración
+        }
       }
-      return null;
-    }).filter(Boolean);
 
-    // 5. Render final y renovación de cachés
-    renderizarBotones(freshData);
-    localStorage.setItem(cacheKey, JSON.stringify(freshData));
+      // Si es un anime nuevo o vio un capítulo nuevo, preparamos la petición
+      indicesFetch.push(index);
+      promesasFetch.push(getDoc(doc(db, "datos-animes", cap.id)));
+    });
+
+    // 3. Ejecutamos las llamadas a Firebase SOLAMENTE para los que faltan
+    if (promesasFetch.length > 0) {
+      const animeDocsSnap = await Promise.all(promesasFetch);
+
+      animeDocsSnap.forEach((docSnap, i) => {
+        if (docSnap.exists()) {
+          const animeDetails = docSnap.data();
+          const originalIndex = indicesFetch[i]; // Recuperamos su posición original
+          const cap = currentState[originalIndex];
+
+          const siguienteCapitulo = cap.ultimoVisto + 1;
+          const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
+          const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
+
+          if (siguienteEpisodio) {
+            freshData[originalIndex] = {
+              id: cap.id,
+              portada: animeDetails.portada,
+              titulo: animeDetails.titulo,
+              siguienteCapitulo: siguienteCapitulo,
+              siguienteCapituloUrl: siguienteEpisodio.url
+            };
+          }
+        }
+      });
+    }
+
+    // 4. Limpiamos cualquier anime nulo (por si ya no hay más capítulos para ver de ese anime)
+    const datosFinales = freshData.filter(Boolean);
+
+    // 5. Render final y actualización de cachés
+    renderizarBotones(datosFinales);
+    localStorage.setItem(cacheKey, JSON.stringify(datosFinales));
     localStorage.setItem(cacheStateKey, JSON.stringify(currentState));
 
   } catch (error) {
     console.error('Error crítico en cargarUltimosCapsVistos:', error);
+    // Feedback opcional para el usuario en caso de que se caiga el internet o la BD
+    ultimosCapsContainer.innerHTML = '<p>Error al sincronizar tu historial de continuar viendo.</p>';
   }
 }
 
@@ -790,6 +819,7 @@ async function cargarContinuarViendo() {
   if (!container) return;
   
   if(localStorage.getItem(cachekey) === null) {
+    container.innerHTML = '<span class="span-carga">Inicia sesión para ver tu registro de animes!</span>';
     return;
   }
    let datos = JSON.parse(localStorage.getItem(cachekey));
