@@ -266,7 +266,7 @@ async function cargarUltimosCapsVistos() {
     const promesasFetch = [];
     const indicesFetch = [];
     const freshData = new Array(currentState.length).fill(null);
-
+    
     currentState.forEach((cap, index) => {
       // ¿Este anime y su último capítulo visto ya estaban en la caché?
       const estadoAnterior = cachedState.find(c => c.id === cap.id && c.ultimoVisto === cap.ultimoVisto);
@@ -279,26 +279,26 @@ async function cargarUltimosCapsVistos() {
           return; // Saltamos a la siguiente iteración
         }
       }
-
+      
       // Si es un anime nuevo o vio un capítulo nuevo, preparamos la petición
       indicesFetch.push(index);
       promesasFetch.push(getDoc(doc(db, "datos-animes", cap.id)));
     });
-
+    
     // 3. Ejecutamos las llamadas a Firebase SOLAMENTE para los que faltan
     if (promesasFetch.length > 0) {
       const animeDocsSnap = await Promise.all(promesasFetch);
-
+      
       animeDocsSnap.forEach((docSnap, i) => {
         if (docSnap.exists()) {
           const animeDetails = docSnap.data();
           const originalIndex = indicesFetch[i]; // Recuperamos su posición original
           const cap = currentState[originalIndex];
-
+          
           const siguienteCapitulo = cap.ultimoVisto + 1;
           const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
           const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
-
+          
           if (siguienteEpisodio) {
             freshData[originalIndex] = {
               id: cap.id,
@@ -311,15 +311,16 @@ async function cargarUltimosCapsVistos() {
         }
       });
     }
-
+    
     // 4. Limpiamos cualquier anime nulo (por si ya no hay más capítulos para ver de ese anime)
     const datosFinales = freshData.filter(Boolean);
-
+    
     // 5. Render final y actualización de cachés
     renderizarBotones(datosFinales);
     localStorage.setItem(cacheKey, JSON.stringify(datosFinales));
     localStorage.setItem(cacheStateKey, JSON.stringify(currentState));
-
+    
+    cargarContinuarViendo();
   } catch (error) {
     console.error('Error crítico en cargarUltimosCapsVistos:', error);
     // Feedback opcional para el usuario en caso de que se caiga el internet o la BD
@@ -830,22 +831,21 @@ async function cargarContinuarViendo() {
   h2.dataset.text = "Disponibles: " + datos.length;
   if (datos.length === 0) {
    container.innerHTML = '<span class="span-carga">No hay capítulos disponibles para continuar viendo.</span>';
-     return;
-   }
-   
-   // ----------------------------------------------------
-   // Modificación: Integrado renderFlipOptimizado
+   return;
+  }
+    
+    // ----------------------------------------------------
+    // Modificación: Integrado renderFlipOptimizado
    // ----------------------------------------------------
    renderFlipOptimizado(container, () => {
      container.innerHTML = '';
      datos.forEach(data => {
        container.appendChild(createAnimeCard(data, data.siguienteCapitulo));
      });
-   });
-   observerAnimeCards();
+    });
+    observerAnimeCards();
    
-   h2.dataset.text = "Disponibles: " + datos.length;
-}
+  }
 
 function cargarFetch(direccion) {
   direccion = direccion.charAt(0).toUpperCase() + direccion.slice(1);
