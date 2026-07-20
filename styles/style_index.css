@@ -373,7 +373,6 @@ nav.filtros {
     opacity: 0;
     pointer-events: none;
     max-height: 0;
-    overflow: hidden;
   }
   #filtrosjk.mobile-active, #filtros-av1.mobile-active {
     transform: unset;
