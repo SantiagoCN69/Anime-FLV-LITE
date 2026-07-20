@@ -1067,7 +1067,6 @@ section.content-section h2:first-of-type::after {
     min-height: 267px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    grid-template-rows: max-content;
     gap: 17px;
 }
 #main {
