@@ -804,6 +804,7 @@ justify-content: space-between;
 }
 /* ===== CONTADOR PAG ===== */
 #Num-pag {
+  height: 2lh;
   display: block;
   padding: 10px;
   opacity: 0.8;
