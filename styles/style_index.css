@@ -61,6 +61,7 @@
   display: none;           /* Chrome, Safari */
 }
 .btn-letra {
+  flex: auto;
   background-color: var(--br);
   color: var(--t1);
   border: none;
@@ -360,6 +361,7 @@ nav.filtros {
     transform: scale(0.95);
   }
 }
+
 :has(#filtrosjk.mobile-active) #btnfiltrosjk {
   background: linear-gradient(135deg, var(--btn), var(--btn2));
 }
