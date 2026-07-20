@@ -204,6 +204,7 @@ nav.filtros {
   display: flex;
   flex:1 1 0;
   min-width: 173px;
+  height: 51px;
 }
 .btn-filtro, #btn-filtrar, #btn-filtrar-av1 {
   width: fit-content;
