@@ -210,7 +210,6 @@ nav.filtros {
   width: fit-content;
   cursor: pointer;
   position: relative;
-  min-width: 173px;
   flex:1 1 0;
 }
 .btn-filtro::after {
@@ -336,7 +335,47 @@ nav.filtros {
 .btn-filtro-opcion.active {
   background-color: var(--btn);
 }
-    
+
+#btnfiltrosjk, #btnfiltrosav1 {
+  display: none;
+  background-color: var(--p);
+  color: var(--txt);
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100px;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  font-size: 1rem;
+  margin-left: auto;
+  margin-top: 1rem;
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+@media (max-width: 1022px) {
+  #btnfiltrosjk, #btnfiltrosav1 {
+    display: flex;
+  }
+  #filtrosjk, #filtros-av1 {
+    transition: transform 0.3s ease, opacity 0.3s ease, max-height 0.4s ease;
+    transform: translateY(-68%) translateX(39.7%) scale(0.2);
+    opacity: 0;
+    pointer-events: none;
+    max-height: 0;
+    overflow: hidden;
+  }
+  #filtrosjk.mobile-active, #filtros-av1.mobile-active {
+    transform: unset;
+    opacity: 1;
+    pointer-events: auto;
+    max-height: 700px;
+  }
+} 
+
 #resultados, #resultados-av1, #populares {
   position: relative;
   flex: 1;
@@ -813,7 +852,6 @@ justify-content: space-between;
 #contenedor-animes {
   display: grid;
   gap: 12px;
-  padding: 10px;
 }
 
 /* ===== LAYOUT 1: GRID TARJETAS ===== */
@@ -823,7 +861,7 @@ justify-content: space-between;
 
 /* ===== LAYOUT 2: MÁS GRANDE ===== */
 #contenedor-animes.layout2 {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
 /* ===== LAYOUT 3: LISTA ===== */

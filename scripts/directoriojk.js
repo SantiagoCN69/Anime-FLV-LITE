@@ -407,3 +407,7 @@ setLayout(savedLayout);
 
 // Inicializamos todo inmediatamente en lugar de esperar al DOMContentLoaded
 initFiltros();
+
+document.querySelector('#btnfiltrosjk').addEventListener('click', function() {
+    document.querySelector('#filtrosjk').classList.toggle('mobile-active');
+});

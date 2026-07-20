@@ -498,3 +498,9 @@ document.getElementById('btn-fuente-directorio-av1').addEventListener('click', (
 });
 
 cargarAnimesConCache();
+
+document.getElementById('btnfiltrosav1').addEventListener('click', () => {
+    const filtros = document.getElementById('filtros-av1');
+    filtros.classList.toggle('mobile-active');
+});
+
