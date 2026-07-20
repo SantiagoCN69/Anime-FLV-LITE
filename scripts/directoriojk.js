@@ -197,6 +197,8 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
       localStorage.setItem(CACHE_KEY, JSON.stringify(data));
 
       console.log("Cache actualizado");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.querySelector('#filtrosjk').classList.remove('mobile-active');
     } catch (err) {
       console.error(err);
     }
@@ -215,6 +217,8 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
     renderPagination();
     actualizarPaginaUI();
     actualizarFiltrosSeleccionados();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('#filtrosjk').classList.remove('mobile-active');
   } catch (err) {
     console.error("Error al obtener datos:", err);
   }

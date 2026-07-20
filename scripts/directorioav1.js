@@ -188,6 +188,7 @@ function cambiarPagina(page) {
         observerAnimeCards();
       });
       updatePagination(data);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     })
     .catch(error => {
       console.error('Error detallado:', error);
@@ -423,6 +424,8 @@ async function ejecutarBusqueda() {
         
         currentPage = 1; 
         updatePagination(data);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('filtros-av1').classList.remove('mobile-active');
     } catch (error) {
         console.error('Error al cargar animes:', error);
         resultadosContainer.innerHTML = '<p>Error al cargar los animes</p>';
