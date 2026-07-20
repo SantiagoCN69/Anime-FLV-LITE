@@ -351,10 +351,17 @@ nav.filtros {
   font-size: 1rem;
   margin-left: auto;
   margin-top: 1rem;
+  transition: background 0.3s ease, transform 0.3s ease;
   svg {
     width: 20px;
     height: 20px;
   }
+  &:active {
+    transform: scale(0.95);
+  }
+}
+:has(#filtrosjk.mobile-active) #btnfiltrosjk {
+  background: linear-gradient(135deg, var(--btn), var(--btn2));
 }
 @media (max-width: 1022px) {
   #btnfiltrosjk, #btnfiltrosav1 {
