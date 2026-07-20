@@ -776,7 +776,6 @@ justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 10px 0;
   color: var(--t2);
   font-size: 16px;
   min-height: 55px;
