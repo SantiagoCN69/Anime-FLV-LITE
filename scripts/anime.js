@@ -1349,7 +1349,7 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
 
   if (config) {
     pill.textContent = config.texto;
-    // Si el estado es falso, forzamos la clase 'eliminado' (rojo translúcido)
+    // Si el estado es falso, forzamos la clase 'eliminado'
     pill.classList.add(estado ? config.clase : "pildora-eliminado");
   } else {
     pill.textContent = estado ? "Acción realizada" : "Acción revertida";
@@ -1358,14 +1358,10 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
 
   document.body.appendChild(pill);
 
-  requestAnimationFrame(() => {
-    pill.classList.add("mostrar");
-  });
-
-  setTimeout(() => {
-    pill.classList.remove("mostrar");
-    pill.addEventListener('transitionend', () => pill.remove(), { once: true });
-  }, 3000);
+  // Escuchamos el final del keyframe para eliminar el elemento del DOM
+  pill.addEventListener('animationend', () => {
+    pill.remove();
+  }, { once: true });
 }
 document.getElementById("btn-volver").addEventListener("click", () => {
   if (history.length > 1) {

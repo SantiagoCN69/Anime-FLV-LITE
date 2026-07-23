@@ -1489,16 +1489,13 @@ margin-top: 10px;
 /* Píldora visual check (Base) */
 .pildora {
   position: fixed;
-  top: -60px;
   left: 50%;
-  transform: translateX(-50%) translateY(-20px);
   padding: 12px 24px;
   text-align: center;
   border-radius: 999px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--t1, white); /* Fallback a blanco por si la variable falla */
-  opacity: 0;
+  color: var(--t1, white);
   z-index: 98;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -1506,16 +1503,34 @@ margin-top: 10px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 
               0 4px 16px rgba(0, 0, 0, 0.1),
               inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  animation: mostrarOcultarPildora 3s forwards;
 }
 
-/* Estado visible */
-.pildora.mostrar {
-  top: 20px; 
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+@keyframes mostrarOcultarPildora {
+  0% {
+    top: -60px;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  15% {
+    top: 20px; 
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  85% {
+    top: 20px; 
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    top: -60px;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
 }
-
 /* --- Variantes --- */
 
 /* Verdes */
