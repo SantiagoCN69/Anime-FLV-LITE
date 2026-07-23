@@ -337,7 +337,7 @@ nav.filtros {
   background-color: var(--btn);
 }
 
-#btnfiltrosjk, #btnfiltrosav1 {
+.btn-filtros {
   display: none;
   background-color: var(--p);
   color: var(--txt);
@@ -362,11 +362,11 @@ nav.filtros {
   }
 }
 
-:has(#filtrosjk.mobile-active) #btnfiltrosjk {
+:has(.filtros.mobile-active) .btn-filtros {
   background: linear-gradient(135deg, var(--btn), var(--btn2));
 }
 @media (max-width: 1022px) {
-  #btnfiltrosjk, #btnfiltrosav1 {
+  .btn-filtros {
     display: flex;
   }
   #filtrosjk, #filtros-av1 {
