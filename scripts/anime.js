@@ -408,6 +408,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
 
     img.onerror = () => {
       img.remove();
+      btn.classList.add('imgnoloading');
     };
   }
   else {

@@ -730,7 +730,9 @@ header {
   height: 60px;
   opacity: 1;
 }
-
+.imgnoloading {
+  border: 1px solid var(--br) !important;
+}
 .episode-text {
   padding: 8px;
   font-weight: 600;
@@ -747,7 +749,7 @@ header {
 }
 .ep-visto .episode-text {
   color: var(--t1);
-  background:var(--btn2);
+  background:var(--btn);
 }
 .icon-eye {
   width: 45px;
@@ -763,7 +765,7 @@ header {
   transition: filter 0.2s, background-color 0.2s;
 }
 .ep-visto .icon-eye {
-  background-color: var(--btn2);
+  background-color: var(--btn);
 }
 .ep-visto .icon-eye::after, .ep-no-visto .icon-eye::after {
   content: "";
@@ -801,7 +803,7 @@ header {
   opacity: 0;
 }
 @media screen and (hover:hover) {
-  .episode-btn:hover {color: var(--btn2);transform: translateY(-3px);}
+  .episode-btn:hover {transform: translateY(-3px);}
   .icon-eye:hover {filter: brightness(1.2);}
 
   .episode-btn:hover .play-icon-anime {width: 60px;height: 60px;
@@ -1102,7 +1104,9 @@ max-height: 500px;
     background: var(--p);
     border-radius: 12px;
   }
-  
+  .imgnoloading {
+    border:none !important;
+  }
   .episode-thumb {
     width: 100px;
     height: 100%;
