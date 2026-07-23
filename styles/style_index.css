@@ -402,8 +402,8 @@ nav.filtros {
   overflow-y: hidden;
   flex-wrap: nowrap;
   scroll-snap-type: x mandatory;
-  padding-bottom: 10px;
-  margin-top: 2rem;
+  padding-block: 10px;
+  margin-top: calc(2rem - 10px);
 }
 
 .page-button {
