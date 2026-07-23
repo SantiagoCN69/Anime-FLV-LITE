@@ -795,7 +795,7 @@ justify-content: space-between;
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 500;
-  border: 1px solid var(--btn2);  
+  border: 1px solid var(--btn);  
   position: relative;
 }
 
@@ -805,7 +805,7 @@ justify-content: space-between;
   border: none;
   font-size: 20px;
   transition: all 0.2s ease;
-  color: var(--t2);
+  color: var(--btn);
 }
 
 .filtro-activo button:hover {
