@@ -393,7 +393,7 @@ nav.filtros {
 }
 
 .pagination {
-  width: 100%;
+  width: fit-content;
   max-width: 614px;
   margin: 0 auto;
   display: flex;
