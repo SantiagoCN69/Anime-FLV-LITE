@@ -463,9 +463,6 @@ iframe {
   border: 2px solid var(--br);
   cursor: not-allowed;
 }
-.desactivado:hover {
-  border: 2px solid var(--btn);
-}
 .btn-anterior {
   grid-area: btn-anterior;
   border-top-left-radius: 22px;
