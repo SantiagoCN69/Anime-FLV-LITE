@@ -51,7 +51,15 @@ const getBtnTextoPorValor = (menuId, valor) => {
 const sincronizarBotonesConFiltros = () => {
   filtroMenus.forEach(([btnId, menuId, filtroKey]) => {
     const texto = getBtnTextoPorValor(menuId, filtros[filtroKey]);
-    if (texto) actualizarBoton(btnId, texto);
+    if (texto) {
+      actualizarBoton(btnId, texto);
+    } else {
+      // Usar primera opción del menú cuando el filtro está vacío
+      const primeraOpcion = $(menuId)?.querySelector(".btn-filtro-opcion");
+      if (primeraOpcion) {
+        actualizarBoton(btnId, limpiarTextoOpcion(primeraOpcion.textContent));
+      }
+    }
   });
 };
 
