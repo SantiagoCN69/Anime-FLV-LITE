@@ -446,6 +446,7 @@ iframe {
   transition: transform .3s;  
   padding: 15px;
   width: 100%;
+  border: 2px solid transparent;
 }
 .btn-anterior:active, .btn-siguiente:active, .btn-anuncios:active, #btn-cambio-servers:active, #btn-estado-capitulo:active {
   transform: scale(.95);
