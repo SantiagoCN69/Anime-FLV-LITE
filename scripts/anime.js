@@ -2,7 +2,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Agregamos arrayUnion y arrayRemove al final de esta línea
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards, aplicarViewTransition } from "./utils.js";
@@ -697,15 +697,66 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
 
     const ref = doc(db, 'usuarios', userId, 'caps-vistos', animeId);
     
-    const actualizacion = esVisto 
-      ? arrayUnion(episodio.toString()) 
-      : arrayRemove(episodio.toString());
-
-    await setDoc(ref, {
-      titulo,
-      fechaAgregado: serverTimestamp(),
-      episodiosVistos: actualizacion
-    }, { merge: true });
+    // Obtener estado del anime desde el DOM (elemento #statuscargado)
+    const statusElement = document.getElementById('statuscargado');
+    const estadoTexto = statusElement ? statusElement.textContent : '';
+    const esFinalizadoPorEstado = estadoTexto === 'Finalizado' || estadoTexto === 'Concluido';
+    
+    if (esVisto) {
+      // Marcar como visto
+      const snap = await getDoc(ref);
+      let nuevosVistos = [];
+      
+      if (snap.exists()) {
+        const data = snap.data();
+        nuevosVistos = [...(data.episodiosVistos || []), episodio.toString()];
+      } else {
+        nuevosVistos = [episodio.toString()];
+      }
+      
+      // Verificar si se vieron todos los capítulos
+      const total = document.querySelectorAll(".episode-btn").length;
+      const vistosTodosLosCaps = nuevosVistos.length >= total && total > 0;
+      const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
+      
+      console.log('🔍 toggleCapituloVisto - MARCAR COMO VISTO');
+      console.log('  Estado texto:', estadoTexto, '| esFinalizadoPorEstado:', esFinalizadoPorEstado);
+      console.log('  Episodios vistos:', nuevosVistos.length, '| Total episodios:', total);
+      console.log('  vistosTodosLosCaps:', vistosTodosLosCaps, '| esFinalizadoPorVistos:', esFinalizadoPorVistos);
+      
+      await setDoc(ref, {
+        titulo,
+        fechaAgregado: serverTimestamp(),
+        episodiosVistos: arrayUnion(episodio.toString()),
+        esFinalizadoPorVistos: esFinalizadoPorVistos
+      }, { merge: true });
+    } else {
+      // Desmarcar como visto
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        const nuevosVistos = (data.episodiosVistos || []).filter(ep => ep !== episodio.toString());
+        
+        if (nuevosVistos.length === 0) {
+          // Si no quedan episodios vistos, eliminar el documento completo
+          await deleteDoc(ref);
+          console.log('🗑️ Documento eliminado:', animeId, '(no quedan episodios vistos)');
+        } else {
+          // Verificar si aún se vieron todos los capítulos
+          const total = document.querySelectorAll(".episode-btn").length;
+          const vistosTodosLosCaps = nuevosVistos.length >= total && total > 0;
+          const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
+          
+          // Actualizar con los episodios restantes
+          await setDoc(ref, {
+            titulo,
+            fechaAgregado: serverTimestamp(),
+            episodiosVistos: nuevosVistos,
+            esFinalizadoPorVistos: esFinalizadoPorVistos
+          }, { merge: true });
+        }
+      }
+    }
 
     // Lógicas de UI post-confirmación
     const total = document.querySelectorAll(".episode-btn").length;
@@ -1375,3 +1426,125 @@ document.getElementById("btn-volver").addEventListener("click", () => {
     window.location.href = "https://anizenlite.netlify.app/";
   }
 });
+
+// // Función para actualizar campo esFinalizadoPorVistos por lotes desde Firestore
+// async function actualizarFinalizadoPorLotes() {
+//   console.log('🔄 Iniciando actualizarFinalizadoPorLotes...');
+//   try {
+//     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+//     if (!userId) {
+//       console.warn("No hay usuario autenticado para actualizar finalizado.");
+//       return;
+//     }
+//     console.log('✅ Usuario autenticado:', userId);
+
+//     const ref = collection(db, "usuarios", userId, "caps-vistos");
+//     const snap = await getDocs(ref);
+    
+//     if (snap.empty) {
+//       console.log("✅ No hay documentos para actualizar.");
+//       return;
+//     }
+//     console.log(`📦 Total documentos encontrados: ${snap.docs.length}`);
+
+//     let actualizados = 0;
+//     const batchSize = 10; // Procesar en lotes de 10
+//     const docs = snap.docs;
+
+//     for (let i = 0; i < docs.length; i += batchSize) {
+//       const batch = docs.slice(i, i + batchSize);
+//       const promesas = [];
+
+//       for (const docSnap of batch) {
+//         const data = docSnap.data();
+//         const animeId = docSnap.id;
+//         console.log(`🔍 Procesando ${animeId}...`);
+//         promesas.push(
+//           (async () => {
+//             try {
+//               const animeDoc = await getDoc(doc(db, 'datos-animes', animeId));
+//               if (animeDoc.exists()) {
+//                 const animeData = animeDoc.data();
+//                 const estado = (animeData.estado || animeData.status || '').toLowerCase();
+//                 const esFinalizadoPorEstado = estado === 'finalizado' || estado === 'completed';
+                
+//                 // Verificar si se vieron todos los capítulos
+//                 const episodiosVistos = (data.episodiosVistos || []).length;
+//                 const totalEpisodios = Array.isArray(animeData.episodios) ? animeData.episodios.length : Object.keys(animeData.episodios || {}).length;
+//                 const vistosTodosLosCaps = totalEpisodios > 0 && episodiosVistos >= totalEpisodios;
+//                 const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
+                
+//                 console.log(`  📊 ${animeId}: estado="${estado}" esFinalizadoPorEstado=${esFinalizadoPorEstado} vistos=${episodiosVistos}/${totalEpisodios} vistosTodos=${vistosTodosLosCaps} esFinalizadoPorVistos=${esFinalizadoPorVistos}`);
+                
+//                 await setDoc(docSnap.ref, {
+//                   esFinalizadoPorVistos: esFinalizadoPorVistos
+//                 }, { merge: true });
+                
+//                 console.log(`✅ Actualizado: ${animeId} - esFinalizadoPorVistos: ${esFinalizadoPorVistos}`);
+//                 actualizados++;
+//               } else {
+//                 console.warn(`⚠️ Anime no existe en datos-animes: ${animeId}`);
+//               }
+//             } catch (e) {
+//               console.error(`❌ Error actualizando ${animeId}:`, e);
+//             }
+//           })()
+//         );
+//       }
+
+//       await Promise.all(promesas);
+//       console.log(`📊 Progreso: ${Math.min(i + batchSize, docs.length)}/${docs.length} documentos procesados`);
+//     }
+
+//     console.log(`✅ Actualización completada: ${actualizados} documentos actualizados.`);
+
+//   } catch (error) {
+//     console.error("❌ Error al actualizar finalizado por lotes:", error);
+//   }
+// }
+// actualizarFinalizadoPorLotes();
+
+
+// // Función de limpieza: elimina documentos con episodiosVistos vacíos
+// async function limpiarDocumentosVacios() {
+//   try {
+//     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+//     if (!userId) {
+//       console.warn("No hay usuario autenticado para limpiar documentos.");
+//       return;
+//     }
+
+//     const ref = collection(db, "usuarios", userId, "caps-vistos");
+//     const snap = await getDocs(ref);
+    
+//     if (snap.empty) {
+//       console.log("✅ No hay documentos para limpiar.");
+//       return;
+//     }
+
+//     let eliminados = 0;
+//     const promesasEliminacion = [];
+
+//     snap.docs.forEach(docSnap => {
+//       const data = docSnap.data();
+//       const episodiosVistos = data.episodiosVistos || [];
+      
+//       if (!Array.isArray(episodiosVistos) || episodiosVistos.length === 0) {
+//         console.log('🗑️ Eliminando documento vacío:', docSnap.id);
+//         promesasEliminacion.push(deleteDoc(docSnap.ref));
+//         eliminados++;
+//       }
+//     });
+
+//     if (promesasEliminacion.length > 0) {
+//       await Promise.all(promesasEliminacion);
+//       console.log(`✅ Limpieza completada: ${eliminados} documentos eliminados.`);
+//     } else {
+//       console.log("✅ No se encontraron documentos vacíos.");
+//     }
+
+//   } catch (error) {
+//     console.error("❌ Error al limpiar documentos vacíos:", error);
+//   }
+// }
+// limpiarDocumentosVacios()

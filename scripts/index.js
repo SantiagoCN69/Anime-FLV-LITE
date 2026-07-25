@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-login.js';
-import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { observerAnimeCards, aplicarViewTransition } from './utils.js';
 
 let userID = localStorage.getItem('userID') || "null";
@@ -234,7 +234,7 @@ async function cargarUltimosCapsVistos() {
 
   try {
     const ref = collection(db, "usuarios", userID, "caps-vistos");
-    const q = query(ref, orderBy('fechaAgregado', 'desc'), limit(8));
+    const q = query(ref, where('esFinalizadoPorVistos', '==', false), limit(10));
     const snap = await getDocs(q);
 
     // Si el usuario no tiene historial en Firebase
@@ -250,12 +250,29 @@ async function cargarUltimosCapsVistos() {
       const data = docSnap.data();
       const vistos = (data.episodiosVistos || []).map(Number);
       if (vistos.length > 0) {
+        let fechaMilisegundos = 0;
+        if (data.fechaAgregado && typeof data.fechaAgregado.toMillis === 'function') {
+           fechaMilisegundos = data.fechaAgregado.toMillis();
+        } else if (data.fechaAgregado) {
+           fechaMilisegundos = new Date(data.fechaAgregado).getTime();
+        }
+
         currentState.push({
           id: docSnap.id,
-          ultimoVisto: Math.max(...vistos)
+          ultimoVisto: Math.max(...vistos),
+          fechaAgregado: fechaMilisegundos 
         });
       }
     });
+    
+    // Ordenar por fechaAgregado descendente en el cliente
+    currentState.sort((a, b) => {
+      const fechaA = a.fechaAgregado ? a.fechaAgregado.toDate?.() || a.fechaAgregado : 0;
+      const fechaB = b.fechaAgregado ? b.fechaAgregado.toDate?.() || b.fechaAgregado : 0;
+      return fechaB - fechaA;
+    });
+    
+    console.log('📊 Animes en historial (filtrados y ordenados):', currentState.length, currentState);
 
     // Validamos si TODO está exactamente igual (ahorra ejecución)
     if (cachedState && cachedData.length > 0 && JSON.stringify(currentState) === JSON.stringify(cachedState)) {
@@ -276,6 +293,7 @@ async function cargarUltimosCapsVistos() {
         const datosCacheados = cachedData.find(d => d.id === cap.id);
         if (datosCacheados) {
           freshData[index] = datosCacheados; // Reutilizamos sin gastar lecturas
+          console.log('♻️ Reusando caché:', cap.id, 'Ep último visto:', cap.ultimoVisto);
           return; // Saltamos a la siguiente iteración
         }
       }
@@ -284,6 +302,7 @@ async function cargarUltimosCapsVistos() {
       indicesFetch.push(index);
       promesasFetch.push(getDoc(doc(db, "datos-animes", cap.id)));
     });
+    console.log('🔄 Fetching nuevos animes:', promesasFetch.length, 'de', currentState.length);
     
     // 3. Ejecutamos las llamadas a Firebase SOLAMENTE para los que faltan
     if (promesasFetch.length > 0) {
@@ -299,6 +318,8 @@ async function cargarUltimosCapsVistos() {
           const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
           const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
           
+          console.log('🔍 Anime:', cap.id, '| Último visto:', cap.ultimoVisto, '| Buscando Ep:', siguienteCapitulo, '| Encontrado:', !!siguienteEpisodio);
+          
           if (siguienteEpisodio) {
             freshData[originalIndex] = {
               id: cap.id,
@@ -307,13 +328,18 @@ async function cargarUltimosCapsVistos() {
               siguienteCapitulo: siguienteCapitulo,
               siguienteCapituloUrl: siguienteEpisodio.url
             };
+          } else {
+            console.warn('⚠️ No se encontró siguiente capítulo para:', cap.id, 'Título:', animeDetails.titulo, '| Ep buscado:', siguienteCapitulo, '| Total eps:', episodios.length);
           }
+        } else {
+          console.error('❌ Documento no existe en Firebase:', currentState[indicesFetch[i]].id);
         }
       });
     }
     
     // 4. Limpiamos cualquier anime nulo (por si ya no hay más capítulos para ver de ese anime)
     const datosFinales = freshData.filter(Boolean);
+    console.log('✅ Animes a renderizar:', datosFinales.map(d => ({ id: d.id, titulo: d.titulo, siguienteEp: d.siguienteCapitulo })));
     
     // 5. Render final y actualización de cachés
     renderizarBotones(datosFinales);
