@@ -220,7 +220,6 @@ main section:nth-child(2) {
 }
 
 .visto .texto-estado-capitulo {
-  color: var(--t2);
   opacity: 1;
 }
 
@@ -240,7 +239,7 @@ main section:nth-child(2) {
 #btn-estado-capitulo.visto::after {
   content: "";
   -webkit-mask-size: contain;
-  background-color: var(--t2);
+  background-color: var(--t1);
   opacity: 1;
   -webkit-mask: url('../icons/eye-solid.svg') no-repeat center;
   mask-size: contain;
