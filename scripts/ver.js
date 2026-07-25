@@ -1004,6 +1004,15 @@ function mostrarVideo(link, botonSeleccionado) {
   }
 }
 function actualizarEstadoBotones() {
+  // Si no hay episodios cargados, mantener botones desactivados
+  if (!episodios || episodios.length === 0) {
+    btnAnterior.disabled = true;
+    btnAnterior.classList.add('desactivado');
+    btnSiguiente.disabled = true;
+    btnSiguiente.classList.add('desactivado');
+    return;
+  }
+
   const primerEpisodio = episodios[0];
   const esPrimerEpisodio = primerEpisodio ? episodioActualIndex <= primerEpisodio.number : true;
   btnAnterior.disabled = esPrimerEpisodio;
