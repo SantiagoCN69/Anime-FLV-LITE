@@ -62,8 +62,6 @@ function actualizarEstadoBotonDoblado(servidores) {
   // Si no hay doblados, deshabilitamos el botón y lo dejamos en modo "Subtitulado"
   if (!tieneDoblados) {
     btn.disabled = true;
-    btn.style.opacity = "0.5"; // Lo hacemos ver deshabilitado
-    btn.style.cursor = "not-allowed";
     // Forzamos el modo subtitulado si el botón se deshabilita
     if (modoDoblado) {
       modoDoblado = false;
