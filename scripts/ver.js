@@ -151,18 +151,41 @@ async function toggleYGuardarEstadoCapitulo() {
     const nuevoEstadoVisto = !estaVistoActualmente;
 
     const episodiosActuales = new Set(episodiosVistos);
+    
+    // Mantenemos la estructura condicional if/else
     if (nuevoEstadoVisto) {
       episodiosActuales.add(episodioId);
     } else {
       episodiosActuales.delete(episodioId);
     }
 
+    const arrayNuevosVistos = Array.from(episodiosActuales);
+
     try {
+      if (arrayNuevosVistos.length === 0) {
+        // Si ya no quedan episodios vistos, eliminamos el documento
+        await deleteDoc(animeRef);
+        console.log('🗑️ Documento eliminado (no quedan episodios vistos)');
+      } else {
+        // Obtener estado del anime si existe en esta vista
+        const statusElement = document.getElementById('statuscargado');
+        const estadoTexto = statusElement ? statusElement.textContent : '';
+        const esFinalizadoPorEstado = (estadoTexto === 'Finalizado' || estadoTexto === 'Concluido');
+        
+        // Verificar si completó todos los capítulos con el array local "episodios"
+        const totalEpisodios = episodios.length;
+        const vistosTodosLosCaps = arrayNuevosVistos.length >= totalEpisodios && totalEpisodios > 0;
+        const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
+
+        // Guardar con la bandera y con merge para no sobrescribir destructivamente
       await setDoc(animeRef, {
         titulo,
         fechaAgregado: serverTimestamp(),
-        episodiosVistos: Array.from(episodiosActuales)
-      });
+          episodiosVistos: arrayNuevosVistos,
+          esFinalizadoPorVistos: esFinalizadoPorVistos
+        }, { merge: true });
+      }
+
       mostrarPildora(nuevoEstadoVisto, episodioActualIndex);
     } catch (error) {
       console.error("Error al guardar estado del capítulo en Firestore:", error);
