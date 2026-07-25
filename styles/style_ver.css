@@ -505,6 +505,10 @@ iframe {
   grid-area: btn-censura;
   background: var(--btn2);
 }
+#btn-cambio-servers:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 #btn-cambio-servers.activo {
   background: var(--btn);
 }
