@@ -490,10 +490,6 @@ h3 {
   aspect-ratio: 1/2;
 }
 
-.acciones-fav {
-  margin-block: 1.5rem;
-}
-
 .search-container {
   display: flex;
   flex-wrap: wrap;
@@ -501,17 +497,21 @@ h3 {
   margin-bottom: 1.5rem;
 }
 
-#busqueda-personalizada {
+#busqueda-personalizada, #filtro-extra {
   min-width: 100%;
   padding: 1rem;
-  border: 1px solid var(--btn);
   border-radius: 25px;
   background: rgba(var(--bgt), .1);
   color: var(--t1);
   font-size: 1rem;
+  border: 1px solid transparent;
 }
-
-#busqueda-personalizada:focus {
+#filtro-extra {
+  min-width: auto;
+  flex: 1;
+}
+#busqueda-personalizada:focus, #filtro-extra:focus {
+  border: 1px solid var(--btn);
   outline: none;
 }
 
@@ -520,6 +520,7 @@ h3 {
   display: flex;
   gap: 1rem;
   justify-content: center;
+  margin-block: 1.5rem;
 }
 
 .btn-generar,

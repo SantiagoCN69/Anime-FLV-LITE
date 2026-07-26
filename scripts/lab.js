@@ -6,13 +6,11 @@ import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards } from "./utils.js";
 import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName } from "./ai-recommendations.js";
 
-
 // Inicialización de Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let userid = null;
-
 
 (async () => {
     // Cargar caché inicial
@@ -56,19 +54,15 @@ let userid = null;
 })()
 
 // Funciones para manejar el caché de animes
-
 function guardarCacheAnimes(animes) {
-    // Limpiar caché anterior
     limpiarCacheAnimes();
     
-    // Guardar nuevos animes
     const cache = JSON.stringify({
         animes: animes.slice(0, 5),
         timestamp: Date.now()
     });
     localStorage.setItem('cache_animes', cache);
     
-    // Actualizar UI
     const contenedor = document.getElementById('recomendaciones-favoritos');
     if (contenedor) {
         const fragment = document.createDocumentFragment();
@@ -96,22 +90,18 @@ async function obtenerFavoritosUsuario() {
     try {
         if (!userid) return [];
 
-        // Obtener el documento de favoritos
         const favoritosRef = doc(db, `usuarios/${userid}/favoritos/lista`);
         const favoritosDoc = await getDoc(favoritosRef);
         if (!favoritosDoc.exists() || !favoritosDoc.data().animes || favoritosDoc.data().animes.length === 0) {
             return [];
         }
 
-        // Obtener los títulos de los favoritos
         const titulosFavoritos = favoritosDoc.data().animes;
         
-        // Si no hay favoritos, retornar array vacío
         if (!titulosFavoritos || titulosFavoritos.length === 0) {
             return [];
         }
 
-        // Mezclar los favoritos y seleccionar los primeros 5
         const favoritosMezclados = titulosFavoritos
             .map(titulo => ({
                 titulo,
@@ -135,19 +125,15 @@ async function obtenerAnimesVistos() {
     try {
         if (!userid) return [];
 
-        // Obtener el documento de estados
         const estadosRef = doc(db, `usuarios/${userid}/estados/visto`);
         const estadosDoc = await getDoc(estadosRef);
         
-        // Si no existe el documento o no tiene animes, retornar array vacío
         if (!estadosDoc.exists() || !estadosDoc.data().animes || !Array.isArray(estadosDoc.data().animes)) {
             return [];
         }
         
-        // Obtener los IDs de los animes vistos
         const ids = estadosDoc.data().animes;
         
-        // Obtener los datos de cada anime
         const animesPromises = ids.map(async (id) => {
             try {
                 const animeDoc = await getDoc(doc(db, 'datos-animes', id));
@@ -164,7 +150,6 @@ async function obtenerAnimesVistos() {
             }
         });
         
-        // Esperar a que todas las promesas se resuelvan y filtrar nulos
         const animes = await Promise.all(animesPromises);
         return animes.filter(anime => anime !== null);
         
@@ -174,8 +159,8 @@ async function obtenerAnimesVistos() {
     }
 }
 
-
-function crearAnimeCard(anime, isLink = false) {
+// Lógica simplificada de las tarjetas (ahora siempre son enlaces)
+function crearAnimeCard(anime) {
     const coverImage = anime.cover || anime.image || 'img/loading.png';
     let animeId = anime.id;
     if (!animeId && anime.url) {
@@ -188,13 +173,12 @@ function crearAnimeCard(anime, isLink = false) {
     const div = document.createElement('div');
     div.className = 'anime-card lab-card';
     
-    // Mantener el estilo original usando innerHTML
     let ratingHtml = '';
     if (anime.rating) {
         ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
     }
     div.style.setProperty('--cover', `url(${coverImage})`);
-    div.id="anime-${animeId}";
+    div.id = `anime-${animeId}`;
     div.innerHTML = `
         <div class="container-img">
             <img src="${coverImage}" class="cover" alt="${anime.title || 'Título del Anime'}">
@@ -203,27 +187,16 @@ function crearAnimeCard(anime, isLink = false) {
             <span class="estado">${anime.type || ''}</span>
         </div>
         <strong>${anime.title || 'Título del Anime'}</strong>
-        `;
-        div.addEventListener('click', () => {
+    `;
+    
+    // Al hacer clic, redirige al anime directamente
+    div.addEventListener('click', () => {
+        if (typeof aplicarViewTransition === "function") {
             aplicarViewTransition(animeId, ratingHtml);
-          });
-        // Evento de clic según el tipo de tarjeta
-        if (isLink) {
-
-            div.addEventListener('click', () => {
-                window.location.href = `anime.html?id=${animeId}`;
-            });
-        } else {
-            div.addEventListener('click', () => {
-                div.classList.toggle('active');
-                if (div.classList.contains('active')) {
-                    window.seleccionados = window.seleccionados || new Set();
-                    window.seleccionados.add(animeId);
-                } else {
-                    window.seleccionados.delete(animeId);
-                }
-            });
         }
+        window.location.href = `anime.html?id=${animeId}`;
+    });
+        
     return div;
 }
 
@@ -243,77 +216,11 @@ function mostrarPildora(mensaje, tipo = "default") {
   }, { once: true });
 }
 
-// Función para agregar animes a pendientes
-document.getElementById("agregar-a-pendientes").addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) {
-    mostrarPildora("Por favor, inicia sesión primero", "error");
-    return;
-  }
-
-  if (!window.seleccionados || window.seleccionados.size === 0) {
-    mostrarPildora("Por favor, selecciona al menos un anime", "error");
-    return;
-  }
-
-  try {
-    // Limpiar estados previos de los animes seleccionados
-    for (const animeId of window.seleccionados) {
-      await limpiarEstadosPrevios(animeId);
-    }
-
-    // Obtener la referencia al documento de pendientes
-    const pendientesRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), "pendiente");
-    const pendientesDoc = await getDoc(pendientesRef);
-    
-    // Obtener los IDs actuales o inicializar array vacío
-    const animesActuales = pendientesDoc.exists() && Array.isArray(pendientesDoc.data().animes) 
-      ? [...pendientesDoc.data().animes] 
-      : [];
-    
-    // Agregar nuevos IDs (sin duplicados)
-    const nuevosAnimes = [...new Set([...animesActuales, ...Array.from(window.seleccionados)])];
-    
-    // Actualizar el documento
-    await setDoc(pendientesRef, { animes: nuevosAnimes }, { merge: true });
-
-    // Limpiar selección
-    window.seleccionados.clear();
-    document.querySelectorAll('.anime-card.active').forEach(card => {
-      card.classList.remove('active');
-    });
-
-    mostrarPildora("Animes agregados a pendientes exitosamente!", "success");
-  } catch (error) {
-    console.error("Error al agregar animes a pendientes:", error);
-    mostrarPildora("Error al agregar animes a pendientes. Por favor, intenta nuevamente.", "error");
-  }
-});
-
-async function limpiarEstadosPrevios(animeId) {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const estados = ['viendo', 'pendiente', 'visto'];
-  
-  for (const estado of estados) {
-    const estadoRef = doc(collection(doc(db, "usuarios", user.uid), "estados"), estado);
-    const estadoDoc = await getDoc(estadoRef);
-    
-    if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
-      // Filtrar el animeId del array
-      const animesActualizados = estadoDoc.data().animes.filter(id => id !== animeId);
-      
-      // Actualizar solo si hay cambios
-      if (animesActualizados.length !== estadoDoc.data().animes.length) {
-        await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
-      }
-    }
-  }
-}
-
+// Evento Generar Nuevas (Con el input extra añadido)
 document.getElementById("generar-nuevas").addEventListener("click", async () => {
     const texto = document.getElementById("textbtngenerarfav");
+    const inputFiltro = document.getElementById("filtro-extra");
+    const filtroExtra = inputFiltro ? inputFiltro.value.trim() : "";
     
     texto.innerHTML = 'Generando recomendaciones... <span id="contador1">100s</span>';
 
@@ -322,9 +229,9 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     let count = 100;
     const interval = setInterval(() => {
       count--;
-      contador.textContent = count + 's';
+      if(contador) contador.textContent = count + 's';
     
-      if (count === 0) {
+      if (count <= 0) {
         clearInterval(interval);
         if (typeof initLoading !== "undefined") initLoading.remove();
       }
@@ -338,8 +245,8 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
 
     if (favoritos.length === 0) {
         console.warn("No hay favoritos.");
-        const texto = document.getElementById("textbtngenerarfav");
         texto.textContent = "No hay favoritos";
+        clearInterval(interval);
         return;
     }
 
@@ -350,57 +257,77 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     
     const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])].join(', ');
 
-    const prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista`;
-    enviarPrompt(prompt, "favoritos");
+    // Construir el prompt incluyendo las especificaciones extras si existen
+    let prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} `;
+    
+    if (filtroExtra) {
+        prompt += `Además, ten muy en cuenta estas especificaciones extras para la recomendación: ${filtroExtra}. `;
+    }
+    
+    prompt += `Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista`;
+    
+    // Esperamos a que la IA responda para luego limpiar
+    await enviarPrompt(prompt, "favoritos");
+
+    // Limpiar el contador y el input de especificaciones extra
+    clearInterval(interval);
+    if (inputFiltro) {
+        inputFiltro.value = "";
+    }
 });
 
 
 // Agregar evento para detectar Enter en el input de búsqueda personalizada
 const inputBusqueda = document.getElementById("busqueda-personalizada");
-inputBusqueda.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        document.getElementById("generar-personalizadas").click();
-    }
-});
+if(inputBusqueda) {
+    inputBusqueda.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("generar-personalizadas").click();
+        }
+    });
+}
 
-//generar personalizadas
-const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas")
-btnGenerarPersonalizadas.addEventListener("click", async () => {
-    const texto = document.getElementById("textbtngenerarpersonalizada");
-    texto.innerHTML = 'Generando recomendaciones... <span id="contador1">100s</span>';
+// Generar personalizadas
+const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas");
+if (btnGenerarPersonalizadas) {
+    btnGenerarPersonalizadas.addEventListener("click", async () => {
+        const texto = document.getElementById("textbtngenerarpersonalizada");
+        texto.innerHTML = 'Generando recomendaciones... <span id="contador2">100s</span>';
 
-    const contador = document.getElementById("contador1");
-    
-    let count = 100;
-    const interval = setInterval(() => {
-      count--;
-      contador.textContent = count + 's';
-    
-      if (count === 0) {
+        const contador = document.getElementById("contador2");
+        
+        let count = 100;
+        const interval = setInterval(() => {
+          count--;
+          if(contador) contador.textContent = count + 's';
+        
+          if (count <= 0) {
+            clearInterval(interval);
+            if (typeof initLoading !== "undefined") initLoading.remove();
+          }
+        }, 220);
+        const busquedaPersonalizada = document.getElementById("busqueda-personalizada").value;
+        const cacheActual = obtenerCacheAnimes();
+
+        if (busquedaPersonalizada.length === 0) {
+            console.warn("No hay busqueda personalizada.");
+            texto.textContent = "No hay busqueda personalizada";
+            clearInterval(interval);
+            return;
+        }
+
+        const animesCache2 = cacheActual?.animes || [];
+        const nombresCache2 = animesCache2.map(a => a.title || a.id).join(', ');
+
+        const prompt = `Dame 5 nombres de animes de acuerdo a la siguiente descripción: ${busquedaPersonalizada}
+        Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2},
+        Contetame solo y unicamente solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista y siempre separa por la coma `;
+
+        await enviarPrompt(prompt, "personalizadas");
         clearInterval(interval);
-        if (typeof initLoading !== "undefined") initLoading.remove();
-      }
-    }, 220);
-    const busquedaPersonalizada = document.getElementById("busqueda-personalizada").value;
-    const cacheActual = obtenerCacheAnimes();
-
-    if (busquedaPersonalizada.length === 0) {
-        console.warn("No hay busqueda personalizada.");
-        texto.textContent = "No hay busqueda personalizada";
-        return;
-    }
-
-    const animesCache2 = cacheActual?.animes || [];
-    const nombresCache2 = animesCache2.map(a => a.title || a.id).join(', ');
-
-    const prompt = `Dame 5 nombres de animes de acuerdo a la siguiente descripción: ${busquedaPersonalizada}
-    Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2},
-    Contetame solo y unicamente solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista y siempre separa por la coma `;
-
-    enviarPrompt(prompt, "personalizadas");
-});
-
+    });
+}
 
 async function enviarPrompt(prompt, seccion) {
     const seccionesValidas = ["favoritos", "personalizadas"];
@@ -413,7 +340,7 @@ async function enviarPrompt(prompt, seccion) {
         const respuesta = await fetchIAResponse(prompt);
         window.ultimaRespuesta = respuesta;
         console.log(respuesta);
-        mostrarRelacionadosDesdeRespuesta(respuesta, seccion);
+        await mostrarRelacionadosDesdeRespuesta(respuesta, seccion);
     } catch (error) {
         console.error('Error al enviar prompt:', error);
     }
@@ -456,6 +383,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     for (const nombre of nombres) {
         const anime = await resolveAnimeByName(nombre);
         if (!anime) continue;
+        
         if (guardarEnCache) {
             const animeData = {
                 titulo: anime.title || '',
@@ -478,9 +406,11 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
             });
         }
 
-        const card = crearAnimeCard(anime, !guardarEnCache);
+        // Ya no le pasamos el boolean de "isLink" porque ahora siempre son links
+        const card = crearAnimeCard(anime);
         fragment.appendChild(card);
     }
+    
     if (guardarEnCache && animesEncontrados.length > 0) {
         guardarCacheAnimes(animesEncontrados, 'favoritos');
     }
@@ -491,6 +421,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     const textoBtn = document.getElementById(textoBtnId);
     if (textoBtn) textoBtn.textContent = "Regenerar";
 }
+
 /*text random en input */
 const textos = [
     "Terror cortico pero que asuste de verdad.",
@@ -517,24 +448,31 @@ const textos = [
 ];    
       
 const random = Math.floor(Math.random() * textos.length);
-document.getElementById("busqueda-personalizada").value = textos[random];
+const inputPersonalizado = document.getElementById("busqueda-personalizada");
+if(inputPersonalizado) {
+    inputPersonalizado.value = textos[random];
+}
 
-document.getElementById("text-random").addEventListener("click", () => {
-    const random = Math.floor(Math.random() * textos.length);
-    document.getElementById("busqueda-personalizada").value = textos[random];
-    document.getElementById("generar-personalizadas").click();
-});
-
-btnGenerarPersonalizadas.click()
-
-// Selecciona todos los elementos con esas clases
-const contenedores = document.querySelectorAll(".grid-animes.lab");
-
-    contenedores.forEach((contenedor) => {
-      contenedor.addEventListener('wheel', (evento) => {
-        if (evento.deltaY !== 0) {
-          evento.preventDefault();
-          contenedor.scrollLeft += evento.deltaY; 
-        }
-      });
+const btnRandom = document.getElementById("text-random");
+if (btnRandom) {
+    btnRandom.addEventListener("click", () => {
+        const random = Math.floor(Math.random() * textos.length);
+        document.getElementById("busqueda-personalizada").value = textos[random];
+        document.getElementById("generar-personalizadas").click();
     });
+}
+
+if (btnGenerarPersonalizadas) {
+    btnGenerarPersonalizadas.click();
+}
+
+// Scroll horizontal
+const contenedores = document.querySelectorAll(".grid-animes.lab");
+contenedores.forEach((contenedor) => {
+    contenedor.addEventListener('wheel', (evento) => {
+        if (evento.deltaY !== 0) {
+            evento.preventDefault();
+            contenedor.scrollLeft += evento.deltaY; 
+        }
+    });
+});
