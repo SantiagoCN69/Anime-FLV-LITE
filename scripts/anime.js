@@ -709,7 +709,10 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
       
       if (snap.exists()) {
         const data = snap.data();
-        nuevosVistos = [...(data.episodiosVistos || []), episodio.toString()];
+        // Usa esto:
+        const arrayActual = data.episodiosVistos || [];
+        // Usamos Set para garantizar que no se duplique localmente el ID
+        nuevosVistos = [...new Set([...arrayActual, episodio.toString()])];
       } else {
         nuevosVistos = [episodio.toString()];
       }
@@ -1427,124 +1430,149 @@ document.getElementById("btn-volver").addEventListener("click", () => {
   }
 });
 
-// // Función para actualizar campo esFinalizadoPorVistos por lotes desde Firestore
-// async function actualizarFinalizadoPorLotes() {
-//   console.log('🔄 Iniciando actualizarFinalizadoPorLotes...');
-//   try {
-//     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
-//     if (!userId) {
-//       console.warn("No hay usuario autenticado para actualizar finalizado.");
-//       return;
-//     }
-//     console.log('✅ Usuario autenticado:', userId);
+// Función para actualizar campo esFinalizadoPorVistos por lotes desde Firestore
+async function actualizarFinalizadoPorLotes() {
+  console.log('🔄 Iniciando actualizarFinalizadoPorLotes...');
+  try {
+    const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+    if (!userId) {
+      console.warn("No hay usuario autenticado para actualizar finalizado.");
+      return;
+    }
+    console.log('✅ Usuario autenticado:', userId);
 
-//     const ref = collection(db, "usuarios", userId, "caps-vistos");
-//     const snap = await getDocs(ref);
+    const ref = collection(db, "usuarios", userId, "caps-vistos");
+    const snap = await getDocs(ref);
     
-//     if (snap.empty) {
-//       console.log("✅ No hay documentos para actualizar.");
-//       return;
-//     }
-//     console.log(`📦 Total documentos encontrados: ${snap.docs.length}`);
+    if (snap.empty) {
+      console.log("✅ No hay documentos para actualizar.");
+      return;
+    }
+    console.log(`📦 Total documentos encontrados: ${snap.docs.length}`);
 
-//     let actualizados = 0;
-//     const batchSize = 10; // Procesar en lotes de 10
-//     const docs = snap.docs;
+    let actualizados = 0;
+    const batchSize = 10; // Procesar en lotes de 10
+    const docs = snap.docs;
 
-//     for (let i = 0; i < docs.length; i += batchSize) {
-//       const batch = docs.slice(i, i + batchSize);
-//       const promesas = [];
+    for (let i = 0; i < docs.length; i += batchSize) {
+      const batch = docs.slice(i, i + batchSize);
+      const promesas = [];
 
-//       for (const docSnap of batch) {
-//         const data = docSnap.data();
-//         const animeId = docSnap.id;
-//         console.log(`🔍 Procesando ${animeId}...`);
-//         promesas.push(
-//           (async () => {
-//             try {
-//               const animeDoc = await getDoc(doc(db, 'datos-animes', animeId));
-//               if (animeDoc.exists()) {
-//                 const animeData = animeDoc.data();
-//                 const estado = (animeData.estado || animeData.status || '').toLowerCase();
-//                 const esFinalizadoPorEstado = estado === 'finalizado' || estado === 'completed';
+      for (const docSnap of batch) {
+        const data = docSnap.data();
+        const animeId = docSnap.id;
+        console.log(`🔍 Procesando ${animeId}...`);
+        promesas.push(
+          (async () => {
+            try {
+              const animeDoc = await getDoc(doc(db, 'datos-animes', animeId));
+              if (animeDoc.exists()) {
+                const animeData = animeDoc.data();
+                const estado = (animeData.estado || animeData.status || '').toLowerCase();
+                const esFinalizadoPorEstado = estado === 'finalizado' || estado === 'completed';
                 
-//                 // Verificar si se vieron todos los capítulos
-//                 const episodiosVistos = (data.episodiosVistos || []).length;
-//                 const totalEpisodios = Array.isArray(animeData.episodios) ? animeData.episodios.length : Object.keys(animeData.episodios || {}).length;
-//                 const vistosTodosLosCaps = totalEpisodios > 0 && episodiosVistos >= totalEpisodios;
-//                 const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
+                // Verificar si se vieron todos los capítulos
+                const episodiosVistos = (data.episodiosVistos || []).length;
+                const totalEpisodios = Array.isArray(animeData.episodios) ? animeData.episodios.length : Object.keys(animeData.episodios || {}).length;
+                const vistosTodosLosCaps = totalEpisodios > 0 && episodiosVistos >= totalEpisodios;
+                const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
                 
-//                 console.log(`  📊 ${animeId}: estado="${estado}" esFinalizadoPorEstado=${esFinalizadoPorEstado} vistos=${episodiosVistos}/${totalEpisodios} vistosTodos=${vistosTodosLosCaps} esFinalizadoPorVistos=${esFinalizadoPorVistos}`);
+                console.log(`  📊 ${animeId}: estado="${estado}" esFinalizadoPorEstado=${esFinalizadoPorEstado} vistos=${episodiosVistos}/${totalEpisodios} vistosTodos=${vistosTodosLosCaps} esFinalizadoPorVistos=${esFinalizadoPorVistos}`);
                 
-//                 await setDoc(docSnap.ref, {
-//                   esFinalizadoPorVistos: esFinalizadoPorVistos
-//                 }, { merge: true });
+                await setDoc(docSnap.ref, {
+                  esFinalizadoPorVistos: esFinalizadoPorVistos
+                }, { merge: true });
                 
-//                 console.log(`✅ Actualizado: ${animeId} - esFinalizadoPorVistos: ${esFinalizadoPorVistos}`);
-//                 actualizados++;
-//               } else {
-//                 console.warn(`⚠️ Anime no existe en datos-animes: ${animeId}`);
-//               }
-//             } catch (e) {
-//               console.error(`❌ Error actualizando ${animeId}:`, e);
-//             }
-//           })()
-//         );
-//       }
+                console.log(`✅ Actualizado: ${animeId} - esFinalizadoPorVistos: ${esFinalizadoPorVistos}`);
+                actualizados++;
+              } else {
+                console.warn(`⚠️ Anime no existe en datos-animes: ${animeId}`);
+              }
+            } catch (e) {
+              console.error(`❌ Error actualizando ${animeId}:`, e);
+            }
+          })()
+        );
+      }
 
-//       await Promise.all(promesas);
-//       console.log(`📊 Progreso: ${Math.min(i + batchSize, docs.length)}/${docs.length} documentos procesados`);
-//     }
+      await Promise.all(promesas);
+      console.log(`📊 Progreso: ${Math.min(i + batchSize, docs.length)}/${docs.length} documentos procesados`);
+    }
 
-//     console.log(`✅ Actualización completada: ${actualizados} documentos actualizados.`);
+    console.log(`✅ Actualización completada: ${actualizados} documentos actualizados.`);
 
-//   } catch (error) {
-//     console.error("❌ Error al actualizar finalizado por lotes:", error);
-//   }
-// }
-// actualizarFinalizadoPorLotes();
+  } catch (error) {
+    console.error("❌ Error al actualizar finalizado por lotes:", error);
+  }
+}
 
 
-// // Función de limpieza: elimina documentos con episodiosVistos vacíos
-// async function limpiarDocumentosVacios() {
-//   try {
-//     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
-//     if (!userId) {
-//       console.warn("No hay usuario autenticado para limpiar documentos.");
-//       return;
-//     }
-
-//     const ref = collection(db, "usuarios", userId, "caps-vistos");
-//     const snap = await getDocs(ref);
+// Función de limpieza: elimina documentos con episodiosVistos vacíos
+async function limpiarDocumentosVacios() {
+  try {
+    const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+    if (!userId) {
+      console.warn("No hay usuario autenticado para limpiar documentos.");
+      return;
+    }
     
-//     if (snap.empty) {
-//       console.log("✅ No hay documentos para limpiar.");
-//       return;
-//     }
-
-//     let eliminados = 0;
-//     const promesasEliminacion = [];
-
-//     snap.docs.forEach(docSnap => {
-//       const data = docSnap.data();
-//       const episodiosVistos = data.episodiosVistos || [];
+    const ref = collection(db, "usuarios", userId, "caps-vistos");
+    const snap = await getDocs(ref);
+    
+    if (snap.empty) {
+      console.log("✅ No hay documentos para limpiar.");
+      return;
+    }
+    
+    let eliminados = 0;
+    const promesasEliminacion = [];
+    
+    snap.docs.forEach(docSnap => {
+      const data = docSnap.data();
+      const episodiosVistos = data.episodiosVistos || [];
       
-//       if (!Array.isArray(episodiosVistos) || episodiosVistos.length === 0) {
-//         console.log('🗑️ Eliminando documento vacío:', docSnap.id);
-//         promesasEliminacion.push(deleteDoc(docSnap.ref));
-//         eliminados++;
-//       }
-//     });
+      if (!Array.isArray(episodiosVistos) || episodiosVistos.length === 0) {
+        console.log('🗑️ Eliminando documento vacío:', docSnap.id);
+        promesasEliminacion.push(deleteDoc(docSnap.ref));
+        eliminados++;
+      }
+    });
+    
+    if (promesasEliminacion.length > 0) {
+      await Promise.all(promesasEliminacion);
+      console.log(`✅ Limpieza completada: ${eliminados} documentos eliminados.`);
+    } else {
+      console.log("✅ No se encontraron documentos vacíos.");
+    }
+    
+  } catch (error) {
+    console.error("❌ Error al limpiar documentos vacíos:", error);
+  }
+}
+// ejecutar 1 vez
+async function ejecutarMantenimientoUnaVez() {
+  const cacheKey = "mantenimiento_bd_completado";
+  const yaEjecutado = localStorage.getItem(cacheKey);
 
-//     if (promesasEliminacion.length > 0) {
-//       await Promise.all(promesasEliminacion);
-//       console.log(`✅ Limpieza completada: ${eliminados} documentos eliminados.`);
-//     } else {
-//       console.log("✅ No se encontraron documentos vacíos.");
-//     }
-
-//   } catch (error) {
-//     console.error("❌ Error al limpiar documentos vacíos:", error);
-//   }
-// }
-// limpiarDocumentosVacios()
+  if (yaEjecutado === "true") {
+    // Si ya está en true, no hacemos nada
+    console.log("✅ El mantenimiento de la base de datos ya se realizó anteriormente.");
+  } else {
+    // Si no existe o es falso, ejecutamos el proceso
+    try {
+      console.log("⏳ Iniciando limpieza y actualización de documentos...");
+      
+      // Ejecutamos tus funciones esperando a que terminen
+      await limpiarDocumentosVacios();
+      await actualizarFinalizadoPorLotes();
+      
+      // Guardamos en el localStorage para no volver a hacerlo
+      localStorage.setItem(cacheKey, "true");
+      console.log("✅ Mantenimiento finalizado y guardado en local.");
+      
+    } catch (error) {
+      console.error("❌ Ocurrió un error ejecutando el mantenimiento:", error);
+    }
+  }
+}
+ejecutarMantenimientoUnaVez();
