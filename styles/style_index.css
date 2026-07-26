@@ -469,7 +469,7 @@ h3 {
   height: 9px;
 }
 .grid-animes.lab::-webkit-scrollbar-thumb {
-  background-color: var(--btn);
+  background-color: var(--p);
   border-radius: 7px;
 }
 .grid-animes.lab .anime-card {
