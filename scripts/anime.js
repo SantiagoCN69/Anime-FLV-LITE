@@ -346,7 +346,9 @@ const renderAnime = anime => {
   }
   
   // Add status with icon
-  infoParts.push(`<p class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</p>`);
+  if (anime.estado) {
+    infoParts.push(`<p class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</p>`);
+  }
   
   // Join with bullet points
   info1El.innerHTML = infoParts.join(' • ');
