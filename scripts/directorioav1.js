@@ -134,6 +134,114 @@ localStorage.removeItem("animes_cache");
 
 const CACHE_KEY = 'animes_cache_directorio';
 
+// Función para cargar filtros desde la URL
+function cargarFiltrosDesdeUrl() {
+    console.log('📥 CARGANDO FILTROS DESDE URL');
+    const params = new URLSearchParams(window.location.search);
+    
+    // 1. Letras
+    const letter = params.get('letter');
+    if (letter) {
+        console.log('📥 Letter en URL:', letter);
+        const btnLetra = document.querySelector(`.btn-letra[data-letra="${letter}"]`);
+        if (btnLetra) {
+            btnLetra.classList.add('active');
+            console.log('📥 Botón letra activado:', letter);
+        }
+    }
+    
+    // 2. Años
+    const minYear = params.get('minYear');
+    const maxYear = params.get('maxYear');
+    if (minYear && inputMinAno) {
+        inputMinAno.value = minYear;
+        console.log('📥 minYear:', minYear);
+    }
+    if (maxYear && inputMaxAno) {
+        inputMaxAno.value = maxYear;
+        console.log('📥 maxYear:', maxYear);
+    }
+    if (minYear || maxYear) {
+        actualizarTextosSlider();
+    }
+    
+    // 3. Géneros
+    const genres = params.getAll('genre');
+    if (genres.length > 0) {
+        console.log('📥 Géneros en URL:', genres);
+        genres.forEach(g => {
+            const generoNormalizado = g.replace(/\s+/g, '-');
+            const btnGenero = document.getElementById(`${generoNormalizado}-av1`);
+            if (btnGenero) {
+                btnGenero.classList.add('active');
+            }
+        });
+        const activos = Array.from(generosOpciones).filter(b => b.classList.contains('active'));
+        if (generosBtn && generosBtn.querySelector('span')) {
+            generosBtn.querySelector('span').textContent = activos.length > 0 ? `(${activos.length})` : 'Todos';
+        }
+    }
+    
+    // 4. Tipos
+    const categories = params.getAll('category');
+    if (categories.length > 0) {
+        console.log('📥 Categorías en URL:', categories);
+        const mapaTiposInverso = { 'tv-anime': 'tv', 'pelicula': 'movie', 'especial': 'special', 'ova': 'ova' };
+        categories.forEach(cat => {
+            const tipoKey = mapaTiposInverso[cat] || cat;
+            const btnTipo = document.getElementById(`${tipoKey}-av1`);
+            if (btnTipo) {
+                btnTipo.classList.add('active');
+            }
+        });
+        const activos = Array.from(tiposOpciones).filter(b => b.classList.contains('active'));
+        if (tipoBtn && tipoBtn.querySelector('span')) {
+            tipoBtn.querySelector('span').textContent = activos.length > 0 ? `(${activos.length})` : 'Todos';
+        }
+    }
+    
+    // 5. Estados
+    const statuses = params.getAll('status');
+    if (statuses.length > 0) {
+        console.log('📥 Estados en URL:', statuses);
+        const mapaEstadosInverso = { 'emision': '1', 'finalizado': '2', 'proximamente': '3' };
+        statuses.forEach(status => {
+            const estadoKey = mapaEstadosInverso[status] || status;
+            const btnEstado = document.getElementById(`${estadoKey}-av1`);
+            if (btnEstado) {
+                btnEstado.classList.add('active');
+            }
+        });
+        const activos = Array.from(estadosOpciones).filter(b => b.classList.contains('active'));
+        if (estadoBtn && estadoBtn.querySelector('span')) {
+            estadoBtn.querySelector('span').textContent = activos.length > 0 ? `(${activos.length})` : 'Todos';
+        }
+    }
+    
+    // 6. Orden
+    const order = params.get('order');
+    if (order) {
+        console.log('📥 Orden en URL:', order);
+        const mapaOrdenInverso = { 'updated': 'updated', 'added': 'added', 'title': 'title', 'score': 'rating' };
+        const ordenKey = mapaOrdenInverso[order] || order;
+        const btnOrden = document.getElementById(`${ordenKey}-av1`);
+        if (btnOrden) {
+            ordenesOpciones.forEach(b => b.classList.remove('active'));
+            btnOrden.classList.add('active');
+            if (ordenBtn && ordenBtn.querySelector('span')) {
+                ordenBtn.querySelector('span').textContent = btnOrden.textContent;
+            }
+        }
+    }
+    
+    // 7. Página
+    const page = params.get('page');
+    if (page) {
+        currentPage = parseInt(page);
+        console.log('📥 Página en URL:', currentPage);
+    }
+}
+
 // Inicializar elementos del DOM
 const paginationContainer = document.getElementById('pagination-directorio-av1');
 
@@ -173,10 +281,16 @@ function updatePagination(data) {
 }
 
 function cambiarPagina(page) {
+  console.log('📄 CAMBIAR PÁGINA:', page);
+  console.log('📄 URL ACTUAL (window.location.search):', window.location.search);
   currentPage = page;
   const link = window.location.search.substring(1);
+  console.log('📄 PARÁMETROS USADOS:', link);
+  console.log('📄 LETRA ACTIVA EN DOM:', document.querySelector('.btn-letra.active')?.dataset.letra || 'NINGUNA');
   resultadosContainer.innerHTML = `<span class="span-carga">Cargando servidores...</span>`;
-  fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&${link}&page=${currentPage}`)
+  const urlCompleta = `https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&${link}&page=${currentPage}`;
+  console.log('📄 URL FETCH:', urlCompleta);
+  fetch(urlCompleta)
     .then(response => {
       return response.json();
     })
@@ -198,43 +312,34 @@ function cambiarPagina(page) {
 }
 
 async function cargarAnimesConCache() {
-    const cachedData = localStorage.getItem(CACHE_KEY);
-  
+    console.log('🚀 cargarAnimesConCache INICIADO');
+    
+    // Primero cargar filtros desde la URL
+    cargarFiltrosDesdeUrl();
+    
     const params = new URLSearchParams(window.location.search);
-    if (params.has('genre[]')) {
-      const genero = params.get('genre[]');
-      
-        const generoNormalizado = `${genero.replace(/\s+/g, '-')}-av1`;
-        const botonGenero = document.getElementById(generoNormalizado);
-        
-        if (botonGenero) {
-          botonGenero.classList.add('active');
-          const generosActivos = Array.from(document.querySelectorAll('#filtro-genero-av1 .btn-filtro-opcion.active'));
-          if (generosBtn && generosBtn.querySelector('span')) {
-            generosBtn.querySelector('span').textContent = generosActivos.length > 0 ? `(${generosActivos.length})` : 'Todos';
-          }
-        }
-
-      
-      fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&order=default&genre[]=${genero}`)
-      .then(response => response.json())
-      .then(data => {
-        resultadosContainer.innerHTML = '';
-        data.animes.forEach(anime => {
-          const card = crearAnimeCardResultados(anime);
-          resultadosContainer.appendChild(card);
-        });
-        observerAnimeCards();
-        updatePagination(data);
-      })
-      .catch(error => {
-        console.error('Error detallado:', error);
-        console.error('Error en la petición:', error.message);
-        console.error('Stack trace:', error.stack);
-      });
+    
+    // Verificar si hay filtros en la URL (letter, genre, minYear, maxYear, category, status, order)
+    const tieneFiltros = params.has('letter') || 
+                       params.has('genre') || 
+                       params.has('minYear') || 
+                       params.has('maxYear') || 
+                       params.has('category') || 
+                       params.has('status') || 
+                       params.has('order');
+    
+    console.log('🚀 ¿Tiene filtros en URL?', tieneFiltros);
+    
+    if (tieneFiltros) {
+        // Si hay filtros, usar ejecutarBusqueda
+        console.log('🚀 Usando ejecutarBusqueda por filtros en URL');
+        await ejecutarBusqueda();
+        return;
     }
-    else {
-      
+    
+    // Si no hay filtros, usar lógica de caché
+    console.log('🚀 Sin filtros, usando lógica de caché');
+    const cachedData = localStorage.getItem(CACHE_KEY);
     resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
 
     if (cachedData) {
@@ -312,7 +417,6 @@ async function cargarAnimesConCache() {
         console.error('Stack trace:', error.stack);
       });
     }
-  }
 }
 
 const generosBtn = document.getElementById('btn-filtro-genero-av1');
@@ -361,8 +465,10 @@ function actualizarLinkBusqueda() {
 
     // 1. Letras
     const letraActiva = document.querySelector('.btn-letra.active');
+    console.log('🔗 actualizarLinkBusqueda - Letra activa:', letraActiva ? letraActiva.dataset.letra : 'NINGUNA');
     if (letraActiva) {
         params.append('letter', letraActiva.dataset.letra);
+        console.log('🔗 Parámetro letter agregado:', letraActiva.dataset.letra);
     }
 
     // 2. Años desde el Slider
@@ -382,7 +488,7 @@ function actualizarLinkBusqueda() {
     if (generosActivos.length > 0) generosActivos.forEach(g => params.append('genre', g));
 
     // 4. Tipos
-    const mapaTipos = { 'tv': 'tv', 'movie': 'pelicula', 'special': 'especial', 'ova': 'ova' };
+    const mapaTipos = { 'tv': 'tv-anime', 'movie': 'pelicula', 'special': 'especial', 'ova': 'ova' };
     const tiposActivos = Array.from(document.querySelectorAll('#filtro-tipo-av1 .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaTipos[valorFiltroav1(btn)] || valorFiltroav1(btn));
     if (tiposActivos.length > 0) tiposActivos.forEach(t => params.append('category', t));
 
@@ -396,21 +502,26 @@ function actualizarLinkBusqueda() {
     const ordenesActivos = Array.from(document.querySelectorAll('#filtro-orden-av1 .btn-filtro-opcion')).filter(btn => btn.classList.contains('active')).map(btn => mapaOrden[valorFiltroav1(btn)] !== undefined ? mapaOrden[valorFiltroav1(btn)] : valorFiltroav1(btn));
     if (ordenesActivos.length > 0 && ordenesActivos[0] !== '') params.append('order', ordenesActivos[0]);
 
-    return `https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&${params.toString()}`;
+    const urlFinal = `https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&${params.toString()}`;
+    console.log('🔗 URL FINAL CONSTRUIDA:', urlFinal);
+    return urlFinal;
 }
 
 // --- Función central para ejecutar la búsqueda ---
 async function ejecutarBusqueda() {
+    console.log('🔍 EJECUTAR BÚSQUEDA INICIADA');
     const link = actualizarLinkBusqueda();
     resultadosContainer.innerHTML = '<span class="span-carga">Cargando...</span>';
+    console.log('🔍 URL A FETCH:', link);
     
     try {
         const response = await fetch(link);
         const data = await response.json();
+        console.log('🔍 DATOS RECIBIDOS:', data.animes?.length, 'animes');
         resultadosContainer.innerHTML = '';
         
         const linkSolo = link.split('/browse?')[1]; 
-        linkSolo && history.pushState({}, '', '?Directorio&' + linkSolo);
+        linkSolo && history.pushState({}, '', '?DirectorioAV1&' + linkSolo);
         
         if (data.animes && data.animes.length > 0) {
             data.animes.forEach(anime => {
@@ -475,9 +586,11 @@ btnFiltrar.addEventListener('click', ejecutarBusqueda);
 const botonesLetras = document.querySelectorAll('.btn-letra');
 botonesLetras.forEach(btn => {
     btn.addEventListener('click', () => {
+        console.log('🔤 CLICK EN LETRA:', btn.dataset.letra);
         const estabaActivo = btn.classList.contains('active');
         botonesLetras.forEach(b => b.classList.remove('active'));
         if (!estabaActivo) btn.classList.add('active');
+        console.log('🔤 LETRA ACTIVA DESPUÉS:', btn.classList.contains('active') ? btn.dataset.letra : 'NINGUNA');
         ejecutarBusqueda(); // Búsqueda automática al presionar letra
     });
 });
