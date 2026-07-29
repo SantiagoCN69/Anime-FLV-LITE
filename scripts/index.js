@@ -778,18 +778,25 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
         const docSnap = await getDoc(doc(db, "datos-animes", id));
         if (docSnap.exists()) {
           const data = docSnap.data();
-          animes.push({
-            id: docSnap.id,
-            titulo: data.titulo,
-            portada: data.portada || data.banner,
-            estado: data.estado || 'No disponible',
-            rating: data.rating || null
-          });
+          if (!data.titulo || data.titulo.trim() === '') {
+            console.log(`El anime con ID: ${id} no tiene título, se eliminará de la lista`);
+            idsNoEncontrados.push(id);
+          } else {
+            animes.push({
+              id: docSnap.id,
+              titulo: data.titulo,
+              portada: data.portada || data.banner,
+              estado: data.estado || 'No disponible',
+              rating: data.rating || null
+            });
+          }
         } else {
           console.log(`No se encontró el anime con ID: ${id} en datos-animes, se eliminará de la lista`);
           idsNoEncontrados.push(id);
         }
       }
+      
+      console.log('Animes cargados:', animes);
       
       if (idsNoEncontrados.length > 0) {
         const nuevosTitulos = titulos.filter(id => !idsNoEncontrados.includes(id));
