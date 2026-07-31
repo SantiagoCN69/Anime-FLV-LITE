@@ -411,7 +411,7 @@ function createAnimeCard(anime, siguienteEpisodioUrl) {
     div.dataset.id = anime.id; // ¡CLAVE PARA EL FLIP!
     
     if (anime.Capitulo) {chapterHtml = `<span id="chapter">Episodio ${anime.Capitulo}</span>`;}
-    if (anime.estado) {if (anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
+    if (anime.estado) {if (anime.estado === 'En emisión' || anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
       else {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;}
     }
     if (!anime.estado && siguienteEpisodioUrl) {
