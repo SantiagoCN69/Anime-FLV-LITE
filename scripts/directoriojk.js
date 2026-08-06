@@ -300,7 +300,7 @@ function slug(str) {
   const clean = str
     .toLowerCase()
     .trim()
-    .replace(/[:'".,!?/]/g, '')
+    .replace(/[:'".,!?/()]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
   return clean;
