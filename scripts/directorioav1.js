@@ -122,13 +122,27 @@ function centrarPaginacion() {
 
 async function cambiarPagina(page) {
     currentPage = page;
-    const queryString = window.location.search.substring(1);
     DOM.resultados.innerHTML = `<span class="span-carga">Cargando servidores...</span>`;
     
     try {
-        const data = await fetchData(`${API_BASE_URL}&${queryString}&page=${currentPage}`);
+        console.log('Cambiando página a:', page);
+        
+        // Construir query string limpio sin DirectorioAV1
+        const params = new URLSearchParams(window.location.search);
+        params.delete('DirectorioAV1');
+        params.set('page', page);
+        
+        const queryString = params.toString();
+        console.log('API_BASE_URL:', API_BASE_URL);
+        console.log('Query string limpia:', queryString);
+        console.log('URL completa:', `${API_BASE_URL}&${queryString}`);
+        
+        const data = await fetchData(`${API_BASE_URL}&${queryString}`);
         renderizarResultados(data.animes);
         updatePagination(data);
+        
+        // Actualizar URL en el navegador
+        history.pushState({}, '', `?DirectorioAV1&${queryString}`);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
         console.error('Error al cambiar de página:', error);
@@ -173,21 +187,38 @@ function actualizarLinkBusqueda() {
     const ordenActivo = obtenerActivos('#filtro-orden-av1', MAPA_ORDEN)[0];
     if (ordenActivo) params.append('order', ordenActivo);
 
-    return `${API_BASE_URL}&${params.toString()}`;
+    // Agregar page si es mayor a 1
+    if (currentPage > 1) {
+        params.append('page', currentPage);
+    }
+
+    return {
+        apiUrl: `${API_BASE_URL}&${params.toString()}`,
+        browserUrl: params.toString()
+    };
 }
 
-async function ejecutarBusqueda() {
-    const link = actualizarLinkBusqueda();
+// Le pasamos un parámetro que por defecto sea true
+async function ejecutarBusqueda(resetPage = true) {
+    // Si viene de un evento del DOM (click), resetPage será un objeto Event. 
+    // Lo convertimos a booleano de forma segura.
+    const debeResetear = typeof resetPage === 'boolean' ? resetPage : true;
+
+    if (debeResetear) {
+        currentPage = 1; // Volvemos a la página 1 al filtrar
+    }
+
+    const { apiUrl, browserUrl } = actualizarLinkBusqueda();
     DOM.resultados.innerHTML = '<span class="span-carga">Cargando...</span>';
     
     try {
-        const data = await fetchData(link);
-        const linkSolo = link.split('/browse?')[1]; 
-        if (linkSolo) history.pushState({}, '', `?DirectorioAV1&${linkSolo}`);
+        const data = await fetchData(apiUrl);
+        
+        if (browserUrl) history.pushState({}, '', `?DirectorioAV1&${browserUrl}`);
+        else history.pushState({}, '', `?DirectorioAV1`);
         
         renderizarResultados(data.animes);
-        currentPage = 1; 
-        updatePagination(data);
+        updatePagination(data); // Se actualizará correctamente basándose en currentPage
         window.scrollTo({ top: 0, behavior: 'smooth' });
         DOM.filtrosContainer.classList.remove('mobile-active');
     } catch (error) {
@@ -273,11 +304,17 @@ function bindFilterEvents() {
 
 async function cargarAnimesConCache() {
     localStorage.removeItem("animes_cache");
-    const hasFilters = ['letter', 'genre', 'minYear', 'maxYear', 'category', 'status', 'order'].some(f => URL_PARAMS.has(f));
+    const hasFilters = ['letter', 'genre', 'minYear', 'maxYear', 'category', 'status', 'order', 'page'].some(f => URL_PARAMS.has(f));
     
-    if (hasFilters) {
-        inicializarFiltrosDesdeURL(); // ¡Ahora sí sincroniza la UI con la URL!
-        await ejecutarBusqueda();
+if (hasFilters) {
+        inicializarFiltrosDesdeURL(); 
+        
+        if (URL_PARAMS.has('page')) {
+            currentPage = parseInt(URL_PARAMS.get('page'));
+        }
+        
+        // Le pasamos false para que respete el currentPage de la URL
+        await ejecutarBusqueda(false); 
         return;
     }
 
@@ -320,14 +357,20 @@ document.querySelectorAll('.filtro-opciones').forEach(f => f.addEventListener('c
 // Inicialización
 bindFilterEvents();
 function inicializarFiltrosDesdeURL() {
-    // 1. Letras
+    // 1. Page
+    const page = URL_PARAMS.get('page');
+    if (page) {
+        currentPage = parseInt(page);
+    }
+
+    // 2. Letras
     const letter = URL_PARAMS.get('letter');
     if (letter) {
         const btnLetra = document.querySelector(`.btn-letra[data-letra="${letter}"]`);
         if (btnLetra) btnLetra.classList.add('active');
     }
 
-    // 2. Años (Sliders)
+    // 3. Años (Sliders)
     const minYear = URL_PARAMS.get('minYear');
     const maxYear = URL_PARAMS.get('maxYear');
     if (minYear && DOM.slider.min) DOM.slider.min.value = minYear;
@@ -337,7 +380,7 @@ function inicializarFiltrosDesdeURL() {
         DOM.slider.valMax.textContent = DOM.slider.max.value;
     }
 
-    // 3. Helper para activar opciones de selectores múltiples
+    // 4. Helper para activar opciones de selectores múltiples
     const activarBotonesURL = (paramName, selector, mapaInverso, idMainBtn) => {
         const values = URL_PARAMS.getAll(paramName);
         if (values.length > 0) {
