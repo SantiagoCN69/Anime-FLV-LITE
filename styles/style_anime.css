@@ -14,7 +14,7 @@ body::before {
   background-image: inherit;
   background-size: cover;
   background-position: center;
-  opacity: calc(-0.3 * var(--f) + 1.3);
+  opacity: 1;
   z-index: -2;
   pointer-events: none;
     animation: zoom 1.5s ease-out forwards;
@@ -724,6 +724,9 @@ header {
 }
 .no-thumb {
   display: none;
+}
+:has(> .no-thumb) {
+  background: var(--p);
 }
 .no-thumb ~ .play-icon-anime {
   width: 60px;
