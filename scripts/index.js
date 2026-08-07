@@ -168,7 +168,7 @@ function crearElementoSiguienteCapitulo(itemData) {
 
   const spanEpisodio = document.createElement('span');
   spanEpisodio.className = 'texto-episodio';
-  spanEpisodio.textContent = `Ep. ${itemData.siguienteCapitulo}`;
+  spanEpisodio.textContent = `Ver episodio ${itemData.siguienteCapitulo}`;
 
   contenedorTexto.appendChild(spanTitulo);
   contenedorTexto.appendChild(spanEpisodio);
