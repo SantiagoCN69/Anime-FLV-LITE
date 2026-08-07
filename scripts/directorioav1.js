@@ -169,7 +169,7 @@ function actualizarLinkBusqueda() {
         let maxYear = parseInt(DOM.slider.max.value);
         if (minYear > maxYear) [minYear, maxYear] = [maxYear, minYear];
         
-        if (minYear !== 1990 || maxYear !== 2025) {
+        if (minYear !== 1991 || maxYear !== 2026) {
             params.append('minYear', minYear);
             params.append('maxYear', maxYear);
         }
