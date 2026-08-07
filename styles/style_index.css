@@ -65,7 +65,7 @@
   background-color: var(--br);
   color: var(--t1);
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   padding: 6px 12px;
   font-size: 14px;
   font-family: inherit;
@@ -394,7 +394,8 @@ nav.filtros {
 
 .pagination {
   width: fit-content;
-  max-width: 614px;
+  /* max-width: 614px; */
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   gap: 10px;
@@ -861,6 +862,27 @@ justify-content: space-between;
 #contenedor-animes {
   display: grid;
   gap: 12px;
+  transition: gap 0.3s ease;
+}
+
+/* =======================================================
+   TRANSICIONES GLOBALES PARA ELEMENTOS INTERNOS
+   ======================================================= */
+.anime-card,
+.anime-card a,
+.anime-card img,
+.container-img,
+.content,
+.anime-card h3 {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Transición especial para la sinopsis */
+#card-synopsis {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.35s ease, margin 0.3s ease;
 }
 
 /* ===== LAYOUT 1: GRID TARJETAS ===== */
@@ -894,7 +916,6 @@ justify-content: space-between;
   overflow: hidden;
   text-overflow: ellipsis;
   border: none;
-  text-align: start;
 }
 
 #card-synopsis {
@@ -914,44 +935,52 @@ justify-content: space-between;
 #contenedor-animes.layout1 .card-anime {
   min-width: 160px;
   max-width: 200px;
+  transition: min-width 0.35s ease, max-width 0.35s ease;
 }
 
 #contenedor-animes.layout1 .card-anime img {
   height: auto;
   aspect-ratio: 26/37;
+  transition: height 0.35s ease, aspect-ratio 0.35s ease;
 }
 
 #contenedor-animes.layout1 .card-anime h3 {
   font-size: 13px;
   margin: 8px;
+  transition: font-size 0.35s ease, margin 0.35s ease;
 }
 
 /* ===== LAYOUT 2: TARJETAS GRANDES ===== */
 #contenedor-animes.layout2 .card-anime {
   min-width: 220px;
   max-width: 280px;
+  transition: min-width 0.35s ease, max-width 0.35s ease;
 }
 
 #contenedor-animes.layout2 .card-anime img {
   height: 280px;
   aspect-ratio: auto;
+  transition: height 0.35s ease, aspect-ratio 0.35s ease;
 }
 
 #contenedor-animes.layout2 .card-anime h3 {
   font-size: 16px;
   margin: 12px;
+  transition: font-size 0.35s ease, margin 0.35s ease;
 }
 
 /* ===== LAYOUT 3: LISTA ===== */
 #contenedor-animes.layout3 .anime-card a {
   display: flex;
   flex-direction: row;
+  transition: flex-direction 0.35s ease;
 }
 
 #contenedor-animes.layout3 .anime-card .container-img {
   width: 170px;
   min-width: 170px;
   height: 100%;
+  transition: width 0.35s ease, min-width 0.35s ease, height 0.35s ease;
 }
 
 #contenedor-animes.layout3 .anime-card .content {
@@ -961,8 +990,8 @@ justify-content: space-between;
   height: 100%;
   padding: 20px;
   gap: 10px;
-  
   max-height: 240px;
+  transition: padding 0.35s ease, gap 0.35s ease, max-height 0.35s ease;
 }
 
 #contenedor-animes.layout3 .anime-card h3 {
@@ -971,9 +1000,13 @@ justify-content: space-between;
   min-height: 1lh;
   padding: 0;
   margin: 0;
+  transition: font-size 0.35s ease, padding 0.35s ease, margin 0.35s ease;
+  text-align: start;
 }
 
 #contenedor-animes.layout3 #card-synopsis {
+  opacity: 1;
+  max-height: 150px;
   display: block !important;
 }
 
