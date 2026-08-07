@@ -8,22 +8,8 @@ t2: '#c084fc',       // Acento activo (tabs, botones activos)
 br: '#464e65',       // Bordes y separadores
 btn: '#8b5cf6',      // Color principal de acción
 btn2: '#ec4899',     // Color secundario (gradientes)
-f: 1,                // Intensidad de efectos/filtros
 bgt: '255, 255, 255',// Transparencias claras
 bgti: '10, 12, 18'   // Transparencias oscuras
-},
-
-light_orange: {
-p: '#ffffff',
-b: '#f8fafc',
-t1: '#1e293b',
-t2: '#f97316',       // Más coherente como acento (antes era muy apagado)
-br: '#e2e8f0',
-btn: '#f97316',
-btn2: '#fb923c',
-f: 1,
-bgt: '0, 0, 0',
-bgti: '255, 255, 255'
 },
 
 nocturno: {
@@ -34,7 +20,6 @@ t2: '#38bdf8',       // Más vivo para estados activos
 br: '#2e3a59',
 btn: '#3b82f6',
 btn2: '#22d3ee',
-f: 1,
 bgt: '255, 255, 255',
 bgti: '2, 6, 23'
 },
@@ -47,7 +32,6 @@ t2: '#f472b6',
 br: '#4c244c',
 btn: '#db2777',
 btn2: '#f9a8d4',     // Más suave para mejor gradiente
-f: 1,
 bgt: '255, 255, 255',
 bgti: '20, 11, 20'
 },
@@ -60,7 +44,6 @@ t2: '#22d3ee',       // Menos agresivo que el cyan puro
 br: '#2e3a59',
 btn: '#06b6d4',
 btn2: '#ff007f',
-f: 1,
 bgt: '255, 255, 255',
 bgti: '5, 5, 10'
 },
@@ -73,9 +56,20 @@ t2: '#fb923c',
 br: '#4a2c2c',
 btn: '#f97316',
 btn2: '#f59e0b',     // Mejora el contraste del gradiente
-f: 1,
 bgt: '255, 255, 255',
 bgti: '26, 15, 15'
+},
+
+morado_medianoche: {
+p: '#181323',       // Superficie
+b: '#0D0A16',       // Fondo
+t1: '#F8FAFC',      // Texto principal
+t2: '#C084FC',      // Acento
+br: '#2D2340',      // Bordes (derivado del panel)
+btn: '#A855F7',     // Primario
+btn2: '#EC4899',    // Secundario
+bgt: '255, 255, 255',
+bgti: '13, 10, 22'  // RGB del fondo #0D0A16
 }
 };
 

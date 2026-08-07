@@ -338,7 +338,7 @@ if (btnLogin) {
 export { app, auth, db };
 
 const THEME_CONFIG = {
-  themes: ['dark', 'nocturno', 'sakura', 'cyberpunk', 'sunset'],
+  themes: ['dark', 'nocturno', 'sakura', 'cyberpunk', 'sunset', 'morado_medianoche'],
   defaultTheme: 'dark',
   saveDelay: 10000
 };
