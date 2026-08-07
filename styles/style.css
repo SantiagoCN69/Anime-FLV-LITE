@@ -459,8 +459,7 @@ header.search-active .logout-modal {
   display: block;
   }
 .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
-  padding: 12px 25px;
-  padding-bottom: 20px;
+  padding: 16px 25px;
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
