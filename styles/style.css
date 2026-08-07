@@ -1077,7 +1077,7 @@ section.content-section h2:first-of-type::after {
   position: relative;
 }
 .anime-card {
-  background-color: var(--p);
+  /* background-color: var(--p); */
   position: relative;
   border-radius: 15px;
   overflow: hidden;
@@ -1118,6 +1118,7 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   position: relative;
   display: flex;
+  border-radius: 15px;
 }
 .anime-card span {
   position: absolute;
@@ -1160,37 +1161,39 @@ section.content-section h2:first-of-type::after {
   aspect-ratio: 26/37;
   width: 100%;
   object-fit: cover;
-  transition: transform .5s ease, filter .4s ease;
+  transition: transform .6s ease, filter .4s ease;
 }
 .container-img::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: -50%;
   left: 0;
   width: 100%;
   height: 50%; 
 
-  -webkit-filter: invert(100%);
-  filter: invert(100%);
+  background: linear-gradient(to top, rgba(var(--bgti), 0.7), transparent);
   pointer-events: none;
   z-index: 1;
+  transition: bottom 0.3s ease;
 }
-
 @media (hover: hover) {
-.anime-card:hover .cover {transform: scale(1.15);}
-.anime-card:hover #chapter, .anime-card:hover .estado, .anime-card:hover .rating {opacity: 0;}
-.anime-card:hover #chapter, .anime-card:hover .estado {transform: translate(-25px, 25px) scale(1.8);}
-.anime-card:hover .rating {transform: translate(25px, -25px) scale(1.8);}
-.anime-card:hover .cover {filter: blur(3px);}
-.anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px;
-  border: 1px solid #fff2;}
-.anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
-.anime-card:hover {
-  transform: translate(0, -6px);
-}
-}
-.anime-card img,
-.anime-card strong {
+  .anime-card:hover .cover {transform: scale(1.25);}
+  .anime-card:hover #chapter, .anime-card:hover .estado, .anime-card:hover .rating {opacity: 0;}
+  .anime-card:hover #chapter, .anime-card:hover .estado {transform: translate(-25px, 25px) scale(1.8);}
+  .anime-card:hover .rating {transform: translate(25px, -25px) scale(1.8);}
+
+  .anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px;
+    border: 1px solid #fff2;}
+    .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
+    /* .anime-card:hover {
+      transform: translate(0, -6px);
+    } */
+    .anime-card:hover .container-img::after {
+      bottom: 0;
+    }
+  }
+  .anime-card img,
+  .anime-card strong {
   position: relative;
   z-index: 1;
 }
@@ -1209,18 +1212,20 @@ section.content-section h2:first-of-type::after {
 }
 
 .anime-card strong {
-    color: var(--t1);
-    overflow: hidden;
-    margin: 10px;
-    line-height: 1.05rem;
-    height: 2lh;
-    display: block;
+  font-size: .9rem;
+  text-align: start;
+  color: var(--t1);
+  overflow: hidden;
+  margin: 10px;
+  line-height: 1.05rem;
+  height: 2lh;
+  display: block;
 }
 
 .anime-card a {
   display: flex;
   flex-direction: column;
-  background-color: var(--p);
+  /* background-color: var(--p); */
 }
 /* style modal */
 
