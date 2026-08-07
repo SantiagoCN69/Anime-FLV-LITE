@@ -185,7 +185,6 @@ function crearElementoSiguienteCapitulo(itemData) {
 }
 
 async function cargarUltimosCapsVistos() {
-  console.log("cargarUltimosCapsVistos");
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
   if (!ultimosCapsContainer) return;
 
@@ -271,8 +270,6 @@ async function cargarUltimosCapsVistos() {
       const fechaB = b.fechaAgregado ? b.fechaAgregado.toDate?.() || b.fechaAgregado : 0;
       return fechaB - fechaA;
     });
-    
-    console.log('📊 Animes en historial (filtrados y ordenados):', currentState.length, currentState);
 
     // Validamos si TODO está exactamente igual (ahorra ejecución)
     if (cachedState && cachedData.length > 0 && JSON.stringify(currentState) === JSON.stringify(cachedState)) {
