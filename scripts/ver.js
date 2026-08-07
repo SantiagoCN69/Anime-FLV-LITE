@@ -178,9 +178,9 @@ async function toggleYGuardarEstadoCapitulo() {
         const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
 
         // Guardar con la bandera y con merge para no sobrescribir destructivamente
-      await setDoc(animeRef, {
-        titulo,
-        fechaAgregado: serverTimestamp(),
+        await setDoc(animeRef, {
+          titulo,
+          fechaAgregado: serverTimestamp(),
           episodiosVistos: arrayNuevosVistos,
           esFinalizadoPorVistos: esFinalizadoPorVistos
         }, { merge: true });
@@ -1066,10 +1066,10 @@ btnAnterior.addEventListener("click", async (e) => {
   e.preventDefault();
   const primerEpisodio = episodios[0];
   if (primerEpisodio && episodioActualIndex > primerEpisodio.number) {
-    const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
-    if (marcarVistoBtn && marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
-      await toggleYGuardarEstadoCapitulo();
-    }
+    // const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
+    // if (marcarVistoBtn && marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
+    //   await toggleYGuardarEstadoCapitulo();
+    // }
     await cargarVideoDesdeEpisodio(episodioActualIndex - 1);
     refrescarUIEstadoCapitulo();
     actualizarEstadoBotones();
