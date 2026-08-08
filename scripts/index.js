@@ -511,6 +511,15 @@ const slugFromTitle = (str = '') =>
      .replace(/[:'".,!?/()]/g, '')
      .replace(/[\s-]+/g, '-');
 
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 function leerCacheDirectorioJK() {
   if (animesCacheMemoria) return animesCacheMemoria;
   
@@ -520,7 +529,7 @@ function leerCacheDirectorioJK() {
     
     const data = JSON.parse(raw);
     if (Array.isArray(data?.animes) && data.animes.length > 0) {
-      animesCacheMemoria = data.animes.slice(0, 5);
+      animesCacheMemoria = shuffleArray(data.animes.slice(0, 10));
       return animesCacheMemoria;
     }
   } catch (e) {
@@ -543,7 +552,7 @@ async function precargarCacheDirectorioJK() {
       if (!Array.isArray(data?.animes) || data.animes.length === 0) return;
 
       localStorage.setItem(DIRECTORIO_JK_CACHE_KEY, JSON.stringify(data));
-      animesCacheMemoria = data.animes.slice(0, 5);
+      animesCacheMemoria = shuffleArray(data.animes.slice(0, 10));
 
       const section = document.getElementById('Ultimos-Episodios');
       if (section && !section.classList.contains('hidden')) {
