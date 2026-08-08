@@ -60,6 +60,10 @@ export function mostrarSeccionDesdesearch() {
 
   actualizarIndicadorActivo();
 
+if (id === 'Ultimos-Episodios') {
+  cargarHeroSlider();
+}
+
 const sectionConfig = {
   'Mis-Favoritos': { flag: () => favoritosCargados, setFlag: () => { favoritosCargados = true; }, load: () => cargarDatos(document.getElementById('favoritos'), doc(db, "usuarios", userID, "favoritos", "lista")) },
   'Viendo': { flag: () => viendoCargado, setFlag: () => { viendoCargado = true; }, load: () => cargarDatos(document.getElementById('viendo'), doc(db, "usuarios", userID, "estados", "viendo")) },
@@ -135,6 +139,7 @@ window.handlesearchChange = function () {
 document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
+    precargarCacheDirectorioJK(),
   ])
   const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
@@ -493,6 +498,239 @@ function guardarCache(key, data) {
     console.error(`Error guardando cache (${key}):`, e);
     localStorage.removeItem(key);
   }
+}
+const DIRECTORIO_JK_CACHE_KEY = 'cache-directoriojk';
+
+let animesCacheMemoria = null;
+let precargaDirectorioJKPromise = null;
+
+const slugFromTitle = (str = '') => 
+  str.toLowerCase()
+     .trim()
+     .replace(/[:'".,!?/()]/g, '')
+     .replace(/[\s-]+/g, '-');
+
+function leerCacheDirectorioJK() {
+  if (animesCacheMemoria) return animesCacheMemoria;
+  
+  try {
+    const raw = localStorage.getItem(DIRECTORIO_JK_CACHE_KEY);
+    if (!raw) return null;
+    
+    const data = JSON.parse(raw);
+    if (Array.isArray(data?.animes) && data.animes.length > 0) {
+      animesCacheMemoria = data.animes.slice(0, 5);
+      return animesCacheMemoria;
+    }
+  } catch (e) {
+    console.error('Error leyendo cache del directorio JK:', e);
+  }
+  return null;
+}
+
+async function precargarCacheDirectorioJK() {
+  if (animesCacheMemoria || localStorage.getItem(DIRECTORIO_JK_CACHE_KEY)) return;
+  if (precargaDirectorioJKPromise) return precargaDirectorioJKPromise;
+  
+  console.log('No hay cache cargado del api..');
+  precargaDirectorioJKPromise = (async () => {
+    try {
+      const res = await fetch('https://backend-animeflv-lite.onrender.com/api/browse?source=jkanime&p=1');
+      if (!res.ok) throw new Error('Respuesta inválida');
+      
+      const data = await res.json();
+      if (!Array.isArray(data?.animes) || data.animes.length === 0) return;
+
+      localStorage.setItem(DIRECTORIO_JK_CACHE_KEY, JSON.stringify(data));
+      animesCacheMemoria = data.animes.slice(0, 5);
+
+      const section = document.getElementById('Ultimos-Episodios');
+      if (section && !section.classList.contains('hidden')) {
+        cargarHeroSlider();
+      }
+    } catch (e) {
+      console.error('Error precargando cache del directorio JK:', e);
+    } finally {
+      precargaDirectorioJKPromise = null;
+    }
+  })();
+
+  return precargaDirectorioJKPromise;
+}
+
+const getEstadoBadge = (estado) => {
+  const badges = {
+    'En emision': '<span class="hero-badge hero-badge--ongoing">En emisión</span>',
+    'Por estrenar': '<span class="hero-badge hero-badge--new">Por estrenar</span>',
+    'Concluido': '<span class="hero-badge hero-badge--status">Concluido</span>',
+    'Finalizado': '<span class="hero-badge hero-badge--status">Finalizado</span>'
+  };
+  return estado ? (badges[estado] || `<span class="hero-badge hero-badge--status">${estado}</span>`) : '';
+};
+
+function buildHeroSlide(anime, index) {
+  const id = slugFromTitle(anime.title);
+  const url1 = `anime.html?id=${id}`;
+  const url2 = `ver.html?id=${id}&url=1`;
+  const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
+
+  const badges = [
+    getEstadoBadge(anime.estado),
+    (index === 0 && anime.estado !== 'Por estrenar') ? '<span class="hero-badge hero-badge--new">Reciente</span>' : ''
+  ].filter(Boolean).join('');
+
+  const slide = document.createElement('article');
+  slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
+  slide.dataset.index = index;
+  slide.dataset.id = id;
+  
+  slide.innerHTML = `
+    <div class="hero-slide__bg" style="background-image:url('${anime.image || ''}')"></div>
+    <div class="hero-slide__content">
+      ${badges ? `<div class="hero-slide__badges">${badges}</div>` : ''}
+      <h2 class="hero-slide__title">${anime.title || 'Sin título'}</h2>
+      ${synopsisCompleta ? `<p class="hero-slide__synopsis">${synopsisCompleta}</p>` : ''}
+      <div class="hero-slide__actions">
+        <a href="${url2}" class="hero-btn hero-btn--primary">
+          <span class="hero-btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </span>
+          <span class="hero-btn__label">Ver ahora</span>
+        </a>
+        <a href="${url1}" class="hero-btn hero-btn--secondary">
+          <span class="hero-btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>
+          </span>
+          <span class="hero-btn__label">Más información</span>
+        </a>
+      </div>
+    </div>
+  `;
+  return slide;
+}
+
+function initHeroSliderControls(container, slidesLength) {
+  const track = container.querySelector('.hero-slider__track');
+  const dotsWrap = container.querySelector('.hero-slider__dots');
+  let current = 0;
+  let autoplayId = null;
+
+  const goTo = (index) => {
+    if (current === index) return;
+
+    const currentSlide = track.querySelector('.hero-slide.active');
+    current = (index + slidesLength) % slidesLength;
+    
+    if (currentSlide) {
+      currentSlide.classList.remove('active');
+      currentSlide.classList.add('leaving');
+      setTimeout(() => currentSlide.classList.remove('leaving'), 500);
+    }
+    
+    track.children[current]?.classList.add('active');
+    
+    dotsWrap.querySelector('.hero-slider__dot.active')?.classList.remove('active');
+    dotsWrap.children[current]?.classList.add('active');
+  };
+
+  const startAutoplay = () => {
+    stopAutoplay();
+    autoplayId = setInterval(() => goTo(current + 1), 8500);
+  };
+
+  const stopAutoplay = () => {
+    if (autoplayId) {
+      clearInterval(autoplayId);
+      autoplayId = null;
+    }
+  };
+
+  const resetAutoplay = () => {
+    stopAutoplay();
+    startAutoplay();
+  };
+
+  dotsWrap.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    goTo(Number(btn.dataset.idx));
+    resetAutoplay();
+  });
+
+  container.querySelector('.hero-slider__prev').addEventListener('click', () => {
+    goTo(current - 1);
+    resetAutoplay();
+  });
+  
+  container.querySelector('.hero-slider__next').addEventListener('click', () => {
+    goTo(current + 1);
+    resetAutoplay();
+  });
+
+  container.addEventListener('mouseenter', stopAutoplay);
+  container.addEventListener('mouseleave', startAutoplay);
+
+  let touchStartX = 0;
+  track.addEventListener('touchstart', e => { 
+    touchStartX = e.changedTouches[0].screenX; 
+    stopAutoplay();
+  }, { passive: true });
+  
+  track.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(dx) > 50) {
+      goTo(current + (dx < 0 ? 1 : -1));
+    }
+    resetAutoplay();
+  }, { passive: true });
+
+  track.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
+    const slide = link.closest('.hero-slide');
+    if (slide) {
+      const id = slide.dataset.id;
+      slide.querySelector('.hero-slide__title')?.style.setProperty('view-transition-name', 'title' + id);
+      slide.querySelector('.hero-slide__bg')?.style.setProperty('view-transition-name', id);
+    }
+  });
+
+  startAutoplay();
+}
+
+function cargarHeroSlider() {
+  const container = document.getElementById('hero-slider');
+  if (!container) return;
+
+  const animes = leerCacheDirectorioJK();
+  if (!animes) {
+    container.classList.add('hidden');
+    container.replaceChildren();
+    precargarCacheDirectorioJK();
+    return;
+  }
+
+  container.classList.remove('hidden');
+  
+  container.innerHTML = `
+    <div class="hero-slider__track"></div>
+    <button type="button" class="hero-slider__prev" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button type="button" class="hero-slider__next" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="hero-slider__dots">
+      ${animes.map((_, i) => `<button type="button" class="hero-slider__dot ${i === 0 ? 'active' : ''}" data-idx="${i}" aria-label="Ir al slide ${i + 1}"></button>`).join('')}
+    </div>
+  `;
+
+  const track = container.querySelector('.hero-slider__track');
+  const fragment = document.createDocumentFragment();
+  animes.forEach((anime, i) => fragment.appendChild(buildHeroSlide(anime, i)));
+  track.appendChild(fragment);
+
+  initHeroSliderControls(container, animes.length);
 }
 
 async function cargarUltimosCapitulos() {
@@ -968,6 +1206,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
  const excepciones = [
   '.pagination',
+  '.hero-slider',
   '#recomendaciones-favoritos',
   '#recomendaciones-personalizadas',
   '#sugerencias-sin-resultados',
