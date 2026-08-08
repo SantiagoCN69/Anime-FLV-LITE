@@ -1205,7 +1205,6 @@ justify-content: space-between;
 
 .hero-slide {
   border-radius: 20px;
-  overflow: hidden;
   position: absolute;
   inset: 0;
   opacity: 0;
@@ -1234,6 +1233,27 @@ justify-content: space-between;
   transform: scale(1.12);
 }
 
+.hero-background {
+    overflow: hidden;
+    border-radius: 20px;
+    position: absolute;
+    inset: 0;
+}
+.hero-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 10px;
+  transform: scale(1.02);
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px);
+  opacity: 0.1;
+  border-radius: 20px;
+  z-index: 0;
+  pointer-events: none;
+}
 .hero-slide__bg::after {
   content: '';
   position: absolute;
@@ -1254,7 +1274,7 @@ justify-content: space-between;
   gap: 0.75rem;
   min-height: 440px;
   padding: 2rem 2.5rem 3.5rem 2.5rem;
-  max-width: 75%;
+  max-width: 70%;
 }
 
 .hero-slide__badges {

@@ -593,9 +593,12 @@ function buildHeroSlide(anime, index) {
   slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
   slide.dataset.index = index;
   slide.dataset.id = id;
+  slide.style.setProperty('--bg-image', `url('${anime.image || ''}')`);
   
   slide.innerHTML = `
+  <div class="hero-background">
     <div class="hero-slide__bg" style="background-image:url('${anime.image || ''}')"></div>
+  </div>
     <div class="hero-slide__content">
       ${badges ? `<div class="hero-slide__badges">${badges}</div>` : ''}
       <h2 class="hero-slide__title">${anime.title || 'Sin título'}</h2>
