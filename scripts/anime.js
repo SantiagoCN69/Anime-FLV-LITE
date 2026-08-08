@@ -523,6 +523,13 @@ const calcularAlturaContenedor = (episodiosLength, capContenedor) => {
 async function crearBotonesEpisodios(anime, invertirOrden = false) {
     capContenedor.innerHTML = '';
     let episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
+
+    if (episodios.length === 0) {
+        capContenedor.innerHTML = '<span class="span-carga">No hay capitulos disponibles</span>';
+        if (initLoadingCap) initLoadingCap.style.display = 'none';
+        capContenedor.classList.add("cargado");
+        return;
+    }
     
     if (invertirOrden) {
         episodios = [...episodios].reverse();
