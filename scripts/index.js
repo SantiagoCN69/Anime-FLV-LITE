@@ -173,7 +173,7 @@ function crearElementoSiguienteCapitulo(itemData) {
 
   const spanEpisodio = document.createElement('span');
   spanEpisodio.className = 'texto-episodio';
-  spanEpisodio.textContent = `Ver episodio ${itemData.siguienteCapitulo}`;
+  spanEpisodio.textContent = `Ver episodio ${itemData.siguienteCapitulo}` + ' / ' + (itemData.totalCapitulos || 'X');
 
   contenedorTexto.appendChild(spanTitulo);
   contenedorTexto.appendChild(spanEpisodio);
@@ -328,7 +328,8 @@ async function cargarUltimosCapsVistos() {
               portada: animeDetails.portada,
               titulo: animeDetails.titulo,
               siguienteCapitulo: siguienteCapitulo,
-              siguienteCapituloUrl: siguienteEpisodio.url
+              siguienteCapituloUrl: siguienteEpisodio.url,
+              totalCapitulos: episodios.length
             };
           } else {
             console.warn('⚠️ No se encontró siguiente capítulo para:', cap.id, 'Título:', animeDetails.titulo, '| Ep buscado:', siguienteCapitulo, '| Total eps:', episodios.length);
