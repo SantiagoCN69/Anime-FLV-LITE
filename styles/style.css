@@ -1291,7 +1291,7 @@ background: rgba(255, 248, 248, 0.1);
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
-#theme-toggle, #clear-cache {
+#theme-toggle, #clear-cache, #cv-toggle {
   border-radius: 5px;
 }
 .modal-btn-b {
