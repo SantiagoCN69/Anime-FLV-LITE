@@ -3,10 +3,33 @@ import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signO
 import { getFirestore, collection, getDocs, query, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
+const THEME_CONFIG = {
+  themes: ['dark', 'nocturno', 'sakura', 'cyberpunk', 'sunset', 'morado_medianoche'],
+  defaultTheme: 'dark',
+  saveDelay: 10000
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
+
+const cargarTemaDesdeFirestore = async () => {
+  if (!auth.currentUser) return;
+
+  try {
+    const docRef = doc(db, 'usuarios', auth.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists() && docSnap.data().theme) {
+      const tema = docSnap.data().theme;
+      localStorage.setItem('theme', tema);
+      window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: tema } }));
+    }
+  } catch (error) {
+    console.error('Error al cargar tema desde Firestore:', error);
+  }
+};
 
 // Función para actualizar UI
 function updateUIForUser(user) {
@@ -94,8 +117,9 @@ function crearmodal(user = false) {
   const modal = document.createElement('div');
   modal.className = 'logout-modal';
   modal.innerHTML = `
-  <button id="export-data">Exportar datos</button>
-  <button id="clear-cache">Eliminar cache</button>
+    <button id="export-data">Exportar datos</button>
+    <button id="clear-cache">Eliminar cache</button>
+    <button id="cv-toggle">CV: ${cvLabels[currentCv]}</button>
     <button id="theme-toggle">Cambiar tema</button>
     <button id="config">Navegación</button>
   `;
@@ -107,32 +131,69 @@ function crearmodal(user = false) {
   }
   
   loginButton.appendChild(modal);
+
+  // Evitar que clics en el fondo del modal lo cierren por accidente
+  modal.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
   
   // ==========================================
-  // EVENTOS DEL MODAL (Todos con stopPropagation)
+  // EVENTOS DEL MODAL
   // ==========================================
 
-  // 1. Botón Login
-  const loginButtonModal = modal.querySelector('#confirm-login');
-  if (loginButtonModal) {
-    loginButtonModal.addEventListener('click', async (e) => {
+  // --- NUEVO: Botón Navegación (#config) ---
+  const configBtn = modal.querySelector('#config');
+  if (configBtn) {
+    configBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      e.stopPropagation();
-      await loginConGoogle();
+      e.stopPropagation(); // Evita que se cierre el modal
+      
+      const indexpagination = document.getElementById('indexpagination');
+      if (!indexpagination) return;
+
+      const NAV_POSITIONS = { TOP: 'top', BOTTOM: 'bottom', FLOATING: 'floating' };
+      
+      let currentPosition = localStorage.getItem('indexpaginationPosition') ||
+        [...indexpagination.classList].find(cls => Object.values(NAV_POSITIONS).includes(cls)) ||
+        NAV_POSITIONS.TOP;
+
+      // Cambiar de estado
+      if (currentPosition === NAV_POSITIONS.TOP) {
+        currentPosition = NAV_POSITIONS.BOTTOM;
+      } else if (currentPosition === NAV_POSITIONS.BOTTOM) {
+        currentPosition = NAV_POSITIONS.FLOATING;
+      } else {
+        currentPosition = NAV_POSITIONS.TOP;
+      }
+
+      // Guardar y aplicar
+      localStorage.setItem('indexpaginationPosition', currentPosition);
+      indexpagination.classList.remove('top', 'bottom', 'floating', 'fixed');
+      indexpagination.classList.add(currentPosition);
     });
   }
 
-  // 2. Botón Logout
-  const logoutButton = modal.querySelector('#confirm-logout');
-  if (logoutButton) {
-    logoutButton.addEventListener('click', async (e) => {
+  // --- Botón de Continuar Viendo (Toggle) ---
+  const cvToggleBtn = modal.querySelector('#cv-toggle');
+  if (cvToggleBtn) {
+    cvToggleBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      await logoutConGoogle();
+      
+      const states = ['cv-main', 'cv-sidebar', 'cv-ambas'];
+      const current = localStorage.getItem('continuar_viendo_pos') || 'cv-main';
+      const idx = states.indexOf(current);
+      const next = states[(idx + 1) % states.length];
+      
+      localStorage.setItem('continuar_viendo_pos', next);
+      cvToggleBtn.textContent = `CV: ${cvLabels[next]}`;
+      
+      document.body.classList.remove('cv-main', 'cv-sidebar', 'cv-ambas');
+      document.body.classList.add(next);
     });
   }
 
-  // 3. Botón Cambiar Tema
+  // --- Botón Cambiar Tema ---
   const themeBtn = modal.querySelector('#theme-toggle');
   if (themeBtn) {
     themeBtn.addEventListener('click', (e) => {
@@ -146,7 +207,7 @@ function crearmodal(user = false) {
       localStorage.setItem('theme', next);
       window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
 
-      if (auth.currentUser) {
+      if (auth && auth.currentUser) {
         setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
           theme: next,
           lastUpdated: serverTimestamp()
@@ -155,7 +216,7 @@ function crearmodal(user = false) {
     });
   }
 
-  // 4. Botón Limpiar Caché
+  // --- Botón Limpiar Caché ---
   const clearCacheBtn = modal.querySelector('#clear-cache');
   if (clearCacheBtn) {
     clearCacheBtn.addEventListener('click', async (e) => {
@@ -187,7 +248,7 @@ function crearmodal(user = false) {
     });
   }
 
-  // 5. Botón Exportar Datos (Tu lógica original con stopPropagation añadido)
+  // --- Botón Exportar Datos ---
   const exportButton = modal.querySelector('#export-data');
   if (exportButton) {
     exportButton.addEventListener('click', async (e) => {
@@ -199,7 +260,7 @@ function crearmodal(user = false) {
         exportButton.textContent = 'Exportando...';
         exportButton.disabled = true;
         
-        const currentUser = auth.currentUser; // Usar la instancia 'auth' ya importada arriba
+        const currentUser = auth.currentUser;
         if (!currentUser) throw new Error('No hay usuario autenticado');
         
         const userId = currentUser.uid;
@@ -210,7 +271,6 @@ function crearmodal(user = false) {
             const querySnapshot = await getDocs(q);
             return querySnapshot.docs.map(doc => doc.data());
           } catch (error) {
-            console.error(`Error al obtener ${collectionName}:`, error);
             return [];
           }
         };
@@ -255,6 +315,25 @@ function crearmodal(user = false) {
           exportButton.disabled = false;
         }, 2000);
       }
+    });
+  }
+
+  // --- Botones Login / Logout ---
+  const loginButtonModal = modal.querySelector('#confirm-login');
+  if (loginButtonModal) {
+    loginButtonModal.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      await loginConGoogle();
+    });
+  }
+
+  const logoutButton = modal.querySelector('#confirm-logout');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      await logoutConGoogle();
     });
   }
 }
@@ -302,7 +381,6 @@ onAuthStateChanged(auth, (user) => {
   const btnLogin = document.getElementById('btn-login');
   if (btnLogin) btnLogin.disabled = false;
   
-  themeToggle();
   if (!localStorage.getItem('theme')) {
     cargarTemaDesdeFirestore();
   }
@@ -344,69 +422,3 @@ if (btnLogin) {
 }
 
 export { app, auth, db };
-
-const THEME_CONFIG = {
-  themes: ['dark', 'nocturno', 'sakura', 'cyberpunk', 'sunset', 'morado_medianoche'],
-  defaultTheme: 'dark',
-  saveDelay: 10000
-};
-
-const cargarTemaDesdeFirestore = async () => {
-  if (!auth.currentUser) return;
-
-  try {
-    const docRef = doc(db, 'usuarios', auth.currentUser.uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists() && docSnap.data().theme) {
-      const tema = docSnap.data().theme;
-      localStorage.setItem('theme', tema);
-      window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: tema } }));
-    }
-  } catch (error) {
-    console.error('Error al cargar tema desde Firestore:', error);
-  }
-};
-
-const themeToggle = () => {
-  const btn = document.getElementById('theme-toggle');
-  if (!btn) return;
-
-  let saveTimeout;
-
-  const getNextTheme = (current) => {
-    const idx = THEME_CONFIG.themes.indexOf(current);
-    return THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
-  };
-
-  const saveThemeToFirestore = async (theme) => {
-    if (!auth.currentUser) return;
-
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(async () => {
-      try {
-        await setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
-          theme,
-          lastUpdated: serverTimestamp()
-        }, { merge: true });
-      } catch (error) {
-        console.error("Error guardando tema:", error);
-      }
-    }, THEME_CONFIG.saveDelay);
-  };
-
-  btn.replaceWith(btn.cloneNode(true));
-  const newBtn = document.getElementById('theme-toggle');
-
-  newBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const current = localStorage.getItem('theme') || THEME_CONFIG.defaultTheme;
-    const next = getNextTheme(current);
-
-    localStorage.setItem('theme', next);
-    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
-
-    saveThemeToFirestore(next);
-  });
-};
