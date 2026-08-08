@@ -1512,21 +1512,22 @@ justify-content: space-between;
     max-height: 5lh;
     line-clamp: 5;
     -webkit-line-clamp: 5;
-    font-size: .9rem;
+    font-size: .8rem;
   }
   .hero-slide__title {
-    font-size: 1rem;
+    font-size: .9rem;
     margin-bottom: 0 !important;
   }
   .hero-slide__actions {
     width: calc(100% - 1.4rem);
     position: absolute;
-    bottom: 10px;
+    bottom: .7rem;
     align-items: stretch;
     a {
       flex: 1;
     }
   }
+
   .hero-slider__dots {
     padding: .7rem;
     bottom: calc(41px + 1rem);
