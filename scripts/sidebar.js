@@ -141,7 +141,7 @@ function handleSwipeGesture() {
 }
 
 // Funciones para el componente de capítulos
-function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id }) {
+function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id, totalCapitulos }) {
   const btn = document.createElement('a');
   btn.className = 'btn-siguiente-capitulo';
   btn.href = `ver.html?id=${id}&url=${siguienteCapitulo}`;
@@ -159,7 +159,7 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id
 
   contenedorTexto.innerHTML = `
     <span class="texto-2-lineas">${titulo}</span>
-    <span class="texto-episodio">Ep. ${siguienteCapitulo}</span>
+    <span class="texto-episodio">Ver episodio ${siguienteCapitulo} / ${totalCapitulos || 'X'}</span>
   `;
 
   btn.append(img, contenedorTexto);
