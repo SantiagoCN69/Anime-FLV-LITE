@@ -835,6 +835,7 @@ main {
 }
 
 #header-ultcaps, .headder-section {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
   grid-template-rows: auto auto;
