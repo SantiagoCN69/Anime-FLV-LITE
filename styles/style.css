@@ -1022,7 +1022,7 @@ section.content-section h2:first-of-type::after {
   border-radius: 8px;
 }
 .btn-siguiente-capitulo:hover {
-  background-color: rgba(var(--bgt), .1);
+  background-color: var(--br);
   transform: scale(1.02) translateY(-2px) !important;
 }
 .btn-siguiente-capitulo .portada-anime {
