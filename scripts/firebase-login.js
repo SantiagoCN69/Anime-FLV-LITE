@@ -106,7 +106,7 @@ function crearmodal(user = false) {
   if (modalExistente) modalExistente.remove();
 
   // Obtener estado actual de Continuar Viendo
-  const currentCv = localStorage.getItem('continuar_viendo_pos') || 'cv-main';
+  const currentCv = localStorage.getItem('continuar_viendo_pos') || 'cv-ambas';
   const cvLabels = {
     'cv-main': 'Principal',
     'cv-sidebar': 'Lateral',
@@ -181,7 +181,7 @@ function crearmodal(user = false) {
       e.stopPropagation();
       
       const states = ['cv-main', 'cv-sidebar', 'cv-ambas'];
-      const current = localStorage.getItem('continuar_viendo_pos') || 'cv-main';
+      const current = localStorage.getItem('continuar_viendo_pos') || 'cv-ambas';
       const idx = states.indexOf(current);
       const next = states[(idx + 1) % states.length];
       
