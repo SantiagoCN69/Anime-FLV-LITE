@@ -115,6 +115,8 @@ header {
   border-radius: 12px;
   position: relative;
   z-index: 1;
+  aspect-ratio: 5 / 7;
+  object-fit: cover;
 }
 
 .anime-container1::after {
