@@ -404,7 +404,8 @@ header.search-active .logout-modal {
 }
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
-  height: 100dvh;
+  display: flex;
+  flex-direction: column;
   z-index: 9;
   position: fixed;
   top: 88px;
@@ -412,7 +413,7 @@ header.search-active .logout-modal {
   width: 220px;
   color: var(--t1);
   min-width: 230px;
-  height: calc(100vh - 88px);
+  height: calc(100dvh - 88px);
   left: 0;
   overflow-y: auto;
   border-right: 1px solid var(--br);
@@ -449,6 +450,12 @@ header.search-active .logout-modal {
 }
 
 .sidebar ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: calc(100vh - 89px - 2rem);
+  max-height: 600px;
   list-style: none;
   padding: 0;
   margin: 1rem 0;
@@ -521,11 +528,16 @@ header.search-active .logout-modal {
     overscroll-behavior: contain;
     position: fixed;
     width: clamp(259px, 60%, 60%);
-    height: calc(100vh - 88px);
+    height: calc(100dvh - 88px);
     transform: translateX(-120%);
     overflow-y: auto;
   }
-
+ .sidebar ul {
+  height: unset;
+ }
+ .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
+  padding: 22px 25px;
+ }
   #btn-login span{
     display: none;
   }
@@ -998,10 +1010,10 @@ section.content-section h2:first-of-type::after {
   border-bottom: 1px solid var(--br);
   color: var(--t1);
 }
-.continuar-viendo {
+#continuar-viendo-sidebar {
   border-top: 1px solid var(--br);
   height: auto;
-  padding: 1rem 1rem 2rem 1rem;
+  padding: 1rem
 }
 #ultimos-caps-viendo {
   margin-top: 1rem;
@@ -1026,7 +1038,7 @@ section.content-section h2:first-of-type::after {
   border-radius: 8px;
 }
 .btn-siguiente-capitulo:hover {
-  background-color: var(--br);
+  background-color: rgba(var(--bgt), .1);
   transform: scale(1.02) translateY(-2px) !important;
 }
 .btn-siguiente-capitulo .portada-anime {
