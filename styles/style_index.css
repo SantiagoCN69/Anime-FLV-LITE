@@ -1287,7 +1287,7 @@ justify-content: space-between;
   gap: 0.75rem;
   min-height: 440px;
   padding: 2rem 2.5rem 3.5rem 2.5rem;
-  max-width: 70%;
+  max-width: 60%;
 }
 
 .hero-slide__badges {
