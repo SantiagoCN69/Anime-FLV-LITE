@@ -959,11 +959,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("touchend", e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
 
   const navigationMap = {
-    'Ultimos-Episodios': { left: 'Populares', right: null },
-    'Populares': { left: 'Continuar-viendo', right: 'Ultimos-Episodios' },
-    'Continuar-viendo': { left: 'DirectorioJK', right: 'Populares' },
-    'DirectorioJK': { left: 'Lab', right: 'Continuar-viendo' },
-    'Lab': { left: null, right: 'DirectorioJK' }
+    'Ultimos-Episodios': { left: 'DirectorioJK', right: null },
+    'DirectorioJK': { left: 'Lab', right: 'Ultimos-Episodios' },
+    'Lab': { left: 'Populares', right: 'DirectorioJK' },
+    'Populares': { left: 'Horarios', right: 'Lab' },
+    'Horarios': { left: null, right: 'Populares' }
   };
   
  const excepciones = [
