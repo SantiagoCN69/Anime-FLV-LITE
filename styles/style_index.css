@@ -1246,7 +1246,6 @@ justify-content: space-between;
 
 /* ===== 3. CONTENIDO (Textos, Badges, Botones) ===== */
 .hero-slide__content {
-  position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -1255,6 +1254,7 @@ justify-content: space-between;
   gap: 0.75rem;
   min-height: 440px;
   padding: 2rem 2.5rem 3.5rem 2.5rem;
+  max-width: 75%;
 }
 
 .hero-slide__badges {
@@ -1490,7 +1490,6 @@ justify-content: space-between;
     -webkit-line-clamp: 3;
   }
   .hero-slide__content {
-    max-width: 100%;
     padding: 1.25rem 3rem 3rem 1.25rem;
   }
 
@@ -1507,17 +1506,39 @@ justify-content: space-between;
 @media screen and (max-width: 520px) {
   .hero-slide__content  {
     padding: .7rem;
-    padding-bottom: 2.7rem;
+    padding-bottom: 5.7rem;
+  }
+  .hero-slide__synopsis {
+    max-height: 5lh;
+    line-clamp: 5;
+    -webkit-line-clamp: 5;
+    font-size: .9rem;
   }
   .hero-slide__title {
+    font-size: 1rem;
     margin-bottom: 0 !important;
   }
   .hero-slide__actions {
-    width: 100%;
-    flex-direction: column;
+    width: calc(100% - 1.4rem);
+    position: absolute;
+    bottom: 10px;
     align-items: stretch;
+    a {
+      flex: 1;
+    }
   }
-
+  .hero-slider__dots {
+    padding: .7rem;
+    bottom: calc(41px + 1rem);
+    left: 0;
+    transform: translateX(0);
+  }
+}
+@media screen and (max-width: 375px) {
+  .hero-slide__actions a:last-child {
+    display: none;
+  }
+}
   .hero-slider__prev,
   .hero-slider__next {
     top: .7rem;
@@ -1527,7 +1548,7 @@ justify-content: space-between;
     width: 100%;
     justify-content: center;
   }
-}
+
 /* =========================================
    SCROLL INDICATOR STYLES (Estilo Píldora Horizontal)
    ========================================= */
