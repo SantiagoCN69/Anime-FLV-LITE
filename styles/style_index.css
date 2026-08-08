@@ -1311,8 +1311,9 @@ justify-content: space-between;
   max-width: 560px;
   opacity: 0.95;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  -webkit-line-clamp: 5;
+  min-height: 5lh;
+  line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: auto;
 }
@@ -1501,10 +1502,13 @@ justify-content: space-between;
   .hero-slide__content {
     min-height: 380px;
   }
-
+.hero-slide__title {
+    margin: 0 !important;
+  }
   .hero-slide__synopsis {
     line-clamp: 3;
     -webkit-line-clamp: 3;
+    min-height: 3lh;
   }
   .hero-slide__content {
     padding: 1.25rem 3rem 3rem 1.25rem;
