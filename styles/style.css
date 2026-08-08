@@ -51,7 +51,10 @@ svg {
 ::-webkit-scrollbar {width: 7px;}
 ::-webkit-scrollbar-track {background: transparent;}
 ::-webkit-scrollbar-thumb {background-color: var(--p);}
-::-webkit-scrollbar-thumb:hover {background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);}
+::-webkit-scrollbar-thumb:hover {
+  /* background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%); */
+  cursor: pointer;
+}
 
 header {
   top: 0;
