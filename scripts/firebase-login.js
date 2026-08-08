@@ -82,6 +82,14 @@ function crearmodal(user = false) {
   const modalExistente = loginButton.querySelector('.logout-modal');
   if (modalExistente) modalExistente.remove();
 
+  // Obtener estado actual de Continuar Viendo
+  const currentCv = localStorage.getItem('continuar_viendo_pos') || 'cv-main';
+  const cvLabels = {
+    'cv-main': 'Principal',
+    'cv-sidebar': 'Lateral',
+    'cv-ambas': 'Ambas'
+  };
+
   // Crear nuevo modal
   const modal = document.createElement('div');
   modal.className = 'logout-modal';

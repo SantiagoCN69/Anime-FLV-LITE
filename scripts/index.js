@@ -198,6 +198,7 @@ async function cargarUltimosCapsVistos() {
 
   if (!userID || userID === "null") {
     ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tu registro de animes!.</p>';
+    inicializarContinuarViendo();
     return;
   }
 
@@ -234,6 +235,7 @@ async function cargarUltimosCapsVistos() {
   // 1. Render instantáneo
   if (Array.isArray(cachedData)) {
     renderizarBotones(cachedData);
+    inicializarContinuarViendo();
   }
 
   try {
@@ -246,6 +248,7 @@ async function cargarUltimosCapsVistos() {
       ultimosCapsContainer.innerHTML = textoVacio;
       localStorage.setItem(cacheKey, JSON.stringify([])); 
       localStorage.setItem(cacheStateKey, JSON.stringify([]));
+      inicializarContinuarViendo();
       return;
     }
 
@@ -349,6 +352,7 @@ async function cargarUltimosCapsVistos() {
     localStorage.setItem(cacheKey, JSON.stringify(datosFinales));
     localStorage.setItem(cacheStateKey, JSON.stringify(currentState));
     
+    inicializarContinuarViendo();
     cargarContinuarViendo();
   } catch (error) {
     console.error('Error crítico en cargarUltimosCapsVistos:', error);
@@ -648,7 +652,7 @@ function initHeroSliderControls(container, slidesLength) {
 
   const startAutoplay = () => {
     stopAutoplay();
-    autoplayId = setInterval(() => goTo(current + 1), 8500);
+    autoplayId = setInterval(() => goTo(current + 1), 5500);
   };
 
   const stopAutoplay = () => {
@@ -1224,7 +1228,8 @@ document.addEventListener("DOMContentLoaded", () => {
   '#recomendaciones-personalizadas',
   '#sugerencias-sin-resultados',
   '#anime-grid-ia-busqueda',
-  '#filtro-letras-av1'
+  '#filtro-letras-av1',
+  '#section-ultimos-caps-viendo'
  ]
 
 function handleSectionNavigation(sectionId, direction) {
@@ -1254,7 +1259,7 @@ mostrarSeccionDesdesearch = function() {
     const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
     const targetElement = document.elementFromPoint(touchX, touchY);
-    
+
     this._touchData = {
       startX: e.changedTouches[0].screenX,
       startY: e.changedTouches[0].screenY,
@@ -1316,49 +1321,6 @@ mostrarSeccionDesdesearch = function() {
   }, { passive: false });
 });
 
-const indexpagination = document.getElementById('indexpagination');
-
-
-
-const NAV_POSITIONS = {
-  TOP: 'top',
-  BOTTOM: 'bottom',
-  FLOATING: 'floating'
-};
-
-// toma primero localStorage, si no, usa la clase del HTML
-let currentPosition =
-  localStorage.getItem('indexpaginationPosition') ||
-  [...indexpagination.classList].find(cls =>
-    Object.values(NAV_POSITIONS).includes(cls)
-  ) ||
-  NAV_POSITIONS.TOP;
-
-function applyNavigationPosition() {
-  indexpagination.classList.remove('top', 'bottom', 'floating', 'fixed'); // 👈 importante
-
-  indexpagination.classList.add(currentPosition);
-}
-
-// aplicar al iniciar
-applyNavigationPosition();
-
-// cambiar modo al hacer click en config
-document.addEventListener('click', (e) => {
-  if (e.target.closest('#config')) {
-
-    if (currentPosition === NAV_POSITIONS.TOP) {
-      currentPosition = NAV_POSITIONS.BOTTOM;
-    } else if (currentPosition === NAV_POSITIONS.BOTTOM) {
-      currentPosition = NAV_POSITIONS.FLOATING;
-    } else {
-      currentPosition = NAV_POSITIONS.TOP;
-    }
-
-    localStorage.setItem('indexpaginationPosition', currentPosition);
-    applyNavigationPosition();
-  }
-});
 // =========================================
 // SCRIPT DE SCROLL AUTOMÁTICO ENTRE SECCIONES
 // =========================================
@@ -1692,3 +1654,111 @@ window.addEventListener('touchmove', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
   createIndicators();
 });
+
+
+// 1. Función para obtener los datos de caché de forma segura
+function obtenerDatosContinuarViendo() {
+  const userID = localStorage.getItem('userID') || "null";
+  const cacheKey = `ultimosCapsVistosCache_${userID}`;
+  
+  try {
+    const cachedData = localStorage.getItem(cacheKey);
+    return cachedData ? JSON.parse(cachedData) : null;
+  } catch (e) {
+    console.error('Error al leer caché de capítulos:', e);
+    return null;
+  }
+}
+
+// 2. Controlador principal
+function inicializarContinuarViendo() {
+  console.log('Inicializando continuar viendo');
+  const datos = obtenerDatosContinuarViendo();
+  const container = document.getElementById('section-continuar-viendo');
+  const gridPrincipal = document.getElementById('section-ultimos-caps-viendo');
+
+  // Si no hay datos, ocultamos la sección o mostramos un mensaje vacío
+  if (!datos || datos.length === 0) {
+    if (container) container.classList.add('hidden');
+    if (gridPrincipal) gridPrincipal.innerHTML = '<p class="empty-state">No tienes capítulos pendientes.</p>';
+    return;
+  }
+
+  // Renderizar la vista principal estilo "Netflix/Crunchyroll" (Basado en tu imagen)
+  if (container && gridPrincipal) {
+    container.classList.remove('hidden');
+    renderizarGridPrincipal(gridPrincipal, datos);
+  }
+}
+
+// 3. Renderizado del Grid Principal (Diseño de la imagen)
+function renderizarGridPrincipal(container, datos) {
+  container.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  
+  datos.forEach(item => {
+    // Calculamos el progreso falso o real si tienes el total de capítulos
+    const total = item.totalCapitulos || 12; // Valor por defecto si no existe
+    const capsVistos = (item.siguienteCapitulo || 1) - 1;
+    const progresoPorcentaje = Math.min((capsVistos / total) * 100, 100);
+
+    const card = document.createElement('a');
+    card.className = 'continue-card anime-card';
+    card.href = `ver.html?id=${item.id}&url=${item.siguienteCapitulo}`;
+    
+    // Usamos Template Literals para estructurar el componente de forma limpia
+    card.innerHTML = `
+      <div class="card-thumbnail container-img">
+        <img src="${item.portada}" alt="${item.titulo}" onerror="this.src='path/to/default/image.png'">
+        <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+        <span class="chapter ep-badge">EP ${item.siguienteCapitulo}</span>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: ${progresoPorcentaje}%"></div>
+        </div>
+      </div>
+      <div class="card-info">
+        <h3 class="card-title">${item.titulo}</h3>
+        <span class="card-meta">${capsVistos}/${total} eps</span>
+      </div>
+    `;
+    
+    fragment.appendChild(card);
+  });
+  
+  container.appendChild(fragment);
+
+  // Inicializar botones de scroll
+  inicializarBotonesScroll(container);
+}
+
+function inicializarBotonesScroll(container) {
+  // Buscar botones en el header (section-continuar-viendo)
+  const headerSection = document.getElementById('section-continuar-viendo');
+  const prevBtn = headerSection.querySelector('.scroll-btn-prev');
+  const nextBtn = headerSection.querySelector('.scroll-btn-next');
+  
+  if (!prevBtn || !nextBtn) return;
+  
+  const scrollAmount = 660;
+  
+  prevBtn.addEventListener('click', () => {
+    container.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth'
+    });
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    container.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  });
+  
+  // Botones siempre visibles
+  prevBtn.style.opacity = '1';
+  prevBtn.style.pointerEvents = 'auto';
+  
+  nextBtn.style.opacity = '1';
+  nextBtn.style.pointerEvents = 'auto';
+}

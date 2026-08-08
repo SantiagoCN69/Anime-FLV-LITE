@@ -148,8 +148,6 @@ if (indexpagination) {
     </div>
   </header>
 
-  <main>
-
   <aside class="sidebar">
           <ul>
             <div class="active-indicator"></div>
@@ -221,13 +219,15 @@ if (indexpagination) {
                   Horarios
                 </li>
           </ul>
-          <div class="continuar-viendo">
+          <div id="continuar-viendo-sidebar">
             <h2>Continuar viendo</h2>
             <div id="ultimos-caps-viendo">
 
             </div>
           </div>
     </aside>
+  <main>
+
 
     <section id="Busqueda-Resultados" class="content-section hidden">
         <h2 data-text="Resultados" id="busqueda-h2">Resultados de la búsqueda</h2>
@@ -237,6 +237,44 @@ if (indexpagination) {
         
     <section id="Ultimos-Episodios" class="content-section hidden">
       <div id="hero-slider" class="hero-slider hidden" aria-label="Destacados del directorio"></div>
+      <div id="section-continuar-viendo" class="">
+        <div class="headder-section headder-section1">
+          <svg width="69" height="69" viewBox="0 0 69 69" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_20_26)">
+<path d="M34.5018 64.6408C51.1788 64.6408 64.6981 51.1214 64.6981 34.4445C64.6981 17.7675 51.1788 4.24817 34.5018 4.24817C17.8249 4.24817 4.30551 17.7675 4.30551 34.4445C4.30551 51.1214 17.8249 64.6408 34.5018 64.6408Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="4.30556" stroke-miterlimit="10"/>
+<path d="M34.5018 23.4509C37.5297 23.4509 39.9842 20.9963 39.9842 17.9685C39.9842 14.9406 37.5297 12.4861 34.5018 12.4861C31.474 12.4861 29.0194 14.9406 29.0194 17.9685C29.0194 20.9963 31.474 23.4509 34.5018 23.4509Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="4.30556" stroke-miterlimit="10"/>
+<path d="M34.5018 56.4027C37.5297 56.4027 39.9842 53.9481 39.9842 50.9203C39.9842 47.8924 37.5297 45.4379 34.5018 45.4379C31.474 45.4379 29.0194 47.8924 29.0194 50.9203C29.0194 53.9481 31.474 56.4027 34.5018 56.4027Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="4.30556" stroke-miterlimit="10"/>
+<path d="M18.0259 39.9268C21.0537 39.9268 23.5083 37.4723 23.5083 34.4444C23.5083 31.4166 21.0537 28.962 18.0259 28.962C14.998 28.962 12.5435 31.4166 12.5435 34.4444C12.5435 37.4723 14.998 39.9268 18.0259 39.9268Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="4.30556" stroke-miterlimit="10"/>
+<path d="M50.9777 39.9268C54.0056 39.9268 56.4601 37.4723 56.4601 34.4444C56.4601 31.4166 54.0056 28.962 50.9777 28.962C47.9499 28.962 45.4953 31.4166 45.4953 34.4444C45.4953 37.4723 47.9499 39.9268 50.9777 39.9268Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="4.30556" stroke-miterlimit="10"/>
+<path d="M66.1666 64.9445L34.5018 64.6407" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="4.30556" stroke-miterlimit="10" stroke-linecap="round"/>
+<path d="M35.1666 33.9445H34.1666" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="4.30556" stroke-miterlimit="10" stroke-linecap="round"/>
+</g>
+<defs>
+<clipPath id="clip0_20_26">
+<rect width="68.8889" height="68.8889" fill="white" style="fill:white;fill-opacity:1;"/>
+</clipPath>
+</defs>
+</svg>
+
+          <h2 data-text="Continuar Viendo">Continuar Viendo</h2>
+          <span>Retoma donde lo dejaste</span>
+          <button type="button" class="scroll-btn-prev scroll-btn" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <button type="button" class="scroll-btn-next scroll-btn" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+        <div class="scroll-container-wrapper">
+
+          <div id="section-ultimos-caps-viendo" class="continuar-viendo-grid"></div>
+
+        </div>
+      </div>
       <div id="header-ultcaps" class="headder-section headder-section1">
         <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
          <path d="M32 8 
@@ -274,6 +312,12 @@ if (indexpagination) {
       <div id="historial" class="grid-animes hidden"></div>
       <button alt="Populares" title="Populares" type="button" data-target="Populares" class="menu-item" id="btn-populares-pc"><svg id="icon-populares" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 64 64"><path fill="#ff9d33" d="M57 26.2s-3 2.8-8.1 6.1C47.5 24.2 43.6 14.2 36 2c0 0-2.5 13.1-10.8 25.4c-3.6-5.6-5.2-10-5.2-10C-6 43.5 15.6 62 29.2 62c17.4 0 32.7-8.4 27.8-35.8"/><path fill="#ffce31" d="M46.7 49.4c1.5-3.3 2.6-7.6 2.8-13c0 0-2.1 1.8-5.7 4.1c-1-5.4-3.7-12-9-20.2c0 0-1.7 8.7-7.5 17c-2.5-3.7-3.6-6.7-3.6-6.7c-4.3 6.8-6 12.2-6.1 16.5c-2.4-.9-3.9-1.6-3.9-1.6c4.1 12.2 12.6 14.9 16.4 14.9c6.8 0 13.7-2 20.5-11.7c0-.1-1.5.3-3.9.7"/><path fill="#ffdf85" d="M21.9 43.9s2.8 3.8 4.9 2.9c0 0 4-6.3 9.8-9.8c0 0-1.2 9.6.2 11.3c1.8 2.3 6.7-2.5 6.7-2.5c0 5.7-6.2 12.8-11.8 12.8c-5.4 0-13.2-6.2-9.8-14.7"/><path fill="#ff9d33" d="M49.8 18.1c2.1-3 3.5-6.2 3.5-6.2c3.5 5.8 1.4 9.3-.1 10.4c-2.1 1.6-5.8-.7-3.4-4.2m-38.2-1c-2.1-3.5-2.3-7.9-2.3-7.9c-5 7.5-3.1 11.7-1.4 12.9c2.2 1.7 6-.9 3.7-5m11.6-7.8c.3-2.4-.7-4.8-.7-4.8c4.7 3.1 4.7 5.7 4.1 6.8c-.9 1.3-3.7.7-3.4-2"/></svg></button>
     </section>
+
+<script>
+  const savedCvPos = localStorage.getItem('continuar_viendo_pos') || 'cv-main';
+  
+  document.body.classList.add(savedCvPos);
+</script>
 
     <section id="Mis-Favoritos" class="content-section hidden">
       <div class="headder-section">
