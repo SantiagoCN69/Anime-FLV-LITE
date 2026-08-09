@@ -1,10 +1,10 @@
 
-const CACHE_VERSION = 'v8.0.0';
+const CACHE_VERSION = 'v8.1.0';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
 
-const OFFLINE_URL = '/index.html';
+const OFFLINE_URL = '/offline.html';
 
 // ─────────────────────────────────────────────
 // RECURSOS ESTÁTICOS
@@ -13,6 +13,7 @@ const OFFLINE_URL = '/index.html';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/offline.html',
   '/anime.html',
   '/directorioav1.html',
   '/directoriojk.html',
@@ -48,7 +49,8 @@ const STATIC_ASSETS = [
   '/icons/icon.png',
   '/icons/icon2.png',
 
-  '/img/loading.png'
+  '/img/loading.png',
+  '/img/cat.png',
 ];
 
 // ─────────────────────────────────────────────
