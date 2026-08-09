@@ -511,6 +511,7 @@ iframe {
   border: 1px solid var(--br);
   gap: 8px;
   position: relative;
+  min-width: 144px;
 }
 .btn-selector-capitulo:hover {
   background-color: var(--br);
