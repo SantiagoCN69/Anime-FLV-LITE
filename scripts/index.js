@@ -1809,7 +1809,10 @@ function renderizarGridPrincipal(container, datos) {
   datos.forEach(item => {
     // Calculamos el progreso falso o real si tienes el total de capítulos
     const total = item.totalCapitulos || 12; // Valor por defecto si no existe
-    const capsVistos = (item.siguienteCapitulo || 1) - 1;
+    let capsVistos = (item.siguienteCapitulo || 1) - 1;
+    if (capsVistos === 0) {
+      capsVistos = 1;
+    }
     const progresoPorcentaje = Math.min((capsVistos / total) * 100, 100);
 
     const card = document.createElement('a');
