@@ -151,9 +151,7 @@ main section:nth-child(2) {
   border-bottom-right-radius: 15px;
   font-size: 0.7rem;
 }
-.btn-volver, .btn-anterior, .btn-siguiente {
-  text-decoration: none;
-}
+
 .btn-volver {
   color: var(--t1);
   font-weight: 600;
@@ -331,7 +329,6 @@ overflow: hidden;
   justify-content: center;
   background: #3ca0e7;
   border: 1px solid #64bfff;
-  text-decoration: none;
   opacity: 1;
   right: 0;
   top: 0;

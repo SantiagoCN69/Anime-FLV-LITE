@@ -39,10 +39,12 @@ body {
   overflow-x: hidden;
   position: relative;
 }
+
 a {
   text-decoration: none;
   color: inherit;
 }
+
 svg {
   pointer-events: none;
 }
@@ -484,7 +486,6 @@ header.search-active .logout-modal {
   color: var(--t1);
 }
 .sidebar a:not(.btn-siguiente-capitulo) {
-  text-decoration: none;
   color: var(--t1);
   width: 100%;
   display: block;

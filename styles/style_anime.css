@@ -966,7 +966,6 @@ margin-bottom: 2rem;
 
 /* Tarjeta interactiva horizontal */
 .timeline-card-link {
-  text-decoration: none;
   color: inherit;
   display: block;
 }
