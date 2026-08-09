@@ -1258,7 +1258,7 @@ justify-content: space-between;
     position: absolute;
     inset: 0;
 }
-.hero-slide::before {
+/* .hero-slide::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -1272,7 +1272,7 @@ justify-content: space-between;
   border-radius: 20px;
   z-index: 0;
   pointer-events: none;
-}
+} */
 .hero-slide__bg::after {
   content: '';
   position: absolute;

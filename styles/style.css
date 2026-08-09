@@ -1070,9 +1070,7 @@ section.content-section h2:first-of-type::after {
   border-radius: 4px;
 }
 
-.btn-siguiente-capitulo span {
-  flex-grow: 1;
-}
+
 
 .texto-2-lineas {
   display: -webkit-box;
@@ -1089,6 +1087,7 @@ section.content-section h2:first-of-type::after {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-height: 65px;
 }
 
 .texto-episodio {
