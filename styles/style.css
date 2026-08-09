@@ -652,7 +652,6 @@ header.search-active .logout-modal {
 
 /* ACTIVO BASE */
 #indexpagination .active-menu-item { color: var(--t1); }
-#indexpagination .active-menu-item path { stroke: var(--t1); }
 
 #indexpagination .active-menu-item::after {
   content: "";
@@ -663,7 +662,7 @@ header.search-active .logout-modal {
   height: calc(100% - 1px);
   border-radius: inherit;
   border: 1px solid var(--btn);
-  background-color: var(--p);
+  background-color: var(--br);
   z-index: -2;
   animation: aparecer .3s forwards;
 }
@@ -764,7 +763,9 @@ header.search-active .logout-modal {
 
 #indexpagination.bottom button svg { width: 22px; height: 22px; }
 #indexpagination.bottom .active-menu-item::after { display: none; }
-
+#indexpagination.bottom .active-menu-item {
+  color: var(--btn);
+}
 /* ================= LAYOUT ================= */
 
 @media (max-width: 600px) {
