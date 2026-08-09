@@ -25,11 +25,11 @@ body.cv-sidebar #section-continuar-viendo {
     grid-column: -2 / -1;
     align-self: end;
   }
-  
+
   .ver-mas-btn:hover {
     filter: brightness(1.1);
   }
-  
+
 
   #menu-toggle {
     display: none !important;
@@ -1861,25 +1861,28 @@ justify-content: space-between;
 }
 }
 #collapse-btn-container {
-margin-top:auto
+margin-top:auto;
+display: flex;
 }
 #Collapse-aside {
   display: flex;
   justify-content: center;
   gap: .5rem;
   padding: 1rem 3rem;
-  width: calc(100% - 2rem);
   border-radius: 8px;
   margin-inline: 1rem;
+  flex: 1;
   margin-top: 1rem;
   margin-bottom: 2rem;
   box-sizing: border-box;
+  transition: all 0.3s ease;
   position: relative;
   font-size: 1rem;
   cursor: pointer;
+  height: 50px;
   svg {
-    width: 1lh;
-    height: 1lh;
+    width: 20px;
+    height: 20px;
   }
   color: var(--t1);
   border: none;
@@ -1889,7 +1892,7 @@ margin-top:auto
   background-color: rgba(var(--bgt), .1);
 }
 @media (max-width: 600px) {
-  #Collapse-aside {
-    margin-bottom: 1rem;
+  #collapse-btn-container {
+   display: none;
   }
 }
