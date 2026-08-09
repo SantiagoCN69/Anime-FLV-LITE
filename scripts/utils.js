@@ -45,9 +45,36 @@ const handleScroll = () => {
 // Aplicar el efecto al cargar la página
 window.addEventListener('load', handleScroll);
 
-// Escuchar el evento de scroll
-window.addEventListener('scroll', handleScroll);
+// Escuchar el evento de scroll con throttling para mejor rendimiento en móvil
+let ticking = false;
+window.addEventListener('scroll', () => {
+    if (ticking) return;
 
+    ticking = true;
+
+    requestAnimationFrame(() => {
+        handleScroll();
+        ticking = false;
+    });
+}, { passive: true });
+
+
+// Único observador global para todas las tarjetas de anime
+const animeCardObserver = new IntersectionObserver((entries, obs) => {
+    for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+
+        const card = entry.target;
+
+        card.classList.add("show");
+        card.style.transitionDelay = "";
+
+        obs.unobserve(card);
+    }
+}, {
+    threshold: 0.05,
+    rootMargin: "0px 0px -1% 0px"
+});
 
 export function observerAnimeCards() {
     const cards = document.querySelectorAll(".anime-card");
@@ -67,24 +94,8 @@ export function observerAnimeCards() {
 
     document.body.offsetHeight;
 
-    const observer = new IntersectionObserver((entries, obs) => {
-        for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-
-            const card = entry.target;
-
-            card.classList.add("show");
-            card.style.transitionDelay = "";
-
-            obs.unobserve(card);
-        }
-    }, {
-        threshold: 0.05,
-        rootMargin: "0px 0px -1% 0px"
-    });
-
     requestAnimationFrame(() => {
-        cards.forEach(card => observer.observe(card));
+        cards.forEach(card => animeCardObserver.observe(card));
     });
 }
 
