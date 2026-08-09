@@ -410,9 +410,8 @@ header.search-active .logout-modal {
   position: fixed;
   top: 88px;
   transform: translateX(-100%);
-  width: 220px;
   color: var(--t1);
-  min-width: 230px;
+  width: 230px;
   height: calc(100dvh - 88px);
   left: 0;
   overflow-y: auto;
@@ -473,7 +472,7 @@ header.search-active .logout-modal {
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform .2s;
+  transition: transform .2s, padding-inline .3s ease;
 }
 
 .sidebar li:not(:has(> a)):hover, .sidebar li a:hover {
@@ -497,7 +496,7 @@ header.search-active .logout-modal {
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
   border-radius: 0 2px 2px 0;
   opacity: 0;
-  transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+  transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, width 0.3s ease;
   pointer-events: none;
 }
 
@@ -516,7 +515,7 @@ header.search-active .logout-modal {
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
-  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease, height 0.3s ease, padding-bottom 0.3s ease;
+  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease, height 0.3s ease, padding-bottom 0.3s ease, width 0.3s ease;
 }
 
 @media screen and (max-width: 600px) {
@@ -570,7 +569,7 @@ header.search-active .logout-modal {
 #indexpagination {display: none;}
 
 @media screen and (max-width: 600px) {
-  .content-section {margin: 0 1rem 2rem 1rem !important; width: calc(100% - 2rem) !important;}
+  .content-section {margin: 0 1rem 2rem 1rem !important;}
   #indexpagination {display: flex;}
   .indexbtnmovil {display: none !important;}
   #btn-lab {display: none;}
@@ -785,9 +784,8 @@ main {
   min-height: calc(100dvh - 267px);
   position: relative;
   margin: 2rem;
-  width: calc(100% - 4rem - 230px);
   opacity: 1;
-  transition: opacity .3s;
+  transition: opacity .3s, margin .3s;
   display: flex;
   flex-direction: column;
 }
@@ -1013,7 +1011,7 @@ section.content-section h2:first-of-type::after {
 #continuar-viendo-sidebar {
   border-top: 1px solid var(--br);
   height: auto;
-  padding: 1rem
+  padding: 1rem;
 }
 #ultimos-caps-viendo {
   margin-top: 1rem;
@@ -1029,12 +1027,12 @@ section.content-section h2:first-of-type::after {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px;
+  padding: 10px;
   background: transparent;
   border: none;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background .5s, transform .3s;
+  transition: background .5s, transform .3s, padding .3s;
   border-radius: 8px;
 }
 .btn-siguiente-capitulo:hover {
@@ -1042,7 +1040,7 @@ section.content-section h2:first-of-type::after {
   transform: scale(1.02) translateY(-2px) !important;
 }
 .btn-siguiente-capitulo .portada-anime {
-  min-width: 25%;
+  min-width: 45px;
   height: 50px;
   object-fit: cover;
   border-radius: 4px;
@@ -1592,4 +1590,76 @@ margin-top: 10px;
 .pildora-default {
   background: linear-gradient(135deg, rgba(96, 125, 139, 0.9), rgba(69, 90, 100, 0.8));
   border-color: rgba(96, 125, 139, 0.4);
+}
+@media (min-width: 600px) {
+/* Estilos del sidebar colapsado */
+.sidebar-collapsed .sidebar {
+  min-width: unset;
+  width: 88px;
+}
+.sidebar span {
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.sidebar-collapsed .sidebar span {
+  opacity: 0;
+}
+.sidebar svg {
+  transition: width 0.3s ease, height 0.3s ease;
+}
+.sidebar-collapsed .sidebar svg {
+  width: 25px;
+  height: 25px;
+}
+.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-capitulo) {
+  padding-inline:34px ;
+}
+.sidebar-collapsed .sidebar li:not(:has(> a)):hover,
+.sidebar-collapsed .sidebar li a:hover {
+  transform: translateY(-4px);
+}
+.sidebar-collapsed .sidebar li:not(:has(> a)).active-menu-item,
+.sidebar-collapsed .sidebar li a.active-menu-item {
+  transform: translateY(-4px);
+}
+.sidebar-collapsed .active-indicator {
+  width: 3px;
+}
+
+.sidebar-collapsed #Collapse-aside {
+  padding: 1rem 1rem;
+  width: 25px;
+  span {
+    display: none;
+  }
+  svg {
+    margin-inline-end: 0;
+  }
+}
+/* continuarviendosidebar */
+.sidebar h2, .texto-2-lineas, .texto-episodio {
+  transition: opacity 0.3s ease;
+  max-height: 1lh;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.texto-2-lineas {
+  max-height: 2lh;
+  white-space: wrap;
+}
+
+.sidebar-collapsed .sidebar h2 {
+  opacity: 0;
+}
+.sidebar-collapsed .btn-siguiente-capitulo {
+  padding-inline: 5px;
+}
+.sidebar-collapsed .btn-siguiente-capitulo:hover {
+  background: none;
+}
+/* main */
+.sidebar-collapsed .content-section {
+  margin-left: calc(71px + 2rem);
+}
 }
