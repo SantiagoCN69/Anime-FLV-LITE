@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://animeflvlite.netlify.app/index.html</loc>
-    <lastmod>2025-05-22</lastmod>
+    <loc>https://anizenlite.netlify.app/</loc>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://animeflvlite.netlify.app/anime.html</loc>
-    <lastmod>2025-05-28</lastmod>
+    <loc>https://anizenlite.netlify.app/index.html</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://anizenlite.netlify.app/directorioav1.html</loc>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://animeflvlite.netlify.app/ver.html</loc>
-    <lastmod>2025-05-28</lastmod>
+    <loc>https://anizenlite.netlify.app/directoriojk.html</loc>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://animeflvlite.netlify.app/lab.html</loc>
-    <lastmod>2025-05-28</lastmod>
+    <loc>https://anizenlite.netlify.app/horarios.html</loc>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://animeflvlite.netlify.app/directorio.html</loc>
-    <lastmod>2025-05-28</lastmod>
+    <loc>https://anizenlite.netlify.app/populares.html</loc>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>  
+    <priority>0.8</priority>
+  </url>
 </urlset>
