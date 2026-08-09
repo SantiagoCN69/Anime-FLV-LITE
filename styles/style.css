@@ -1233,7 +1233,7 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   margin: 10px;
   line-height: 1.05rem;
-  height: 2lh;
+  height: calc(2lh + 3px);
   display: block;
 }
 
