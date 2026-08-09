@@ -640,9 +640,10 @@ header.search-active .logout-modal {
   display: block;
   position: fixed;
   bottom: 0;
-  background: linear-gradient(to top, rgba(var(--bgti), .6), transparent);
+  background: linear-gradient(to top, var(--b), transparent);
+  opacity: .7;
   width: 100vw;
-  height: 94px;
+  height: 100px;
   z-index: 1;
 }
 }
