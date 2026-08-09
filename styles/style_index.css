@@ -1087,6 +1087,7 @@ justify-content: space-between;
 
 .btn-day {
   flex: 1;
+  min-width: 125px;
   background-color: var(--p);
   color: var(--t1);
   border: none;
@@ -1096,6 +1097,7 @@ justify-content: space-between;
   font-weight: 600;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  opacity: 0.7;
 }
 
 .btn-day:hover {
@@ -1106,10 +1108,12 @@ justify-content: space-between;
 .btn-day.active {
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
   color: var(--t1);
+  opacity: 1;
 }
 
 .anime-count {
   margin-left: 0.5rem;
+  min-width: 17px !important;
 }
 
 .search-input {
