@@ -29,6 +29,19 @@ let modoDoblado = false;
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 
+// Función helper simple para obtener el número de capítulo
+function getNumeroCapitulo(episodio, index) {
+  if (episodio && typeof episodio === 'object' && 'number' in episodio) {
+    // Convertir a número para evitar problemas de comparación string vs number
+    return parseInt(episodio.number, 10);
+  }
+  // Para arrays simples: detectar si el primer capítulo es 0
+  if (episodios.length > 0 && episodios[0] === 0) {
+    return index;
+  }
+  return index + 1;
+}
+
 // Funciones globales para el selector de capítulos
 function generarDropdownCapitulos() {
   if (!dropdownCapitulos || !episodios || episodios.length === 0) return;
@@ -61,11 +74,7 @@ function generarDropdownCapitulos() {
   
   episodios.forEach((episodio, index) => {
     const btn = document.createElement("button");
-    // Si tu objeto episodio tiene una propiedad numérica (ej. .number), úsala; si no, el index
-    const numCapitulo = (episodio && typeof episodio === 'object' && 'number' in episodio) 
-      ? episodio.number 
-      : index;
-      
+    const numCapitulo = getNumeroCapitulo(episodio, index);
     btn.textContent = numCapitulo;
     btn.dataset.episode = numCapitulo;
     
@@ -149,21 +158,32 @@ function actualizarNumeroCapitulo() {
 function actualizarTextoBotonesNavegacion() {
   if (!episodios || episodios.length === 0) return;
   
-  let currentIndex = episodios.findIndex(ep => {
-    const num = (ep && typeof ep === 'object' && 'number' in ep) ? ep.number : episodios.indexOf(ep);
-    return num === episodioActualIndex;
+  // Buscar el índice actual de forma más robusta
+  let currentIndex = -1;
+  
+  // Primero intentar buscar por número exacto (usando comparación numérica)
+  currentIndex = episodios.findIndex(ep => {
+    const num = getNumeroCapitulo(ep, episodios.indexOf(ep));
+    return num === parseInt(episodioActualIndex, 10);
   });
   
+  // Si no encuentra, buscar por índice directo (fallback)
   if (currentIndex === -1) {
-    currentIndex = episodios.findIndex((_, idx) => idx === episodioActualIndex);
+    currentIndex = episodios.findIndex((_, idx) => {
+      const num = getNumeroCapitulo(episodios[idx], idx);
+      return num === parseInt(episodioActualIndex, 10);
+    });
+  }
+  
+  // Último fallback: usar episodioActualIndex - 1
+  if (currentIndex === -1) {
+    currentIndex = parseInt(episodioActualIndex, 10) - 1;
   }
   
   if (textoAnterior) {
     if (currentIndex > 0) {
       const epAnterior = episodios[currentIndex - 1];
-      const numAnterior = (epAnterior && typeof epAnterior === 'object' && 'number' in epAnterior) 
-        ? epAnterior.number 
-        : currentIndex - 1;
+      const numAnterior = getNumeroCapitulo(epAnterior, currentIndex - 1);
       textoAnterior.textContent = `${numAnterior}`;
     } else {
       textoAnterior.textContent = "-";
@@ -173,9 +193,7 @@ function actualizarTextoBotonesNavegacion() {
   if (textoSiguiente) {
     if (currentIndex >= 0 && currentIndex < episodios.length - 1) {
       const epSiguiente = episodios[currentIndex + 1];
-      const numSiguiente = (epSiguiente && typeof epSiguiente === 'object' && 'number' in epSiguiente) 
-        ? epSiguiente.number 
-        : currentIndex + 1;
+      const numSiguiente = getNumeroCapitulo(epSiguiente, currentIndex + 1);
       textoSiguiente.textContent = `${numSiguiente}`;
     } else {
       textoSiguiente.textContent = "+";
