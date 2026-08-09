@@ -184,9 +184,9 @@ function actualizarTextoBotonesNavegacion() {
     if (currentIndex > 0) {
       const epAnterior = episodios[currentIndex - 1];
       const numAnterior = getNumeroCapitulo(epAnterior, currentIndex - 1);
-      textoAnterior.textContent = `${numAnterior}`;
+      textoAnterior.textContent = `EP ${numAnterior}`;
     } else {
-      textoAnterior.textContent = "-";
+      textoAnterior.textContent = "EP -";
     }
   }
   
@@ -194,9 +194,9 @@ function actualizarTextoBotonesNavegacion() {
     if (currentIndex >= 0 && currentIndex < episodios.length - 1) {
       const epSiguiente = episodios[currentIndex + 1];
       const numSiguiente = getNumeroCapitulo(epSiguiente, currentIndex + 1);
-      textoSiguiente.textContent = `${numSiguiente}`;
+      textoSiguiente.textContent = `EP ${numSiguiente}`;
     } else {
-      textoSiguiente.textContent = "+";
+      textoSiguiente.textContent = "EP +";
     }
   }
 }
