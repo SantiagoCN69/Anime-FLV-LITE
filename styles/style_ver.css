@@ -548,7 +548,7 @@ iframe {
   display: none;
 }
 .dropdown-titulo {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: var(--t1);
   padding: 10px;
@@ -707,4 +707,9 @@ iframe {
 .recomendaciones-ia-busqueda {
   margin: 1rem;
   margin-bottom: 2rem;
+} 
+@media (max-width: 370px) {
+  .botones-reproductor span {
+    display: none;
+  }
 }
