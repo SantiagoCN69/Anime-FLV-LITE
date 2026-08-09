@@ -488,12 +488,16 @@ iframe {
   grid-area: btn-anuncios;
 }
 .btn-anuncios::before {
-  content: url(/icons/shield-halved-solid.svg);
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  margin: 5px;
-  filter: invert(100%);
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url('/icons/shield-halved-solid.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: middle;
+    margin-right: 8px;
 }
 #btn-cambio-servers {
   grid-area: btn-censura;
