@@ -356,7 +356,7 @@ const renderAnime = anime => {
   tituloEl.textContent = anime.titulo;
   document.getElementById("portadacarga").classList.add("cargado");
   portadaEl.src = anime.portada;
-  document.querySelector('.anime-container1').style.backgroundImage = `url(${anime.portada})`;
+  document.querySelector('.anime-container1').style.setProperty('--anime-portada', `url(${anime.portada})`);
   aplicarFondoAnime(anime);
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);

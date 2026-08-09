@@ -107,7 +107,7 @@ header {
   position: relative;
   width: 100%;
   justify-content: center;
-  aspect-ratio: 200 / 281;
+  aspect-ratio: 200 / 280;
 }
 
 .anime-container1 img {
@@ -123,12 +123,12 @@ header {
   content: '';
   position: absolute;
   inset: 0;
-  transform: scale(1.02);
-  background-image: inherit;
+  transform: scale(1.03);
+  background-image: var(--anime-portada);
   background-size: cover;
   background-position: center;
-  filter: blur(10px);
-  opacity: 0.3;
+  filter: blur(9px);
+  opacity: 0.4;
   border-radius: 12px;
   z-index: 0;
   pointer-events: none;
@@ -390,6 +390,7 @@ header {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+  min-height: 21.5px;
 }
 #info1 p {
   font-size: .9rem;
