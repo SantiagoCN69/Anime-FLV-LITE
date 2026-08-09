@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.4.0';
+const CACHE_VERSION = 'v8.5.0';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -51,6 +51,8 @@ const STATIC_ASSETS = [
 
   '/img/loading.png',
   '/img/cat.png',
+  '/icons/eye-solid.svg',
+  '/icons/eye-slash-solid.svg',
 ];
 
 // ─────────────────────────────────────────────
