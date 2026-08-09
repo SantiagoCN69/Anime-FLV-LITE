@@ -434,7 +434,7 @@ iframe {
   align-items: center;
   justify-content: center;
   max-height: 50px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
   font-weight: bold;
