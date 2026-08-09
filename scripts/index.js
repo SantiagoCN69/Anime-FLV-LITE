@@ -1923,6 +1923,10 @@ if (collapseBtn) {
     const showTooltip = (element) => {
         if (!shouldShowTooltip()) return;
         
+        // Verificar que el elemento esté dentro del sidebar
+        const sidebar = element.closest('.sidebar');
+        if (!sidebar) return;
+        
         const text = element.getAttribute('data-target');
         if (!text) return;
 
