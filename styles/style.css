@@ -477,8 +477,9 @@ header.search-active .logout-modal {
   flex-direction: column;
   justify-content: space-between;
   flex-shrink: 0;
+  min-height: 513px;
   height: calc(100vh - 89px - 2rem);
-  max-height: 600px;
+  max-height: 613px;
   list-style: none;
   padding: 0;
   margin: 1rem 0;
