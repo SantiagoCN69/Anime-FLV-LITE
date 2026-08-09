@@ -121,6 +121,7 @@ function crearmodal(user = false) {
     <button id="clear-cache">Eliminar cache</button>
     <button id="cv-toggle">CV: ${cvLabels[currentCv]}</button>
     <button id="theme-toggle">Cambiar tema</button>
+    <button id="sidebar-toggle">Colapsar sidebar</button>
     <button id="config">Navegación</button>
   `;
   
@@ -334,6 +335,20 @@ function crearmodal(user = false) {
       e.preventDefault();
       e.stopPropagation();
       await logoutConGoogle();
+    });
+  }
+
+  // --- Botón Colapsar Sidebar ---
+  const sidebarToggleBtn = modal.querySelector('#sidebar-toggle');
+  if (sidebarToggleBtn) {
+    sidebarToggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      document.body.classList.toggle('sidebar-collapsed');
+      const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+      localStorage.setItem('sidebarCollapsed', isCollapsed);
+      sidebarToggleBtn.textContent = isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar';
     });
   }
 }
