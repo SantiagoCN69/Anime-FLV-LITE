@@ -33,7 +33,6 @@ const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 function generarDropdownCapitulos() {
   if (!dropdownCapitulos || !episodios || episodios.length === 0) return;
   
-  // Si ya está generado, solo actualizar el estado activo
   if (dropdownGenerado) {
     actualizarEstadoActivoDropdown();
     return;
@@ -41,46 +40,39 @@ function generarDropdownCapitulos() {
   
   dropdownCapitulos.innerHTML = "";
   
-  // Agregar título con cantidad de capítulos
   const titulo = document.createElement("div");
   titulo.className = "dropdown-titulo";
-  if (episodios.length === 0) {
-    titulo.textContent = "No hay capítulos disponibles";
-  } else {
-    titulo.textContent = `Seleccionar episodio (${episodios.length})`;
-  }
+  titulo.textContent = "Seleccionar episodio";
   dropdownCapitulos.appendChild(titulo);
   
-  // Crear grid para los botones
   const grid = document.createElement("div");
   grid.className = "dropdown-grid";
   
-  // Convertir a Set para búsquedas más rápidas
   const capitulosVistosSet = new Set(capitulosVistosGlobales);
   
-  // Usar event delegation en lugar de múltiples listeners
   grid.addEventListener("click", (e) => {
     if (e.target.tagName === "BUTTON") {
-      const numCapitulo = parseInt(e.target.dataset.episode);
+      const numCapitulo = parseInt(e.target.dataset.episode, 10);
       seleccionarCapitulo(numCapitulo);
     }
   });
   
-  // DocumentFragment para mejor rendimiento al agregar múltiples elementos
   const fragment = document.createDocumentFragment();
   
   episodios.forEach((episodio, index) => {
     const btn = document.createElement("button");
-    const numCapitulo = index + 1;
+    // Si tu objeto episodio tiene una propiedad numérica (ej. .number), úsala; si no, el index
+    const numCapitulo = (episodio && typeof episodio === 'object' && 'number' in episodio) 
+      ? episodio.number 
+      : index;
+      
     btn.textContent = numCapitulo;
     btn.dataset.episode = numCapitulo;
     
-    // Marcar capítulo actual
     if (numCapitulo === episodioActualIndex) {
       btn.classList.add("activo");
     }
     
-    // Marcar episodios vistos con el color verde (usando Set para búsqueda O(1))
     if (capitulosVistosSet.has(String(numCapitulo))) {
       btn.classList.add("visto");
     }
@@ -157,25 +149,21 @@ function actualizarNumeroCapitulo() {
 function actualizarTextoBotonesNavegacion() {
   if (!episodios || episodios.length === 0) return;
   
-  // Encontrar el índice del episodio actual en el array
-  let currentIndex = -1;
+  let currentIndex = episodios.findIndex(ep => {
+    const num = (ep && typeof ep === 'object' && 'number' in ep) ? ep.number : episodios.indexOf(ep);
+    return num === episodioActualIndex;
+  });
   
-  if (episodios[0] && typeof episodios[0] === 'object' && episodios[0].number) {
-    currentIndex = episodios.findIndex(ep => ep.number === episodioActualIndex);
-    
-    // Si no encuentra por .number, usar posición directa como fallback
-    if (currentIndex === -1) {
-      currentIndex = episodioActualIndex - 1;
-    }
-  } else {
-    // Si es un array simple, usar el índice directamente
-    currentIndex = episodioActualIndex - 1;
+  if (currentIndex === -1) {
+    currentIndex = episodios.findIndex((_, idx) => idx === episodioActualIndex);
   }
   
   if (textoAnterior) {
     if (currentIndex > 0) {
       const epAnterior = episodios[currentIndex - 1];
-      const numAnterior = typeof epAnterior === 'object' ? epAnterior.number : currentIndex;
+      const numAnterior = (epAnterior && typeof epAnterior === 'object' && 'number' in epAnterior) 
+        ? epAnterior.number 
+        : currentIndex - 1;
       textoAnterior.textContent = `${numAnterior}`;
     } else {
       textoAnterior.textContent = "-";
@@ -185,7 +173,9 @@ function actualizarTextoBotonesNavegacion() {
   if (textoSiguiente) {
     if (currentIndex >= 0 && currentIndex < episodios.length - 1) {
       const epSiguiente = episodios[currentIndex + 1];
-      const numSiguiente = typeof epSiguiente === 'object' ? epSiguiente.number : currentIndex + 2;
+      const numSiguiente = (epSiguiente && typeof epSiguiente === 'object' && 'number' in epSiguiente) 
+        ? epSiguiente.number 
+        : currentIndex + 1;
       textoSiguiente.textContent = `${numSiguiente}`;
     } else {
       textoSiguiente.textContent = "+";
