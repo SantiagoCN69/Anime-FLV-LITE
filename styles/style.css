@@ -558,6 +558,7 @@ header.search-active .logout-modal {
   }
  .sidebar ul {
   height: unset;
+  min-height: unset;
  }
  .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
   padding: 22px 25px;
