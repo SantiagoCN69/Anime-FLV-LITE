@@ -500,10 +500,10 @@ iframe {
   flex: 1;
 }
 .desactivado {
-  opacity: 0.5;
-  background-color: var(--p);
-  border: 1px solid var(--br);
-  cursor: not-allowed;
+  opacity: 0.5 !important;
+  background-color: var(--p) !important;
+  border: 1px solid var(--br) !important;
+  cursor: not-allowed !important;
 }
 
 .btn-selector-capitulo {
@@ -683,7 +683,7 @@ iframe {
   }
 }
 @media screen and (max-width:600px){
-  .botones-reproductor {
+  .botones-reproductor,  .botones-reproductor > div{
     gap: 8px;
   }
 

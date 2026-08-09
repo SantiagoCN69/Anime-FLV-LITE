@@ -1262,14 +1262,23 @@ function actualizarEstadoBotones() {
   }
 
   const primerEpisodio = episodios[0];
-  const esPrimerEpisodio = primerEpisodio ? episodioActualIndex <= primerEpisodio.number : true;
+  const primerNumero = getNumeroCapitulo(primerEpisodio, 0);
+  const esPrimerEpisodio = episodioActualIndex <= primerNumero;
+  
   btnAnterior.disabled = esPrimerEpisodio;
   btnAnterior.classList.toggle('desactivado', esPrimerEpisodio);
 
   const ultimoEpisodio = episodios[episodios.length - 1];
-  const esUltimoEpisodio = ultimoEpisodio ? episodioActualIndex >= ultimoEpisodio.number : true;
+  const ultimoNumero = getNumeroCapitulo(ultimoEpisodio, episodios.length - 1);
+  const esUltimoEpisodio = episodioActualIndex >= ultimoNumero;
   btnSiguiente.disabled = esUltimoEpisodio;
   btnSiguiente.classList.toggle('desactivado', esUltimoEpisodio);
+  
+  // Activar el selector de capítulos cuando hay episodios
+  if (btnSelectorCapitulo) {
+    btnSelectorCapitulo.disabled = false;
+    btnSelectorCapitulo.classList.remove('desactivado');
+  }
 }
 
 // Configurar navegación de botones
