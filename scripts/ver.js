@@ -1,17 +1,17 @@
 const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
-const episodioUrl = params.get("url");
+const episodeNumber = params.get("episode");
 const btnVolver = document.getElementById("btn-volver-anime");
 const tituloAnime = document.getElementById("titulo-anime");
 btnVolver.href = `anime.html?id=${animeId}`;
 
-document.title = "AniZen - " + animeId + " - " + episodioUrl;
+document.title = "AniZen - " + animeId + " - " + episodeNumber;
 
 const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
 const btnAnterior = document.getElementById("btn-anterior-capitulo");
 
 let episodios = [];
-let episodioActualIndex = parseInt(episodioUrl);
+let episodioActualIndex = parseInt(episodeNumber);
 let embeds = [];
 let bloquearAnuncios = true;
 let modoDoblado = false;
@@ -87,7 +87,7 @@ const auth = getAuth(app);
 
 const btnCap = document.getElementById("btn-cap");
 tituloAnime.textContent = animeId;
-btnCap.textContent = `Episodio ${params.get('url')}`;
+btnCap.textContent = `Episodio ${episodeNumber}`;
 
 const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
 const textoEstado = document.getElementById("texto-estado-capitulo");
@@ -672,7 +672,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `ver.html?id=${animeId}&url=${ep.number}`);
+  history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;

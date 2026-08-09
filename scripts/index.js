@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('a');
   btn.className = 'btn-siguiente-capitulo';
-  btn.href = `ver.html?id=${itemData.id}&url=${itemData.siguienteCapitulo}`;
+  btn.href = `ver.html?id=${itemData.id}&episode=${itemData.siguienteCapitulo}`;
   
   const portada = document.createElement('img');
   portada.src = itemData.portada;
@@ -456,7 +456,7 @@ function createAnimeCard(anime, siguienteEpisodioUrl) {
     }
     if (anime.rating) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;}
     
-    if (siguienteEpisodioUrl) {linkbase = `<a href="ver.html?id=${anime.id}&url=${siguienteEpisodioUrl}">`;
+    if (siguienteEpisodioUrl) {linkbase = `<a href="ver.html?id=${anime.id}&episode=${siguienteEpisodioUrl}">`;
     }
     div.innerHTML = `
     ${linkbase}
@@ -615,7 +615,7 @@ const getEstadoBadge = (estado) => {
 function buildHeroSlide(anime, index) {
   const id = slugFromTitle(anime.title);
   const url1 = `anime.html?id=${id}`;
-  const url2 = `ver.html?id=${id}&url=1`;
+  const url2 = `ver.html?id=${id}&episode=1`;
   const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
 
   const badges = [
@@ -1798,7 +1798,7 @@ function renderizarGridPrincipal(container, datos) {
 
     const card = document.createElement('a');
     card.className = 'continue-card anime-card';
-    card.href = `ver.html?id=${item.id}&url=${item.siguienteCapitulo}`;
+    card.href = `ver.html?id=${item.id}&episode=${item.siguienteCapitulo}`;
     
     // Usamos Template Literals para estructurar el componente de forma limpia
     card.innerHTML = `

@@ -442,7 +442,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
       await manejarEstadoEpisodio(btn, icon, ep);
     }
     img.style.setProperty('view-transition-name', `${id}-${ep.number}`);
-    window.location.href = `ver.html?id=${id}&url=${ep.number}`;
+    window.location.href = `ver.html?id=${id}&episode=${ep.number}`;
   });
 
   icon.addEventListener('click', e => {
