@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reglas para la colección de datos de animes
+    match /datos-animes/{animeId} {
+      // Permitir lectura, escritura y edición a cualquier usuario
+      allow read, write, update: if true;
+      
+      // Bloquear eliminación de documentos
+      allow delete: if false;
+    }
+    
+    // Reglas para los usuarios
+    match /usuarios/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Permitir acceso a las subcolecciones del usuario
+      match /{collection}/{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    match /cache/{document} {
+      allow read, write: if true;
+    }
+
+    // Permitir acceso a subcolección /noticias/noticias/items/
+    match /noticias/noticias {
+      allow read, write: if true;
+    }
+    
+    // Reglas para la colección de últimos capítulos
+    match /ultimos-capitulos/{document} {
+      // Permitir lectura, escritura y actualización a cualquier usuario
+      allow read, write, update: if true;
+    }
+  }
+}

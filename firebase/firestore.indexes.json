@@ -1,0 +1,25 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "datos-animes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "titulo",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "usuarios",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "email",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
