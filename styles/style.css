@@ -47,6 +47,27 @@ svg {
   pointer-events: none;
 }
 
+/* SVG inline style replacements */
+.svg-stroke-current {
+  stroke: currentColor;
+  stroke-opacity: 1;
+}
+
+.svg-fill-current {
+  fill: currentColor;
+  fill-opacity: 1;
+}
+
+.svg-fill-white {
+  fill: white;
+  fill-opacity: 1;
+}
+
+.svg-stroke-white {
+  stroke: white;
+  stroke-opacity: 1;
+}
+
 /* Scrollbar styles */
 ::-webkit-scrollbar {width: 7px;}
 ::-webkit-scrollbar-track {background: transparent;}
@@ -180,6 +201,7 @@ header #busqueda{
   align-items: center;
   position: relative;
   font-size: .9rem;
+  view-transition-name: login-button;
 }
 #btn-login::after {
   content: "";
