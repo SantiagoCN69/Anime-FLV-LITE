@@ -165,7 +165,6 @@ async function toggleYGuardarEstadoCapitulo() {
       if (arrayNuevosVistos.length === 0) {
         // Si ya no quedan episodios vistos, eliminamos el documento
         await deleteDoc(animeRef);
-        console.log('🗑️ Documento eliminado (no quedan episodios vistos)');
       } else {
         // Obtener estado del anime si existe en esta vista
         const statusElement = document.getElementById('statuscargado');
@@ -370,24 +369,24 @@ function servidoresSonIguales(servidoresA, servidoresB) {
   // 🔥 NUEVO: Si los datos de Firestore no tienen el campo 'name', forzamos la actualización
   const formatoViejo = servidoresA.some(s => s.nombre && s.name === undefined);
   if (formatoViejo) {
-    console.log("[COMPARE] ❌ Formato antiguo detectado. Forzando actualización.");
+
     return false;
   }
 
   const urlsA = extraerUrlsServidores(servidoresA).map(normalizarUrl);
   const urlsB = extraerUrlsServidores(servidoresB).map(normalizarUrl);
   if (urlsA.length !== urlsB.length) {
-    console.log("[COMPARE] ❌ Diferente cantidad");
+
     return false;
   }
   const setB = new Set(urlsB);
   for (let url of urlsA) {
     if (!setB.has(url)) {
-      console.log("[COMPARE] ❌ Falta en B:", url);
+
       return false;
     }
   }
-  console.log("[COMPARE] ✅ Son iguales (normalizado)");
+
   return true;
 }
 
@@ -478,7 +477,7 @@ async function obtenerServidoresDesdeApi(episodio) {
   const data = await res.json();
 
   if (!data.servidores?.length) {
-    console.log("[API episode] No se encontraron servidores en la respuesta");
+
     return [];
   }
 
@@ -513,7 +512,7 @@ async function sincronizarServidoresConApi(ep) {
   let servidoresFirestore = [];
 
   try {
-    console.log(`[Servidores] 📦 Consultando Firestore (ID: ${animeId})...`);
+
     const animeDatosRef = doc(db, "datos-animes", animeId);
     const animeDatosSnap = await getDoc(animeDatosRef);
     
@@ -527,15 +526,15 @@ async function sincronizarServidoresConApi(ep) {
         
         if (!esFormatoViejo) {
           servidoresFirestore = episodioGuardado.servidores;
-          console.log(`[Servidores] ✅ Firestore encontrado: ${servidoresFirestore.length} servidores.`);
+
         } else {
-          console.log("[Servidores] ⚠️ Firestore: Formato viejo, se actualizará desde la API.");
+
         }
       } else {
-        console.log("[Servidores] ⚠️ Firestore: Episodio sin servidores guardados.");
+
       }
     } else {
-      console.log("[Servidores] ❌ Firestore: El documento del anime no existe.");
+
     }
   } catch (error) {
     console.error("[Servidores] ❌ Error al leer Firestore:", error);
@@ -543,11 +542,11 @@ async function sincronizarServidoresConApi(ep) {
 
   // --- INTENTO DE LECTURA API ---
   try {
-    console.log("[Servidores] 🌐 Consultando API...");
+
     const servidoresApi = await obtenerServidoresDesdeApi(ep);
 
     if (servidoresApi === null) {
-      console.log("[Servidores] ⚠️ API falló (null), usando respaldo de Firestore.");
+
       if (servidoresFirestore.length) {
         const result = reordenarServidores(servidoresFirestore);
         serverCache.set(cacheKey, { data: result, time: Date.now() });
@@ -557,23 +556,23 @@ async function sincronizarServidoresConApi(ep) {
     }
 
     if (servidoresApi.length) {
-      console.log(`[Servidores] ✅ API devolvió ${servidoresApi.length} servidores.`);
+
       const iguales = servidoresSonIguales(servidoresFirestore, servidoresApi);
 
       if (!iguales) {
-        console.log("[Servidores] 🔄 Datos distintos. Guardando en Firestore...");
+
         await guardarServidoresEnFirestore(ep, servidoresApi);
       }
 
       const result = reordenarServidores(servidoresApi);
       serverCache.set(cacheKey, { data: result, time: Date.now() });
-      console.log("[Servidores] 💾 Guardado en caché. con key: " + cacheKey);
+
       return result;
     }
 
     // --- RESPALDO SI API ES [] ---
     if (servidoresFirestore.length) {
-      console.log("[Servidores] ⚠️ API vacía, usando respaldo de Firestore.");
+
       const result = reordenarServidores(servidoresFirestore);
       serverCache.set(cacheKey, { data: result, time: Date.now() });
       return result;
@@ -583,7 +582,7 @@ async function sincronizarServidoresConApi(ep) {
   } catch (error) {
     console.error("[Servidores] ❌ Error inesperado al consultar API:", error);
     if (servidoresFirestore.length) {
-      console.log("[Servidores] ⚠️ Error en API, usando respaldo de Firestore.");
+
       const result = reordenarServidores(servidoresFirestore);
       serverCache.set(cacheKey, { data: result, time: Date.now() });
       return result;
@@ -593,7 +592,7 @@ async function sincronizarServidoresConApi(ep) {
 }
 
 async function cargarEpisodios() {
-  console.log('cargarEpisodios - Iniciando');
+
   try {
     const episodiosRef = doc(db, "datos-animes", animeId);
     const docSnap = await getDoc(episodiosRef);
@@ -617,7 +616,7 @@ async function cargarEpisodios() {
     if (!res.ok) throw new Error(`API anime respondió ${res.status}`);
 
     const data = await res.json();
-    console.log('Datos de API:', data);
+
     episodios = (data.episodes || []).map(ep => ({ number: ep.number, url: ep.url }));
 
     if (!episodios.length) {
@@ -628,8 +627,7 @@ async function cargarEpisodios() {
       portada: data.cover || '',
       banner: data.banner || ''
     };
-    console.log('animeData para fondo:', animeData);
-    console.log('Llamando aplicarFondoAnime con datos de API');
+
     aplicarFondoAnime(animeData);
 
     await setDoc(doc(db, "datos-animes", animeId), {
@@ -676,17 +674,16 @@ async function cargarVideoDesdeEpisodio(index) {
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;
-  console.log("[cargarVideoDesdeEpisodio] Cache key:", cacheKey);
+
   const cached = serverCache.get(cacheKey);
   
   if (cached && Date.now() - cached.time < CACHE_TTL) {
-    console.log("[Servidores] ⚡ Usando caché en memoria (5 min):", cacheKey);
-    console.log(cached.data);
+
     renderizarServidores( cached.data );
     return;
   }
   else{
-    console.log("[Servidores] 🔄 No hay caché válido, consultando API...");
+
   }
 
   // 1. Cargar servidores de Firestore primero (instantáneo)
@@ -703,9 +700,9 @@ async function cargarVideoDesdeEpisodio(index) {
       
       if (!esFormatoViejo) {
         servidoresFirestore = episodioGuardado.servidores;
-        console.log("[cargarVideoDesdeEpisodio] Servidores cargados de Firestore:", servidoresFirestore.length);
+
       } else {
-        console.log("[cargarVideoDesdeEpisodio] ⚠️ Formato viejo ignorado, usando API...");
+
       }
     }
   } catch (error) {
