@@ -1190,6 +1190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar.classList.toggle("active");
     menuBtn.classList.toggle("active");
   });
+
   sections.forEach(section => {
     section.addEventListener("click", () => {
       sidebar.classList.remove("active");
@@ -1197,22 +1198,99 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.overflow = "";
     });
   });
-  let touchStartX = 0;
-  let touchEndX = 0;
-  
-  const handleSwipe = () => {
-    if (sidebar.classList.contains("active")) {
-      const dist = touchStartX - touchEndX;
-      if (dist > 50) {
-        sidebar.classList.remove("active")
-        menuBtn.classList.remove("active")
+
+  // --- NUEVA LÓGICA DE DESLIZAMIENTO DEL SIDEBAR EN TIEMPO REAL ---
+  let isDraggingSidebar = false;
+  let isIntentionalSwipe = false; // Nueva variable para saber si realmente quiere abrir el menú
+  let startX = 0;
+  let startY = 0; // Guardamos también la posición Y inicial
+  let sidebarWidth = 0;
+
+  document.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY; // Registramos Y
+    const isActive = sidebar.classList.contains("active");
+    const zonaDeAgarre = 100 * window.innerWidth / 100; 
+
+    if ((!isActive && startX < zonaDeAgarre && isMobile()) || isActive) {
+      isDraggingSidebar = true;
+      isIntentionalSwipe = false; // Reiniciamos la intención en cada toque
+      sidebarWidth = sidebar.offsetWidth || 250; 
+      // OJO: No quitamos la transición de CSS todavía, esperamos a confirmar la intención
+    }
+  }, { passive: true });
+
+  document.addEventListener("touchmove", (e) => {
+    if (!isDraggingSidebar) return;
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const deltaX = currentX - startX;
+    const deltaY = currentY - startY;
+
+    // FASE DE DETECCIÓN DE INTENCIÓN (Los primeros 5-10 píxeles de movimiento)
+    if (!isIntentionalSwipe) {
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 5) {
+        // El movimiento es mayormente VERTICAL (Scroll). Cancelamos el arrastre del menú.
+        isDraggingSidebar = false;
+        return;
+      } else if (Math.abs(deltaX) > 5) {
+        // El movimiento es mayormente HORIZONTAL (Swipe). Confirmamos la intención.
+        isIntentionalSwipe = true;
+        sidebar.style.transition = "none"; // Ahora sí, quitamos la transición para seguir al dedo
+      } else {
+        // Si aún no se ha movido más de 5px, esperamos.
+        return;
       }
     }
-  };
-  
-  document.addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-  document.addEventListener("touchend", e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
 
+    // SI LLEGAMOS AQUÍ, ES PORQUE CONFIRMAMOS QUE ES UN SWIPE HORIZONTAL INTENCIONAL
+    const isActive = sidebar.classList.contains("active");
+    let percentage = 0;
+
+    if (!isActive) {
+      const move = Math.max(0, deltaX); 
+      percentage = -100 + (move / sidebarWidth) * 100;
+      percentage = Math.min(0, percentage); 
+    } else {
+      const move = Math.min(0, deltaX); 
+      percentage = (move / sidebarWidth) * 100;
+      percentage = Math.max(-100, percentage); 
+    }
+
+    sidebar.style.transform = `translateX(${percentage}%)`;
+  }, { passive: true });
+
+  document.addEventListener("touchend", (e) => {
+    if (!isDraggingSidebar) return;
+    isDraggingSidebar = false;
+    
+    // Si soltó el dedo antes de mover los 5px (ej. un tap), no hacemos nada
+    if (!isIntentionalSwipe) return;
+    
+    const currentX = e.changedTouches[0].clientX;
+    const deltaX = currentX - startX;
+    const isActive = sidebar.classList.contains("active");
+    
+    // Restaurar estilos
+    sidebar.style.transition = ""; 
+    sidebar.style.transform = ""; 
+
+    const umbral = 50; 
+
+    if (!isActive && deltaX > umbral) {
+      sidebar.classList.add("active");
+      menuBtn.classList.add("active");
+      document.body.style.overflow = "hidden";
+    } else if (isActive && deltaX < -umbral) {
+      sidebar.classList.remove("active");
+      menuBtn.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  }, { passive: true });
+  // --- FIN LÓGICA DEL SIDEBAR ---
+
+  // --- LÓGICA DE NAVEGACIÓN ENTRE SECCIONES (Se mantiene igual) ---
   const navigationMap = {
     'Ultimos-Episodios': { left: 'DirectorioJK', right: null },
     'DirectorioJK': { left: 'Lab', right: 'Ultimos-Episodios' },
@@ -1221,32 +1299,27 @@ document.addEventListener("DOMContentLoaded", () => {
     'Horarios': { left: null, right: 'Populares' }
   };
   
- const excepciones = [
-  '.pagination',
-  '.hero-slider',
-  '#recomendaciones-favoritos',
-  '#recomendaciones-personalizadas',
-  '#sugerencias-sin-resultados',
-  '#anime-grid-ia-busqueda',
-  '#filtro-letras-av1',
-  '#section-ultimos-caps-viendo'
- ]
+  const excepciones = [
+    '.pagination', '.hero-slider', '#recomendaciones-favoritos',
+    '#recomendaciones-personalizadas', '#sugerencias-sin-resultados',
+    '#anime-grid-ia-busqueda', '#filtro-letras-av1', '#section-ultimos-caps-viendo'
+  ];
 
-function handleSectionNavigation(sectionId, direction) {
-  const targetSection = navigationMap[sectionId]?.[direction];
-  if (!targetSection) return false;
+  function handleSectionNavigation(sectionId, direction) {
+    const targetSection = navigationMap[sectionId]?.[direction];
+    if (!targetSection) return false;
 
-  history.replaceState(null, '', `?${targetSection}`);
-  mostrarSeccionDesdesearch();
-  return true;
-}
+    history.replaceState(null, '', `?${targetSection}`);
+    mostrarSeccionDesdesearch();
+    return true;
+  }
 
-const originalMostrarSeccion = mostrarSeccionDesdesearch;
-mostrarSeccionDesdesearch = function() {
-  originalMostrarSeccion.apply(this, arguments);
-  const id = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
-  centrarElementoEnVista(id);
-};
+  const originalMostrarSeccion = mostrarSeccionDesdesearch;
+  mostrarSeccionDesdesearch = function() {
+    originalMostrarSeccion.apply(this, arguments);
+    const id = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
+    centrarElementoEnVista(id);
+  };
 
   function isElementInExceptions(element) {
     if (!element) return false;
@@ -1269,7 +1342,7 @@ mostrarSeccionDesdesearch = function() {
   }
 
   function handleTouchEnd(e) {
-    if (this._touchData?.isPagination || this._touchData?.isException) return;
+    if (this._touchData?.isPagination || this._touchData?.isException || document.body.style.overflow === "hidden") return;
     
     const endX = e.changedTouches[0].screenX;
     const endY = e.changedTouches[0].screenY;
@@ -1281,22 +1354,9 @@ mostrarSeccionDesdesearch = function() {
       : null;
     
     if (!direction) return;
-    
     const sectionId = this.id;
     
-    if (sidebar.classList.contains('active') && 
-        sectionId === 'Ultimos-Episodios' && 
-        direction === 'left') return;
-    
-    if (navigationMap[sectionId] && handleSectionNavigation(sectionId, direction)) {
-      return;
-    }
-    
-    if (direction === 'right' && !sidebar.classList.contains('active') && isMobile()) {
-      sidebar.classList.add('active');
-      menuBtn.classList.add('active');
-      document.body.style.overflow = "hidden";
-    }
+    handleSectionNavigation(sectionId, direction);
   }
 
   sections.forEach(section => {
