@@ -532,9 +532,8 @@ iframe {
 }
 .dropdown-capitulos {
   position: absolute !important;
-  bottom: calc(100% + 15px);
-  left: 0;
-  right: 0;
+  bottom: calc(100% + 30px);
+  left: 15px;
   background-color: var(--p);
   border: 1px solid var(--br);
   border-radius: 8px;
