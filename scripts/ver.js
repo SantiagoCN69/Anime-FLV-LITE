@@ -9,6 +9,17 @@ document.title = "AniZen - " + animeId + " - " + episodeNumber;
 
 const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
 const btnAnterior = document.getElementById("btn-anterior-capitulo");
+const btnSelectorCapitulo = document.getElementById("btn-selector-capitulo");
+const dropdownCapitulos = document.getElementById("dropdown-capitulos");
+const numeroCapituloActual = document.getElementById("numero-capitulo-actual");
+const textoAnterior = document.getElementById("texto-anterior");
+const textoSiguiente = document.getElementById("texto-siguiente");
+
+// Variable global para capítulos vistos (compartida con refrescarUIEstadoCapitulo)
+let capitulosVistosGlobales = [];
+
+// Cache del dropdown generado para evitar regeneraciones innecesarias
+let dropdownGenerado = false;
 
 let episodios = [];
 let episodioActualIndex = parseInt(episodeNumber);
@@ -17,6 +28,188 @@ let bloquearAnuncios = true;
 let modoDoblado = false;
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
+
+// Funciones globales para el selector de capítulos
+function generarDropdownCapitulos() {
+  if (!dropdownCapitulos || !episodios || episodios.length === 0) return;
+  
+  // Si ya está generado, solo actualizar el estado activo
+  if (dropdownGenerado) {
+    actualizarEstadoActivoDropdown();
+    return;
+  }
+  
+  dropdownCapitulos.innerHTML = "";
+  
+  // Agregar título con cantidad de capítulos
+  const titulo = document.createElement("div");
+  titulo.className = "dropdown-titulo";
+  if (episodios.length === 0) {
+    titulo.textContent = "No hay capítulos disponibles";
+  } else {
+    titulo.textContent = `Seleccionar episodio (${episodios.length})`;
+  }
+  dropdownCapitulos.appendChild(titulo);
+  
+  // Crear grid para los botones
+  const grid = document.createElement("div");
+  grid.className = "dropdown-grid";
+  
+  // Convertir a Set para búsquedas más rápidas
+  const capitulosVistosSet = new Set(capitulosVistosGlobales);
+  
+  // Usar event delegation en lugar de múltiples listeners
+  grid.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON") {
+      const numCapitulo = parseInt(e.target.dataset.episode);
+      seleccionarCapitulo(numCapitulo);
+    }
+  });
+  
+  // DocumentFragment para mejor rendimiento al agregar múltiples elementos
+  const fragment = document.createDocumentFragment();
+  
+  episodios.forEach((episodio, index) => {
+    const btn = document.createElement("button");
+    const numCapitulo = index + 1;
+    btn.textContent = numCapitulo;
+    btn.dataset.episode = numCapitulo;
+    
+    // Marcar capítulo actual
+    if (numCapitulo === episodioActualIndex) {
+      btn.classList.add("activo");
+    }
+    
+    // Marcar episodios vistos con el color verde (usando Set para búsqueda O(1))
+    if (capitulosVistosSet.has(String(numCapitulo))) {
+      btn.classList.add("visto");
+    }
+    
+    fragment.appendChild(btn);
+  });
+  
+  grid.appendChild(fragment);
+  dropdownCapitulos.appendChild(grid);
+  dropdownGenerado = true;
+}
+
+// Función optimizada para actualizar solo el estado activo sin regenerar todo
+function actualizarEstadoActivoDropdown() {
+  const grid = dropdownCapitulos.querySelector('.dropdown-grid');
+  if (!grid) return;
+  
+  const capitulosVistosSet = new Set(capitulosVistosGlobales);
+  const botones = grid.querySelectorAll('button');
+  
+  botones.forEach(btn => {
+    const numCapitulo = parseInt(btn.dataset.episode);
+    btn.classList.toggle('activo', numCapitulo === episodioActualIndex);
+    btn.classList.toggle('visto', capitulosVistosSet.has(String(numCapitulo)));
+  });
+}
+
+function seleccionarCapitulo(numCapitulo) {
+  if (numCapitulo === episodioActualIndex) return;
+  
+  // Actualizar estado
+  episodioActualIndex = numCapitulo;
+  
+  // Actualizar URL sin recargar la página
+  const newUrl = new URL(window.location);
+  newUrl.searchParams.set("episode", numCapitulo);
+  window.history.pushState({}, "", newUrl);
+  
+  // Cerrar dropdown inmediatamente
+  if (dropdownCapitulos) {
+    dropdownCapitulos.classList.add("oculto");
+  }
+  if (btnSelectorCapitulo) {
+    btnSelectorCapitulo.classList.remove("open");
+  }
+  
+  // Usar requestAnimationFrame para optimizar actualizaciones de UI
+  requestAnimationFrame(() => {
+    actualizarNumeroCapitulo();
+    actualizarEstadoBotones();
+    generarDropdownCapitulos();
+    actualizarTextoBotonesNavegacion();
+  });
+  
+  // Cargar el nuevo episodio (async, no bloquea UI)
+  cargarVideoDesdeEpisodio(numCapitulo);
+  
+  // Refrescar estado de visto (async, no bloquea UI)
+  refrescarUIEstadoCapitulo();
+}
+
+function actualizarNumeroCapitulo() {
+  if (numeroCapituloActual) {
+    numeroCapituloActual.textContent = `Episodio ${episodioActualIndex}`;
+  }
+  document.title = "AniZen - " + animeId + " - " + episodioActualIndex;
+  const btnCapElement = document.getElementById("btn-cap");
+  if (btnCapElement) {
+    btnCapElement.textContent = `Episodio ${episodioActualIndex}`;
+  }
+  actualizarTextoBotonesNavegacion();
+}
+
+function actualizarTextoBotonesNavegacion() {
+  if (!episodios || episodios.length === 0) return;
+  
+  // Encontrar el índice del episodio actual en el array
+  let currentIndex = -1;
+  
+  if (episodios[0] && typeof episodios[0] === 'object' && episodios[0].number) {
+    currentIndex = episodios.findIndex(ep => ep.number === episodioActualIndex);
+    
+    // Si no encuentra por .number, usar posición directa como fallback
+    if (currentIndex === -1) {
+      currentIndex = episodioActualIndex - 1;
+    }
+  } else {
+    // Si es un array simple, usar el índice directamente
+    currentIndex = episodioActualIndex - 1;
+  }
+  
+  if (textoAnterior) {
+    if (currentIndex > 0) {
+      const epAnterior = episodios[currentIndex - 1];
+      const numAnterior = typeof epAnterior === 'object' ? epAnterior.number : currentIndex;
+      textoAnterior.textContent = `${numAnterior}`;
+    } else {
+      textoAnterior.textContent = "-";
+    }
+  }
+  
+  if (textoSiguiente) {
+    if (currentIndex >= 0 && currentIndex < episodios.length - 1) {
+      const epSiguiente = episodios[currentIndex + 1];
+      const numSiguiente = typeof epSiguiente === 'object' ? epSiguiente.number : currentIndex + 2;
+      textoSiguiente.textContent = `${numSiguiente}`;
+    } else {
+      textoSiguiente.textContent = "+";
+    }
+  }
+}
+
+// Funcionalidad del selector de capítulos
+if (btnSelectorCapitulo && dropdownCapitulos) {
+  // Toggle del dropdown
+  btnSelectorCapitulo.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdownCapitulos.classList.toggle("oculto");
+    btnSelectorCapitulo.classList.toggle("open");
+  });
+
+  // Cerrar dropdown al hacer clic fuera
+  document.addEventListener("click", (e) => {
+    if (!btnSelectorCapitulo.contains(e.target) && !dropdownCapitulos.contains(e.target)) {
+      dropdownCapitulos.classList.add("oculto");
+      btnSelectorCapitulo.classList.remove("open");
+    }
+  });
+}
 
 
 btnBloquear.addEventListener("click", () => {
@@ -87,7 +280,12 @@ const auth = getAuth(app);
 
 const btnCap = document.getElementById("btn-cap");
 tituloAnime.textContent = animeId;
-btnCap.textContent = `Episodio ${episodeNumber}`;
+btnCap.textContent = `Episodio ${episodioActualIndex}`;
+
+// Inicializar el número del capítulo después de que btnCap esté disponible
+if (numeroCapituloActual) {
+  actualizarNumeroCapitulo();
+}
 
 const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
 const textoEstado = document.getElementById("texto-estado-capitulo");
@@ -103,6 +301,9 @@ async function refrescarUIEstadoCapitulo() {
   const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
   const docSnap = await getDoc(animeRef);
   const capitulosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
+  
+  // Guardar TODOS los capítulos vistos en variable global para usar en el dropdown
+  capitulosVistosGlobales = capitulosVistos;
 
   if (!episodios || episodios.length === 0 || episodioActualIndex < 0 ) {
     console.warn('refrescarUIEstadoCapitulo: Lista de episodios no disponible o índice inválido.');
@@ -183,6 +384,13 @@ async function toggleYGuardarEstadoCapitulo() {
           episodiosVistos: arrayNuevosVistos,
           esFinalizadoPorVistos: esFinalizadoPorVistos
         }, { merge: true });
+      
+      // Actualizar la variable global para que el dropdown tenga los datos actualizados
+      capitulosVistosGlobales = arrayNuevosVistos;
+      
+      // Regenerar dropdown para mostrar el nuevo estado
+      dropdownGenerado = false;
+      generarDropdownCapitulos();
       }
 
       mostrarPildora(nuevoEstadoVisto, episodioActualIndex);
@@ -602,6 +810,12 @@ async function cargarEpisodios() {
       episodios = data.episodios || [];
       aplicarFondoAnime(data);
       if (episodios.length) {
+        // Generar dropdown después de cargar episodios
+        if (typeof generarDropdownCapitulos === 'function') {
+          generarDropdownCapitulos();
+        }
+        // Actualizar texto de botones de navegación
+        actualizarTextoBotonesNavegacion();
         await cargarVideoDesdeEpisodio(episodioActualIndex);
         return episodios;
       }
@@ -637,6 +851,12 @@ async function cargarEpisodios() {
       banner: data.banner || ''
     }, { merge: true });
 
+    // Generar dropdown después de cargar episodios
+    if (typeof generarDropdownCapitulos === 'function') {
+      generarDropdownCapitulos();
+    }
+    // Actualizar texto de botones de navegación
+    actualizarTextoBotonesNavegacion();
     await cargarVideoDesdeEpisodio(episodioActualIndex);
     return episodios;
   } catch (err) {
@@ -1056,6 +1276,16 @@ btnSiguiente.addEventListener("click", async (e) => {
     await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
     refrescarUIEstadoCapitulo();
     actualizarEstadoBotones();
+    // Actualizar número del capítulo en el selector
+    if (typeof actualizarNumeroCapitulo === 'function') {
+      actualizarNumeroCapitulo();
+    }
+    // Actualizar dropdown
+    if (typeof generarDropdownCapitulos === 'function') {
+      generarDropdownCapitulos();
+    }
+    // Actualizar texto de botones de navegación
+    actualizarTextoBotonesNavegacion();
   }
 });
 
@@ -1070,12 +1300,28 @@ btnAnterior.addEventListener("click", async (e) => {
     await cargarVideoDesdeEpisodio(episodioActualIndex - 1);
     refrescarUIEstadoCapitulo();
     actualizarEstadoBotones();
+    // Actualizar número del capítulo en el selector
+    if (typeof actualizarNumeroCapitulo === 'function') {
+      actualizarNumeroCapitulo();
+    }
+    // Actualizar dropdown
+    if (typeof generarDropdownCapitulos === 'function') {
+      generarDropdownCapitulos();
+    }
+    // Actualizar texto de botones de navegación
+    actualizarTextoBotonesNavegacion();
   }
 });
 
 
 cargarEpisodios()
-  .then(actualizarEstadoBotones)
+  .then(() => {
+    actualizarEstadoBotones();
+    // Generar dropdown después de cargar episodios inicialmente
+    if (typeof generarDropdownCapitulos === 'function') {
+      generarDropdownCapitulos();
+    }
+  })
   .catch(error => {
     console.error("Error al cargar episodios inicialmente:", error);
   });

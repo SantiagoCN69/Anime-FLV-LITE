@@ -115,7 +115,7 @@
       }
     </script>
 
-    <button type="button" id="menu-toggle" title="Menú">
+    <button type="button" id="menu-toggle" title="Menú" aria-label="Abrir menú">
       <span></span>
       <span></span>
       <span></span>
@@ -144,7 +144,7 @@
         <span id="texto-estado-capitulo" class="texto-estado-capitulo">No visto</span>
       </button>
     </div>
-    
+
     <div class="reproductor-container">
       <div id="controles">
         <div id="reproductor-container-carga"></div>
@@ -158,13 +158,35 @@
       document.getElementById('video').style.setProperty('view-transition-name', id + "-" + episodeId);
      </script>
     </div>
-   
 
    <div class="botones-reproductor">
-     <a href="#" id="btn-anterior-capitulo" class="btn-anterior desactivado">&#10094;</a>
-     <a href="#" id="btn-siguiente-capitulo" class="btn-siguiente desactivado">&#10095;</a>
+    <div>
+     <a href="#" id="btn-anterior-capitulo" class="btn-anterior desactivado" aria-label="Capítulo anterior">
+       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+       </svg>
+       <span id="texto-anterior">-</span>
+     </a>
+     <button type="button" id="btn-selector-capitulo" class="btn-selector-capitulo" aria-label="Seleccionar capítulo">
+       <span id="numero-capitulo-actual">Episodio 1</span>
+       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+       </svg>
+     </button>
+     <div id="dropdown-capitulos" class="dropdown-capitulos oculto">
+       <!-- Los capítulos se generarán dinámicamente con JavaScript -->
+     </div>
+     <a href="#" id="btn-siguiente-capitulo" class="btn-siguiente desactivado" aria-label="Capítulo siguiente">
+       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span id="texto-siguiente">+</span>
+     </a>
+    </div>
+    <div>
      <button disabled type="button" id="btn-cambio-servers">Server Doblados</button>
      <button type="button" id="btn-bloquear-anuncios" class="btn-anuncios activo">AdBlock: ON</button>
+    </div>
   </div>
 </section>
 <section>
@@ -172,10 +194,10 @@
   <div id="noticias_container" class="noticias-container">
     <span id="init-loading-noticias" class="span-carga">Cargando noticias...</span>
   </div>
-  
+
 </section>
 </main>
 <div id="main"></div>
-  
+
 </body>
 </html>
