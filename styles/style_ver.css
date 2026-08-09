@@ -449,6 +449,7 @@ iframe {
 }
 .btn-anterior, .btn-siguiente {
   background-color: var(--btn);
+  padding-bottom: 18px;
 }
 .btn-anuncios, #btn-cambio-servers {
   background-color: var(--p);
@@ -488,8 +489,8 @@ iframe {
 }
 .btn-anuncios::before {
   content: url(/icons/shield-halved-solid.svg);
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   display: inline-block;
   margin: 5px;
   filter: invert(100%);
