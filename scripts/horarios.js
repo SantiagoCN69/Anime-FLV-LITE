@@ -19,7 +19,16 @@ const renderButtons = () => {
   scheduleData.forEach(item => {
     const btn = document.createElement('button');
     btn.className = `btn-day ${item.day === currentDay ? 'active' : ''}`;
-    btn.textContent = item.day;
+    
+    const dayText = document.createElement('span');
+    dayText.textContent = item.day;
+    
+    const countBadge = document.createElement('span');
+    countBadge.className = 'anime-count';
+    countBadge.textContent = item.animes.length;
+    
+    btn.appendChild(dayText);
+    btn.appendChild(countBadge);
     
     btn.addEventListener('click', () => {
       currentDay = item.day;
@@ -132,7 +141,8 @@ const applyFilter = (filterText = '') => {
     });
 
     document.querySelectorAll('.btn-day').forEach(b => {
-      b.classList.toggle('active', b.textContent === currentDay);
+      const dayName = b.querySelector('span:first-child').textContent;
+      b.classList.toggle('active', dayName === currentDay);
     });
   } else {
     cards.forEach(card => {
