@@ -1762,3 +1762,16 @@ function inicializarBotonesScroll(container) {
   nextBtn.style.opacity = '1';
   nextBtn.style.pointerEvents = 'auto';
 }
+
+// Boton de colapsar sidebar
+const collapseBtn = document.getElementById('Collapse-aside');
+if (collapseBtn) {
+  // Recuperar estado guardado al cargar
+
+  collapseBtn.addEventListener('click', () => {
+    document.body.classList.toggle('sidebar-collapsed');
+    // Guardar estado en localStorage
+    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', isCollapsed);
+  });
+}
