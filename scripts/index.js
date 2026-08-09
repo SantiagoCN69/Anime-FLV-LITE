@@ -1201,22 +1201,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- NUEVA LÓGICA DE DESLIZAMIENTO DEL SIDEBAR EN TIEMPO REAL ---
   let isDraggingSidebar = false;
-  let isIntentionalSwipe = false; // Nueva variable para saber si realmente quiere abrir el menú
+  let isIntentionalSwipe = false; 
   let startX = 0;
-  let startY = 0; // Guardamos también la posición Y inicial
+  let startY = 0; 
   let sidebarWidth = 0;
 
   document.addEventListener("touchstart", (e) => {
     startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY; // Registramos Y
+    startY = e.touches[0].clientY; 
     const isActive = sidebar.classList.contains("active");
     const zonaDeAgarre = 100 * window.innerWidth / 100; 
 
-    if ((!isActive && startX < zonaDeAgarre && isMobile()) || isActive) {
+    // Obtener la sección actual desde la URL (por defecto 'Ultimos-Episodios')
+    const currentSection = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
+
+    // Condición estricta: Solo permitir abrir si está cerrado, dentro de la zona de agarre, en móvil, 
+    // Y estamos exactamente en la sección 'Ultimos-Episodios'
+    const canOpenSidebar = !isActive && startX < zonaDeAgarre && isMobile() && currentSection === 'Ultimos-Episodios';
+
+    // Iniciar arrastre si cumplimos las reglas para abrir, o si ya está abierto (para poder cerrarlo)
+    if (canOpenSidebar || isActive) {
       isDraggingSidebar = true;
-      isIntentionalSwipe = false; // Reiniciamos la intención en cada toque
+      isIntentionalSwipe = false; 
       sidebarWidth = sidebar.offsetWidth || 250; 
-      // OJO: No quitamos la transición de CSS todavía, esperamos a confirmar la intención
     }
   }, { passive: true });
 
@@ -1231,20 +1238,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // FASE DE DETECCIÓN DE INTENCIÓN (Los primeros 5-10 píxeles de movimiento)
     if (!isIntentionalSwipe) {
       if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 5) {
-        // El movimiento es mayormente VERTICAL (Scroll). Cancelamos el arrastre del menú.
+        // Movimiento VERTICAL (Scroll). Cancelamos el arrastre del menú.
         isDraggingSidebar = false;
         return;
       } else if (Math.abs(deltaX) > 5) {
-        // El movimiento es mayormente HORIZONTAL (Swipe). Confirmamos la intención.
+        // Movimiento HORIZONTAL (Swipe). Confirmamos la intención.
         isIntentionalSwipe = true;
-        sidebar.style.transition = "none"; // Ahora sí, quitamos la transición para seguir al dedo
+        sidebar.style.transition = "none"; 
       } else {
-        // Si aún no se ha movido más de 5px, esperamos.
         return;
       }
     }
 
-    // SI LLEGAMOS AQUÍ, ES PORQUE CONFIRMAMOS QUE ES UN SWIPE HORIZONTAL INTENCIONAL
     const isActive = sidebar.classList.contains("active");
     let percentage = 0;
 
@@ -1265,7 +1270,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isDraggingSidebar) return;
     isDraggingSidebar = false;
     
-    // Si soltó el dedo antes de mover los 5px (ej. un tap), no hacemos nada
     if (!isIntentionalSwipe) return;
     
     const currentX = e.changedTouches[0].clientX;
@@ -1290,7 +1294,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { passive: true });
   // --- FIN LÓGICA DEL SIDEBAR ---
 
-  // --- LÓGICA DE NAVEGACIÓN ENTRE SECCIONES (Se mantiene igual) ---
+  // --- LÓGICA DE NAVEGACIÓN ENTRE SECCIONES ---
   const navigationMap = {
     'Ultimos-Episodios': { left: 'DirectorioJK', right: null },
     'DirectorioJK': { left: 'Lab', right: 'Ultimos-Episodios' },
@@ -1310,7 +1314,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!targetSection) return false;
 
     history.replaceState(null, '', `?${targetSection}`);
-    mostrarSeccionDesdesearch();
+    mostrarSeccionDesdesearch(); // Asume que esta función sigue disponible globalmente
     return true;
   }
 
