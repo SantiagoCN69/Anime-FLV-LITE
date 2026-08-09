@@ -1348,6 +1348,7 @@ justify-content: space-between;
   -webkit-line-clamp: 5;
   min-height: 5lh;
   line-clamp: 5;
+  max-height: 5lh;
   -webkit-box-orient: vertical;
   overflow: auto;
 }
