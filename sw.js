@@ -1,10 +1,9 @@
 
-const CACHE_VERSION = 'v8.1.0';
+const CACHE_VERSION = 'v8.2.0';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
 
-const OFFLINE_URL = '/offline.html';
 
 // ─────────────────────────────────────────────
 // RECURSOS ESTÁTICOS
