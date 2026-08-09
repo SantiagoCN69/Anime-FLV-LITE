@@ -98,7 +98,7 @@ header {
 }
 
 @media screen and (max-width: 600px) {
-.scrolled {
+.scrolled:not(.floating) {
   background: rgba(var(--bgti), .5) !important;
   -webkit-backdrop-filter: blur(30px) !important;
   backdrop-filter: blur(30px) !important;
@@ -635,13 +635,23 @@ header.search-active .logout-modal {
   transition: transform .3s, padding .3s;
   will-change: transform;
 }
-
+@media (max-width: 600px) {
+#indexpagination.floating ~ #overlay {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(var(--bgti), .6), transparent);
+  width: 100vw;
+  height: 94px;
+  z-index: 1;
+}
+}
 #indexpagination button:active { transform: scale(.95); }
 #indexpagination button svg { width: 20px; height: 20px; }
 
 /* ACTIVO BASE */
-#indexpagination .active-menu-item { color: var(--btn); }
-#indexpagination .active-menu-item path { stroke: var(--btn); }
+#indexpagination .active-menu-item { color: var(--t1); }
+#indexpagination .active-menu-item path { stroke: var(--t1); }
 
 #indexpagination .active-menu-item::after {
   content: "";
@@ -672,8 +682,8 @@ header.search-active .logout-modal {
   gap: 0;
   justify-content: center;
   border-radius: 30px;
-  background-color: rgba(var(--bgti), .3);
-  backdrop-filter: blur(10px);
+  background-color: rgba(var(--bgti), .5);
+  backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(10px);
   animation: aparecer2 .3s forwards;
 }
@@ -698,7 +708,7 @@ header.search-active .logout-modal {
 #indexpagination.floating .active-menu-item::after {
   border: none;
   border-radius: 30px;
-  background-color: rgba(var(--bgti), .2);
+  background-color: rgba(var(--bgt), .1);
   box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
 }
 
@@ -719,11 +729,11 @@ header.search-active .logout-modal {
 }
 
 #indexpagination.floating::after {
-  background-image: conic-gradient(from 100deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57%);
+  background-image: conic-gradient(from 100deg, transparent 0% 43%, rgba(var(--bgt), .3) 48% 52%, transparent 57%);
 }
 
 #indexpagination.floating::before {
-  background-image: conic-gradient(from 280deg, transparent 0% 43%, var(--br) 48% 52%, transparent 57%);
+  background-image: conic-gradient(from 280deg, transparent 0% 43%, rgba(var(--bgt), .3) 48% 52%, transparent 57%);
 }
 
 /* ================= BOTTOM (YouTube) ================= */
