@@ -2,6 +2,36 @@ import { db, auth } from './firebase-login.js';
 import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { observerAnimeCards, aplicarViewTransition } from './utils.js';
 
+// Registro del Service Worker para PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('Service Worker registrado con éxito:', registration.scope);
+        
+        // Verificar actualizaciones del service worker
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('Nueva versión del Service Worker disponible');
+              // Aquí podrías mostrar una notificación al usuario
+            }
+          });
+        });
+      })
+      .catch((error) => {
+        console.error('Error al registrar el Service Worker:', error);
+      });
+  });
+  
+  // Escuchar cambios en el control del service worker
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('Service Worker controlador cambiado');
+    window.location.reload();
+  });
+}
+
 let userID = localStorage.getItem('userID') || "null";
 
 document.addEventListener('DOMContentLoaded', () => {
