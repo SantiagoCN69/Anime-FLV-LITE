@@ -1897,3 +1897,46 @@ display: flex;
    display: none;
   }
 }
+
+
+/* 
+====================================
+  Estilos del Tooltip Flotante 
+==================================== 
+*/
+.custom-tooltip {
+    position: fixed;
+    background: var(--br); /* Fondo secundario de tu tema */
+    color: var(--t1); /* Texto principal de tu tema */
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    pointer-events: none; /* Evita que el ratón interactúe con el tooltip */
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--br); /* Borde sutil */
+    
+    /* Animación inicial oculta */
+    opacity: 0;
+    transform: translateX(-15px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* El triangulito (flecha) del tooltip */
+.custom-tooltip::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -6px; /* Lo saca un poco a la izquierda */
+    transform: translateY(-50%);
+    border-width: 6px 6px 6px 0;
+    border-style: solid;
+    border-color: transparent var(--br) transparent transparent;
+}
+
+/* Clase que el JS añadirá para mostrar el tooltip */
+.custom-tooltip.show {
+    opacity: 1;
+    transform: translateX(0);
+}

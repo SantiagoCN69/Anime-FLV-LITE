@@ -1775,3 +1775,138 @@ if (collapseBtn) {
     localStorage.setItem('sidebarCollapsed', isCollapsed);
   });
 }
+// Tooltip ultra-optimizado para producción v2
+(() => {
+    let tooltip = null;
+    let activeElement = null;
+    let rafId = null;
+    let scrollTimeout = null;
+    let observer = null;
+    let isLargeScreen = false;
+    let isSidebarCollapsed = false;
+
+    const mediaQuery = window.matchMedia('(min-width: 601px)');
+    isLargeScreen = mediaQuery.matches;
+
+    const handleMediaChange = (e) => {
+        isLargeScreen = e.matches;
+        if (!isLargeScreen || !isSidebarCollapsed) hideTooltip();
+    };
+
+    mediaQuery.addEventListener('change', handleMediaChange);
+    const shouldShowTooltip = () => isLargeScreen && isSidebarCollapsed;
+
+    const getTooltip = () => {
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.className = 'custom-tooltip';
+            // Optimizacion CSS inline para asegurar que use transforms
+            tooltip.style.top = '0';
+            tooltip.style.left = '0';
+            tooltip.style.willChange = 'transform, opacity'; // Le avisa a la GPU
+            document.body.appendChild(tooltip);
+        }
+        return tooltip;
+    };
+
+    // Mostrar y posicionar tooltip en un solo RAF (Evita Layout Thrashing)
+    const showTooltip = (element) => {
+        if (!shouldShowTooltip()) return;
+        
+        const text = element.getAttribute('data-target');
+        if (!text) return;
+
+        const tooltipEl = getTooltip();
+        tooltipEl.textContent = text.replace(/-/g, ' ');
+        activeElement = element;
+
+        if (rafId) cancelAnimationFrame(rafId);
+        
+        rafId = requestAnimationFrame(() => {
+            // FASE DE LECTURA (Read)
+            const rect = element.getBoundingClientRect();
+            const tooltipHeight = tooltipEl.offsetHeight;
+            
+            const tooltipTop = rect.top + (rect.height / 2) - (tooltipHeight / 2);
+            const tooltipLeft = rect.right + 15;
+            
+            // FASE DE ESCRITURA (Write) - Usamos translate3d para aceleración GPU
+            tooltipEl.style.transform = `translate3d(${tooltipLeft}px, ${tooltipTop}px, 0)`;
+            tooltipEl.classList.add('show');
+        });
+    };
+
+    const hideTooltip = () => {
+        if (tooltip) tooltip.classList.remove('show');
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+        activeElement = null;
+    };
+
+    let lastScrollTime = 0;
+    const SCROLL_THROTTLE = 100;
+
+    const handleScroll = () => {
+        const now = performance.now();
+        if (now - lastScrollTime < SCROLL_THROTTLE) return;
+        lastScrollTime = now;
+
+        hideTooltip();
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            if (activeElement && shouldShowTooltip()) {
+                showTooltip(activeElement);
+            }
+        }, 150);
+    };
+
+    document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('.menu-item');
+        if (target && target !== activeElement) {
+            showTooltip(target);
+        }
+    }, { passive: true });
+
+    document.addEventListener('mouseout', (e) => {
+        if (!activeElement) return;
+        
+        // Evita el bug de parpadeo si el cursor se mueve a un hijo del mismo botón
+        const related = e.relatedTarget;
+        if (related && activeElement.contains(related)) return;
+
+        const target = e.target.closest('.menu-item');
+        if (target === activeElement) {
+            hideTooltip();
+        }
+    }, { passive: true });
+
+    document.addEventListener('click', hideTooltip, { passive: true });
+
+    // capture: true permite detectar scroll en contenedores internos (como el sidebar)
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+
+    let observerTimeout = null;
+    observer = new MutationObserver(() => {
+        clearTimeout(observerTimeout);
+        observerTimeout = setTimeout(() => {
+            isSidebarCollapsed = document.body.classList.contains('sidebar-collapsed');
+            if (!shouldShowTooltip()) hideTooltip();
+        }, 50);
+    });
+    
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    isSidebarCollapsed = document.body.classList.contains('sidebar-collapsed');
+
+    const cleanup = () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        if (observerTimeout) clearTimeout(observerTimeout);
+        if (observer) observer.disconnect();
+        mediaQuery.removeEventListener('change', handleMediaChange);
+    };
+
+    window.addEventListener('beforeunload', cleanup);
+    window.addEventListener('pagehide', cleanup);
+})();
