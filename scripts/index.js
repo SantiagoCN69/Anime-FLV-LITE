@@ -1753,143 +1753,67 @@ if (collapseBtn) {
     const isCollapsed = document.body.classList.contains('sidebar-collapsed');
     localStorage.setItem('sidebarCollapsed', isCollapsed);
   });
-}
-// Tooltip ultra-optimizado para producción v2
+
+
+// =========================================
+// 3. TOOLTIP ULTRA-OPTIMIZADO V2
+// =========================================
 (() => {
-    let tooltip = null;
-    let activeElement = null;
-    let rafId = null;
-    let scrollTimeout = null;
-    let observer = null;
-    let isLargeScreen = false;
-    let isSidebarCollapsed = false;
+  let tooltip, active, rafId, timer, obs;
+  let isLarge = window.matchMedia('(min-width: 601px)').matches;
+  let isCollapsed = document.body.classList.contains('sidebar-collapsed');
 
-    const mediaQuery = window.matchMedia('(min-width: 601px)');
-    isLargeScreen = mediaQuery.matches;
+  const hide = () => {
+    tooltip?.classList.remove('show');
+    active = null;
+    if (rafId) cancelAnimationFrame(rafId);
+  };
 
-    const handleMediaChange = (e) => {
-        isLargeScreen = e.matches;
-        if (!isLargeScreen || !isSidebarCollapsed) hideTooltip();
-    };
-
-    mediaQuery.addEventListener('change', handleMediaChange);
-    const shouldShowTooltip = () => isLargeScreen && isSidebarCollapsed;
-
-    const getTooltip = () => {
+  const show = (el) => {
+    if (!isLarge || !isCollapsed || !el.closest('.sidebar') || !el.dataset.target) return;
+    
         if (!tooltip) {
             tooltip = document.createElement('div');
             tooltip.className = 'custom-tooltip';
-            // Optimizacion CSS inline para asegurar que use transforms
-            tooltip.style.top = '0';
-            tooltip.style.left = '0';
-            tooltip.style.willChange = 'transform, opacity'; // Le avisa a la GPU
+      tooltip.style.cssText = 'top:0; left:0; will-change: transform, opacity;';
             document.body.appendChild(tooltip);
         }
-        return tooltip;
-    };
 
-    // Mostrar y posicionar tooltip en un solo RAF (Evita Layout Thrashing)
-    const showTooltip = (element) => {
-        if (!shouldShowTooltip()) return;
-        
-        // Verificar que el elemento esté dentro del sidebar
-        const sidebar = element.closest('.sidebar');
-        if (!sidebar) return;
-        
-        const text = element.getAttribute('data-target');
-        if (!text) return;
-
-        const tooltipEl = getTooltip();
-        tooltipEl.textContent = text.replace(/-/g, ' ');
-        activeElement = element;
-
+    tooltip.textContent = el.dataset.target.replace(/-/g, ' ');
+    active = el;
         if (rafId) cancelAnimationFrame(rafId);
         
         rafId = requestAnimationFrame(() => {
-            // FASE DE LECTURA (Read)
-            const rect = element.getBoundingClientRect();
-            const tooltipHeight = tooltipEl.offsetHeight;
-            
-            const tooltipTop = rect.top + (rect.height / 2) - (tooltipHeight / 2);
-            const tooltipLeft = rect.right + 15;
-            
-            // FASE DE ESCRITURA (Write) - Usamos translate3d para aceleración GPU
-            tooltipEl.style.transform = `translate3d(${tooltipLeft}px, ${tooltipTop}px, 0)`;
-            tooltipEl.classList.add('show');
+      const rect = el.getBoundingClientRect();
+      tooltip.style.transform = `translate3d(${rect.right + 15}px, ${rect.top + (rect.height - tooltip.offsetHeight)/2}px, 0)`;
+      tooltip.classList.add('show');
         });
     };
 
-    const hideTooltip = () => {
-        if (tooltip) tooltip.classList.remove('show');
-        if (rafId) {
-            cancelAnimationFrame(rafId);
-            rafId = null;
-        }
-        activeElement = null;
-    };
+  window.matchMedia('(min-width: 601px)').addEventListener('change', e => { isLarge = e.matches; if(!isLarge) hide(); });
 
-    let lastScrollTime = 0;
-    const SCROLL_THROTTLE = 100;
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    if (performance.now() - lastScroll < 100) return;
+    lastScroll = performance.now();
+    hide();
+    clearTimeout(timer);
+    timer = setTimeout(() => active && show(active), 150);
+  }, { passive: true, capture: true });
 
-    const handleScroll = () => {
-        const now = performance.now();
-        if (now - lastScrollTime < SCROLL_THROTTLE) return;
-        lastScrollTime = now;
-
-        hideTooltip();
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            if (activeElement && shouldShowTooltip()) {
-                showTooltip(activeElement);
-            }
-        }, 150);
-    };
-
-    document.addEventListener('mouseover', (e) => {
-        const target = e.target.closest('.menu-item');
-        if (target && target !== activeElement) {
-            showTooltip(target);
-        }
+  document.addEventListener('mouseover', e => { const t = e.target.closest('.menu-item'); if (t && t !== active) show(t); }, { passive: true });
+  document.addEventListener('mouseout', e => {
+    if (active && (!e.relatedTarget || !active.contains(e.relatedTarget)) && e.target.closest('.menu-item') === active) hide();
     }, { passive: true });
+  document.addEventListener('click', hide, { passive: true });
 
-    document.addEventListener('mouseout', (e) => {
-        if (!activeElement) return;
-        
-        // Evita el bug de parpadeo si el cursor se mueve a un hijo del mismo botón
-        const related = e.relatedTarget;
-        if (related && activeElement.contains(related)) return;
-
-        const target = e.target.closest('.menu-item');
-        if (target === activeElement) {
-            hideTooltip();
-        }
-    }, { passive: true });
-
-    document.addEventListener('click', hideTooltip, { passive: true });
-
-    // capture: true permite detectar scroll en contenedores internos (como el sidebar)
-    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
-
-    let observerTimeout = null;
-    observer = new MutationObserver(() => {
-        clearTimeout(observerTimeout);
-        observerTimeout = setTimeout(() => {
-            isSidebarCollapsed = document.body.classList.contains('sidebar-collapsed');
-            if (!shouldShowTooltip()) hideTooltip();
-        }, 50);
+  obs = new MutationObserver(() => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { isCollapsed = document.body.classList.contains('sidebar-collapsed'); if(!isCollapsed) hide(); }, 50);
     });
-    
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    isSidebarCollapsed = document.body.classList.contains('sidebar-collapsed');
+  obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-    const cleanup = () => {
-        if (rafId) cancelAnimationFrame(rafId);
-        if (scrollTimeout) clearTimeout(scrollTimeout);
-        if (observerTimeout) clearTimeout(observerTimeout);
-        if (observer) observer.disconnect();
-        mediaQuery.removeEventListener('change', handleMediaChange);
-    };
-
+  const cleanup = () => { hide(); clearTimeout(timer); obs.disconnect(); };
     window.addEventListener('beforeunload', cleanup);
     window.addEventListener('pagehide', cleanup);
 })();
