@@ -1926,6 +1926,11 @@ display: flex;
     opacity: 0;
     transform: translateX(-15px);
     transition: opacity 0.2s ease, transform 0.2s ease;
+
+    top: 0px;
+    left: 0px;
+    will-change: transform, opacity;
+    transform: translate3d(102.333px, 323px, 0px);
 }
 
 /* El triangulito (flecha) del tooltip */
