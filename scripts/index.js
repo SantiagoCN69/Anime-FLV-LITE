@@ -1260,13 +1260,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Si está en una excepción, no permitir el arrastre
     if (isInException) return;
 
-    // Condición estricta: Solo permitir abrir si está cerrado, dentro de la zona de agarre, en móvil, 
-    // Y estamos exactamente en la sección 'Ultimos-Episodios'
-    const canOpenSidebar = !isActive && startX < zonaDeAgarre && isMobile() && currentSection === 'Ultimos-Episodios';
+    // Condición: Permitir abrir si está cerrado, dentro de la zona de agarre, en móvil, 
+    // Y estamos en las secciones permitidas
+    const seccionesPermitidas = ['Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes', 'Completados'];
+    const canOpenSidebar = !isActive && startX < zonaDeAgarre && isMobile() && seccionesPermitidas.includes(currentSection);
 
     // Iniciar arrastre si cumplimos las reglas para abrir, o si ya está abierto (para poder cerrarlo)
-    // Solo permitir cerrar si estamos en la sección 'Ultimos-Episodios'
-    if (canOpenSidebar || (isActive && currentSection === 'Ultimos-Episodios')) {
+    // Permitir cerrar en las secciones permitidas
+    if (canOpenSidebar || (isActive && seccionesPermitidas.includes(currentSection))) {
       isDraggingSidebar = true;
       isIntentionalSwipe = false; 
       sidebarWidth = sidebar.offsetWidth || 250; 
