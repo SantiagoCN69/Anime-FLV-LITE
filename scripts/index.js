@@ -112,11 +112,12 @@ const config = sectionConfig[id];
 if (config && !config.flag()) {
   config.load();
   config.setFlag();
-} else if (config) {
-
 }
-
-cerrarSidebar();
+  const currentSection = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
+  if (typeof centrarElementoEnVista === 'function') {
+    centrarElementoEnVista(currentSection);
+  }
+  cerrarSidebar();
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -177,6 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetId = e.target.getAttribute('data-target');
       history.replaceState(null, '', `?${targetId}`);
       mostrarSeccionDesdesearch();
+      // Centrar el elemento en la navegación con un pequeño delay
+      if (typeof centrarElementoEnVista === 'function') {
+        centrarElementoEnVista(targetId);
+      }
     });
   });
 });
@@ -1185,6 +1190,7 @@ function cargarFetch(direccion) {
 }
 
 function centrarElementoEnVista(seccionId, smooth = true) {
+  console.log("centrarElementoEnVista", seccionId);
   const contenedor = document.getElementById("indexpagination");
   const elemento = contenedor?.querySelector(`[data-target="${seccionId}"]`);
   if (!contenedor || !elemento) return;
@@ -1306,12 +1312,6 @@ document.addEventListener("DOMContentLoaded", () => {
     'Continuar-viendo': { right: 'Horarios' }
   };
 
-  const originalMostrarSeccion = window.mostrarSeccionDesdesearch;
-  window.mostrarSeccionDesdesearch = function(...args) {
-    if (originalMostrarSeccion) originalMostrarSeccion.apply(this, args);
-    if (typeof centrarElementoEnVista === 'function') centrarElementoEnVista(getCurrentSection());
-  };
-
   sections.forEach(section => {
     section.addEventListener('touchstart', (e) => {
       const touch = e.touches[0];
@@ -1418,11 +1418,6 @@ const changeSection = (dir) => {
     mostrarSeccionDesdesearch();
   } else if (window.mostrarSeccionDesdesearch) {
     window.mostrarSeccionDesdesearch();
-  }
-  
-  // Centrar el elemento en la navegación
-  if (typeof centrarElementoEnVista === 'function') {
-    centrarElementoEnVista(target.id);
   }
   
   window.scrollTo({ top: 0, behavior: 'instant' });
