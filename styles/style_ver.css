@@ -130,8 +130,14 @@ main section:nth-child(2) {
   object-fit: cover;
   border-radius: 10px;
 }
+#links {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 #titulo-anime {
   text-transform: capitalize;
+  white-space: nowrap;
 }
 .noticia-titulo {
   display: block;
@@ -675,7 +681,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 @media screen and (max-width:1100px) {
   main {
     flex-direction: column;
-    height: clamp(670px, calc(100vh - 88px - 3rem), 1000px);
+    height: clamp(670px, calc(100dvh - 88px - 3rem), 1000px);
     transition: height .3s;
     margin-inline: 1rem;
     width: calc(100% - 2rem);
