@@ -1295,10 +1295,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- LÓGICA DE NAVEGACIÓN ENTRE SECCIONES ---
   const navigationMap = {
     'Ultimos-Episodios': { left: 'DirectorioJK' },
-    'DirectorioJK': { left: 'Lab', right: 'Ultimos-Episodios' },
+    'Mis-Favoritos': { left: 'Ultimos-Episodios', right: 'Viendo' },
+    'Viendo': { left: 'Mis-Favoritos', right: 'Pendientes' },
+    'Pendientes': { left: 'Viendo', right: 'Completados' },
+    'Completados': { left: 'Pendientes', right: 'DirectorioJK' },
+    'DirectorioJK': { left: 'Lab', right: 'Completados' },
     'Lab': { left: 'Populares', right: 'DirectorioJK' },
     'Populares': { left: 'Horarios', right: 'Lab' },
-    'Horarios': { right: 'Populares' }
+    'Horarios': { right: 'Populares' },
+    'Continuar-viendo': { left: 'Horarios' }
   };
 
   const originalMostrarSeccion = window.mostrarSeccionDesdesearch;
@@ -1327,7 +1332,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const target = navigationMap[section.id]?.[dx < 0 ? 'left' : 'right'];
         if (target) {
           history.replaceState(null, '', `?${target}`);
-          window.mostrarSeccionDesdesearch(); // Asegúrate de que esta función exista globalmente
+          
+          // Llamar a la función directamente (está exportada como módulo ES6)
+          if (typeof mostrarSeccionDesdesearch === 'function') {
+            mostrarSeccionDesdesearch();
+          } else if (window.mostrarSeccionDesdesearch) {
+            window.mostrarSeccionDesdesearch();
+          }
         }
       }
     }, { passive: true });
@@ -1345,414 +1356,230 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { passive: false });
 });
 // =========================================
-// SCRIPT DE SCROLL AUTOMÁTICO ENTRE SECCIONES
+// 1. SCRIPT DE SCROLL AUTOMÁTICO ENTRE SECCIONES
 // =========================================
-
 const sectionsOrder = [
   'Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes',
-  'Completados',  'DirectorioJK','Lab', 'Populares', 'Horarios', 'Continuar-viendo'
+  'Completados', 'DirectorioJK', 'Lab', 'Populares', 'Horarios', 'Continuar-viendo'
 ];
 
-const state = {
-  isScrolling: false,
-  scrollTimeout: null,
-  insistCount: 0,
-  atBottom: false,
-  atTop: false,
-  lastEdgeTime: 0 // Freno de tiempo para evitar cambios bruscos
+const state = { scrolling: false, timer: null, insist: 0, edge: null, lastTime: 0 };
+const inds = { bottom: null, top: null };
+
+const getIcon = (name) => {
+  const svg = document.querySelector(`.sidebar .menu-item[data-target="${name}"] svg`);
+  if (svg) {
+    const clone = svg.cloneNode(true);
+    clone.setAttribute('width', '16');
+    clone.setAttribute('height', '16');
+    clone.style.cssText = 'margin-right: 4px; vertical-align: text-bottom;';
+    return clone.outerHTML;
+  }
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
 };
 
-const indicators = { bottom: null, top: null };
-
-// Función para extraer iconos del sidebar dinámicamente
-function getSectionIcon(sectionName) {
-  const sidebarItem = document.querySelector(`.sidebar .menu-item[data-target="${sectionName}"]`);
-  if (sidebarItem) {
-    const svg = sidebarItem.querySelector('svg');
-    if (svg) {
-      // Clonar el SVG y ajustar tamaño para el indicador
-      const clonedSvg = svg.cloneNode(true);
-      clonedSvg.setAttribute('width', '16');
-      clonedSvg.setAttribute('height', '16');
-      clonedSvg.style.marginRight = '4px';
-      clonedSvg.style.verticalAlign = 'text-bottom';
-      return clonedSvg.outerHTML;
-    }
+const updateIndicator = (show, progress = 0, pos = 'bottom', name = '') => {
+  if (!inds[pos]) {
+    inds[pos] = document.createElement('div');
+    inds[pos].className = `section-change-indicator ${pos}`;
+    inds[pos].innerHTML = `
+      <div class="indicator-text">${pos === 'bottom' ? 'Siguiente' : 'Anterior'}: <span class="indicator-highlight"></span></div>
+      <div class="indicator-action"><span class="action-text">Ir ahora &rarr;</span><div class="progress-bar"></div></div>`;
+    inds[pos].querySelector('.indicator-action').onclick = () => changeSection(pos === 'bottom' ? 'next' : 'prev');
+    document.body.appendChild(inds[pos]);
   }
   
-  // Icono por defecto si no se encuentra
-  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: text-bottom;">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-    <line x1="16" y1="2" x2="16" y2="6"></line>
-    <line x1="8" y1="2" x2="8" y2="6"></line>
-    <line x1="3" y1="10" x2="21" y2="10"></line>
-  </svg>`;
-}
+  const el = inds[pos];
+  if (name) el.querySelector('.indicator-highlight').innerHTML = `${getIcon(name)} ${name.replace(/-/g, ' ')}`;
+  
+  el.style.transform = `translateX(-50%) translateY(${show ? '0' : (pos === 'bottom' ? '100px' : '-100px')})`;
+  el.style.opacity = show ? '1' : '0';
+  el.querySelector('.progress-bar').style.width = show ? `${Math.min(progress, 100)}%` : '0%';
+};
 
-// 1. CREACIÓN DE INTERFAZ (Estilo Píldora Horizontal)
-function createIndicators() {
-  if (indicators.bottom && indicators.top) return;
+const changeSection = (dir) => {
+  if (state.scrolling) return;
+  const active = document.querySelector('.content-section:not(.hidden)');
+  if (!active) return;
 
-  const createHTML = (label, sectionName, icon) => `
-    <div class="indicator-text">
-      ${label}:
-      <span class="indicator-highlight">
-        ${icon}
-        ${sectionName}
-      </span>
-    </div>
-    <div class="indicator-action">
-      <span class="action-text">Ir ahora &rarr;</span>
-      <div class="progress-bar"></div>
-    </div>
+  const nextIdx = sectionsOrder.indexOf(active.id) + (dir === 'next' ? 1 : -1);
+  const target = document.getElementById(sectionsOrder[nextIdx]);
+  if (!target) return;
 
-  `;
-
-  // Indicador Inferior
-  indicators.bottom = document.createElement('div');
-  indicators.bottom.className = 'section-change-indicator bottom';
-  indicators.bottom.innerHTML = createHTML('Siguiente sección', 'Sección', getSectionIcon('default'));
-
-  // Indicador Superior
-  indicators.top = document.createElement('div');
-  indicators.top.className = 'section-change-indicator top';
-  indicators.top.innerHTML = createHTML('Sección anterior', 'Sección', getSectionIcon('default'));
-
-  document.body.append(indicators.bottom, indicators.top);
-
-  // Hacer funcionales los botones "Ir ahora"
-  indicators.bottom.querySelector('.indicator-action').addEventListener('click', () => {
-    changeSection('next');
-  });
-  indicators.top.querySelector('.indicator-action').addEventListener('click', () => {
-    changeSection('prev');
-  });
-}
-
-function updateIndicator(show, progress = 0, position = 'bottom', sectionName = '') {
-  if (!indicators[position]) createIndicators();
-  const indicator = indicators[position];
-  const transformHide = position === 'bottom' ? 'translateY(100px)' : 'translateY(-100px)';
-
-  if (sectionName) {
-    const highlightSpan = indicator.querySelector('.indicator-highlight');
-    if (highlightSpan) {
-      const cleanName = sectionName.replace(/-/g, ' ');
-      const icon = getSectionIcon(sectionName);
-      highlightSpan.innerHTML = `
-        ${icon}
-        ${cleanName}
-      `;
-    }
+  state.scrolling = true; state.insist = 0; state.edge = null;
+  updateIndicator(false, 0, 'bottom'); updateIndicator(false, 0, 'top');
+  
+  history.pushState(null, '', `?${target.id}`);
+  
+  // Llamar a la función directamente (está exportada como módulo ES6)
+  if (typeof mostrarSeccionDesdesearch === 'function') {
+    mostrarSeccionDesdesearch();
+  } else if (window.mostrarSeccionDesdesearch) {
+    window.mostrarSeccionDesdesearch();
   }
-
-  indicator.style.transform = show ? 'translateX(-50%) translateY(0)' : `translateX(-50%) ${transformHide}`;
-  indicator.style.opacity = show ? '1' : '0';
-
-  const progressBar = indicator.querySelector('.progress-bar');
-  if (progressBar) progressBar.style.width = show ? `${Math.min(progress, 100)}%` : '0%';
-}
-
-// 2. LÓGICA DE TRANSICIÓN (Conectada a tu función global)
-function changeSection(direction) {
-  if (state.isScrolling) return;
-
-  const activeSection = document.querySelector('.content-section:not(.hidden)');
-  if (!activeSection) return;
-
-  const currentIndex = sectionsOrder.indexOf(activeSection.id);
-  const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
   
-  if (newIndex < 0 || newIndex >= sectionsOrder.length) return;
-
-  const targetSectionId = sectionsOrder[newIndex];
-  const targetSection = document.getElementById(targetSectionId);
-  
-  if (!targetSection) return;
-
-  console.log(`🚀 Scroll activado: Navegando hacia ${targetSectionId}`);
-  
-  state.isScrolling = true;
-  state.insistCount = 0;
-  state.atBottom = false;
-  state.atTop = false;
-  
-  updateIndicator(false, 0, 'bottom');
-  updateIndicator(false, 0, 'top');
-
-  // Cambiar URL silenciosamente
-  history.pushState(null, '', `?${targetSectionId}`);
-  
-  // Llamar a tu función nativa para cargar datos y vistas
-  try {
-    if (typeof mostrarSeccionDesdesearch === 'function') {
-      mostrarSeccionDesdesearch();
-    } else {
-      console.warn("mostrarSeccionDesdesearch no está definida globalmente.");
-    }
-  } catch (e) {
-    console.error("Error al ejecutar mostrarSeccionDesdesearch:", e);
+  // Centrar el elemento en la navegación
+  if (typeof centrarElementoEnVista === 'function') {
+    centrarElementoEnVista(target.id);
   }
-
-  // Animación de entrada
+  
   window.scrollTo({ top: 0, behavior: 'instant' });
-  
-  const startY = direction === 'next' ? '20px' : '-20px';
-  targetSection.style.opacity = '0';
-  targetSection.style.transform = `translateY(${startY})`;
-  targetSection.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
 
+  target.style.cssText = `opacity:0; transform:translateY(${dir === 'next' ? '20px' : '-20px'}); transition:opacity 0.4s ease, transform 0.4s ease`;
+  
   requestAnimationFrame(() => {
-    targetSection.style.opacity = '1';
-    targetSection.style.transform = 'translateY(0)';
+    target.style.opacity = '1'; 
+    target.style.transform = 'translateY(0)';
   });
 
-  setTimeout(() => {
-    state.isScrolling = false;
-    targetSection.style.transition = '';
-  }, 400);
-}
+  setTimeout(() => { state.scrolling = false; target.style.transition = ''; }, 400);
+};
 
-// 3. DETECCIÓN DE LÍMITES Y FRENO
-function handleIntent(direction) {
-  if (state.isScrolling) return;
-
-  const activeSection = document.querySelector('.content-section:not(.hidden)');
-  if (!activeSection) return;
-
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  const scrollHeight = document.documentElement.scrollHeight;
-  const clientHeight = document.documentElement.clientHeight;
-
-  const isEdgeBottom = Math.ceil(scrollTop + clientHeight) >= (scrollHeight - 20);
-  const isEdgeTop = scrollTop <= 20;
-
-  if (direction === 'down' && isEdgeBottom) {
-    handleEdge('bottom', true);
-  } else if (direction === 'up' && isEdgeTop) {
-    handleEdge('top', true);
-  } else {
-    if (state.atBottom || state.atTop) {
-      state.atBottom = false; state.atTop = false; state.insistCount = 0;
-      updateIndicator(false, 0, 'bottom'); updateIndicator(false, 0, 'top');
-    }
-  }
-}
-
-function handleEdge(edgeType, isAtEdge) {
-  const isBottom = edgeType === 'bottom';
-  const currentStateFlag = isBottom ? state.atBottom : state.atTop;
-  const direction = isBottom ? 'next' : 'prev';
+const handleEdge = (type, targetId) => {
   const now = Date.now();
+  clearTimeout(state.timer);
 
-  const activeSection = document.querySelector('.content-section:not(.hidden)');
-  if (!activeSection) return;
-  const currentIndex = sectionsOrder.indexOf(activeSection.id);
-  const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
-  
-  if (targetIndex < 0 || targetIndex >= sectionsOrder.length) return;
-  const targetSectionId = sectionsOrder[targetIndex];
-
-  clearTimeout(state.scrollTimeout);
-
-  if (!currentStateFlag) {
-    if (isBottom) state.atBottom = true; else state.atTop = true;
-    state.insistCount = 1;
-    state.lastEdgeTime = now;
-    
-    updateIndicator(true, 30, edgeType, targetSectionId);
-    
-    state.scrollTimeout = setTimeout(() => {
-      state.atBottom = false; state.atTop = false;
-      updateIndicator(false, 0, edgeType);
-    }, 1500);
+  if (state.edge !== type) {
+    state.edge = type; state.insist = 1; state.lastTime = now;
+    updateIndicator(true, 30, type, targetId);
   } else {
-    // Freno de tiempo (150ms) para que no avance de golpe con scroll rápido
-    if (now - state.lastEdgeTime < 150) {
-      state.scrollTimeout = setTimeout(() => {
-        state.atBottom = false; state.atTop = false;
-        updateIndicator(false, 0, edgeType);
+    if (now - state.lastTime < 150) {
+      state.timer = setTimeout(() => {
+        state.edge = null;
+        updateIndicator(false, 0, type);
       }, 1500);
-      return; 
+      return;
     }
-
-    state.lastEdgeTime = now;
-    state.insistCount++;
     
-    const progress = Math.min(45 + (state.insistCount * 15), 100);
-    updateIndicator(true, progress, edgeType, targetSectionId);
+    state.lastTime = now;
+    const progress = Math.min(45 + (++state.insist * 15), 100);
+    updateIndicator(true, progress, type, targetId);
     
     if (progress >= 100) {
-      changeSection(direction);
-    } else {
-      state.scrollTimeout = setTimeout(() => {
-        state.atBottom = false; state.atTop = false;
-        updateIndicator(false, 0, edgeType);
-      }, 1500);
+      changeSection(type === 'bottom' ? 'next' : 'prev');
+      return;
     }
   }
-}
+  state.timer = setTimeout(() => {
+    state.edge = null;
+    updateIndicator(false, 0, type);
+  }, 1500);
+};
 
-// 4. LISTENERS (Ignorando sidebar y swipes horizontales)
-window.addEventListener('wheel', (e) => {
-  if (e.target.closest('.sidebar')) return;
-  handleIntent(e.deltaY > 0 ? 'down' : 'up');
-}, { passive: true });
-
-let touchStartX = 0;
-let touchStartY = 0;
-
-window.addEventListener('touchstart', (e) => { 
-  if (e.target.closest('.sidebar')) return;
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY; 
-}, { passive: true });
-
-window.addEventListener('touchmove', (e) => {
-  if (e.target.closest('.sidebar')) return;
+const handleIntent = (dir) => {
+  if (state.scrolling) return;
+  const top = window.pageYOffset || document.documentElement.scrollTop;
+  const max = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const active = document.querySelector('.content-section:not(.hidden)');
   
-  const touchEndX = e.touches[0].clientX;
-  const touchEndY = e.touches[0].clientY;
-
-  const deltaX = Math.abs(touchEndX - touchStartX);
-  const deltaY = Math.abs(touchEndY - touchStartY);
-
-  // Si es movimiento horizontal, ignorar
-  if (deltaX >= deltaY) return;
-
-  handleIntent(touchStartY > touchEndY ? 'down' : 'up');
+  if (!active) return;
+  const idx = sectionsOrder.indexOf(active.id);
   
-  touchStartX = touchEndX;
-  touchStartY = touchEndY; 
-}, { passive: true });
+  // Calcular el índice de la sección objetivo
+  const targetIdx = dir === 'down' ? idx + 1 : idx - 1;
+  const targetId = sectionsOrder[targetIdx];
 
-// 5. INICIALIZACIÓN
-document.addEventListener('DOMContentLoaded', () => {
-  createIndicators();
-});
-
-
-// 1. Función para obtener los datos de caché de forma segura
-function obtenerDatosContinuarViendo() {
-  const userID = localStorage.getItem('userID') || "null";
-  const cacheKey = `ultimosCapsVistosCache_${userID}`;
-  
-  try {
-    const cachedData = localStorage.getItem(cacheKey);
-    return cachedData ? JSON.parse(cachedData) : null;
-  } catch (e) {
-    console.error('Error al leer caché de capítulos:', e);
-    return null;
+  if (dir === 'down' && top >= max - 20 && targetId) {
+    handleEdge('bottom', targetId);
+  } else if (dir === 'up' && top <= 20 && targetId) {
+    handleEdge('top', targetId);
+  } else if (state.edge) {
+    state.edge = null; state.insist = 0;
+    updateIndicator(false, 0, 'bottom'); updateIndicator(false, 0, 'top');
   }
-}
+};
 
-// 2. Controlador principal
+let startX = 0, startY = 0;
+const isSidebar = e => e.target.closest('.sidebar');
+const isSection = e => e.target.closest('.content-section');
+
+// Lógica para scroll automático con wheel
+window.addEventListener('wheel', e => {
+  if (!isSidebar(e)) {
+    handleIntent(e.deltaY > 0 ? 'down' : 'up');
+  }
+}, { passive: true });
+
+// Lógica táctil separada para scroll vertical (NO interferir con navegación horizontal)
+window.addEventListener('touchstart', e => {
+  // Solo iniciar seguimiento si NO estamos en una sección con navegación horizontal
+  if (!isSidebar(e) && !isSection(e)) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+window.addEventListener('touchmove', e => {
+  if (isSidebar(e) || isSection(e)) return; // Ignorar si estamos en sidebar o sección
+  
+  const currentX = e.touches[0].clientX;
+  const currentY = e.touches[0].clientY;
+  const dx = Math.abs(currentX - startX);
+  const dy = Math.abs(currentY - startY);
+  
+  // Solo procesar si es movimiento vertical significativo (scroll)
+  if (dy > 10 && dy > dx) {
+    handleIntent(startY > currentY ? 'down' : 'up');
+  }
+}, { passive: true });
+
+// Resetear coordenadas al terminar el touch
+window.addEventListener('touchend', () => {
+  startX = 0;
+  startY = 0;
+}, { passive: true });
+
+
+// =========================================
+// 2. CONTINUAR VIENDO & SIDEBAR
+// =========================================
 function inicializarContinuarViendo() {
-  console.log('Inicializando continuar viendo');
-  const datos = obtenerDatosContinuarViendo();
+  const data = JSON.parse(localStorage.getItem(`ultimosCapsVistosCache_${localStorage.getItem('userID') || 'null'}`) || 'null');
   const container = document.getElementById('section-continuar-viendo');
-  const gridPrincipal = document.getElementById('section-ultimos-caps-viendo');
+  const grid = document.getElementById('section-ultimos-caps-viendo');
 
-  // Si no hay datos, ocultamos la sección o mostramos un mensaje vacío
-  if (!datos || datos.length === 0) {
-    if (container) container.classList.add('hidden');
-    if (gridPrincipal) gridPrincipal.innerHTML = '<p class="empty-state">No tienes capítulos pendientes.</p>';
+  if (!data?.length) {
+    container?.classList.add('hidden');
+    if (grid) grid.innerHTML = '<p class="empty-state">No tienes capítulos pendientes.</p>';
     return;
   }
 
-  // Renderizar la vista principal estilo "Netflix/Crunchyroll" (Basado en tu imagen)
-  if (container && gridPrincipal) {
+  if (container && grid) {
     container.classList.remove('hidden');
-    renderizarGridPrincipal(gridPrincipal, datos);
+    grid.innerHTML = data.map(item => {
+      const total = item.totalCapitulos || 12;
+      const capsVistos = Math.max((item.siguienteCapitulo || 1) - 1, 1);
+      
+      return `
+        <a class="continue-card anime-card" href="ver.html?id=${item.id}&episode=${item.siguienteCapitulo}">
+          <div class="card-thumbnail container-img">
+            <img src="${item.portada}" alt="${item.titulo}" onerror="this.src='path/to/default/image.png'">
+            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+            <span class="chapter ep-badge">EP ${item.siguienteCapitulo}</span>
+            <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%"></div></div>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">${item.titulo}</h3>
+            <span class="card-meta">${capsVistos}/${total} eps</span>
+          </div>
+        </a>`;
+    }).join('');
+
+    // Inicializar botones scroll
+    ['prev', 'next'].forEach(dir => {
+      const btn = container.querySelector(`.scroll-btn-${dir}`);
+      if (btn) {
+        btn.style.cssText = 'opacity: 1; pointer-events: auto;';
+        btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 660 : -660, behavior: 'smooth' });
+      }
+    });
   }
 }
 
-// 3. Renderizado del Grid Principal (Diseño de la imagen)
-function renderizarGridPrincipal(container, datos) {
-  container.innerHTML = '';
-  const fragment = document.createDocumentFragment();
-  
-  datos.forEach(item => {
-    // Calculamos el progreso falso o real si tienes el total de capítulos
-    const total = item.totalCapitulos || 12; // Valor por defecto si no existe
-    let capsVistos = (item.siguienteCapitulo || 1) - 1;
-    if (capsVistos === 0) {
-      capsVistos = 1;
-    }
-    const progresoPorcentaje = Math.min((capsVistos / total) * 100, 100);
-
-    const card = document.createElement('a');
-    card.className = 'continue-card anime-card';
-    card.href = `ver.html?id=${item.id}&episode=${item.siguienteCapitulo}`;
-    
-    // Usamos Template Literals para estructurar el componente de forma limpia
-    card.innerHTML = `
-      <div class="card-thumbnail container-img">
-        <img src="${item.portada}" alt="${item.titulo}" onerror="this.src='path/to/default/image.png'">
-        <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-        <span class="chapter ep-badge">EP ${item.siguienteCapitulo}</span>
-        <div class="progress-track">
-          <div class="progress-fill" style="width: ${progresoPorcentaje}%"></div>
-        </div>
-      </div>
-      <div class="card-info">
-        <h3 class="card-title">${item.titulo}</h3>
-        <span class="card-meta">${capsVistos}/${total} eps</span>
-      </div>
-    `;
-    
-    fragment.appendChild(card);
-  });
-  
-  container.appendChild(fragment);
-
-  // Inicializar botones de scroll
-  inicializarBotonesScroll(container);
-}
-
-function inicializarBotonesScroll(container) {
-  // Buscar botones en el header (section-continuar-viendo)
-  const headerSection = document.getElementById('section-continuar-viendo');
-  const prevBtn = headerSection.querySelector('.scroll-btn-prev');
-  const nextBtn = headerSection.querySelector('.scroll-btn-next');
-  
-  if (!prevBtn || !nextBtn) return;
-  
-  const scrollAmount = 660;
-  
-  prevBtn.addEventListener('click', () => {
-    container.scrollBy({
-      left: -scrollAmount,
-      behavior: 'smooth'
-    });
-  });
-  
-  nextBtn.addEventListener('click', () => {
-    container.scrollBy({
-      left: scrollAmount,
-      behavior: 'smooth'
-    });
-  });
-  
-  // Botones siempre visibles
-  prevBtn.style.opacity = '1';
-  prevBtn.style.pointerEvents = 'auto';
-  
-  nextBtn.style.opacity = '1';
-  nextBtn.style.pointerEvents = 'auto';
-}
-
-// Boton de colapsar sidebar
-const collapseBtn = document.getElementById('Collapse-aside');
-if (collapseBtn) {
-  // Recuperar estado guardado al cargar
-
-  collapseBtn.addEventListener('click', () => {
-    document.body.classList.toggle('sidebar-collapsed');
-    // Guardar estado en localStorage
-    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-    localStorage.setItem('sidebarCollapsed', isCollapsed);
-  });
+document.getElementById('Collapse-aside')?.addEventListener('click', () => {
+  document.body.classList.toggle('sidebar-collapsed');
+  localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+});
 
 
 // =========================================
@@ -1772,26 +1599,26 @@ if (collapseBtn) {
   const show = (el) => {
     if (!isLarge || !isCollapsed || !el.closest('.sidebar') || !el.dataset.target) return;
     
-        if (!tooltip) {
-            tooltip = document.createElement('div');
-            tooltip.className = 'custom-tooltip';
+    if (!tooltip) {
+      tooltip = document.createElement('div');
+      tooltip.className = 'custom-tooltip';
       tooltip.style.cssText = 'top:0; left:0; will-change: transform, opacity;';
-            document.body.appendChild(tooltip);
-        }
+      document.body.appendChild(tooltip);
+    }
 
     tooltip.textContent = el.dataset.target.replace(/-/g, ' ');
     active = el;
-        if (rafId) cancelAnimationFrame(rafId);
-        
-        rafId = requestAnimationFrame(() => {
+    if (rafId) cancelAnimationFrame(rafId);
+
+    rafId = requestAnimationFrame(() => {
       const rect = el.getBoundingClientRect();
       tooltip.style.transform = `translate3d(${rect.right + 15}px, ${rect.top + (rect.height - tooltip.offsetHeight)/2}px, 0)`;
       tooltip.classList.add('show');
-        });
-    };
+    });
+  };
 
   window.matchMedia('(min-width: 601px)').addEventListener('change', e => { isLarge = e.matches; if(!isLarge) hide(); });
-
+  
   let lastScroll = 0;
   window.addEventListener('scroll', () => {
     if (performance.now() - lastScroll < 100) return;
@@ -1804,16 +1631,16 @@ if (collapseBtn) {
   document.addEventListener('mouseover', e => { const t = e.target.closest('.menu-item'); if (t && t !== active) show(t); }, { passive: true });
   document.addEventListener('mouseout', e => {
     if (active && (!e.relatedTarget || !active.contains(e.relatedTarget)) && e.target.closest('.menu-item') === active) hide();
-    }, { passive: true });
+  }, { passive: true });
   document.addEventListener('click', hide, { passive: true });
 
   obs = new MutationObserver(() => {
     clearTimeout(timer);
     timer = setTimeout(() => { isCollapsed = document.body.classList.contains('sidebar-collapsed'); if(!isCollapsed) hide(); }, 50);
-    });
+  });
   obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   const cleanup = () => { hide(); clearTimeout(timer); obs.disconnect(); };
-    window.addEventListener('beforeunload', cleanup);
-    window.addEventListener('pagehide', cleanup);
+  window.addEventListener('beforeunload', cleanup);
+  window.addEventListener('pagehide', cleanup);
 })();
