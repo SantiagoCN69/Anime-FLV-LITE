@@ -1295,15 +1295,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- LÓGICA DE NAVEGACIÓN ENTRE SECCIONES ---
   const navigationMap = {
     'Ultimos-Episodios': { left: 'DirectorioJK' },
-    'Mis-Favoritos': { left: 'Ultimos-Episodios', right: 'Viendo' },
-    'Viendo': { left: 'Mis-Favoritos', right: 'Pendientes' },
-    'Pendientes': { left: 'Viendo', right: 'Completados' },
-    'Completados': { left: 'Pendientes', right: 'DirectorioJK' },
-    'DirectorioJK': { left: 'Lab', right: 'Completados' },
+    'Mis-Favoritos': { left: null, right: null },
+    'Viendo': { left: null, right: null },
+    'Pendientes': { left: null, right: null },
+    'Completados': { left: null, right: null },
+    'DirectorioJK': { left: 'Lab', right: 'Ultimos-Episodios' },
     'Lab': { left: 'Populares', right: 'DirectorioJK' },
     'Populares': { left: 'Horarios', right: 'Lab' },
-    'Horarios': { right: 'Populares' },
-    'Continuar-viendo': { left: 'Horarios' }
+    'Horarios': { right: 'Populares', left: 'Continuar-viendo' },
+    'Continuar-viendo': { right: 'Horarios' }
   };
 
   const originalMostrarSeccion = window.mostrarSeccionDesdesearch;
@@ -1330,6 +1330,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       if (Math.abs(dx) > 50 && dy < 35) {
         const target = navigationMap[section.id]?.[dx < 0 ? 'left' : 'right'];
+        // Solo navegar si hay un target válido (no null)
         if (target) {
           history.replaceState(null, '', `?${target}`);
           
@@ -1340,6 +1341,7 @@ document.addEventListener("DOMContentLoaded", () => {
             window.mostrarSeccionDesdesearch();
           }
         }
+        // Si target es null, no hacer nada (no navegar)
       }
     }, { passive: true });
   });
