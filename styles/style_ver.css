@@ -485,10 +485,7 @@ iframe {
   border-top-left-radius: 99px;
   border-bottom-left-radius: 99px;
 }
-.btn-anterior:hover {
-  color: var(--t2);
-  background-color: var(--br);
-}
+
 .btn-siguiente {
   flex-direction: row-reverse;
   background: var(--btn);
@@ -514,12 +511,22 @@ iframe {
   position: relative;
   min-width: 144px;
 }
-.btn-selector-capitulo:hover {
+.btn-selector-capitulo.open {
   background-color: var(--br);
 }
-.btn-siguiente:hover {
+@media (hover: hover) {
+  .btn-selector-capitulo:hover {
+    background-color: var(--br);
+  }
+  .btn-siguiente:hover {
   border-color: var(--p);
 }
+.btn-anterior:hover {
+  color: var(--t2);
+  background-color: var(--br);
+}
+}
+
 .btn-selector-capitulo span {
   font-size: 0.9rem;
   white-space: nowrap;
@@ -550,10 +557,9 @@ iframe {
   display: none;
 }
 .dropdown-titulo {
-  font-size: 0.9rem;
   font-weight: bold;
   color: var(--t1);
-  padding: 10px;
+  padding-bottom: 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid var(--br);
   text-align: start;
@@ -586,10 +592,26 @@ iframe {
   border-color: var(--btn);
   font-weight: bold;
 }
+
 .dropdown-capitulos button.visto {
   background-color: var(--br);
   border-color: var(--btn);
   color: var(--btn);
+  position: relative;
+}
+.dropdown-capitulos button.visto:after {
+  content: "";
+  position: absolute;
+right: 5px;
+top: 3px;
+width: 10px;
+height: 10px;
+background-color: var(--btn);
+-webkit-mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
+mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
+}
+.dropdown-capitulos button.visto.activo:after {
+  background-color: var(--t1);
 }
 .dropdown-capitulos button.visto.activo {
   border-color: var(--btn);
