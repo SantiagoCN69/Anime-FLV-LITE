@@ -815,6 +815,7 @@ justify-content: space-between;
 
 /* Estilo del botón de eliminar (la 'x') */
 .filtro-activo button {
+  cursor: pointer;
   background: none;
   border: none;
   font-size: 20px;
