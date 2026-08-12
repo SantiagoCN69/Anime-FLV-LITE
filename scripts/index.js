@@ -1306,6 +1306,7 @@ document.addEventListener("DOMContentLoaded", () => {
     'Pendientes': { left: null, right: null },
     'Completados': { left: null, right: null },
     'DirectorioJK': { left: 'Lab', right: 'Ultimos-Episodios' },
+    'DirectorioAV1': { left: 'Lab', right: 'Ultimos-Episodios' },
     'Lab': { left: 'Populares', right: 'DirectorioJK' },
     'Populares': { left: 'Horarios', right: 'Lab' },
     'Horarios': { right: 'Populares', left: 'Continuar-viendo' },
@@ -1362,7 +1363,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // =========================================
 const sectionsOrder = [
   'Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes',
-  'Completados', 'DirectorioJK', 'Lab', 'Populares', 'Horarios', 'Continuar-viendo'
+  'Completados', 'DirectorioJK', 'DirectorioAV1', 'Lab', 'Populares', 'Horarios', 'Continuar-viendo'
 ];
 
 const state = { scrolling: false, timer: null, insist: 0, edge: null, lastTime: 0 };
