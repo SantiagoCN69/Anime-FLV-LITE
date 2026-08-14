@@ -682,6 +682,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   main {
     flex-direction: column;
     height: clamp(670px, calc(100dvh - 88px - 3rem), 1000px);
+    height: clamp(670px, calc(calc(var(--vh, 1vh) * 100) - 88px - 3rem), 1000px) !important;
     transition: height .3s;
     margin-inline: 1rem;
     width: calc(100% - 2rem);
@@ -743,3 +744,11 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     display: none;
   }
 }
+/* #prueba10 {
+  background-color: red;
+  height: 100vh;
+  width: 10px;
+  top: 0;
+  left: 0;
+  border-radius: 99px;
+} */
