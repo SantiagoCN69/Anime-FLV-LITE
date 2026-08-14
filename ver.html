@@ -15,11 +15,22 @@
   <script type="module" src="scripts/ver.js" defer></script>
 
   <!-- styles -->
-  <link rel="stylesheet" href="styles/style.css" />
-  <link rel="stylesheet" href="styles/style_ver.css" />
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/style_ver.css">
+  <!-- vlaiaicon pro is el dvh no funciona en weba pp -->
+  <script>
+  function setRealVh() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// Ejecutar inmediatamente al cargar y al redimensionar
+window.addEventListener('DOMContentLoaded', setRealVh);
+window.addEventListener('resize', setRealVh);
+</script>
 </head>
 <body>
-
+<div id="prueba10"></div>
   <nav class="sidebar">
   <ul>
     <li><a href="index.html?Ultimos-Episodios">
