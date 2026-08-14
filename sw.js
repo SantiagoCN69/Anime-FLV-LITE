@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.0';
+const CACHE_VERSION = 'v8.6.1';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -20,7 +20,6 @@ const STATIC_ASSETS = [
   '/horarios.html',
   '/lab.html',
   '/populares.html',
-  '/ver.html',
 
   '/manifest.json',
 
