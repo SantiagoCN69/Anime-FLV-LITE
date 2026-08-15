@@ -1029,7 +1029,7 @@ span {
   .headder-section:not(.headder-section1) svg {
     display: none;
   }
-}
+} */
 section.content-section h2:first-of-type::after {
   color: var(--t1);
   content: attr(data-text);
