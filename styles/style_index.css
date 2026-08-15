@@ -1,3 +1,5 @@
+@import url('fonts.css');
+
 /* seccion continuar viendo */
 /* 1. Si el usuario eligió "Principal" (cv-main), ocultamos el del sidebar */
 body.cv-main #continuar-viendo-sidebar {
@@ -81,8 +83,8 @@ body.cv-sidebar #section-continuar-viendo {
   border-radius: 10px;
   padding: 6px 12px;
   font-size: 14px;
-  font-family: inherit;
-  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
@@ -341,6 +343,7 @@ nav.filtros {
   text-overflow: ellipsis;
   overflow: hidden;
   display: block;
+  font-family: 'DM Sans', sans-serif;
 }
 .btn-filtro-opcion:hover {
   background-color: rgba(var(--bgt), .3);
@@ -440,6 +443,7 @@ nav.filtros {
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .page-button:hover {
@@ -448,7 +452,7 @@ nav.filtros {
 
 .page-button.active {
   background-color: var(--btn);
-  font-weight: bold;
+  font-weight: 600;
 }
 
 
@@ -460,6 +464,7 @@ h3 {
   font-size: 1.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid;
+  font-family: 'Oxanium', sans-serif;
 }
 .favoritos h3{
   color: var(--t1);
@@ -806,7 +811,7 @@ justify-content: space-between;
   color: #f3f4f6; 
   padding: 5px 14px;
   border-radius: 9999px; 
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   font-weight: 500;
   border: 1px solid var(--btn);  
@@ -871,6 +876,7 @@ justify-content: space-between;
   display: block;
   padding: 10px;
   opacity: 0.8;
+  font-family: 'JetBrains Mono', monospace;
 }
 #contenedor-animes {
   display: grid;
@@ -919,7 +925,7 @@ justify-content: space-between;
   font-size: 14px;
   margin: 10px;
   color: var(--t1);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
   height: 2lh;
   display: -webkit-box;
@@ -929,6 +935,7 @@ justify-content: space-between;
   overflow: hidden;
   text-overflow: ellipsis;
   border: none;
+  font-family: 'DM Sans', sans-serif;
 }
 
 #card-synopsis {

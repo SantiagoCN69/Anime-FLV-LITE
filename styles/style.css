@@ -1,3 +1,5 @@
+@import url('fonts.css');
+
 @view-transition {
   navigation: auto;
 }
@@ -30,7 +32,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0 auto;
   background-color: var(--b);
   display: flex;
@@ -117,7 +119,8 @@ header #busqueda{
 }
 
 .title {
-  font-weight: bolder;
+  font-family: 'Oxanium', sans-serif;
+  font-weight: 700;
   letter-spacing: 1px ;
   font-size: 2rem;
   white-space: nowrap;
@@ -150,7 +153,8 @@ header #busqueda{
 .btn-header {
   display: block;
   color: var(--t2);
-  font-weight: 800;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
   font-size: .9rem;
   background-color: transparent;
   border: none;
@@ -180,6 +184,7 @@ header #busqueda{
   border-radius: 12px;
   background-color: transparent;
   color: var(--t1);
+  font-family: 'DM Sans', sans-serif;
   font-size: .9rem;
 }
 #busqueda:focus {
@@ -876,6 +881,7 @@ main {
   gap: 0.5rem;
   margin-bottom: 1.3rem;
   font-size: 1.7rem;
+  font-family: 'Oxanium', sans-serif;
   position: relative;
 }
 .historialh2 {
@@ -883,6 +889,7 @@ main {
 }
 .section-title {
     font-size: 1.7rem;
+    font-family: 'Oxanium', sans-serif;
 }
 
 #header-ultcaps, .headder-section {
@@ -929,7 +936,8 @@ main {
     border-radius: 15px;
     border: none;
     color: var(--t1);
-    font-weight: bold;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;

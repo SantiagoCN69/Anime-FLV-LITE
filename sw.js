@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.1';
+const CACHE_VERSION = 'v8.6.2';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -23,6 +23,7 @@ const STATIC_ASSETS = [
 
   '/manifest.json',
 
+  '/styles/fonts.css',
   '/styles/style.css',
   '/styles/style_index.css',
   '/styles/style_anime.css',
@@ -162,13 +163,27 @@ self.addEventListener('fetch', (event) => {
   //
   // La aplicación siempre obtiene los datos
   // directamente desde la red.
+  //
+  // EXCEPCIÓN: Cachear fuentes de Google Fonts
 
   if (
-    url.hostname.includes('googleapis.com') ||
     url.hostname.includes('firebaseio.com') ||
-    url.hostname.includes('firestore.googleapis.com') ||
+    url.hostname.includes('firestore.googleapis.com')
+  ) {
+    return;
+  }
+
+  // Permitir cacheo de fuentes de Google Fonts
+  if (
+    url.hostname.includes('googleapis.com') ||
     url.hostname.includes('gstatic.com')
   ) {
+    if (url.pathname.includes('css') || url.pathname.includes('font')) {
+      event.respondWith(
+        staleWhileRevalidate(request)
+      );
+      return;
+    }
     return;
   }
 
