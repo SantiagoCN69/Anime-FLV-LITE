@@ -1414,8 +1414,11 @@ justify-content: space-between;
 .hero-btn--primary {
   background: linear-gradient(135deg, var(--btn) 0%, #8b5cf6 100%);
   color: #fff;
+  transition: box-shadow 0.3s ease;
 }
-
+.hero-btn--primary:hover {
+  box-shadow: 0 0 10px var(--btn);
+}
 .hero-btn--primary .hero-btn__icon svg {
   margin-left: 1px;
 }
