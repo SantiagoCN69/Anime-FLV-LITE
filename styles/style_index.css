@@ -1349,7 +1349,7 @@ justify-content: space-between;
   font-weight: 800;
   color: var(--t1);
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
-  max-height: calc(2lh + 2px);
+  max-height: calc(2lh + 1px);
   overflow: hidden;
 }
 
@@ -1560,6 +1560,7 @@ justify-content: space-between;
     line-clamp: 3;
     -webkit-line-clamp: 3;
     min-height: 3lh;
+    max-height: 3lh;
   }
   .hero-slide__content {
     padding: 1.25rem 3rem 3rem 1.25rem;
