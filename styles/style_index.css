@@ -484,11 +484,11 @@ z-index: -1;
   padding: .6rem;
 }
 @media (max-width: 406px) {
-  #svgheaderlab {
+  .svgheaderlab {
     display: none;
   }
   .headerlab span {
-    grid-column: 1;
+    grid-column: 1 !important;
   }
 }
 .Recomendaciones-section-title {
