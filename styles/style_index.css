@@ -471,6 +471,11 @@ nav.filtros {
   border-radius: 15px;
   padding: .6rem;
 }
+@media (max-width: 400px) {
+  #svgheaderlab {
+    display: none;
+  }
+}
 .lab-section-title {
   font-size: 1.8rem;
   font-family: 'Oxanium', sans-serif;
