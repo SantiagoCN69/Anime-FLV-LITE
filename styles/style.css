@@ -1458,6 +1458,10 @@ section.content-section h2:first-of-type::after {
 
 /* Sección de tendencias */
 .tendencias-section {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  flex-wrap: wrap;
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid var(--br);
