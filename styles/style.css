@@ -1390,6 +1390,7 @@ h4 {
 
 .busqueda-item:hover {
   background-color: var(--br);
+  background-color: rgba(var(--bgt), .1);
 }
 
 /* Links de búsqueda */
