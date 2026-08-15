@@ -1313,7 +1313,9 @@ section.content-section h2:first-of-type::after {
   max-height: 400px;
   overflow-y: auto;
 }
-
+h4 {
+  font-family: 'Oxanium', sans-serif;
+}
 /* Scrollbar personalizado */
 .busquedas-recientes-dropdown::-webkit-scrollbar {
   width: 6px;
@@ -1336,6 +1338,9 @@ section.content-section h2:first-of-type::after {
   align-items: center;
   gap: 8px;
   justify-content: space-between;
+  div {
+    gap: 8px;
+  }
 }
 
 .busquedas-titulo svg {

@@ -165,7 +165,7 @@ function renderizarBusquedasRecientes() {
           </clipPath>
         </defs>
       </svg>
-      Búsquedas recientes
+     <h4>Búsquedas recientes</h4>
       </div>
       <button class="btn-borrar-todo" title="Borrar todo">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -214,15 +214,15 @@ function renderizarBusquedasRecientes() {
         <path d="M23 6l-9.5 9.5-5-5L1 18"/>
         <path d="M17 6h6v6"/>
       </svg>
-      Tendencias
+      <h4>Tendencias</h4>
     </div>
     <div class="tendencias-tags">
-      <a href="?q=isekai" class="tendencia-tag">isekai</a>
-      <a href="?q=MAPPA" class="tendencia-tag">MAPPA</a>
-      <a href="?q=shonen" class="tendencia-tag">shonen</a>
-      <a href="?q=romance" class="tendencia-tag">romance</a>
-      <a href="?q=seinen" class="tendencia-tag">seinen</a>
-      <a href="?q=2025" class="tendencia-tag">2025</a>
+      <a href="/index.html?DirectorioJK&genero=isekai" class="tendencia-tag">isekai</a>
+      <a href="/index.html?DirectorioJK&temporada=invierno" class="tendencia-tag">Invierno</a>
+      <a href="/index.html?DirectorioJK&genero=shonen" class="tendencia-tag">shonen</a>
+      <a href="/index.html?DirectorioJK&genero=romance" class="tendencia-tag">romance</a>
+      <a href="/index.html?DirectorioJK&genero=seinen" class="tendencia-tag">seinen</a>
+      <a href="/index.html?DirectorioJK&fecha=2025" class="tendencia-tag">2025</a>
     </div>
   `;
   dropdown.appendChild(tendenciasSection);
