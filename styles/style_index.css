@@ -647,7 +647,7 @@ z-index: -1;
 
 .svg-carga-girando {
   display: block;
-  margin: 135px auto;
+  margin: 120px auto;
   width: 60px;
   height: 60px;
   animation: girar 1s linear infinite;
