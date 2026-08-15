@@ -466,9 +466,12 @@ nav.filtros {
   border-radius: 15px;
   padding: .6rem;
 }
-@media (max-width: 400px) {
+@media (max-width: 406px) {
   #svgheaderlab {
     display: none;
+  }
+  #headerlab span {
+    grid-column: 1;
   }
 }
 .Recomendaciones-section-title {
@@ -594,8 +597,11 @@ nav.filtros {
   margin-top: 1rem;
 }
 
-.sugerencia-fija,
 .sugerencia-aleatoria {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0.5rem 1rem;
   border: 1px solid var(--br);
   border-radius: 20px;
