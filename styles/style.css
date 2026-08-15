@@ -1793,6 +1793,7 @@ margin-top: 10px;
 }
 /* Píldora visual check (Base) */
 .pildora {
+  pointer-events: none;
   position: fixed;
   left: 50%;
   width: max-content;
