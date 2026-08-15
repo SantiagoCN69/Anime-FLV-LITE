@@ -463,7 +463,7 @@ nav.filtros {
   width: 52px;
   height: 52px;
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-  border-radius: 15px;
+  border-radius: 20px;
   padding: .6rem;
 }
 @media (max-width: 406px) {
@@ -554,7 +554,7 @@ nav.filtros {
 #busqueda-personalizada, #filtro-extra {
   min-width: 100%;
   padding: 1rem;
-  border-radius: 15px;
+  border-radius: 20px;
   background: rgba(var(--bgt), .1);
   color: var(--t1);
   font-size: 1rem;
@@ -594,11 +594,13 @@ nav.filtros {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 1rem;
+  margin-block: 1rem;
 }
 
 .sugerencia-aleatoria {
   flex: 1;
+  min-width: 200px;
+  min-height: 56px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -610,7 +612,18 @@ nav.filtros {
   transition: all 0.3s ease;
   color: var(--t1);
 }
+#text-random {
+  background-color: #001A15;
+  display: flex;
+  gap: 10px;
+  border-color: #006B50;
+  color: #006B50;
 
+}
+#text-random:hover{
+  border-color: #00926e;
+  filter: brightness(1.2);
+}
 .sugerencia-fija:hover,
 .sugerencia-aleatoria:hover {
   color: var(--t2);
@@ -635,7 +648,7 @@ nav.filtros {
   gap: 0.5rem;
   padding: 1rem 1.5rem;
   border: none;
-  border-radius: 15px;
+  border-radius: 20px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -686,7 +699,9 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
 }
-
+#text-random::before {
+  background-color: #006B50;
+}
 /* Estilos responsive */
 @media (max-width: 768px) {
   .acciones-fav, .search-container {
@@ -699,6 +714,7 @@ mask: url('../icons/robot-solid.svg') no-repeat center;
     justify-content: center;
   }
 }
+
 /*Populares*/
 
 #icon-populares {
