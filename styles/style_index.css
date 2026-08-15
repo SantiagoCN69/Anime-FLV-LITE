@@ -457,12 +457,7 @@ nav.filtros {
 
 
 /*Recomendaciones*/
-#headerlab {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
+
 
 #svgheaderlab {
   width: 52px;
