@@ -471,7 +471,11 @@ width: calc(100% + 4rem);
 height: 550px;
 z-index: -1;
 }
-
+@media (max-width: 600px) {
+  #fondolab {
+    top: -6rem;
+  }
+}
 #svgheaderlab {
   width: 52px;
   height: 52px;
@@ -483,7 +487,7 @@ z-index: -1;
   #svgheaderlab {
     display: none;
   }
-  #headerlab span {
+  .headerlab span {
     grid-column: 1;
   }
 }
@@ -497,8 +501,8 @@ z-index: -1;
   -webkit-text-fill-color: transparent;
   animation: gradient-text 3s linear infinite;
 }
-.favoritos .Recomendaciones-section-title {
-  margin-block: 1rem;
+.favoritos .headder-section{
+  margin-block: 1.5rem;
 }
 @keyframes gradient-text {
   0% { background-position: 0% center; }
