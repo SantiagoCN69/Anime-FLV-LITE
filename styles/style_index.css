@@ -457,7 +457,20 @@ nav.filtros {
 
 
 /*Recomendaciones*/
-
+#fondolab {
+  background: linear-gradient(
+  to bottom,
+  rgba(124, 58, 237, 0.18) 0%,   /* morado */
+  rgba(236, 72, 153, 0.10) 50%,  /* rosa */
+  var(--b)         /* transparente */
+);
+position: absolute;
+top: -2rem;
+left: -2rem;
+width: calc(100% + 4rem);
+height: 550px;
+z-index: -1;
+}
 
 #svgheaderlab {
   width: 52px;
@@ -552,7 +565,7 @@ nav.filtros {
 }
 
 #busqueda-personalizada, #filtro-extra {
-  min-width: 100%;
+  flex: 1;
   padding: 1rem;
   border-radius: 20px;
   background: rgba(var(--bgt), .1);
@@ -598,9 +611,9 @@ nav.filtros {
 }
 
 .sugerencia-aleatoria {
-  flex: 1;
+  /* flex: 1;
   min-width: 200px;
-  min-height: 56px;
+  min-height: 56px; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -639,9 +652,7 @@ nav.filtros {
   margin-block: 1.5rem;
 }
 
-.btn-generar,
-.btn-agregar {
-  flex: 1;
+.btn-generar {
   justify-content: center;
   display: flex;
   align-items: center;
@@ -679,8 +690,8 @@ nav.filtros {
   mask: url('../icons/arrows-counter-clockwise-bold.svg') no-repeat center;
 }
 .btn-generar::before {
--webkit-mask: url('../icons/robot-solid.svg') no-repeat center;
-mask: url('../icons/robot-solid.svg') no-repeat center;
+-webkit-mask: url('../icons/pencil.svg') no-repeat center;
+mask: url('../icons/pencil.svg') no-repeat center;
 }
 
 .btn-agregar:hover {
