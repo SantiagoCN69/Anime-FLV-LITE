@@ -225,6 +225,17 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     texto.innerHTML = 'Generando... <span id="contador1">100s</span>';
 
     const contador = document.getElementById("contador1");
+
+    // Limpiar contenedor y agregar SVG girando
+    const contenedorFavoritos = document.getElementById('recomendaciones-favoritos');
+    if (contenedorFavoritos) {
+        contenedorFavoritos.innerHTML = '';
+        const svgCarga = document.createElement('img');
+        svgCarga.src = '../icons/arrows-counter-clockwise-bold.svg';
+        svgCarga.className = 'svg-carga-girando';
+        svgCarga.alt = 'Cargando...';
+        contenedorFavoritos.appendChild(svgCarga);
+    }
     
     let count = 100;
     const interval = setInterval(() => {
@@ -296,6 +307,17 @@ if (btnGenerarPersonalizadas) {
         texto.innerHTML = 'Generando... <span id="contador2">100s</span>';
 
         const contador = document.getElementById("contador2");
+
+        // Limpiar contenedor y agregar SVG girando
+        const contenedorPersonalizadas = document.getElementById('recomendaciones-personalizadas');
+        if (contenedorPersonalizadas) {
+            contenedorPersonalizadas.innerHTML = '';
+            const svgCarga = document.createElement('img');
+            svgCarga.src = '../icons/arrows-counter-clockwise-bold.svg';
+            svgCarga.className = 'svg-carga-girando';
+            svgCarga.alt = 'Cargando...';
+            contenedorPersonalizadas.appendChild(svgCarga);
+        }
         
         let count = 100;
         const interval = setInterval(() => {
