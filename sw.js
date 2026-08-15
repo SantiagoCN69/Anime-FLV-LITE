@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.2';
+const CACHE_VERSION = 'v8.6.3';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -178,12 +178,10 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('googleapis.com') ||
     url.hostname.includes('gstatic.com')
   ) {
-    if (url.pathname.includes('css') || url.pathname.includes('font')) {
-      event.respondWith(
-        staleWhileRevalidate(request)
-      );
-      return;
-    }
+    // Cachear cualquier solicitud de fuentes de Google
+    event.respondWith(
+      staleWhileRevalidate(request)
+    );
     return;
   }
 
