@@ -222,7 +222,7 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     const inputFiltro = document.getElementById("filtro-extra");
     const filtroExtra = inputFiltro ? inputFiltro.value.trim() : "";
     
-    texto.innerHTML = 'Generando recomendaciones... <span id="contador1">100s</span>';
+    texto.innerHTML = 'Generando... <span id="contador1">100s</span>';
 
     const contador = document.getElementById("contador1");
     
@@ -293,7 +293,7 @@ const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas
 if (btnGenerarPersonalizadas) {
     btnGenerarPersonalizadas.addEventListener("click", async () => {
         const texto = document.getElementById("textbtngenerarpersonalizada");
-        texto.innerHTML = 'Generando recomendaciones... <span id="contador2">100s</span>';
+        texto.innerHTML = 'Generando... <span id="contador2">100s</span>';
 
         const contador = document.getElementById("contador2");
         
@@ -477,7 +477,6 @@ const textos = [
     "Fantasía oscura y madura."
 ];
 
-// Agregar 5 sugerencias aleatorias al contenedor (reemplazando las existentes)
 const contenedorSugerencias = document.getElementById('sugerencias-busquedas');
 if (contenedorSugerencias) {
     const mezclados = textos.sort(() => Math.random() - 0.5).slice(0, 5);
