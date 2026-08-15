@@ -446,6 +446,25 @@ const textos = [
     "Visuales hermosos, como una obra de arte.",
     "Villanos tan buenos que casi los apoyes."
 ];    
+
+// Agregar 5 sugerencias aleatorias al contenedor (reemplazando las existentes)
+const contenedorSugerencias = document.getElementById('sugerencias-busquedas');
+if (contenedorSugerencias) {
+    // Limpiar contenedor primero
+    contenedorSugerencias.innerHTML = '';
+
+    const mezclados = textos.sort(() => Math.random() - 0.5).slice(0, 5);
+    mezclados.forEach(texto => {
+        const span = document.createElement('span');
+        span.className = 'sugerencia-aleatoria';
+        span.textContent = texto;
+        span.addEventListener('click', () => {
+            document.getElementById('busqueda-personalizada').value = texto;
+            document.getElementById('generar-personalizadas').click();
+        });
+        contenedorSugerencias.appendChild(span);
+    });
+}
       
 const random = Math.floor(Math.random() * textos.length);
 const inputPersonalizado = document.getElementById("busqueda-personalizada");
