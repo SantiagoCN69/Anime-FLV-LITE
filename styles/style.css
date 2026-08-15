@@ -672,7 +672,6 @@ header.search-active .logout-modal {
   height: calc(100% - 1px);
   border-radius: inherit;
   border: 1px solid var(--btn);
-  background-color: var(--br);
   z-index: -2;
   animation: aparecer .3s forwards;
 }
