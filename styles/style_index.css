@@ -471,13 +471,15 @@ nav.filtros {
   0% { background-position: 0% center; }
   100% { background-position: 200% center; }
 }
-h3 {
+#descripcion-personalizadas {
+  display: block;
+  position: static;
+  transform: unset;
+  margin-top: unset;
+  text-align: unset;
   color: var(--t1);
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid;
   font-family: 'Oxanium', sans-serif;
+  margin-bottom: 1.5rem !important;
 }
 .favoritos h3{
   color: var(--t1);
