@@ -476,12 +476,8 @@ z-index: -1;
     top: -6rem;
   }
 }
-#svgheaderlab {
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-  border-radius: 20px;
-  padding: .6rem;
+.svgheaderlab {
+  box-shadow: 0 0 25px 5px rgba(var(--bgt), .1);
 }
 @media (max-width: 406px) {
   .svgheaderlab {
