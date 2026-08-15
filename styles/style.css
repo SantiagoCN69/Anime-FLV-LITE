@@ -1292,7 +1292,9 @@ section.content-section h2:first-of-type::after {
 }
 /* style modal */
 
-/* Búsquedas recientes dropdown */
+/* === BÚSQUEDAS RECIENTES Y TENDENCIAS === */
+
+/* Dropdown principal */
 .busquedas-recientes-dropdown {
   display: flex;
   gap: 8px;
@@ -1312,20 +1314,64 @@ section.content-section h2:first-of-type::after {
   overflow-y: auto;
 }
 
+/* Scrollbar personalizado */
+.busquedas-recientes-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.busquedas-recientes-dropdown::-webkit-scrollbar-thumb {
+  background-color: var(--br);
+  border-radius: 3px;
+}
+
+/* Título de búsquedas recientes */
 .busquedas-titulo {
+  width: 100%;
   font-size: 0.85rem;
-  color: var(--t2);
+  color: var(--t1);
   padding: 5px 10px;
+  padding-right: 0;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-content: space-between;
 }
 
 .busquedas-titulo svg {
+  color: var(--t1);
+}
+
+/* Botón "Borrar todo" */
+.btn-borrar-todo {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--t2);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.btn-borrar-todo svg {
   color: var(--t2);
 }
 
+.btn-borrar-todo:hover {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+}
+
+.btn-borrar-todo:hover svg {
+  color: #ff6b6b;
+}
+
+/* Items de búsqueda */
 .busqueda-item {
   width: 100%;
   display: flex;
@@ -1341,12 +1387,16 @@ section.content-section h2:first-of-type::after {
   background-color: var(--br);
 }
 
+/* Links de búsqueda */
 .busqueda-link {
   display: flex;
   align-items: self-start;
   gap: 10px;
   text-decoration: none;
   width: calc(100% - 36px);
+  transition: background-color 0.2s;
+  border-radius: 6px;
+  padding: 4px;
 }
 
 .busqueda-link img {
@@ -1379,6 +1429,7 @@ section.content-section h2:first-of-type::after {
   opacity: 0.7;
 }
 
+/* Botón de eliminar individual */
 .btn-eliminar-busqueda {
   background: none;
   border: none;
@@ -1392,18 +1443,76 @@ section.content-section h2:first-of-type::after {
   justify-content: center;
 }
 
-.btn-eliminar-busqueda:hover {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #ff6b6b;
+@media (hover: hover) {
+  .btn-eliminar-busqueda {
+    opacity: 0;
+  }
+  .btn-eliminar-busqueda:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #ff6b6b;
+  }
+  .busqueda-item:hover .btn-eliminar-busqueda {
+    opacity: 1;
+  }
 }
 
-.busquedas-recientes-dropdown::-webkit-scrollbar {
-  width: 6px;
+/* Sección de tendencias */
+.tendencias-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--br);
 }
 
-.busquedas-recientes-dropdown::-webkit-scrollbar-thumb {
-  background-color: var(--br);
-  border-radius: 3px;
+.tendencias-titulo {
+  font-size: 0.85rem;
+  color: var(--t1);
+  padding: 5px 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tendencias-titulo svg {
+  color: var(--t1);
+}
+
+.tendencias-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 5px 10px;
+}
+
+.tendencia-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background-color: var(--p);
+  border: 1px solid var(--br);
+  border-radius: 20px;
+  color: var(--t1);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tendencia-tag:hover {
+  background-color: var(--btn);
+  border-color: var(--btn);
+  color: var(--t1);
+}
+
+.tendencia-tag::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M23 6l-9.5 9.5-5-5L1 18'/%3E%3Cpath d='M17 6h6v6'/%3E%3C/svg%3E") no-repeat center / contain;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M23 6l-9.5 9.5-5-5L1 18'/%3E%3Cpath d='M17 6h6v6'/%3E%3C/svg%3E") no-repeat center / contain;
+  opacity: 0.7;
 }
 
 /* Overlay */
