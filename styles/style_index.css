@@ -545,6 +545,7 @@ nav.filtros {
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  position: relative;
 }
 
 #busqueda-personalizada, #filtro-extra {
@@ -555,6 +556,26 @@ nav.filtros {
   color: var(--t1);
   font-size: 1rem;
   border: 1px solid transparent;
+  padding-left: calc(1rem + 20px + 15px);
+}
+.search-container::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  width: 20px;
+  height: 20px;
+  display: block;
+  mask-image: url('../icons/cerebro.svg');
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-image: url('../icons/cerebro.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+  background-color: var(--btn);
+  pointer-events: none;
 }
 #filtro-extra {
   min-width: auto;
