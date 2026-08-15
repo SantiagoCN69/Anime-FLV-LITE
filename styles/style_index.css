@@ -1122,8 +1122,11 @@ justify-content: space-between;
 .anime-count {
   margin-left: 0.5rem;
   min-width: 17px !important;
+  color: var(--btn);
 }
-
+.active .anime-count {
+  color: var(--t1);
+}
 .search-input {
   width: 90%;
   max-width: 500px;
