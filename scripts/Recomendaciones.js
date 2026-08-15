@@ -444,15 +444,42 @@ const textos = [
     "Ciencia ficción intensa y futurista.",
     "Ninjas o espías con estilo.",
     "Visuales hermosos, como una obra de arte.",
-    "Villanos tan buenos que casi los apoyes."
-];    
+    "Villanos tan buenos que casi los apoyes.",
+    "Deportes con competencias intensas.",
+    "Mecha con batallas robóticas épicas.",
+    "Isekai con mundo único y creativo.",
+    "Thriller psicológico que mantenga en vilo.",
+    "Aventuras con amigos y camaradería.",
+    "Gore y horror extremo.",
+    "Ciberpunk con tecnología avanzada.",
+    "Steampunk con máquinas de vapor.",
+    "Post-apocalíptico con supervivencia.",
+    "Superpoderes con batallas épicas.",
+    "Videojuegos con mundo virtual.",
+    "Cocina y comida deliciosa.",
+    "Idols y música pop.",
+    "Detectives resolviendo casos complejos.",
+    "Zombies y apocalipsis.",
+    "Vampiros y criaturas sobrenaturales.",
+    "Magia oscura y hechicería.",
+    "Comedia romántica ligera.",
+    "Drama familiar emotivo.",
+    "Guerra y estrategia militar.",
+    "Piratas y aventuras en el mar.",
+    "Espacio exterior y exploración galáctica.",
+    "Torneos y competiciones.",
+    "Reencarnación en otro mundo.",
+    "Sistema de niveles y habilidades.",
+    "Artes marciales y combate.",
+    "Horror cósmico y Lovecraft.",
+    "Cyberdeportes y competencias futuristas.",
+    "Misterio escolar y detectives juveniles.",
+    "Fantasía oscura y madura."
+];
 
 // Agregar 5 sugerencias aleatorias al contenedor (reemplazando las existentes)
 const contenedorSugerencias = document.getElementById('sugerencias-busquedas');
 if (contenedorSugerencias) {
-    // Limpiar contenedor primero
-    contenedorSugerencias.innerHTML = '';
-
     const mezclados = textos.sort(() => Math.random() - 0.5).slice(0, 5);
     mezclados.forEach(texto => {
         const span = document.createElement('span');
@@ -465,7 +492,7 @@ if (contenedorSugerencias) {
         contenedorSugerencias.appendChild(span);
     });
 }
-      
+
 const random = Math.floor(Math.random() * textos.length);
 const inputPersonalizado = document.getElementById("busqueda-personalizada");
 if(inputPersonalizado) {
