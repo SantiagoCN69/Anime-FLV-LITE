@@ -457,8 +457,23 @@ nav.filtros {
 
 
 /*LAB*/
-#Lab .section-title {
+#headerlab {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 1rem;
+}
+
+#svgheaderlab {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  border-radius: 15px;
+  padding: .6rem;
+}
+.lab-section-title {
+  font-size: 1.8rem;
+  font-family: 'Oxanium', sans-serif;
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 50%, var(--btn) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -466,7 +481,9 @@ nav.filtros {
   -webkit-text-fill-color: transparent;
   animation: gradient-text 3s linear infinite;
 }
-
+.favoritos .lab-section-title {
+  margin-block: 1rem;
+}
 @keyframes gradient-text {
   0% { background-position: 0% center; }
   100% { background-position: 200% center; }
