@@ -103,7 +103,7 @@ const sectionConfig = {
   'Continuar-viendo': { flag: () => continuarViendoCargado, setFlag: () => { continuarViendoCargado = true; }, load: () => cargarContinuarViendo() },
   'DirectorioAV1': { flag: () => directorioAV1Cargado, setFlag: () => { directorioAV1Cargado = true; }, load: () => cargarFetch("DirectorioAV1") },
   'DirectorioJK': { flag: () => directorioJkCargado, setFlag: () => { directorioJkCargado = true; }, load: () => cargarFetch("DirectorioJK") },
-  'Lab': { flag: () => labCargado, setFlag: () => { labCargado = true; }, load: () => cargarFetch("lab") },
+  'Recomendaciones': { flag: () => labCargado, setFlag: () => { labCargado = true; }, load: () => cargarFetch("Recomendaciones") },
   'Populares': { flag: () => popularesCargados, setFlag: () => { popularesCargados = true; }, load: () => cargarFetch("populares") },
   'Horarios': { flag: () => horariosCargados, setFlag: () => { horariosCargados = true; }, load: () => cargarFetch("horarios") }
 };
@@ -1305,10 +1305,10 @@ document.addEventListener("DOMContentLoaded", () => {
     'Viendo': { left: null, right: null },
     'Pendientes': { left: null, right: null },
     'Completados': { left: null, right: null },
-    'DirectorioJK': { left: 'Lab', right: 'Ultimos-Episodios' },
-    'DirectorioAV1': { left: 'Lab', right: 'Ultimos-Episodios' },
-    'Lab': { left: 'Populares', right: 'DirectorioJK' },
-    'Populares': { left: 'Horarios', right: 'Lab' },
+    'DirectorioJK': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
+    'DirectorioAV1': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
+    'Recomendaciones': { left: 'Populares', right: 'DirectorioJK' },
+    'Populares': { left: 'Horarios', right: 'Recomendaciones' },
     'Horarios': { right: 'Populares', left: 'Continuar-viendo' },
     'Continuar-viendo': { right: 'Horarios' }
   };
@@ -1363,7 +1363,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // =========================================
 const sectionsOrder = [
   'Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes',
-  'Completados', 'DirectorioJK', 'DirectorioAV1', 'Lab', 'Populares', 'Horarios', 'Continuar-viendo'
+  'Completados', 'DirectorioJK', 'DirectorioAV1', 'Recomendaciones', 'Populares', 'Horarios', 'Continuar-viendo'
 ];
 
 const state = { scrolling: false, timer: null, insist: 0, edge: null, lastTime: 0 };

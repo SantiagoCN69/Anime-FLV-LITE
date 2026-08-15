@@ -456,7 +456,7 @@ nav.filtros {
 }
 
 
-/*LAB*/
+/*Recomendaciones*/
 #headerlab {
   display: flex;
   align-items: center;
@@ -476,7 +476,7 @@ nav.filtros {
     display: none;
   }
 }
-.lab-section-title {
+.Recomendaciones-section-title {
   font-size: 1.8rem;
   font-family: 'Oxanium', sans-serif;
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 50%, var(--btn) 100%);
@@ -486,7 +486,7 @@ nav.filtros {
   -webkit-text-fill-color: transparent;
   animation: gradient-text 3s linear infinite;
 }
-.favoritos .lab-section-title {
+.favoritos .Recomendaciones-section-title {
   margin-block: 1rem;
 }
 @keyframes gradient-text {
@@ -512,7 +512,7 @@ nav.filtros {
   border-color: var(--btn);
 }
 
-.grid-animes.lab {
+.grid-animes.Recomendaciones {
   padding-right: 30px;
  display: flex !important;
  width: fit-content;
@@ -521,27 +521,27 @@ nav.filtros {
  overflow-x: auto;
  padding-block: 13px;
 }
-.grid-animes.lab::-webkit-scrollbar {
+.grid-animes.Recomendaciones::-webkit-scrollbar {
   height: 9px;
 }
-.grid-animes.lab::-webkit-scrollbar-thumb {
+.grid-animes.Recomendaciones::-webkit-scrollbar-thumb {
   background-color: var(--p);
   border-radius: 7px;
 }
-.grid-animes.lab .anime-card {
+.grid-animes.Recomendaciones .anime-card {
   flex: 1;
   min-width: 180px;
   max-width: 180px;
   text-align: center !important;
 }
-.anime-card.lab-card.active {
+.anime-card.Recomendaciones-card.active {
   transform: translateY(-5px);
   border: 1px solid var(--btn);
 }
 .carga {
   border: 1px solid var(--br);
 }
-.grid-animes.lab .container-img{
+.grid-animes.Recomendaciones .container-img{
   aspect-ratio: 1/2;
 }
 

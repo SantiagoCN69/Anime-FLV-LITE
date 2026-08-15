@@ -171,7 +171,7 @@ function crearAnimeCard(anime) {
         animeId = anime.title?.toLowerCase().replace(/\s+/g, '-');
     }
     const div = document.createElement('div');
-    div.className = 'anime-card lab-card';
+    div.className = 'anime-card Recomendaciones-card';
     
     let ratingHtml = '';
     if (anime.rating) {
@@ -467,7 +467,7 @@ if (btnGenerarPersonalizadas) {
 }
 
 // Scroll horizontal
-const contenedores = document.querySelectorAll(".grid-animes.lab");
+const contenedores = document.querySelectorAll(".grid-animes.Recomendaciones");
 contenedores.forEach((contenedor) => {
     contenedor.addEventListener('wheel', (evento) => {
         if (evento.deltaY !== 0) {

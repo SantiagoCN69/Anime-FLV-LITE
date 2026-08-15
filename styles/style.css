@@ -171,7 +171,7 @@ header #busqueda{
   background-color: var(--t1);
 }
 
-#btn-lab { 
+#btn-Recomendaciones { 
   display: block;
 }
 
@@ -606,7 +606,7 @@ header.search-active .logout-modal {
   .content-section {margin: 0 1rem 2rem 1rem !important;}
   #indexpagination {display: flex;}
   .indexbtnmovil {display: none !important;}
-  #btn-lab {display: none;}
+  #btn-Recomendaciones {display: none;}
   #btn-directorio2 {display: none;}
   #btn-horarios {display: none;}
 }
