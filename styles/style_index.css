@@ -1349,7 +1349,7 @@ justify-content: space-between;
   font-weight: 800;
   color: var(--t1);
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
-  max-height: calc(2lh + 3px);
+  max-height: calc(2lh + 2px);
   overflow: hidden;
 }
 
