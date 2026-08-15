@@ -1025,7 +1025,7 @@ span {
 .headder-section {
   grid-template-rows: 1fr;
 }
-@media screen and (max-width: 734px) {
+/* @media screen and (max-width: 734px) {
   .headder-section:not(.headder-section1) svg {
     display: none;
   }
