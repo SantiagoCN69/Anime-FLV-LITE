@@ -1127,7 +1127,10 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
 
   } catch (error) {
       console.error('Error al cargar favoritos:', error);
+      // Si hay cache, no mostrar error offline
+      if (!cachedData || cachedData.length === 0) {
       container.innerHTML = '<p>Error al cargar los favoritos</p>';
+      }
   } finally {
     cargando.delete(cargaKey);
   }
