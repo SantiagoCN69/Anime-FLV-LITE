@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.5';
+const CACHE_VERSION = 'v8.6.6';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -14,7 +14,6 @@ const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/anime',
   '/directorioav1.html',
   '/directoriojk.html',
   '/horarios.html',
