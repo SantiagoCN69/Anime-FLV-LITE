@@ -481,6 +481,7 @@ header.search-active .logout-modal {
 }
 
 .sidebar ul {
+  width: calc(100% - 4px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
