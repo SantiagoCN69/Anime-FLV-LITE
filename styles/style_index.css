@@ -668,9 +668,11 @@ z-index: -1;
 @keyframes girar {
   from {
     transform: translateX(30px) rotate(0deg);
+    filter: brightness(0.3) invert(1);
   }
   to {
     transform: translateX(30px) rotate(-360deg);
+    filter: brightness(1.1) invert(1);
   }
 }
 
