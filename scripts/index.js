@@ -1193,7 +1193,6 @@ function cargarFetch(direccion) {
 }
 
 function centrarElementoEnVista(seccionId, smooth = true) {
-  console.log("centrarElementoEnVista", seccionId);
   const contenedor = document.getElementById("indexpagination");
   const elemento = contenedor?.querySelector(`[data-target="${seccionId}"]`);
   if (!contenedor || !elemento) return;
