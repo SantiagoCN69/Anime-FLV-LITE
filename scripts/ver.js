@@ -3,7 +3,7 @@ const animeId = params.get("id");
 const episodeNumber = params.get("episode");
 const btnVolver = document.getElementById("btn-volver-anime");
 const tituloAnime = document.getElementById("titulo-anime");
-btnVolver.href = `anime.html?id=${animeId}`;
+btnVolver.href = `/anime?id=${animeId}`;
 
 document.title = "AniZen - " + animeId + " - " + episodeNumber;
 
@@ -898,7 +898,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}`);
+  history.replaceState({}, "", `/ver?id=${animeId}&episode=${ep.number}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;

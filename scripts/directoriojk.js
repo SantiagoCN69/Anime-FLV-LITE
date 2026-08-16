@@ -331,7 +331,7 @@ const renderAnime = (animes) => {
     div.className = "anime-card anime-card-jk";
 
       div.innerHTML = `
-        <a href="/anime.html?id=${slug(a.title)}">
+        <a href="/anime?id=${slug(a.title)}">
         <div class="container-img">
           <img class="cover" src="${a.image}" alt="${a.title}">
           <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">

@@ -67,7 +67,7 @@ function createAnimeCard(anime, eslink) {
     if (anime.type) {typeHtml = `<span class="type supder">${anime.type}</span>`;}
     
     div.innerHTML = `
-<a href="${eslink ? 'anime.html?id=' + formatAnimeId(anime.title) : '#'}">
+<a href="${eslink ? '/anime?id=' + formatAnimeId(anime.title) : '#'}">
 
       <div class="container-img">
         <img src="${anime.images.webp.image_url}" class="cover" alt="${anime.title}">

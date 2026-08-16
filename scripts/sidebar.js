@@ -144,7 +144,7 @@ function handleSwipeGesture() {
 function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id, totalCapitulos }) {
   const btn = document.createElement('a');
   btn.className = 'btn-siguiente-capitulo';
-  btn.href = `ver.html?id=${id}&episode=${siguienteCapitulo}`;
+  btn.href = `/ver?id=${id}&episode=${siguienteCapitulo}`;
 
   const img = document.createElement('img');
   img.src = portada;

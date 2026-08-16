@@ -194,7 +194,7 @@ function crearAnimeCard(anime) {
         if (typeof aplicarViewTransition === "function") {
             aplicarViewTransition(animeId, ratingHtml);
         }
-        window.location.href = `anime.html?id=${animeId}`;
+        window.location.href = `/anime?id=${animeId}`;
     });
         
     return div;
@@ -265,18 +265,18 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     const animesCache = cacheActual?.animes || [];
     const nombresCache = animesCache.map(a => a.title || a.id);
     const nombresVistos = vistos.map(v => v.nombre || v.titulo || v.id);
-    
+
     const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])].join(', ');
 
     // Construir el prompt incluyendo las especificaciones extras si existen
     let prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} `;
-    
+
     if (filtroExtra) {
         prompt += `Además, ten muy en cuenta estas especificaciones extras para la recomendación: ${filtroExtra}. `;
     }
-    
+
     prompt += `Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista`;
-    
+
     // Esperamos a que la IA responda para luego limpiar
     await enviarPrompt(prompt, "favoritos");
 
@@ -318,7 +318,7 @@ if (btnGenerarPersonalizadas) {
             svgCarga.alt = 'Cargando...';
             contenedorPersonalizadas.appendChild(svgCarga);
         }
-        
+
         let count = 100;
         const interval = setInterval(() => {
           count--;

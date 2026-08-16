@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('a');
   btn.className = 'btn-siguiente-capitulo';
-  btn.href = `ver.html?id=${itemData.id}&episode=${itemData.siguienteCapitulo}`;
+  btn.href = `/ver?id=${itemData.id}&episode=${itemData.siguienteCapitulo}`;
   
   const portada = document.createElement('img');
   portada.src = itemData.portada;
@@ -447,7 +447,7 @@ function createAnimeCard(anime, siguienteEpisodioUrl) {
     let chapterHtml = ''; 
     let estadoHtml = '';
     let ratingHtml = '';
-    let linkbase =  `<a href="anime.html?id=${anime.id}" id="anime-${anime.id}">`;
+    let linkbase =  `<a href="/anime?id=${anime.id}" id="anime-${anime.id}">`;
   
     div.className = 'anime-card';
     div.dataset.id = anime.id; // ¡CLAVE PARA EL FLIP!
@@ -461,7 +461,7 @@ function createAnimeCard(anime, siguienteEpisodioUrl) {
     }
     if (anime.rating) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;}
     
-    if (siguienteEpisodioUrl) {linkbase = `<a href="ver.html?id=${anime.id}&episode=${siguienteEpisodioUrl}">`;
+    if (siguienteEpisodioUrl) {linkbase = `<a href="/ver?id=${anime.id}&episode=${siguienteEpisodioUrl}">`;
     }
     div.innerHTML = `
     ${linkbase}
@@ -619,8 +619,8 @@ const getEstadoBadge = (estado) => {
 
 function buildHeroSlide(anime, index) {
   const id = slugFromTitle(anime.title);
-  const url1 = `anime.html?id=${id}`;
-  const url2 = `ver.html?id=${id}&episode=1`;
+  const url1 = `/anime?id=${id}`;
+  const url2 = `/ver?id=${id}&episode=1`;
   const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
 
   const badges = [
@@ -1551,7 +1551,7 @@ function inicializarContinuarViendo() {
       const capsVistos = Math.max((item.siguienteCapitulo || 1) - 1, 1);
       
       return `
-        <a class="continue-card anime-card" href="ver.html?id=${item.id}&episode=${item.siguienteCapitulo}">
+        <a class="continue-card anime-card" href="/ver?id=${item.id}&episode=${item.siguienteCapitulo}">
           <div class="card-thumbnail container-img">
             <img src="${item.portada}" alt="${item.titulo}" onerror="this.src='path/to/default/image.png'">
             <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">

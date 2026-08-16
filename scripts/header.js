@@ -185,7 +185,7 @@ function renderizarBusquedasRecientes() {
     const item = document.createElement('div');
     item.className = 'busqueda-item';
     item.innerHTML = `
-      <a href="anime.html?id=${anime.id}" class="busqueda-link">
+      <a href="/anime?id=${anime.id}" class="busqueda-link">
         <img src="${anime.cover}" alt="${anime.title}">
         <div class="busqueda-info">
           <span class="busqueda-titulo">${anime.title}</span>
@@ -217,12 +217,12 @@ function renderizarBusquedasRecientes() {
       <h4>Tendencias</h4>
     </div>
     <div class="tendencias-tags">
-      <a href="/index.html?DirectorioJK&genero=isekai" class="tendencia-tag">isekai</a>
-      <a href="/index.html?DirectorioJK&temporada=invierno" class="tendencia-tag">Invierno</a>
-      <a href="/index.html?DirectorioJK&genero=shonen" class="tendencia-tag">shonen</a>
-      <a href="/index.html?DirectorioJK&genero=romance" class="tendencia-tag">romance</a>
-      <a href="/index.html?DirectorioJK&genero=seinen" class="tendencia-tag">seinen</a>
-      <a href="/index.html?DirectorioJK&fecha=2025" class="tendencia-tag">2025</a>
+      <a href="/?DirectorioJK&genero=isekai" class="tendencia-tag">isekai</a>
+      <a href="/?DirectorioJK&temporada=invierno" class="tendencia-tag">Invierno</a>
+      <a href="/?DirectorioJK&genero=shonen" class="tendencia-tag">shonen</a>
+      <a href="/?DirectorioJK&genero=romance" class="tendencia-tag">romance</a>
+      <a href="/?DirectorioJK&genero=seinen" class="tendencia-tag">seinen</a>
+      <a href="/?DirectorioJK&fecha=2025" class="tendencia-tag">2025</a>
     </div>
   `;
   dropdown.appendChild(tendenciasSection);
@@ -252,7 +252,7 @@ function crearAnimeCard(anime) {
   div.className = 'anime-card';
   div.style.setProperty('--cover', `url(${coverImage})`);
   div.innerHTML = `
-    <a href="anime.html?id=${animeId}" id="anime-${animeId}">
+    <a href="/anime?id=${animeId}" id="anime-${animeId}">
       <div class="container-img">
         <img src="${coverImage}" class="cover" alt="${anime.title || anime.name || 'anime'}">
         <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -402,7 +402,7 @@ function mostrarResultados(data, searchTerm, searchId) {
 
 // === REDIRECCIÓN ===
 function ver(id) {
-  location.href = `anime.html?id=${id}`;
+  location.href = `/anime?id=${id}`;
 }
 
 // === BÚSQUEDA ===

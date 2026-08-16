@@ -61,7 +61,7 @@ const renderInitialGrid = () => {
     d.animes.forEach(a => {
       const div = document.createElement("a");
       div.className = "anime-card anime-card-schedule hover-touch";
-      div.href = `/anime.html?id=${slug(a.title)}`;
+      div.href = `/anime?id=${slug(a.title)}`;
       div.dataset.day = d.day;
       div.dataset.title = a.title.toLowerCase();
 

@@ -74,7 +74,7 @@ function crearAnimeCardResultados(anime) {
         : (anime.id || anime.title?.toLowerCase().replace(/\s+/g, '-'));
 
     div.innerHTML = `
-        <a href="anime.html?id=${urlPart}" id="anime-${urlPart}">
+        <a href="/anime?id=${urlPart}" id="anime-${urlPart}">
         <div class="container-img">
             <img src="${coverImage}" class="cover" alt="${anime.title}">
             <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
