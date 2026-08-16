@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>AniZen - Anime Details</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="icons/icon3.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="icons/icon3.png">
   <!-- scripts -->
   <script src="scripts/tema.js"></script>
   <script type="module" src="scripts/header.js" defer></script>
@@ -13,9 +13,9 @@
   <script type="module" src="scripts/anime.js" defer></script>
   <script type="module" src="scripts/sidebar.js" defer></script>
   <!-- styles -->
-  <link rel="stylesheet" href="styles/fonts.css" />
-  <link rel="stylesheet" href="styles/style.css" />
-  <link rel="stylesheet" href="styles/style_anime.css" />
+  <link rel="stylesheet" href="styles/fonts.css">
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/style_anime.css">
 </head>
 <body>
 
@@ -55,7 +55,7 @@
 <path d="M32.315 21.5085V35.8803H44.8903M3.57114 32.2874C3.57114 48.162 16.4403 61.0311 32.315 61.0311C48.1894 61.0311 61.0585 48.162 61.0585 32.2874C61.0585 16.4127 48.1894 3.5437 32.315 3.5437C16.4403 3.5437 3.57114 16.4127 3.57114 32.2874Z" stroke="currentColor" style="stroke:currentColor;stroke-opacity:1;" stroke-width="3.96124" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 
-                <span></span>Pendientes</span></a></li>
+                <span>Pendientes</span></a></li>
               <li><a href="index.html?Completados">
 <svg width="65" height="65" viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M19.6628 32.2854L29.2053 41.8278L45.1092 22.7429M61.0135 32.2854C61.0135 48.096 48.1964 60.9127 32.386 60.9127C16.5756 60.9127 3.75856 48.096 3.75856 32.2854C3.75856 16.4749 16.5756 3.65796 32.386 3.65796C48.1964 3.65796 61.0135 16.4749 61.0135 32.2854Z" stroke="currentColor" style="stroke:currentColor;stroke-opacity:1;" stroke-width="3.81699" stroke-linecap="round" stroke-linejoin="round"/>
@@ -103,10 +103,10 @@
 
     <div class="search">
         <input autocomplete="off" type="text" id="busqueda" placeholder="Buscar anime...">
-        <button id="btn-close-search" title="Cerrar búsqueda"></button>
+        <button type="button" id="btn-close-search" title="Cerrar búsqueda" aria-label="Cerrar búsqueda"></button>
     </div>
     <div>
-      <button type="button" id="btn-search" title="Buscar anime"></button>
+      <button type="button" id="btn-search" title="Buscar anime" aria-label="Buscar anime"></button>
     <button disabled type="button" id="btn-login" class="nouser" style="view-transition-name: login-button">
       <span>Login</span>
     </button>
@@ -125,7 +125,7 @@
       }
     </script>
 
-    <button type="button" id="menu-toggle" title="Menú">
+    <button type="button" id="menu-toggle" title="Menú" aria-label="Menú">
       <span></span>
       <span></span>
       <span></span>
@@ -135,8 +135,7 @@
 
 <button type="button" id="btn-volver" title="Volver">
   <svg fill="#fff" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M222.927 580.115l301.354 328.512c24.354 28.708 20.825 71.724-7.883 96.078s-71.724 20.825-96.078-7.883L19.576 559.963a67.846 67.846 0 01-13.784-20.022 68.03 68.03 0 01-5.977-29.488l.001-.063a68.343 68.343 0 017.265-29.134 68.28 68.28 0 011.384-2.6 67.59 67.59 0 0110.102-13.687L429.966 21.113c25.592-27.611 68.721-29.247 96.331-3.656s29.247 68.721 3.656 96.331L224.088 443.784h730.46c37.647 0 68.166 30.519 68.166 68.166s-30.519 68.166-68.166 68.166H222.927z"></path></g></svg>Volver</button>
-  
-  
+
   <main class="anime-details">
     <section class="anime-container1">
       <div id="portadacarga"></div>
@@ -157,7 +156,7 @@
     <section class="anime-container2">
 
       <h1 id="titulo" class="anime-title">
-        <span id="titulocargando"></span>
+        <span id="titulocargando">Cargando...</span>
       </h1>
       <script>
         document.getElementById('titulo').style.setProperty('view-transition-name', "title" + urlPart);
@@ -182,16 +181,16 @@
         <span id="progreso-text">0%</span>
       </div>
       <div  id="botones-estados-sp">
-      <button type="button" class="btn-estado" title="Favorito" id="btn-fav" data-text="Favorito"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg></button>
+      <button type="button" class="btn-estado" title="Favorito" id="btn-fav" data-text="Favorito" aria-label="Favorito"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg></button>
 
-  
-      <button type="button" class="btn-estado" title="Viendo" id="btn-viendo" data-text="Viendo">
+
+      <button type="button" class="btn-estado" title="Viendo" id="btn-viendo" data-text="Viendo" aria-label="Viendo">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
       </button>
-      <button type="button" class="btn-estado" title="Pendiente" id="btn-pendiente" data-text="Pendiente">
+      <button type="button" class="btn-estado" title="Pendiente" id="btn-pendiente" data-text="Pendiente" aria-label="Pendiente">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 7V12L14.5 10.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
       </button>
-      <button type="button" class="btn-estado" id="btn-visto" data-text="Visto">
+      <button type="button" class="btn-estado" id="btn-visto" data-text="Visto" aria-label="Visto">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.608"></circle> <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.608" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
       </button>
     </div>
@@ -199,18 +198,18 @@
     <span> Sinopsis</span>
     <p id="descripcion" class="anime-description"></p>
   </section>
-  
+
   <section class="anime-container3">
         <div class="header-caps">
           <span id="titulo-lista-caps"> Lista de episodios</span>
           <div>
-          <button type="button" id="btn-invertir-caps" title="Invertir orden">
+          <button type="button" id="btn-invertir-caps" title="Invertir orden" disabled aria-label="Invertir orden">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7.55228 5 8 5.44772 8 6V15.5858L10.2929 13.2929C10.6834 12.9024 11.3166 12.9024 11.7071 13.2929C12.0976 13.6834 12.0976 14.3166 11.7071 14.7071L7.70711 18.7071C7.31658 19.0976 6.68342 19.0976 6.29289 18.7071L2.29289 14.7071C1.90237 14.3166 1.90237 13.6834 2.29289 13.2929C2.68342 12.9024 3.31658 12.9024 3.70711 13.2929L6 15.5858V6C6 5.44772 6.44772 5 7 5ZM16.2929 5.29289C16.6834 4.90237 17.3166 4.90237 17.7071 5.29289L21.7071 9.29289C22.0976 9.68342 22.0976 10.3166 21.7071 10.7071C21.3166 11.0976 20.6834 11.0976 20.2929 10.7071L18 8.41421V18C18 18.5523 17.5523 19 17 19C16.4477 19 16 18.5523 16 18V8.41421L13.7071 10.7071C13.3166 11.0976 12.6834 11.0976 12.2929 10.7071C11.9024 10.3166 11.9024 9.68342 12.2929 9.29289L16.2929 5.29289Z" fill="currentColor"></path> </g></svg>
           </button>
-          <button type="button" id="btn-search-capitulo" title="Buscar capítulo"></button>
+          <button type="button" id="btn-search-capitulo" title="Buscar capítulo" aria-label="Buscar capítulo"></button>
           <div class="search-caps">
-            <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo..." />
-            <button id="btn-close-search-capitulo" title="Cerrar búsqueda"></button>
+            <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo...">
+            <button type="button" id="btn-close-search-capitulo" title="Cerrar búsqueda" aria-label="Cerrar búsqueda"></button>
           </div>
           </div>
         </div>
