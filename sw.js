@@ -52,6 +52,7 @@ const STATIC_ASSETS = [
   '/img/cat.png',
   '/icons/eye-solid.svg',
   '/icons/eye-slash-solid.svg',
+  '/icons/arrows-counter-clockwise-bold',
 ];
 
 // ─────────────────────────────────────────────
