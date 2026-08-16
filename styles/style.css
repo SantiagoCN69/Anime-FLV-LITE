@@ -1910,6 +1910,10 @@ margin-top: 10px;
 }
 .sidebar-collapsed .sidebar span {
   opacity: 0;
+  pointer-events: none;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none;     /* IE 10 y Edge antiguo */
+  user-select: none;
 }
 .sidebar svg {
   transition: width 0.3s ease, height 0.3s ease;
