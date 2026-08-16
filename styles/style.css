@@ -680,6 +680,7 @@ header.search-active .logout-modal {
 #indexpagination.top {
   top: 88px;
   transition-duration: 0.1s;
+  background: transparent !important;
 }
 
 /* ================= FLOATING ================= */
