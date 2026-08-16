@@ -1032,14 +1032,14 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
     if (verificarYLimpiarCacheBackground(cacheKey, cachedData, 'portada', null, true)) {
     } else {
       agregarAnimesAlContenedor(cachedData, container);
-      h2.dataset.text = "Disponibles: " + cachedData.length;
+      h2.dataset.text = cachedData.length;
     }
   }
 
   try {
       const Doc = await getDoc(DocRef);
       let titulos = Doc.exists() ? [...(Doc.data().animes || [])].filter(titulo => titulo != null).reverse() : [];
-      h2.dataset.text = "Disponibles: " + titulos.length;
+      h2.dataset.text = titulos.length;
 
       if (titulos.length === 0) {
           container.innerHTML = '<p>No tienes animes en ' + container.id + '</p>';
