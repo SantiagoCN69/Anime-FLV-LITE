@@ -1,0 +1,280 @@
+/* Estilos específicos para la página 404 */
+
+.error-404 {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.error-container {
+    text-align: center;
+    max-width: 600px;
+    z-index: 2;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-visual {
+    position: relative;
+    margin: 0 auto 2rem;
+    width: 200px;
+    height: 200px;
+}
+
+.error-svg {
+    width: 100%;
+    height: 100%;
+    color: var(--btn);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.error-code {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    font-weight: 700;
+    font-family: 'Oxanium', sans-serif;
+    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(var(--bgt), 0.3);
+}
+
+.error-title {
+    font-size: 2rem;
+    font-family: 'Oxanium', sans-serif;
+    color: var(--t1);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.error-description {
+    color: var(--t2);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.btn-primary, .btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    color: var(--t1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(var(--bgt), 0.3);
+}
+
+.btn-secondary {
+    background-color: var(--p);
+    color: var(--t1);
+    border: 1px solid var(--br);
+}
+
+.btn-secondary:hover {
+    background-color: var(--btn);
+    border-color: var(--btn);
+    transform: translateY(-2px);
+}
+
+.btn-primary svg, .btn-secondary svg {
+    width: 20px;
+    height: 20px;
+}
+
+.error-suggestions {
+    background-color: var(--p);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--br);
+    text-align: left;
+}
+
+.error-suggestions h3 {
+    color: var(--t1);
+    font-family: 'Oxanium', sans-serif;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.error-suggestions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.error-suggestions li {
+    color: var(--t2);
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.5;
+}
+
+.error-suggestions li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--btn);
+    font-weight: bold;
+}
+
+/* Elementos decorativos flotantes */
+.error-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.floating-element {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-1 {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-2 {
+    width: 60px;
+    height: 60px;
+    top: 60%;
+    right: 15%;
+    animation-delay: 2s;
+}
+
+.floating-3 {
+    width: 80px;
+    height: 80px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(180deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .error-404 {
+        padding: 1rem;
+    }
+    
+    .error-container {
+        max-width: 100%;
+    }
+    
+    .error-visual {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .error-code {
+        font-size: 3rem;
+    }
+    
+    .error-title {
+        font-size: 1.5rem;
+    }
+    
+    .error-description {
+        font-size: 1rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .floating-element {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-visual {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .error-code {
+        font-size: 2.5rem;
+    }
+    
+    .error-title {
+        font-size: 1.3rem;
+    }
+    
+    .error-suggestions {
+        padding: 1rem;
+    }
+}
