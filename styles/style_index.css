@@ -660,7 +660,7 @@ z-index: -1;
     transform: translateX(30px) rotate(0deg);
   }
   to {
-    transform: translateX(30px) rotate(360deg);
+    transform: translateX(30px) rotate(-360deg);
   }
 }
 
