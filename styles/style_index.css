@@ -5,13 +5,18 @@
 body.cv-main #continuar-viendo-sidebar {
   display: none !important;
 }
-
 /* 2. Si el usuario eligió "Lateral" (cv-sidebar), ocultamos el principal */
 body.cv-sidebar #section-continuar-viendo {
-  display: none !important;
+  /* display: none !important; */
+  height: 0px !important;
+  margin-bottom: 0 !important;
 }
-
-/* 3. Para "Ambas" (cv-ambas), no ponemos "display: none" a ninguno, 
+#section-continuar-viendo {
+  transition: height 0.3s ease-in-out, margin-bottom 0.3s ease-in-out;
+  overflow: hidden;
+  height: 250px;
+}
+/* 3. Para "Ambas" (cv-ambas), no ponemos "display: none" a ninguno,
       por lo que se mostrarán los dos normalmente. */
 .ver-mas-btn {
     display: block;
@@ -201,7 +206,7 @@ body.cv-sidebar #section-continuar-viendo {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;   
+  gap: 5px;
   padding: 10px;
   border-radius: 8px;
   background-color: var(--p);
@@ -398,7 +403,7 @@ nav.filtros {
     pointer-events: auto;
     max-height: 700px;
   }
-} 
+}
 
 #resultados, #resultados-av1, #populares {
   position: relative;
@@ -730,7 +735,7 @@ mask: url('../icons/pencil.svg') no-repeat center;
   width: 20px;
   height: 20px;
   display: inline-block;
-  background-color: var(--t1); 
+  background-color: var(--t1);
   -webkit-mask-size: contain;
   mask-size: contain;
 }
@@ -742,7 +747,7 @@ mask: url('../icons/pencil.svg') no-repeat center;
   .acciones-fav, .search-container {
     flex-direction: column;
   }
-  
+
   .btn-generar,
   .btn-agregar {
     width: 100%;
@@ -942,15 +947,15 @@ justify-content: space-between;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px; 
-  background-color: var(--p); 
-  color: #f3f4f6; 
+  gap: 8px;
+  background-color: var(--p);
+  color: #f3f4f6;
   padding: 5px 14px;
-  border-radius: 9999px; 
+  border-radius: 9999px;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  border: 1px solid var(--btn);  
+  border: 1px solid var(--btn);
   position: relative;
 }
 
@@ -1076,7 +1081,7 @@ justify-content: space-between;
 
 #card-synopsis {
   display: none;
-  
+
   font-size: 14px;
   margin-top: 0;
   text-align: start;
@@ -1336,7 +1341,7 @@ justify-content: space-between;
     position: static;
     transform: none;
     margin: 0 auto;
-    grid-column: 1 / -1; 
+    grid-column: 1 / -1;
     grid-row: 1 / -1;
   }
 }
@@ -1425,7 +1430,7 @@ justify-content: space-between;
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: 
+  background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.72) 42%, rgba(0, 0, 0, 0.25) 100%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.55) 100%);
 }
@@ -1753,7 +1758,7 @@ justify-content: space-between;
   .hero-slider__next {
     top: .7rem;
   }
-  
+
   .hero-btn {
     width: 100%;
     justify-content: center;
@@ -2051,10 +2056,10 @@ display: flex;
 }
 
 
-/* 
+/*
 ====================================
-  Estilos del Tooltip Flotante 
-==================================== 
+  Estilos del Tooltip Flotante
+====================================
 */
 .custom-tooltip {
     position: fixed;
@@ -2068,7 +2073,7 @@ display: flex;
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     border: 1px solid var(--br); /* Borde sutil */
-    
+
     /* Animación inicial oculta */
     opacity: 0;
     transform: translateX(-15px);
