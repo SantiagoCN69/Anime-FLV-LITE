@@ -1148,7 +1148,7 @@ async function cargarContinuarViendo() {
    if (verificarYLimpiarCacheBackground(cachekey, datos, 'portada', null, true)) {
      return;
     }
-  h2.dataset.text = "Disponibles: " + datos.length;
+  h2.dataset.text = datos.length;
   if (datos.length === 0) {
    container.innerHTML = '<span class="span-carga">No hay capítulos disponibles para continuar viendo.</span>';
    return;
