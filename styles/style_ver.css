@@ -138,6 +138,11 @@ main section:nth-child(2) {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+#links > span {
+  font-weight: bolder;
+  opacity: .7;
+  color: var(--t1);
+}
 #titulo-anime {
   text-transform: capitalize;
   white-space: nowrap;
