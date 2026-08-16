@@ -1021,7 +1021,7 @@ span {
 
   }
 }
-.headder-section {
+.headder-section:not(.headder-section1) {
   grid-template-rows: 1fr;
 }
 /* @media screen and (max-width: 734px) {
@@ -1031,7 +1031,7 @@ span {
 } */
 section.content-section h2:first-of-type::after {
   color: var(--t1);
-  content: attr(data-text);
+  content: "Disponibles: " attr(data-text);
   display: block;
   border-radius: 12px;
   width: fit-content;
@@ -1040,6 +1040,26 @@ section.content-section h2:first-of-type::after {
   padding: 8px 14px;
   font-size: 1rem;
   z-index: 1;
+}
+@media screen and (max-width: 470px) {
+  section.content-section h2:first-of-type::after {
+    content: attr(data-text);
+  }
+}
+@media screen and (max-width: 360px) {
+   .headder-section:not(.headder-section1) {
+    min-height: 52px;
+   }
+  .headder-section:not(.headder-section1) {
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+}
+  .headder-section:not(.headder-section1) svg {
+    display: none;
+  }
+  .headder-section:not(.headder-section1) h2 {
+      grid-column: span 2 !important;
+    }
 }
 #busqueda-h2::after, #popularesh2::after {display: none;}
 #Ultimos-Episodios h2:first-of-type::after {
