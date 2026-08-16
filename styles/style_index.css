@@ -469,7 +469,7 @@ nav.filtros {
   rgba(236, 72, 153, 0.10) 50%,  /* rosa */
   var(--b)         /* transparente */
 );
-position: absolute;
+position: fixed;
 top: -2rem;
 left: -2rem;
 width: calc(100% + 4rem);
