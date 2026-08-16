@@ -108,7 +108,7 @@ const renderGeneros = (container, generos) => {
       a.textContent = g;
       a.className = 'genre-link';
       const generoUrl = g.toLowerCase() === 'aventuras' ? 'aventura' : g;
-      a.href = `index.html?DirectorioJK&genero=${quitarTildesYEspacios(generoUrl)}`;
+      a.href = `/?DirectorioJK&genero=${quitarTildesYEspacios(generoUrl)}`;
 
 
       container.appendChild(a);
@@ -216,7 +216,7 @@ function renderRelacionados(anime) {
             <span class="timeline-year">${item.yearStr}</span>
             ${lineaHtml}
           </div>
-          <a href="anime.html?id=${item.slug}" class="timeline-card-link" id="anime-${item.id}">
+          <a href="anime?id=${item.slug}" class="timeline-card-link" id="anime-${item.id}">
             <div class="timeline-card-horizontal">
               <img src="${item.coverImage}" alt="${item.title}" class="timeline-cover" onerror="this.src='img/loading.png'">
               <div class="timeline-info">
@@ -442,7 +442,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
       await manejarEstadoEpisodio(btn, icon, ep);
     }
     img.style.setProperty('view-transition-name', `${id}-${ep.number}`);
-    window.location.href = `ver.html?id=${id}&episode=${ep.number}`;
+    window.location.href = `ver?id=${id}&episode=${ep.number}`;
   });
 
   icon.addEventListener('click', e => {
