@@ -118,6 +118,7 @@ function crearmodal(user = false) {
   modal.className = 'logout-modal';
   modal.innerHTML = `
     <button id="export-data">Exportar datos</button>
+    <a id="contacto-link" href="contacto.html">Contacto</a>
     <button id="clear-cache">Eliminar cache</button>
     <button id="cv-toggle">CV: ${cvLabels[currentCv]}</button>
     <button id="theme-toggle">Cambiar tema</button>

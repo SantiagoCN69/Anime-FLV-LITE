@@ -1603,7 +1603,7 @@ background: rgba(255, 248, 248, 0.1);
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
-#theme-toggle, #clear-cache, #cv-toggle, #sidebar-toggle {
+#theme-toggle, #clear-cache, #cv-toggle, #sidebar-toggle, #contacto-link {
   border-radius: 5px;
 }
 @media (max-width: 600px) {
