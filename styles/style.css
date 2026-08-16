@@ -1484,6 +1484,7 @@ h4 {
 
 /* Sección de tendencias */
 .tendencias-section {
+  gap: 11px;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
@@ -1519,7 +1520,7 @@ h4 {
   align-items: center;
   gap: 4px;
   padding: 6px 12px;
-  background-color: var(--p);
+  background-color: var(--br);
   border: 1px solid var(--br);
   border-radius: 20px;
   color: var(--t1);
