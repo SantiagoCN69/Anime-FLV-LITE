@@ -511,7 +511,6 @@ header.search-active .logout-modal {
 .sidebar li:not(:has(> a)):hover, .sidebar li a:hover {
   transform: translateX(4px);
   color: var(--t2);
-  font-weight: 500;
 }
 
 
