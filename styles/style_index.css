@@ -553,6 +553,9 @@ z-index: -1;
 .carga {
   border: 1px solid var(--br);
 }
+.carga strong {
+  text-align: center;
+}
 .grid-animes.Recomendaciones .container-img{
   aspect-ratio: 1/2;
 }

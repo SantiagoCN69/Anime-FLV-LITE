@@ -529,10 +529,6 @@ if (btnRandom) {
     });
 }
 
-if (btnGenerarPersonalizadas) {
-    btnGenerarPersonalizadas.click();
-}
-
 // Scroll horizontal
 const contenedores = document.querySelectorAll(".grid-animes.Recomendaciones");
 contenedores.forEach((contenedor) => {
