@@ -520,8 +520,9 @@ const calcularAlturaContenedor = (episodiosLength, capContenedor) => {
 // ==========================================
 // 2. FUNCIÓN PRINCIPAL OPTIMIZADA
 // ==========================================
-async function crearBotonesEpisodios(anime, invertirOrden = false) {
+async function crearBotonesEpisodios(anime, invertirOrden = false, esInversion = false) {
     capContenedor.innerHTML = '';
+    overlayCompletadosActivo = false; // Reset flag al limpiar contenedor
     let episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
 
     if (episodios.length === 0) {
@@ -560,6 +561,12 @@ async function crearBotonesEpisodios(anime, invertirOrden = false) {
     capContenedor.classList.add("cargado");
     capContenedor.style.setProperty("--caps", episodios.length);
 
+    // Activar botón de invertir después de renderizar los capítulos
+    const btnInvertirCaps = document.getElementById('btn-invertir-caps');
+    if (btnInvertirCaps) {
+        btnInvertirCaps.disabled = false;
+    }
+
     // Ejecutar cálculo de altura
     requestAnimationFrame(() => calcularAlturaContenedor(episodios.length, capContenedor));
 
@@ -577,7 +584,8 @@ async function crearBotonesEpisodios(anime, invertirOrden = false) {
         const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
 
         if (!primerNoVisto) {
-            if (episodios.length >= 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
+            // Solo mostrar overlay si NO es una inversión
+            if (!esInversion && episodios.length >= 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
                 mostrarOverlayCapitulosCompletados();
             }
             return;
@@ -628,12 +636,12 @@ function setupInvertirButton() {
 
             if (animeActual) {
                 ordenInvertido = !ordenInvertido;
-                crearBotonesEpisodios(animeActual, ordenInvertido);
+                crearBotonesEpisodios(animeActual, ordenInvertido, true); // true = es inversión
 
                 // Debounce de 300ms para evitar spam
                 invertirDebounceTimer = setTimeout(() => {
                     invertirDebounceTimer = null;
-                }, 300);
+                }, 400);
             }
         });
     }
