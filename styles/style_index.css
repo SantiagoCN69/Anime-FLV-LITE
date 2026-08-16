@@ -581,7 +581,7 @@ z-index: -1;
 .search-container::before {
   content: "";
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 20px;
   width: 20px;
   height: 20px;
@@ -601,6 +601,7 @@ z-index: -1;
 #filtro-extra {
   min-width: auto;
   flex: 1;
+  padding-left: 1rem;
 }
 #busqueda-personalizada:focus, #filtro-extra:focus {
   border: 1px solid var(--btn);
