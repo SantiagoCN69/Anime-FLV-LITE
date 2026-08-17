@@ -738,6 +738,7 @@ header {
 }
 :has(> .no-thumb) {
   background: var(--p);
+  border-radius: 12px;
 }
 .no-thumb ~ .play-icon-anime {
   width: 60px;
