@@ -170,8 +170,9 @@ function crearAnimeCard(anime) {
     if (!animeId) {
         animeId = anime.title?.toLowerCase().replace(/\s+/g, '-');
     }
-    const div = document.createElement('div');
+    const div = document.createElement('a');
     div.className = 'anime-card Recomendaciones-card';
+    div.href = `/anime?id=${animeId}`;
     
     let ratingHtml = '';
     if (anime.rating) {
@@ -194,7 +195,6 @@ function crearAnimeCard(anime) {
         if (typeof aplicarViewTransition === "function") {
             aplicarViewTransition(animeId, ratingHtml);
         }
-        window.location.href = `/anime?id=${animeId}`;
     });
         
     return div;
