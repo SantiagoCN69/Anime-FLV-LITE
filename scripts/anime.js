@@ -360,11 +360,11 @@ const renderAnime = anime => {
   aplicarFondoAnime(anime);
   descripcionEl.textContent = anime.descripcion;
   renderGeneros(generoContainer, anime.generos);
-  if (anime.rating === null) {
-    ratingEl.style.display = 'none';
-  } else {
-    ratingEl.textContent = anime.rating + "/5";
-  }
+  // if (anime.rating === null) {
+  //   ratingEl.style.display = 'none';
+  // } else {
+  //   ratingEl.textContent = anime.rating + "/5";
+  // }
   if (anime.estado === "Por estrenar") {
     document.getElementsByClassName("anime-container3")[0].innerHTML = "<span id='anime-proximo-estrenar'>Próximamente en estreno. Los capítulos aún no están disponibles.</span>";
     return;
