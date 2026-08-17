@@ -4,7 +4,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebas
 import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards } from "./utils.js";
-import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName } from "./ai-recommendations.js";
+import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName, buildCustomSearchAnimePrompt, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 
 // Inicialización de Firebase
 const app = initializeApp(firebaseConfig);
@@ -265,21 +265,15 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
         return;
     }
 
-    const nombresFavoritos = favoritos.map(f => f.nombre || f.titulo || f.id).join(', ');
+    const nombresFavoritos = favoritos.map(f => f.nombre || f.titulo || f.id);
     const animesCache = cacheActual?.animes || [];
     const nombresCache = animesCache.map(a => a.title || a.id);
     const nombresVistos = vistos.map(v => v.nombre || v.titulo || v.id);
 
-    const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])].join(', ');
+    const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])];
 
-    // Construir el prompt incluyendo las especificaciones extras si existen
-    let prompt = `Recomiéndame 5 animes parecidos a estos: ${nombresFavoritos} Pero asegúrate de que no sean los mismos que los siguientes: ${titulosAExcluir} `;
-
-    if (filtroExtra) {
-        prompt += `Además, ten muy en cuenta estas especificaciones extras para la recomendación: ${filtroExtra}. `;
-    }
-
-    prompt += `Responde solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista`;
+    // Construir el prompt usando la función especializada
+    const prompt = buildFavoritesAnimePrompt(nombresFavoritos, titulosAExcluir, filtroExtra);
 
     // Esperamos a que la IA responda para luego limpiar
     await enviarPrompt(prompt, "favoritos");
@@ -348,12 +342,9 @@ if (btnGenerarPersonalizadas) {
         }
 
         const animesCache2 = cacheActual?.animes || [];
-        const nombresCache2 = animesCache2.map(a => a.title || a.id).join(', ');
+        const nombresCache2 = animesCache2.map(a => a.title || a.id);
 
-        const prompt = `Dame 5 nombres de animes de acuerdo a la siguiente descripción: ${busquedaPersonalizada}
-        Pero asegúrate de que no sean los mismos que los siguientes: ${nombresCache2},
-        Contetame solo y unicamente solo con los nombres separados por una "," cada uno y si hay espacios en el nombre cambia los espacios por "-" y si hay caracteres como ":" quítalos. no me respondas nada mas. se conciso con la lista y siempre separa por la coma `;
-
+        const prompt = buildCustomSearchAnimePrompt(busquedaPersonalizada, nombresCache2);
         await enviarPrompt(prompt, "personalizadas");
         clearInterval(interval);
     });

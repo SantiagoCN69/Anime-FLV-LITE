@@ -191,3 +191,42 @@ export async function loadIaRecommendationsIntoGrid({
       '<span class="span-carga">No se pudieron generar recomendaciones</span>';
   }
 }
+
+export function buildFavoritesAnimePrompt(favoritos, excluidos = [], filtroExtra = '') {
+  const listaFavoritos = favoritos.join(', ');
+  const listaExcluidos = excluidos.length ? excluidos.join(', ') : 'Ninguno';
+  const instruccionExtra = filtroExtra ? `\n* Considera esta especificación clave: ${filtroExtra}.` : '';
+
+  return `Actúa como un recomendador experto de anime.
+
+1. Analiza los siguientes animes favoritos: ${listaFavoritos}.
+2. Genera 5 recomendaciones de animes similares en género, tono o temática.
+
+Reglas:
+* NUNCA recomiendes animes de esta lista de excluidos: ${listaExcluidos}.${instruccionExtra}
+* Usa exclusivamente el título oficial en japonés (romaji). Nunca en español ni inglés.
+* Formato obligatorio: kebab-case (minúsculas y guiones en lugar de espacios).
+* Devuelve exactamente 5 nombres separados por comas.
+* Sin explicaciones, introducciones ni saltos de línea.
+
+Ejemplo:
+shingeki-no-kyojin,fullmetal-alchemist-brotherhood,jujutsu-kaisen,kimetsu-no-yaiba,hunter-x-hunter`;
+}
+
+export function buildCustomSearchAnimePrompt(descripcion, excluidos = []) {
+  const listaExcluidos = excluidos.length ? excluidos.join(', ') : 'Ninguno';
+
+  return `Actúa como un buscador y recomendador de anime.
+
+1. Encuentra 5 animes que coincidan con esta descripción: "${descripcion}".
+
+Reglas:
+* NUNCA incluyas animes de esta lista: ${listaExcluidos}.
+* Usa exclusivamente el título oficial en japonés (romaji). Nunca en español ni inglés.
+* Formato obligatorio: kebab-case (minúsculas y guiones en lugar de espacios).
+* Devuelve exactamente 5 nombres separados por comas.
+* Sin explicaciones, introducciones ni saltos de línea.
+
+Ejemplo:
+solo-leveling,sword-art-online,tower-of-god,the-daily-life-of-the-immortal-king,overlord`;
+}
