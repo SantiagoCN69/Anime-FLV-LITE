@@ -226,15 +226,19 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
 
     const contador = document.getElementById("contador1");
 
-    // Limpiar contenedor y agregar SVG girando
+    // Limpiar contenedor y agregar 5 tarjetas de carga con animación
     const contenedorFavoritos = document.getElementById('recomendaciones-favoritos');
     if (contenedorFavoritos) {
         contenedorFavoritos.innerHTML = '';
-        const svgCarga = document.createElement('img');
-        svgCarga.src = '../icons/arrows-counter-clockwise-bold.svg';
-        svgCarga.className = 'svg-carga-girando';
-        svgCarga.alt = 'Cargando...';
-        contenedorFavoritos.appendChild(svgCarga);
+        for (let i = 0; i < 5; i++) {
+            const cardCarga = document.createElement('div');
+            cardCarga.className = 'anime-card show carga generando Recomendaciones-card';
+            cardCarga.innerHTML = `
+                <div class="container-img"></div>
+                <strong></strong>
+            `;
+            contenedorFavoritos.appendChild(cardCarga);
+        }
     }
     
     let count = 100;
@@ -308,15 +312,19 @@ if (btnGenerarPersonalizadas) {
 
         const contador = document.getElementById("contador2");
 
-        // Limpiar contenedor y agregar SVG girando
+        // Limpiar contenedor y agregar 5 tarjetas de carga con animación
         const contenedorPersonalizadas = document.getElementById('recomendaciones-personalizadas');
         if (contenedorPersonalizadas) {
             contenedorPersonalizadas.innerHTML = '';
-            const svgCarga = document.createElement('img');
-            svgCarga.src = '../icons/arrows-counter-clockwise-bold.svg';
-            svgCarga.className = 'svg-carga-girando';
-            svgCarga.alt = 'Cargando...';
-            contenedorPersonalizadas.appendChild(svgCarga);
+            for (let i = 0; i < 5; i++) {
+                const cardCarga = document.createElement('div');
+                cardCarga.className = 'anime-card show carga generando Recomendaciones-card';
+                cardCarga.innerHTML = `
+                    <div class="container-img"></div>
+                    <strong></strong>
+                `;
+                contenedorPersonalizadas.appendChild(cardCarga);
+            }
         }
 
         let count = 100;

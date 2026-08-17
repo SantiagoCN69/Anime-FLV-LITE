@@ -675,6 +675,64 @@ z-index: -1;
     filter: brightness(1.1) invert(1);
   }
 }
+.carga .container-img::after {
+  content: unset;
+}
+
+.anime-card.carga.generando {
+  animation: shimmer 3.5s linear infinite;
+  border-color: transparent;
+  background: linear-gradient(
+    90deg, 
+    rgba(var(--bgt), 0.05) 25%, 
+    rgba(var(--bgt), 0.2) 50%, 
+    rgba(var(--bgt), 0.05) 75%
+  );
+  background-size: 200% 100%;
+  opacity: 1 !important;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 3. Spinner de carga (Círculo giratorio) */
+.carga.generando .container-img::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px; /* Ligeramente más grande (antes 30px) */
+  height: 40px;
+  margin: -20px 0 0 -20px; /* Ajustado al nuevo ancho/alto para centrar perfecto */
+  background: none;
+  /* Anillo base casi transparente */
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  
+  /* Detalles del color de giro */
+  border-top: 3px solid var(--btn);
+  border-right: 3px solid transparent; /* Hacer un lado transparente le da un estilo más dinámico */
+  border-radius: 50%;
+  
+  /* Animación más rápida y constante */
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* (Opcional) Si decides usar el pulso, esta es una versión más suave */
+@keyframes pulso-carga-card {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
 
 /* Estilos para los botones de acción */
 .acciones-fav {
@@ -1493,7 +1551,7 @@ justify-content: space-between;
   font-weight: 800;
   color: var(--t1);
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
-  max-height: calc(2lh + 1px);
+  max-height: calc(2lh);
   overflow: hidden;
 }
 
