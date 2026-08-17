@@ -222,7 +222,7 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     const inputFiltro = document.getElementById("filtro-extra");
     const filtroExtra = inputFiltro ? inputFiltro.value.trim() : "";
     
-    texto.innerHTML = 'Generando... <span id="contador1">100s</span>';
+    texto.innerHTML = 'Generando... <span id="contador1">99s</span>';
 
     const contador = document.getElementById("contador1");
 
@@ -241,7 +241,7 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
         }
     }
     
-    let count = 100;
+    let count = 99;
     const interval = setInterval(() => {
       count--;
       if(contador) contador.textContent = count + 's';
@@ -302,7 +302,7 @@ const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas
 if (btnGenerarPersonalizadas) {
     btnGenerarPersonalizadas.addEventListener("click", async () => {
         const texto = document.getElementById("textbtngenerarpersonalizada");
-        texto.innerHTML = 'Generando... <span id="contador2">100s</span>';
+        texto.innerHTML = 'Generando... <span id="contador2">99s</span>';
 
         const contador = document.getElementById("contador2");
 
@@ -321,7 +321,7 @@ if (btnGenerarPersonalizadas) {
             }
         }
 
-        let count = 100;
+        let count = 99;
         const interval = setInterval(() => {
           count--;
           if(contador) contador.textContent = count + 's';
