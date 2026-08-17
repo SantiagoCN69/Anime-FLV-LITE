@@ -192,9 +192,11 @@ function crearAnimeCard(anime) {
     
     // Al hacer clic, redirige al anime directamente
     div.addEventListener('click', () => {
-        if (typeof aplicarViewTransition === "function") {
-            aplicarViewTransition(animeId, ratingHtml);
-        }
+      const strong = div.querySelector('strong');
+      const containerImg = div.querySelector('.container-img');
+      
+      if (strong) strong.style.setProperty('view-transition-name', 'title' + anime.id);
+      if (containerImg) containerImg.style.setProperty('view-transition-name', anime.id);
     });
         
     return div;
