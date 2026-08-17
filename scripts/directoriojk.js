@@ -338,16 +338,16 @@ const renderAnime = (animes) => {
           ${estadoHtml}
         </div>
           <div class="content">
-            <h3>${a.title}</h3>
+            <strong>${a.title}</strong>
             <p id="card-synopsis">${a.synopsis || ""}</p>
           </div>
         </a>
       `;
     div.addEventListener('click', () => {
-      const h3 = div.querySelector('h3');
+      const strong = div.querySelector('strong');
       const containerImg = div.querySelector('.container-img');
       
-      if (h3) h3.style.setProperty('view-transition-name', 'title' + slug(a.title));
+      if (strong) strong.style.setProperty('view-transition-name', 'title' + slug(a.title));
       if (containerImg) containerImg.style.setProperty('view-transition-name', slug(a.title));
     });
     c.appendChild(div);
