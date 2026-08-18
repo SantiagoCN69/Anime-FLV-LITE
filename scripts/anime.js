@@ -218,9 +218,9 @@ function renderRelacionados(anime) {
           </div>
           <a href="/anime?id=${item.slug}" class="timeline-card-link" id="anime-${item.id}">
             <div class="timeline-card-horizontal">
-              <img src="${item.coverImage}" alt="${item.title}" class="timeline-cover" onerror="this.src='img/loading.png'">
+              <img src="${item.coverImage}" alt="${item.title}" class="timeline-cover" onerror="this.src='img/loading.png'" style="view-transition-name: cover-${item.slug}">
               <div class="timeline-info">
-                <h4 class="timeline-title">${item.title}</h4>
+                <h4 class="timeline-title" style="view-transition-name: title-${item.slug}">${item.title}</h4>
                 <span class="timeline-relation">${item.relation}</span>
               </div>
             </div>
