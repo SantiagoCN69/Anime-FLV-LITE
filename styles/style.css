@@ -51,6 +51,11 @@ svg {
   pointer-events: none;
 }
 
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 /* SVG inline style replacements */
 .svg-stroke-current {
   stroke: currentColor;
@@ -156,9 +161,6 @@ header #busqueda{
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
   font-size: .9rem;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
   text-transform: uppercase;
   margin-right: 10px;
   white-space: nowrap;
@@ -322,9 +324,6 @@ header div {
   }
 
 #btn-search {
-  background: none;
-  border: none;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -380,15 +379,12 @@ header.search-active .logout-modal {
 
 /* Botón de cerrar búsqueda */
 #btn-close-search {
-  background: none;
-  border: none;
   width: 25px;
   height: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  cursor: pointer;
 }
 #btn-close-search::after {
   content: "";
@@ -409,10 +405,7 @@ header.search-active .logout-modal {
 #menu-toggle {
   display: block;
   font-size: 1.5rem;
-  background: none;
-  border: none;
   color: var(--t1);
-  cursor: pointer;
 }
 
 #menu-toggle span {
@@ -1097,10 +1090,7 @@ section.content-section h2:first-of-type::after {
   align-items: center;
   gap: 10px;
   padding: 10px;
-  background: transparent;
-  border: none;
   font-size: 0.9rem;
-  cursor: pointer;
   transition: background .5s, transform .3s, padding .3s;
   border-radius: 8px;
 }
@@ -1369,9 +1359,6 @@ h4 {
 
 /* Botón "Borrar todo" */
 .btn-borrar-todo {
-  background: none;
-  border: none;
-  cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
   color: var(--t2);
@@ -1418,7 +1405,6 @@ h4 {
   display: flex;
   align-items: self-start;
   gap: 10px;
-  text-decoration: none;
   width: calc(100% - 36px);
   transition: background-color 0.2s;
   border-radius: 6px;
@@ -1457,9 +1443,6 @@ h4 {
 
 /* Botón de eliminar individual */
 .btn-eliminar-busqueda {
-  background: none;
-  border: none;
-  cursor: pointer;
   padding: 6px;
   border-radius: 6px;
   color: var(--t2);
@@ -1524,7 +1507,6 @@ h4 {
   border: 1px solid var(--br);
   border-radius: 20px;
   color: var(--t1);
-  text-decoration: none;
   font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.2s;

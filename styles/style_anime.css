@@ -68,14 +68,12 @@ header {
 #btn-volver {
   z-index: 1;
   position: absolute;
-  cursor: pointer;
   top: calc(88px + 2rem);
   font-weight: 600;
   left: 2rem;
   background: var(--p);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: none;
   padding: 0.6rem 1rem;
   color: var(--t1);
   display: flex;
@@ -172,10 +170,8 @@ header {
     width: unset;
   }
 .btn-estado {
-  cursor: pointer;
   padding: 15px;
   border-radius: 12px;
-  border: none;
   color: var(--t1);
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   height: 40px !important;
@@ -627,10 +623,8 @@ header {
 
 #btn-invertir-caps {
   background: var(--p);
-  border: none;
   border-radius: 8px;
   padding: 11px;
-  cursor: pointer;
   color: var(--t1);
   display: flex;
   align-items: center;
@@ -706,11 +700,8 @@ header {
 } 
 
 .episode-btn {
-  border: none;
-  background: none;
   color: var(--t1);
   font-size: 1rem;
-  cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
   width: 100%;
   display: flex;
@@ -775,9 +766,7 @@ header {
   position: absolute;
   top: 5px;
   right: 5px;
-  border: none;
   border-radius: 12px;
-  cursor: pointer;
   background-color: var(--p);
   backdrop-filter: blur(10px);
   transition: filter 0.2s, background-color 0.2s;

@@ -42,14 +42,12 @@ header {
 #btn-volver {
   z-index: 1;
   position: absolute;
-  cursor: pointer;
   top: calc(88px + 2rem);
   font-weight: 600;
   left: 2rem;
   background: #000a;
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  border: none;
   padding: 0.6rem 1rem;
   color: var(--t1);
   display: flex;
@@ -213,8 +211,6 @@ main section:nth-child(2) {
 }
 #btn-estado-capitulo {
   background: var(--p);
-  border: none;
-  cursor: pointer;
   padding: 5px 16px;
   border-radius: 20px;
   transition: opacity 0.3s ease;
@@ -441,7 +437,6 @@ iframe {
   top: calc(50% + 23px);
   left: 50%;
   transform: translate(-50%, -50%);
-  cursor: pointer;
   z-index: 2;
   pointer-events: none;
   background-color: #ffffff8f;
@@ -496,8 +491,6 @@ iframe {
   max-height: 50px;
   height: 50px;
   border-radius: 12px;
-  border: none;
-  cursor: pointer;
   font-weight: 600;
   color: var(--t1);
   transition: transform .3s;  
@@ -619,12 +612,10 @@ iframe {
 .dropdown-capitulos button {
   width: 100%;
   padding: 8px 5px;
-  background: none;
   border: 1px solid var(--br);
   border-radius: 12px;
   color: var(--t1);
   text-align: center;
-  cursor: pointer;
   transition: all 0.2s;
   font-size: 0.85rem;
   font-weight: 500;
