@@ -1937,15 +1937,13 @@ justify-content: space-between;
   flex-direction: column;
 }
 
-.card-title {
+.continue-card strong {
   margin: 0;
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 600;
+  margin-bottom: 5px;
   white-space: nowrap;
   overflow: hidden;
+  height: unset !important;
   text-overflow: ellipsis;
-  border: none
 }
 
 .card-meta {

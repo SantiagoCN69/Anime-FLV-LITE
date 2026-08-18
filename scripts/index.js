@@ -1525,7 +1525,7 @@ function inicializarContinuarViendo() {
             <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%"></div></div>
           </div>
           <div class="card-info">
-            <h3 class="card-title">${item.titulo}</h3>
+            <strong>${item.titulo}</strong>
             <span class="card-meta">${capsVistos}/${total} eps</span>
           </div>  
         </a>`;
@@ -1536,7 +1536,7 @@ function inicializarContinuarViendo() {
       card.addEventListener('click', () => {
         const id = card.dataset.id;
         const episode = card.dataset.episode;
-        const title = card.querySelector('.card-title');
+        const title = card.querySelector('strong');
         const img = card.querySelector('.card-thumbnail img');
         
         if (title) title.style.setProperty('view-transition-name', 'title-' + id);
