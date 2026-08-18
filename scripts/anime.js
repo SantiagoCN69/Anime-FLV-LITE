@@ -397,7 +397,8 @@ const debounce = (fn, delay = 200) => {
 
 const createEpisodeButton = (ep, vistos = [], internalId) => {
   const li = document.createElement('li');
-  const btn = document.createElement('button');
+  const btn = document.createElement('a');
+  btn.href = `ver?id=${id}&episode=${ep.number}`;
   const visto = vistos.includes(ep.number.toString());
   btn.className = `episode-btn ${visto ? 'ep-visto' : 'ep-no-visto'}`;
   
@@ -442,7 +443,6 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
       await manejarEstadoEpisodio(btn, icon, ep);
     }
     img.style.setProperty('view-transition-name', `${id}-${ep.number}`);
-    window.location.href = `ver?id=${id}&episode=${ep.number}`;
   });
 
   icon.addEventListener('click', e => {
