@@ -54,8 +54,8 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
 
 // === VARIABLES ===
 const pathname = location.pathname;
-const isAnimePage = pathname.endsWith('/anime.html') || pathname.endsWith('anime.html');
-const isVerPage = pathname.endsWith('/ver.html') || pathname.endsWith('ver.html');
+const isAnimePage = pathname.endsWith('/anime.html') || pathname.endsWith('anime.html') || pathname.endsWith('anime');
+const isVerPage = pathname.endsWith('/ver.html') || pathname.endsWith('ver.html') || pathname.endsWith('ver');
 const isDirectorioPage = pathname.includes('/directorio');
 const isLabPage = pathname.includes('/Recomendaciones');
 const isIndexPage = pathname === '/' || pathname.endsWith('/index.html');
