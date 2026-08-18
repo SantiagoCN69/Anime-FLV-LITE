@@ -149,12 +149,12 @@ window.addEventListener('resize', setRealVh);
     </div>
     <script>
       const animeId = new URLSearchParams(location.search).get("id");
-      document.getElementById('titulo-anime').style.setProperty('view-transition-name', "title" + animeId);
+      document.getElementById('titulo-anime').style.setProperty('view-transition-name', "title-" + animeId);
     </script>
     <div class="contenedor-btn-cap">
       <h3 id="btn-cap" class="btn-cap">Episodio</h3>
     <script>
-      document.getElementById('btn-cap').style.setProperty('view-transition-name', "episodio" + animeId);
+      document.getElementById('btn-cap').style.setProperty('view-transition-name', "episodio-" + animeId);
     </script>
     <div class="buttons-container">
       <button type="button" id="btn-estado-capitulo" title="Marcar capítulo como visto">

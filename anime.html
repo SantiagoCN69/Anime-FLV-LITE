@@ -143,7 +143,7 @@
       <script>
         const urlParams = new URLSearchParams(window.location.search);
         const urlPart = urlParams.get('id');
-        document.getElementById('portada').style.setProperty('view-transition-name', urlPart);
+        document.getElementById('portada').style.setProperty('view-transition-name', "cover-" + urlPart);
         </script>
     <!-- <p id="rating" class="anime-rating">
       <span id="ratingcargando"></span>
@@ -159,7 +159,7 @@
         <span id="titulocargando">Cargando...</span>
       </h1>
       <script>
-        document.getElementById('titulo').style.setProperty('view-transition-name', "title" + urlPart);
+        document.getElementById('titulo').style.setProperty('view-transition-name', "title-" + urlPart);
       </script>
       <div id="info1">
         <p class="span-text-anime1" id="statuscargando"></p>
