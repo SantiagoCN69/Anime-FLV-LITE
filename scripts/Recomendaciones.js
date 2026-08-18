@@ -3,7 +3,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
-import { observerAnimeCards } from "./utils.js";
+import { observerAnimeCards, crearAnimeCard } from "./utils.js";
 import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName, buildCustomSearchAnimePrompt, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 
 // Inicialización de Firebase
@@ -157,49 +157,6 @@ async function obtenerAnimesVistos() {
         console.error('Error al obtener animes vistos:', error);
         return [];
     }
-}
-
-// Lógica simplificada de las tarjetas (ahora siempre son enlaces)
-function crearAnimeCard(anime) {
-    const coverImage = anime.cover || anime.image || 'img/loading.png';
-    let animeId = anime.id;
-    if (!animeId && anime.url) {
-        const urlParts = anime.url.replace(/\/$/, '').split('/');
-        animeId = urlParts[urlParts.length - 1];
-    }
-    if (!animeId) {
-        animeId = anime.title?.toLowerCase().replace(/\s+/g, '-');
-    }
-    const div = document.createElement('a');
-    div.className = 'anime-card Recomendaciones-card';
-    div.href = `/anime?id=${animeId}`;
-    
-    let ratingHtml = '';
-    if (anime.rating) {
-        ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;
-    }
-    div.style.setProperty('--cover', `url(${coverImage})`);
-    div.id = `anime-${animeId}`;
-    div.innerHTML = `
-        <div class="container-img">
-            <img src="${coverImage}" class="cover" alt="${anime.title || 'Título del Anime'}">
-            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="play">
-            ${ratingHtml}
-            <span class="estado">${anime.type || ''}</span>
-        </div>
-        <strong>${anime.title || 'Título del Anime'}</strong>
-    `;
-    
-    // Al hacer clic, redirige al anime directamente
-    div.addEventListener('click', () => {
-      const strong = div.querySelector('strong');
-      const containerImg = div.querySelector('.container-img');
-      
-      if (strong) strong.style.setProperty('view-transition-name', 'title' + anime.id);
-      if (containerImg) containerImg.style.setProperty('view-transition-name', anime.id);
-    });
-        
-    return div;
 }
 
 // Función para mostrar alertas flotantes

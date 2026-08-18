@@ -1,4 +1,4 @@
-import { observerAnimeCards } from './utils.js';
+import { observerAnimeCards, crearAnimeCard } from './utils.js';
 
 let scheduleData = [];
 let currentDay = '';
@@ -40,74 +40,17 @@ const renderButtons = () => {
   });
 };
 
-function slug(str) {
-  const clean = str
-    .toLowerCase()
-    .trim()
-    .replace(/[:'".,!?/()]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-  return clean;
-}
-
 const renderInitialGrid = () => {
   if (!DOM.grid) return;
   DOM.grid.innerHTML = '';
   
   const fragment = document.createDocumentFragment();
 
-  
   scheduleData.forEach(d => {
     d.animes.forEach(a => {
-      const div = document.createElement("a");
-      div.className = "anime-card anime-card-schedule hover-touch";
-      div.href = `/anime?id=${slug(a.title)}`;
-      div.dataset.day = d.day;
-      div.dataset.title = a.title.toLowerCase();
-
-      let timeago = ""
-      timeago = a.time_ago
-        ? `<div class="content" data-time_ago="${a.time_ago}">`
-        : '<div class="content" data-time_ago="Sin ultima hora de emisión">';
-
-      div.innerHTML = `
-        <div class="container-img">
-            <img class="cover" src="${a.image}" alt="${a.title}" loading="lazy">
-            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver" onerror="this.style.display='none'">
-            <span class="rating">${a.type}</span>
-          <span class="estado">Capítulo ${a.last_episode || 1}</span>
-          </div>
-        ${timeago}
-            <strong>${a.title}</strong>
-        ${timeago ? '</div>' : ''}
-      `;
-      div.addEventListener('click', () => {
-      const h3 = div.querySelector('strong');
-      const containerImg = div.querySelector('.container-img');
-      
-      if (h3) h3.style.setProperty('view-transition-name', 'title' + slug(a.title));
-      if (containerImg) containerImg.style.setProperty('view-transition-name', slug(a.title));
-    });
-    
-    // Touch events for mobile hover effect
-    let touchTimeout;
-    div.addEventListener('touchstart', (e) => {
-      clearTimeout(touchTimeout);
-      div.classList.add('touch-hover');
-    });
-    
-    div.addEventListener('touchend', () => {
-      touchTimeout = setTimeout(() => {
-        div.classList.remove('touch-hover');
-      }, 2000); 
-    });
-    
-    div.addEventListener('touchcancel', () => {
-      clearTimeout(touchTimeout);
-      div.classList.remove('touch-hover');
-    });
-    
-      fragment.appendChild(div);
+      const card = crearAnimeCard(a, { variant: 'schedule' });
+      card.dataset.day = d.day;
+      fragment.appendChild(card);
     });
   });
 

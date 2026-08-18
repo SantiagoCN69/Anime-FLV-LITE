@@ -1,4 +1,4 @@
-import { observerAnimeCards, aplicarViewTransition } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
 import { mostrarSeccionDesdesearch } from './index.js';
 
 // --- CONSTANTES GLOBALES ---
@@ -63,29 +63,6 @@ const timerInterval = setInterval(() => {
 }, 230);
 
 // --- RENDERIZADO DEL DOM ---
-function crearAnimeCardResultados(anime) {
-    const coverImage = anime.cover || anime.image || 'img/loading.png';
-    const div = document.createElement('div');
-    div.className = 'anime-card';
-    div.style.setProperty('--cover', `url(${coverImage})`);
-    
-    const urlPart = anime.url 
-        ? anime.url.replace(/\/$/, '').split('/').pop() 
-        : (anime.id || anime.title?.toLowerCase().replace(/\s+/g, '-'));
-
-    div.innerHTML = `
-        <a href="/anime?id=${urlPart}" id="anime-${urlPart}">
-        <div class="container-img">
-            <img src="${coverImage}" class="cover" alt="${anime.title}">
-            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-            <span class="estado">${anime.type || ''}</span>
-        </div>
-        <strong>${anime.title}</strong>
-        </a>`;
-    
-    div.addEventListener('click', () => aplicarViewTransition(urlPart));
-    return div;
-}
 
 function renderizarResultados(animes) {
     DOM.resultados.innerHTML = '';
@@ -93,7 +70,7 @@ function renderizarResultados(animes) {
         DOM.resultados.innerHTML = '<span class="span-carga">No se encontraron resultados</span>';
         return;
     }
-    animes.forEach(anime => DOM.resultados.appendChild(crearAnimeCardResultados(anime)));
+    animes.forEach(anime => DOM.resultados.appendChild(crearAnimeCard(anime)));
     observerAnimeCards();
 }
 

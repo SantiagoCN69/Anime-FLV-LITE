@@ -1129,7 +1129,7 @@ justify-content: space-between;
 }
 
 /* ===== LAYOUT 3: LISTA ===== */
-#contenedor-animes.layout3 .anime-card a {
+#contenedor-animes.layout3 .anime-card {
   display: flex;
   flex-direction: row;
   transition: flex-direction 0.35s ease;
@@ -1155,8 +1155,8 @@ justify-content: space-between;
 
 #contenedor-animes.layout3 .anime-card strong {
   font-size: 16px;
-  height: 1lh;
-  min-height: 1lh;
+  height: calc(1lh + 1px);
+  min-height: calc(1lh + 1px);
   padding: 0;
   margin: 0;
   transition: font-size 0.35s ease, padding 0.35s ease, margin 0.35s ease;

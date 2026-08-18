@@ -1,5 +1,5 @@
 import { mostrarSeccionDesdesearch } from './index.js';
-import { observerAnimeCards, aplicarViewTransition } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
 
 let paginaActual = 1;
 let totalPaginas = 1;
@@ -296,16 +296,6 @@ requestAnimationFrame(() => {
 });
 };
 
-function slug(str) {
-  const clean = str
-    .toLowerCase()
-    .trim()
-    .replace(/[:'".,!?/()]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-  return clean;
-}
-
 const renderAnime = (animes) => {
   const c = $('contenedor-animes');
   if (!c) return;
@@ -317,40 +307,8 @@ const renderAnime = (animes) => {
   }
 
   animes.forEach(a => {
-    let estadoHtml = '';
-    if (a.estado === "Por estrenar") {
-      estadoHtml = `<span class="estado"><img src="../icons/circle-solid-yellow.svg" alt="${a.estado}">${a.estado}</span>`;
-    }
-    else if (a.estado === "En emision") {
-      estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${a.estado}">${a.estado}</span>`;
-    }
-    else {
-      estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${a.estado}">${a.estado}</span>`;
-    }
-    const div = document.createElement("div");
-    div.className = "anime-card anime-card-jk";
-
-      div.innerHTML = `
-        <a href="/anime?id=${slug(a.title)}">
-        <div class="container-img">
-          <img class="cover" src="${a.image}" alt="${a.title}">
-          <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-          ${estadoHtml}
-        </div>
-          <div class="content">
-            <strong>${a.title}</strong>
-            <p id="card-synopsis">${a.synopsis || ""}</p>
-          </div>
-        </a>
-      `;
-    div.addEventListener('click', () => {
-      const strong = div.querySelector('strong');
-      const containerImg = div.querySelector('.container-img');
-      
-      if (strong) strong.style.setProperty('view-transition-name', 'title' + slug(a.title));
-      if (containerImg) containerImg.style.setProperty('view-transition-name', slug(a.title));
-    });
-    c.appendChild(div);
+    const card = crearAnimeCard(a, { variant: 'jk' });
+    c.appendChild(card);
   });
   
   observerAnimeCards(c);
