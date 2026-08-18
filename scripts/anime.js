@@ -447,6 +447,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
 
   icon.addEventListener('click', e => {
     e.stopPropagation();
+    e.preventDefault();
     manejarEstadoEpisodio(btn, icon, ep);
   });
 
