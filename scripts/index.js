@@ -1,6 +1,6 @@
 import { db, auth } from './firebase-login.js';
 import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-import { observerAnimeCards, aplicarViewTransition } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
 
 // Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
@@ -442,50 +442,6 @@ function renderFlipOptimizado(container, renderCallback) {
 // ----------------------------------------------------
 // Modificación: Agregamos div.dataset.id
 // ----------------------------------------------------
-function createAnimeCard(anime, siguienteEpisodioUrl) {
-    const div = document.createElement('div');
-    let chapterHtml = ''; 
-    let estadoHtml = '';
-    let ratingHtml = '';
-    let linkbase =  `<a href="/anime?id=${anime.id}" id="anime-${anime.id}">`;
-  
-    div.className = 'anime-card';
-    div.dataset.id = anime.id; // ¡CLAVE PARA EL FLIP!
-    
-    if (anime.Capitulo) {chapterHtml = `<span class="chapter">Episodio ${anime.Capitulo}</span>`;}
-    if (anime.estado) {if (anime.estado === 'En emisión' || anime.estado === 'En emision') {estadoHtml = `<span class="estado"><img src="../icons/circle-solid-blue.svg" alt="${anime.estado}">${anime.estado}</span>`;}
-      else {estadoHtml = `<span class="estado"><img src="../icons/circle-solid.svg" alt="${anime.estado}">${anime.estado}</span>`;}
-    }
-    if (!anime.estado && siguienteEpisodioUrl) {
-      estadoHtml = `<span class="estado">Capitulo ${siguienteEpisodioUrl}</span>`;
-    }
-    if (anime.rating) {ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${anime.rating}">${anime.rating}</span>`;}
-    
-    if (siguienteEpisodioUrl) {linkbase = `<a href="/ver?id=${anime.id}&episode=${siguienteEpisodioUrl}">`;
-    }
-    div.innerHTML = `
-    ${linkbase}
-      <div class="container-img">
-        <img src="${anime.portada}" class="cover" alt="${anime.titulo}">
-        <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-        ${chapterHtml}
-        ${estadoHtml}
-        ${ratingHtml}
-      </div>
-      <strong>${anime.titulo}</strong>
-    </a>`;
-    div.addEventListener('click', () => {
-      const strong = div.querySelector('strong');
-      const containerImg = div.querySelector('.container-img');
-      const rating = div.querySelector('.rating');
-      
-      if (strong) strong.style.setProperty('view-transition-name', 'title' + anime.id);
-      if (containerImg) containerImg.style.setProperty('view-transition-name', anime.id);
-      if (rating && ratingHtml) rating.style.setProperty('view-transition-name', 'rating' + anime.id);
-    });
-    
-    return div;
-}
 
 function leerCache(key) {
     try {
@@ -819,7 +775,7 @@ async function cargarUltimosCapitulos() {
         
         const fragment = document.createDocumentFragment();
         datos.forEach(anime => {
-          const card = createAnimeCard({
+          const card = crearAnimeCard({
             id: anime.id || getIdFromUrl(anime.url),
             portada: anime.image || anime.cover || '',
             titulo: anime.title || 'Sin título',
@@ -917,7 +873,7 @@ async function cargarhistorial() {
           id: clave.replace('anime_', ''), 
           titulo: datos.titulo || 'Sin título',
           estado: datos.estado || 'Sin estado',
-          rating: datos.rating || 'Sin rating',
+          rating: datos.rating || '',
           portada: datos.portada || '',
           _cachedAt: datos._cachedAt
         });
@@ -947,7 +903,7 @@ async function cargarhistorial() {
       historialContainer.innerHTML = '';
       const fragment = document.createDocumentFragment();
       animesAMostrar.forEach(anime => {
-        const card = createAnimeCard(anime);
+        const card = crearAnimeCard(anime);
         if (card) fragment.appendChild(card);
       });
       historialContainer.appendChild(fragment);
@@ -981,7 +937,7 @@ function agregarAnimesAlContenedor(animes, contenedor) {
   renderFlipOptimizado(contenedor, () => {
     const fragment = document.createDocumentFragment();
     animes.forEach(anime => {
-        const card = createAnimeCard(anime);
+        const card = crearAnimeCard(anime);
         if (card) fragment.appendChild(card);
     });
     contenedor.appendChild(fragment);
@@ -1111,7 +1067,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           container.innerHTML = '';
           const fragment = document.createDocumentFragment();
           animesOrdenados.forEach(anime => {
-              const card = createAnimeCard(anime);
+              const card = crearAnimeCard(anime);
               if (card) fragment.appendChild(card);
           });
           container.appendChild(fragment);
@@ -1163,7 +1119,7 @@ async function cargarContinuarViendo() {
    renderFlipOptimizado(container, () => {
      container.innerHTML = '';
      datos.forEach(data => {
-       container.appendChild(createAnimeCard(data, data.siguienteCapitulo));
+       container.appendChild(crearAnimeCard(data, data.siguienteCapitulo));
      });
     });
     observerAnimeCards();
