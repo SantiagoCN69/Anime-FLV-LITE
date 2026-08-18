@@ -620,7 +620,6 @@ function buildHeroSlide(anime, index) {
 
 function initHeroSliderControls(container, slidesLength) {
   const track = container.querySelector('.hero-slider__track');
-  const dotsWrap = container.querySelector('.hero-slider__dots');
   let current = 0;
   let autoplayId = null;
 
@@ -637,9 +636,6 @@ function initHeroSliderControls(container, slidesLength) {
     }
     
     track.children[current]?.classList.add('active');
-    
-    dotsWrap.querySelector('.hero-slider__dot.active')?.classList.remove('active');
-    dotsWrap.children[current]?.classList.add('active');
   };
 
   const startAutoplay = () => {
@@ -658,13 +654,6 @@ function initHeroSliderControls(container, slidesLength) {
     stopAutoplay();
     startAutoplay();
   };
-
-  dotsWrap.addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    goTo(Number(btn.dataset.idx));
-    resetAutoplay();
-  });
 
   container.querySelector('.hero-slider__prev').addEventListener('click', () => {
     goTo(current - 1);
@@ -738,9 +727,6 @@ function cargarHeroSlider() {
     <button type="button" class="hero-slider__next" aria-label="Siguiente">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </button>
-    <div class="hero-slider__dots">
-      ${animes.map((_, i) => `<button type="button" class="hero-slider__dot ${i === 0 ? 'active' : ''}" data-idx="${i}" aria-label="Ir al slide ${i + 1}"></button>`).join('')}
-    </div>
   `;
 
   const track = container.querySelector('.hero-slider__track');
