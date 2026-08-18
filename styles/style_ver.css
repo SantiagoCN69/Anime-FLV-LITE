@@ -277,7 +277,7 @@ main section:nth-child(2) {
   gap: 8px;
 }
 #share {
-  background: var(--b);
+  background: var(--p);
   border: none;
   border-radius: 99px;
   width: 31px;
