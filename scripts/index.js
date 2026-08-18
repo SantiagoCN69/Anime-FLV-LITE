@@ -218,7 +218,8 @@ function crearElementoSiguienteCapitulo(itemData) {
   
   btn.addEventListener('click', () => {
     btn.getElementsByClassName("texto-2-lineas")[0].style.setProperty('view-transition-name', 'title-' + itemData.id);
-    btn.getElementsByClassName("texto-episodio")[0].style.setProperty('view-transition-name', itemData.id + '-' + itemData.siguienteCapitulo);
+    btn.getElementsByClassName("portada-anime")[0].style.setProperty('view-transition-name', itemData.id + '-' + itemData.siguienteCapitulo);
+    btn.getElementsByClassName("texto-episodio")[0].style.setProperty('view-transition-name', 'episodio-' + itemData.id);
   });
 
   return btn;
@@ -698,8 +699,17 @@ function initHeroSliderControls(container, slidesLength) {
     const slide = link.closest('.hero-slide');
     if (slide) {
       const id = slide.dataset.id;
-      slide.querySelector('.hero-slide__title')?.style.setProperty('view-transition-name', 'title' + id);
-      slide.querySelector('.hero-slide__bg')?.style.setProperty('view-transition-name', id);
+      const isVerAhora = link.classList.contains('hero-btn--primary');
+      
+      slide.querySelector('.hero-slide__title')?.style.setProperty('view-transition-name', 'title-' + id);
+      
+      if (isVerAhora) {
+        // Botón "Ver ahora": usa id + "-1" para el bg
+        slide.querySelector('.hero-slide__bg')?.style.setProperty('view-transition-name', id + '-1');
+      } else {
+        // Botón "Más información": usa cover- + id para el bg
+        slide.querySelector('.hero-slide__bg')?.style.setProperty('view-transition-name', 'cover-' + id);
+      }
     }
   });
 
