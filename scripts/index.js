@@ -217,8 +217,8 @@ function crearElementoSiguienteCapitulo(itemData) {
   btn.appendChild(contenedorTexto);
   
   btn.addEventListener('click', () => {
-    btn.getElementsByClassName("texto-2-lineas")[0].style.setProperty('view-transition-name', 'title' + itemData.id);
-    btn.getElementsByClassName("texto-episodio")[0].style.setProperty('view-transition-name', 'episodio' + itemData.id);
+    btn.getElementsByClassName("texto-2-lineas")[0].style.setProperty('view-transition-name', 'title-' + itemData.id);
+    btn.getElementsByClassName("texto-episodio")[0].style.setProperty('view-transition-name', itemData.id + '-' + itemData.siguienteCapitulo);
   });
 
   return btn;
@@ -1507,7 +1507,7 @@ function inicializarContinuarViendo() {
       const capsVistos = Math.max((item.siguienteCapitulo || 1) - 1, 1);
       
       return `
-        <a class="continue-card anime-card" href="/ver?id=${item.id}&episode=${item.siguienteCapitulo}">
+        <a class="continue-card anime-card" href="/ver?id=${item.id}&episode=${item.siguienteCapitulo}" data-id="${item.id}" data-episode="${item.siguienteCapitulo}">
           <div class="card-thumbnail container-img">
             <img src="${item.portada}" alt="${item.titulo}" onerror="this.src='path/to/default/image.png'">
             <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
@@ -1517,9 +1517,22 @@ function inicializarContinuarViendo() {
           <div class="card-info">
             <h3 class="card-title">${item.titulo}</h3>
             <span class="card-meta">${capsVistos}/${total} eps</span>
-          </div>
+          </div>  
         </a>`;
     }).join('');
+    
+    // Agregar view transitions a las tarjetas de continuar viendo
+    grid.querySelectorAll('.continue-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id;
+        const episode = card.dataset.episode;
+        const title = card.querySelector('.card-title');
+        const img = card.querySelector('.card-thumbnail img');
+        
+        if (title) title.style.setProperty('view-transition-name', 'title-' + id);
+        if (img) img.style.setProperty('view-transition-name', id + '-' + episode);
+      });
+    });
 
     // Inicializar botones scroll
     ['prev', 'next'].forEach(dir => {

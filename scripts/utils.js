@@ -1,11 +1,10 @@
 //aplicar viewanme y eliminar a otras 
-export function aplicarViewTransition(id, ratingHtml) {
-if (ratingHtml){
-  document.querySelectorAll("#anime-" + id +'.rating').forEach(el => el.style.setProperty('view-transition-name', 'rating' + id));
-  }
-
-const cards = document.querySelectorAll('.anime-card.show a');
-cards.forEach(card => {
+export function aplicarViewTransition(id, ratingHtml, clickedElement = null) {
+  console.log("aplicando view transition");
+  
+  // Limpiar view transitions de otras tarjetas
+  const cards = document.querySelectorAll('.anime-card.show a');
+  cards.forEach(card => {
     const imgContainer = card.querySelector('.container-img');
     const strong = card.querySelector('strong');
     const rating = card.querySelector('.rating');
@@ -14,10 +13,25 @@ cards.forEach(card => {
             el.style.removeProperty('view-transition-name');
         }
     });
-});
+  });
   
-  document.querySelectorAll('#anime-' + id + ' strong').forEach(el => el.style.setProperty('view-transition-name', 'title' + id));
-  document.querySelectorAll('#anime-' + id + ' .container-img').forEach(el => el.style.setProperty('view-transition-name', id));
+  // Si se proporciona el elemento clickeado, aplicar solo a ese
+  if (clickedElement) {
+    const strong = clickedElement.querySelector('strong');
+    const containerImg = clickedElement.querySelector('.container-img');
+    const rating = clickedElement.querySelector('.rating');
+    
+    if (strong) strong.style.setProperty('view-transition-name', 'title-' + id);
+    if (containerImg) containerImg.style.setProperty('view-transition-name', 'cover-' + id);
+    if (rating && ratingHtml) rating.style.setProperty('view-transition-name', 'rating-' + id);
+  } else {
+    // Comportamiento original: aplicar a todos con el mismo ID
+    if (ratingHtml) {
+      document.querySelectorAll("#anime-" + id +'.rating').forEach(el => el.style.setProperty('view-transition-name', 'rating-' + id));
+    }
+    document.querySelectorAll('#anime-' + id + ' strong').forEach(el => el.style.setProperty('view-transition-name', 'title-' + id));
+    document.querySelectorAll('#anime-' + id + ' .container-img').forEach(el => el.style.setProperty('view-transition-name', 'cover-' + id));
+  }
 }
 
 // Manejar el scroll para el efecto del header
