@@ -1700,9 +1700,9 @@ justify-content: space-between;
     margin-bottom: 0 !important;
   }
   .hero-slide__actions {
-    width: calc(100% - 1.4rem);
+    width: calc(100% - 2rem);
     position: absolute;
-    bottom: .7rem;
+    bottom: 1rem;
     align-items: stretch;
     a {
       flex: 1;
