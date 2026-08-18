@@ -444,8 +444,10 @@ btnEstadoCapitulo.addEventListener("click", async () => {
 
 
 function crearNoticiaHTML(noticia, base64img) {
-  const tarjeta = document.createElement('div');
+  const tarjeta = document.createElement('a');
   tarjeta.className = 'tarjeta-noticia';
+  tarjeta.href = `https://somoskudasai.com/noticias/${noticia.slug}`;
+  tarjeta.target = '_blank';
   
   // Usar la imagen en base64 si está disponible, si no, usar la URL original
   const imagenSrc = base64img || noticia.image;
@@ -458,8 +460,7 @@ function crearNoticiaHTML(noticia, base64img) {
     <h3 class="noticia-titulo">${noticia.title}</h3>
     <p class="noticia-fecha">${noticia.date}</p>
   `;
-  
-  tarjeta.onclick = () => window.open(`https://somoskudasai.com/noticias/${noticia.slug}`, '_blank');
+
   return tarjeta;
 }
 

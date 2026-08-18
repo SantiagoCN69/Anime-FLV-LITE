@@ -1201,7 +1201,7 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   position: relative;
   display: flex;
-  border-radius: 15px;
+  border-radius: 10px;
 }
 .anime-card span {
   position: absolute;
