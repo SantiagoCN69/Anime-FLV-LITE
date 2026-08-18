@@ -106,7 +106,7 @@ header {
   backdrop-filter: blur(30px) !important;
   border-color: rgba(var(--bgt), .3) !important;
 }
- .scrolled div {
+ .scrolled #continuar-viendo-sidebar {
   border-color: rgba(var(--bgt), .3) !important;
  }
 .scrolled #busqueda {
@@ -398,7 +398,7 @@ header.search-active .logout-modal {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--t2); 
+  background-color: var(--t1); 
   -webkit-mask-size: contain;
   -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center;
   mask-size: contain;
