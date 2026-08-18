@@ -157,7 +157,7 @@ function renderRelacionados(anime) {
   const getRelationText = (type) => {
     const types = {
       1: 'Precuela', 2: 'Secuela', 4: 'Versión alternativa',
-      5: 'Historia paralela', 6: 'Resumen', 8: 'Historia principal', 10: 'Otro'
+      5: 'Historia paralela', 6: 'Resumen', 7: 'Historia completa', 8: 'Historia principal', 10: 'Otro'
     };
     return types[type] || `Tipo ${type}`; 
   };
