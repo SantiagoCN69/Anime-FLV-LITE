@@ -442,6 +442,33 @@ btnEstadoCapitulo.addEventListener("click", async () => {
   }
 });
 
+// Funcionalidad del botón de compartir
+const btnShare = document.getElementById("share");
+if (btnShare) {
+  btnShare.addEventListener("click", async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: document.title,
+          text: `Mira ${animeId} - Episodio ${episodioActualIndex}`,
+          url: window.location.href
+        });
+      } else {
+        // Fallback para navegadores que no soportan Web Share API
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          const originalText = btnShare.innerHTML;
+          btnShare.innerHTML = '<img src="icons/check-solid.svg" alt="Copiado">';
+          setTimeout(() => {
+            btnShare.innerHTML = originalText;
+          }, 2000);
+        });
+      }
+    } catch (error) {
+      console.error("Error al compartir:", error);
+    }
+  });
+}
+
 
 function crearNoticiaHTML(noticia, base64img) {
   const tarjeta = document.createElement('a');
