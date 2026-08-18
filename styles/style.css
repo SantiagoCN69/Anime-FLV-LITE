@@ -5,7 +5,7 @@
 }
 
 ::view-transition-group(*) {
-  animation-duration: .5s;
+  animation-duration: .3s;
   z-index: 1;
   border-radius: 10px;
 }
