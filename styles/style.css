@@ -1018,6 +1018,9 @@ span {
 .headder-section:not(.headder-section1) {
   grid-template-rows: 1fr;
 }
+#header-section-historial {
+  margin-top: 2rem;
+}
 /* @media screen and (max-width: 734px) {
   .headder-section:not(.headder-section1) svg {
     display: none;
