@@ -1132,7 +1132,6 @@ justify-content: space-between;
 #contenedor-animes.layout3 .anime-card {
   display: flex;
   flex-direction: row;
-  transition: flex-direction 0.35s ease;
 }
 
 #contenedor-animes.layout3 .anime-card .container-img {
