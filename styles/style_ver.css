@@ -29,7 +29,7 @@ body::before {
 }
 
 body.fondo-animado::before {
-  animation: cargafondo .6s ease-out forwards;
+  animation: cargafondo 1s ease-out forwards;
 }
 
 @keyframes cargafondo {
@@ -730,8 +730,8 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 @media screen and (max-width:1100px) {
   main {
     flex-direction: column;
-    height: clamp(670px, calc(100dvh - 80px - 2rem), 1000px);
-    height: clamp(670px, calc(calc(var(--vh, 1vh) * 100) - 80px - 2rem), 1000px) !important;
+    height: clamp(670px, calc(100dvh - 80px - 3.5rem), 1000px);
+    height: clamp(670px, calc(calc(var(--vh, 1vh) * 100) - 80px - 3.5rem), 1000px) !important;
     transition: height .3s;
     margin-inline: 1rem;
     width: calc(100% - 2rem);
@@ -763,6 +763,11 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   }
 }
 @media screen and (max-width:600px){
+   main {
+        height: clamp(670px, calc(100dvh - 80px - 2.5rem), 1000px);
+    height: clamp(670px, calc(calc(var(--vh, 1vh) * 100) - 80px - 2.5rem), 1000px) !important;
+    margin-top: calc(80px + 1rem);
+   }
   .botones-reproductor,  .botones-reproductor > div{
     gap: 8px;
   }
