@@ -480,11 +480,11 @@ header.search-active .logout-modal {
   justify-content: space-between;
   flex-shrink: 0;
   min-height: 510px;
-  height: calc(100vh - 90px - 2rem);
+  height: calc(100vh - 90px - 3rem);
   max-height: 613px;
   list-style: none;
   padding: 0;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
   position: relative;
   color: var(--t1);
 }
@@ -818,7 +818,7 @@ main {
 .content-section {
   margin-top:calc(88px + 1.5rem) !important;
   margin-inline: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   flex-grow: 1;
   display: block;
   border-radius: 3px;
@@ -893,7 +893,7 @@ main {
   grid-template-rows: auto auto;
   gap: 0 1rem;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   
   > svg {
     grid-column: 1;
@@ -1020,7 +1020,7 @@ span {
   grid-template-rows: 1fr;
 }
 #header-section-historial {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
 }
 /* @media screen and (max-width: 734px) {
   .headder-section:not(.headder-section1) svg {

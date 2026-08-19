@@ -922,7 +922,7 @@ display: none;
 grid-area: container4;
 flex-direction: column;
 position: relative;
-margin-bottom: 2rem;
+margin-bottom: 1.5rem;
 }
 /* Contenedor principal desplazable */
 .timeline-container {
@@ -1340,5 +1340,5 @@ max-height: 500px;
 }
 .recomendaciones-ia-busqueda {
   margin: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
