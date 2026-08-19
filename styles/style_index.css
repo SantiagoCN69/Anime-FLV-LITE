@@ -1951,6 +1951,7 @@ justify-content: space-between;
   position: static !important;
   color: #888888;
   font-size: 0.85rem;
+  padding: 0 !important;
 }
 /* Estilos para botones de scroll horizontal */
 .scroll-container-wrapper {
