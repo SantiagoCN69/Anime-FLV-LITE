@@ -776,7 +776,7 @@ header.search-active .logout-modal {
 @media (max-width: 600px) {
   #indexpagination.floating ~ main { margin-bottom: 6rem; }
   #indexpagination.bottom ~ main { margin-bottom: 70px; }
-  #indexpagination.top ~ main {padding-top: calc(90px - 1.5rem);}
+  #indexpagination.top ~ main {padding-top: calc(90px - 2rem);}
   #indexpagination.bottom ~ .sidebar {height: calc(100vh - 80px - 68px);}
   #indexpagination.floating ~ .sidebar {padding-bottom: 6rem;}
   #indexpagination.floating, #indexpagination.bottom {z-index: 1000;}
@@ -817,7 +817,7 @@ main {
 }
 /* Contenido principal */
 .content-section {
-  margin-top:calc(80px + 1.5rem) !important;
+  margin-top:calc(80px + 2rem) !important;
   margin-inline: 2rem;
   margin-bottom: 1.5rem;
   flex-grow: 1;

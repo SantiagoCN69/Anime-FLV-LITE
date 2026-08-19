@@ -62,7 +62,7 @@ main {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  margin-top: calc(80px + 1.5rem);
+  margin-top: calc(80px + 2rem);
   margin-bottom: 1.5rem;
   margin-inline: 2rem;
   width: calc(100% - 4rem);
