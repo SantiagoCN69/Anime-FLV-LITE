@@ -742,6 +742,7 @@ header.search-active .logout-modal {
 
 /* ================= BOTTOM (YouTube) ================= */
 #indexpagination.bottom {
+  height: 68px;
   position: fixed;
   bottom: 0; 
   width: 100%;
@@ -776,7 +777,7 @@ header.search-active .logout-modal {
   #indexpagination.floating ~ main { margin-bottom: 6rem; }
   #indexpagination.bottom ~ main { margin-bottom: 70px; }
   #indexpagination.top ~ main {padding-top: calc(90px - 1.5rem);}
-  #indexpagination.bottom ~ .sidebar {height: calc(100vh - 80px - 69px);}
+  #indexpagination.bottom ~ .sidebar {height: calc(100vh - 80px - 68px);}
   #indexpagination.floating ~ .sidebar {padding-bottom: 6rem;}
   #indexpagination.floating, #indexpagination.bottom {z-index: 1000;}
 }
@@ -1080,6 +1081,7 @@ section.content-section h2:first-of-type::after {
   border-top: 1px solid var(--br);
   height: auto;
   padding: 1rem;
+  padding-bottom: 1.5rem;
 }
 #ultimos-caps-viendo {
   margin-top: 1rem;
