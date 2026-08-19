@@ -1125,9 +1125,9 @@ justify-content: space-between;
 
 /* ===== LAYOUT 2: TARJETAS GRANDES ===== */
 
-#contenedor-animes.layout2 .anime-card strong {
+/* #contenedor-animes.layout2 .anime-card strong {
   text-align: center;
-}
+} */
 
 /* ===== LAYOUT 3: LISTA ===== */
 #contenedor-animes.layout3 .anime-card {
