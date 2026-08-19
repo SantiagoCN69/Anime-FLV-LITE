@@ -68,7 +68,7 @@ header {
 #btn-volver {
   z-index: 1;
   position: absolute;
-  top: calc(88px + 2rem);
+  top: calc(88px + 1.5rem);
   font-weight: 600;
   left: 2rem;
   background: var(--p);
@@ -85,7 +85,7 @@ header {
   }
 }
 .anime-details {
-  padding-top: 225px;
+  padding-top: calc(88px + 7rem);
   padding-inline: 4rem;
   display: grid;
   grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
