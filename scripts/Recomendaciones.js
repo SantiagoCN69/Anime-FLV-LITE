@@ -51,6 +51,14 @@ let userid = null;
     });
 
     observerAnimeCards();
+
+    // Hacer click automático al botón de generar personalizadas al cargar la página
+    setTimeout(() => {
+        const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas");
+        if (btnGenerarPersonalizadas) {
+            btnGenerarPersonalizadas.click();
+        }
+    }, 500);
 })()
 
 // Funciones para manejar el caché de animes
