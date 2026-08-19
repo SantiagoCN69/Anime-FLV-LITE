@@ -928,7 +928,8 @@ async function cargarEpisodios() {
 function aplicarFondoAnime(anime) {
   const imagenUrl = anime.portada || anime.banner;
   if (imagenUrl) {
-    document.body.style.backgroundImage = `url('${imagenUrl}')`;
+    document.body.style.setProperty('--background-image', `url('${imagenUrl}')`);
+    document.body.classList.add('fondo-animado');
   }
 }
 
