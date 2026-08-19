@@ -15,7 +15,7 @@ body.cv-sidebar #section-continuar-viendo {
 #section-continuar-viendo {
   transition: height 0.3s ease-in-out, margin-bottom 0.3s ease-in-out, opacity 0.2s ease-in-out;
   overflow: hidden;
-  height: 238px;
+  height: 241px;
 }
 /* 3. Para "Ambas" (cv-ambas), no ponemos "display: none" a ninguno,
       por lo que se mostrarán los dos normalmente. */
@@ -1859,15 +1859,14 @@ justify-content: space-between;
   border-top: 1px solid var(--br);
 }
 #section-continuar-viendo {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 /* Contenedor del grid */
 .continuar-viendo-grid {
   display: flex;
-  gap: 20px;
+  gap: 17px;
   overflow-x: auto; /* Para hacer scroll si hay muchos */
   overflow-y: hidden;
-  padding-bottom: 10px;
 }
 .continuar-viendo-grid::-webkit-scrollbar {
   display: none;
@@ -1879,8 +1878,8 @@ justify-content: space-between;
   width: 200px; /* Ajusta según tu layout */
   transition: transform 0.2s ease;
   flex-shrink: 0;
-  opacity: 1 !important;
-  visibility: visible !important;
+  /* opacity: 1 !important;
+  visibility: visible !important; */
 }
 
 .continue-card:hover img {
@@ -1889,13 +1888,7 @@ justify-content: space-between;
 
 /* Contenedor de la imagen y barra */
 .card-thumbnail {
-  position: relative;
-  width: 100%;
   aspect-ratio: 16/9;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #1a1a1a;
-  margin-bottom: 10px;
 }
 
 .card-thumbnail img {
@@ -1904,26 +1897,31 @@ justify-content: space-between;
   object-fit: cover;
   transition: transform 0.2s ease;
 }
-
+.continue-card .container-img::after {
+  bottom: 0 !important;
+}
 /* Badge del Episodio */
 .ep-badge {
-  position: absolute;
   bottom: 10px !important; /* Espacio para que no pise la barra */
-  right: 8px;
+  left: 4px !important;
+  bottom: 4px !important;
   font-family: monospace, sans-serif;
   font-size: .8rem !important;
   color: #ffffff;
   font-weight: 600;
+  background: none !important;
+  backdrop-filter: unset !important;
 }
 
 /* Barra de progreso */
 .progress-track {
   z-index: 3;
   position: absolute;
-  bottom: 0;
   left: 0;
   width: 100%;
   height: 4px;
+  border-radius: 99px;
+  overflow: hidden;
   background-color: rgba(var(--bgt), .5);
 }
 
@@ -1937,11 +1935,12 @@ justify-content: space-between;
 .card-info {
   display: flex;
   flex-direction: column;
+  margin-top: 8px;
 }
 
 .continue-card strong {
   margin: 0;
-  margin-bottom: 5px;
+  margin-top: 12px;
   white-space: nowrap;
   overflow: hidden;
   height: unset !important;
@@ -1949,10 +1948,13 @@ justify-content: space-between;
 }
 
 .card-meta {
+  font-weight: unset !important;
   position: static !important;
-  color: #888888;
+  color: var(--t1);
+  opacity: 0.7 !important;
   font-size: 0.85rem;
   padding: 0 !important;
+  height: unset !important;
 }
 /* Estilos para botones de scroll horizontal */
 .scroll-container-wrapper {

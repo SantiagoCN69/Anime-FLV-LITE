@@ -1508,9 +1508,9 @@ function inicializarContinuarViendo() {
             <img src="${item.portada}" alt="${item.titulo}" onerror="this.src='path/to/default/image.png'">
             <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
             <span class="chapter ep-badge">EP ${item.siguienteCapitulo}</span>
-            <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%"></div></div>
           </div>
           <div class="card-info">
+          <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%"></div></div>
             <strong>${item.titulo}</strong>
             <span class="card-meta">${capsVistos}/${total} eps</span>
           </div>  
