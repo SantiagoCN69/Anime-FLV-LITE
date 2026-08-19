@@ -1,9 +1,13 @@
 const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
 const episodeNumber = params.get("episode");
+const serversParam = params.get("servers"); // "sub" o "dob"
 const btnVolver = document.getElementById("btn-volver-anime");
 const tituloAnime = document.getElementById("titulo-anime");
 btnVolver.href = `/anime?id=${animeId}`;
+
+// Leer preferencia de servidores de localStorage
+const serversPreference = localStorage.getItem("serverPreference");
 
 document.title = "AniZen - " + animeId + " - " + episodeNumber;
 
@@ -25,7 +29,8 @@ let episodios = [];
 let episodioActualIndex = parseInt(episodeNumber);
 let embeds = [];
 let bloquearAnuncios = true;
-let modoDoblado = false;
+// Prioridad: parámetro URL > preferencia localStorage > default (sub)
+let modoDoblado = serversParam === "dob" || (serversParam === null && serversPreference === "dob");
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 
@@ -115,9 +120,10 @@ function seleccionarCapitulo(numCapitulo) {
   // Actualizar estado
   episodioActualIndex = numCapitulo;
   
-  // Actualizar URL sin recargar la página
+  // Actualizar URL sin recargar la página (incluyendo el modo actual)
   const newUrl = new URL(window.location);
   newUrl.searchParams.set("episode", numCapitulo);
+  newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
   window.history.pushState({}, "", newUrl);
   
   // Cerrar dropdown inmediatamente
@@ -238,12 +244,24 @@ btnBloquear.addEventListener("click", () => {
 // Evento para el botón de cambio de servidores
 const btnCambioServers = document.getElementById("btn-cambio-servers");
 if (btnCambioServers) {
+  // Actualizar estado inicial del botón según el parámetro URL o preferencia
+  btnCambioServers.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+  btnCambioServers.classList.toggle("activo", modoDoblado);
+  
   btnCambioServers.addEventListener("click", function() {
     modoDoblado = !modoDoblado;
     
     // Cambiamos el texto del botón según el estado
     this.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
     this.classList.toggle("activo", modoDoblado); // Por si quieres darle estilos CSS extra
+    
+    // Guardar preferencia en localStorage
+    localStorage.setItem("serverPreference", modoDoblado ? "dob" : "sub");
+    
+    // Actualizar URL con el nuevo modo
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
+    window.history.pushState({}, "", newUrl);
     
     // Al cambiar de modo, recargamos la vista del episodio actual (usará caché, así que es instantáneo)
     if (typeof episodioActualIndex !== 'undefined' && episodioActualIndex !== null) {
@@ -255,24 +273,26 @@ function actualizarEstadoBotonDoblado(servidores) {
   const btn = document.getElementById("btn-cambio-servers");
   if (!btn) return;
 
-  // Verificamos si existe al menos un servidor que contenga "(lat)" en su nombre
   const tieneDoblados = servidores.some(s => 
     (s.name || "").toLowerCase().includes("(lat)")
   );
 
-  // Si no hay doblados, deshabilitamos el botón y lo dejamos en modo "Subtitulado"
   if (!tieneDoblados) {
     btn.disabled = true;
-    // Forzamos el modo subtitulado si el botón se deshabilita
     if (modoDoblado) {
       modoDoblado = false;
       btn.textContent = "Server Doblado";
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set("servers", "sub");
+      window.history.replaceState({}, "", newUrl);
+      // No guardar en localStorage en cambio automático
     }
   } else {
-    // Si hay doblados, lo habilitamos
     btn.disabled = false;
     btn.style.opacity = "1";
     btn.style.cursor = "pointer";
+    btn.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+    btn.classList.toggle("activo", modoDoblado);
   }
 }
 
@@ -926,7 +946,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `/ver?id=${animeId}&episode=${ep.number}`);
+  history.replaceState({}, "", `/ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;
@@ -1034,8 +1054,26 @@ if (siguiente) {
 }
 
 function renderizarServidores(todosLosServidores) {
-  // 🔥 PASO NUEVO: Filtramos los servidores antes de renderizarlos
-  const servidores = filtrarServidores(todosLosServidores, modoDoblado);
+  // Filtramos los servidores antes de renderizarlos
+  let servidores = filtrarServidores(todosLosServidores, modoDoblado);
+
+  // Si no hay servidores del modo seleccionado, cambiar al otro modo automáticamente
+  if (!servidores?.length && modoDoblado) {
+    modoDoblado = false;
+    servidores = filtrarServidores(todosLosServidores, false);
+    
+    // Actualizar URL solo (no guardar en localStorage)
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set("servers", "sub");
+    window.history.replaceState({}, "", newUrl);
+    
+    // Actualizar botón
+    const btn = document.getElementById("btn-cambio-servers");
+    if (btn) {
+      btn.textContent = "Server Doblado";
+      btn.classList.remove("activo");
+    }
+  }
 
   if (!servidores?.length) {
     document.getElementById("video").innerHTML = modoDoblado 
