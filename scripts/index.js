@@ -756,23 +756,10 @@ async function cargarUltimosCapitulos() {
           return;
         }
       
-        const getIdFromUrl = (url) => {
-          if (!url) return '';
-          const clean = url.replace(/\/+$/, '');
-          const parts = clean.split('/');
-          let last = parts[parts.length - 1];
-          if (/^\d+$/.test(last)) {
-            last = parts[parts.length - 2] || '';
-          } else {
-            last = last.replace(/-\d+$/, '');
-          }
-          return last;
-        };
-        
         const fragment = document.createDocumentFragment();
         datos.forEach(anime => {
           const card = crearAnimeCard({
-            id: anime.id || getIdFromUrl(anime.url),
+            id: anime.id,
             portada: anime.image || anime.cover || '',
             titulo: anime.title || 'Sin título',
             Capitulo: anime.chapter?.toString() || anime.episode?.toString() || ''
