@@ -313,18 +313,23 @@ async function esBannerValido(url) {
 async function aplicarFondoAnime(anime) {
   const portada = anime.portada || anime.cover;
   const banner = anime.banner;
-  document.body.style.backgroundImage = `url(${banner})`;
-  if (!banner) {
-    document.body.style.backgroundImage = portada ? `url(${portada})` : '';
+  
+  const imagenUsar = banner ? banner : portada;
+  
+  if (!imagenUsar) {
+    document.body.style.setProperty('--background-image', 'none');
+    document.body.classList.add('fondo-animado');
     return;
   }
 
   const bannerValido = await esBannerValido(banner);
 
   if (bannerValido) {
-    document.body.style.backgroundImage = `url(${banner})`;
+    document.body.style.setProperty('--background-image', `url(${banner})`);
+    document.body.classList.add('fondo-animado');
   } else {
-    document.body.style.backgroundImage = portada ? `url(${portada})` : '';
+    document.body.style.setProperty('--background-image', portada ? `url(${portada})` : 'none');
+    document.body.classList.add('fondo-animado');
   }
 }
 const renderAnime = anime => {

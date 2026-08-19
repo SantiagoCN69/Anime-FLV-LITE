@@ -13,20 +13,27 @@ body::before {
   width: 105vw;
   height: 105vh;
 
-  background-image: inherit;
+  background-image: var(--background-image);
   background-size: cover;
   background-position: center;
-  opacity: 1;
   z-index: -2;
   pointer-events: none;
-    animation: zoom 1.5s ease-out forwards;
+  opacity: 0;
+  transform: scale(1);
+  filter: blur(0px) brightness(0.7) saturate(1.2);
+}
+
+body.fondo-animado::before {
+  animation: zoom .5s ease-out forwards;
 }
 @keyframes zoom {
   0% {
+    opacity: 0;
     transform: scale(1);
     filter: blur(0px) brightness(0.7) saturate(1.2);
   }
   100% {
+    opacity: 1;
     transform: scale(1.1);
     filter: blur(5px) brightness(0.5) saturate(1.1);
   }
