@@ -480,7 +480,7 @@ header.search-active .logout-modal {
   justify-content: space-between;
   flex-shrink: 0;
   min-height: 510px;
-  height: calc(100vh - 89px - 2rem);
+  height: calc(100vh - 90px - 2rem);
   max-height: 613px;
   list-style: none;
   padding: 0;
@@ -596,7 +596,7 @@ header.search-active .logout-modal {
 #indexpagination {display: none;}
 
 @media screen and (max-width: 600px) {
-  .content-section {margin: 0 1rem 2rem 1rem !important;}
+  .content-section {margin-inline: 1rem !important;}
   #indexpagination {display: flex;}
   .indexbtnmovil {display: none !important;}
   #btn-Recomendaciones {display: none;}
@@ -671,6 +671,7 @@ header.search-active .logout-modal {
 
 /* ================= TOP ================= */
 #indexpagination.top {
+  height: 90px;
   top: 88px;
   transition-duration: 0.1s;
   background: transparent !important;
@@ -816,13 +817,13 @@ main {
 /* Contenido principal */
 .content-section {
   margin-top:calc(88px + 1.5rem) !important;
-
+  margin-inline: 2rem;
+  margin-bottom: 2rem;
   flex-grow: 1;
   display: block;
   border-radius: 3px;
   min-height: calc(100dvh - 267px);
   position: relative;
-  margin: 2rem;
   opacity: 1;
   transition: opacity .3s, margin .3s;
   display: flex;
@@ -1155,7 +1156,7 @@ section.content-section h2:first-of-type::after {
 .anime-card {
   /* background-color: var(--p); */
   position: relative;
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
   height: fit-content;
