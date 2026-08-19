@@ -547,6 +547,7 @@ z-index: -1;
 }
 .carga {
   border: 1px solid var(--br);
+  border-radius: 10px;
 }
 .carga strong {
   text-align: center;
