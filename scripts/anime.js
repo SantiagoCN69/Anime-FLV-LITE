@@ -823,8 +823,7 @@ async function obtenerCapitulosVistos(animeId) {
     return []; 
   }
 }
-
-//comparar datos antes de jecutar renderAnime
+// Función optimizada para comparar datos según la nueva estructura del backend
 function compararDatos(a, b) {
   // Validación rápida de nulos/undefined
   if (!a || !b || typeof a !== 'object' || typeof b !== 'object') {
@@ -835,17 +834,17 @@ function compararDatos(a, b) {
   const strEqual = (str1, str2) => 
     String(str1 || '').trim() === String(str2 || '').trim();
 
-  // Comparación de campos básicos (validación temprana)
+  // Comparación de campos básicos (actualizados según nuevo backend)
   const camposBasicos = [
     ['titulo', strEqual],
     ['portada', strEqual],
     ['banner', strEqual],
     ['descripcion', strEqual],
-    ['rating', strEqual],
     ['estado', strEqual],
     ['category', strEqual],
     ['startDate', strEqual],
-    ['internalId', strEqual]
+    ['internalId', strEqual],
+    ['id', strEqual] // Nuevo campo obligatorio
   ];
 
   if (camposBasicos.some(([campo, comparar]) => 
@@ -886,38 +885,17 @@ function compararDatos(a, b) {
   );
 }
 
-// Función para normalizar datos de la API (maneja ambos formatos)
+// Función simplificada para normalizar datos de la API (sin sources[0].data)
 function normalizarDatosAPI(data) {
-  // Verificar si tiene el formato nuevo con "sources"
-  if (data.sources && Array.isArray(data.sources) && data.sources.length > 0) {
-    const sourceData = data.sources[0].data;
-    // Usar datos de sources[0].data si existen, si no usar datos del nivel superior
-    return {
-      titulo: sourceData?.title || data.title || '',
-      internalId: sourceData?.internalId || data.internalId || '',
-      portada: sourceData?.cover || data.cover || '',
-      banner: data.banner || '',
-      descripcion: sourceData?.synopsis || data.synopsis || '',
-      generos: sourceData?.genres || data.genres || [],
-      rating: data.rating || null,
-      estado: sourceData?.status || data.status || null,
-      category: data.category || null,
-      startDate: data.startDate || null,
-      episodios: (sourceData?.episodes || data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
-      relacionados: (data.relations || [])
-        .filter(ep => ep && ep.slug)
-        .map(ep => ({ slug: ep.slug, type: ep.type, startDate: ep.startDate, id: ep.id })) || [],
-    };
-  }
-  // Formato antiguo (directo)
+  // Ya no tenemos el formato con sources[0].data - formato directo simplificado
   return {
+    id: data.id || '', // Nuevo campo obligatorio
     titulo: data.title || '',
     internalId: data.internalId || '',
     portada: data.cover || '',
     banner: data.banner || '',
     descripcion: data.synopsis || '',
     generos: data.genres || [],
-    rating: data.rating || null,
     estado: data.status || null,
     category: data.category || null,
     startDate: data.startDate || null,
@@ -925,6 +903,10 @@ function normalizarDatosAPI(data) {
     relacionados: (data.relations || [])
       .filter(ep => ep && ep.slug)
       .map(ep => ({ slug: ep.slug, type: ep.type, startDate: ep.startDate, id: ep.id })) || [],
+    // Campos adicionales según función
+    type: data.type || null, // Para search
+    chapter: data.chapter || null, // Para getLatestEpisodes
+    url: data.url || null // Para search
   };
 }
 
