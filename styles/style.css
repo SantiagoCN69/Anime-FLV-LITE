@@ -96,7 +96,7 @@ header {
   padding: 2rem;
   width: 100%;
   margin: 0 auto;
-  height:88px;
+  height:80px;
   background: var(--p);
   gap:15px;
   border-bottom: 1px solid var(--br);
@@ -171,10 +171,6 @@ header #busqueda{
 }
 #btn-index:hover::before, #btn-directorio:hover::before {
   background-color: var(--t1);
-}
-
-#btn-Recomendaciones { 
-  display: block;
 }
 
 #busqueda {
@@ -430,11 +426,11 @@ header.search-active .logout-modal {
   flex-direction: column;
   z-index: 9;
   position: fixed;
-  top: 88px;
+  top: 80px;
   transform: translateX(-100%);
   color: var(--t1);
   width: 230px;
-  height: calc(100dvh - 88px);
+  height: calc(100dvh - 80px);
   left: 0;
   overflow-y: auto;
   border-right: 1px solid var(--br);
@@ -480,7 +476,7 @@ header.search-active .logout-modal {
   justify-content: space-between;
   flex-shrink: 0;
   min-height: 510px;
-  height: calc(100vh - 90px - 3rem);
+  height: calc(100vh - 82px - 3rem);
   max-height: 613px;
   list-style: none;
   padding: 0;
@@ -495,6 +491,9 @@ header.search-active .logout-modal {
   }
 .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
   padding: 16px 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
@@ -535,8 +534,9 @@ header.search-active .logout-modal {
 }
 .sidebar svg {
   margin-bottom: -4px;
-  margin-inline-end: 4px;
+  min-width: 20px;
   width: 20px;
+  max-width: 20px;
   height: 20px;
 }
 /* Sidebar oculto por defecto en móvil */
@@ -553,7 +553,7 @@ header.search-active .logout-modal {
     overscroll-behavior: contain;
     position: fixed;
     width: clamp(259px, 60%, 60%);
-    height: calc(100dvh - 88px);
+    height: calc(100dvh - 80px);
     transform: translateX(-120%);
     overflow-y: auto;
   }
@@ -672,7 +672,7 @@ header.search-active .logout-modal {
 /* ================= TOP ================= */
 #indexpagination.top {
   height: 90px;
-  top: 88px;
+  top: 80px;
   transition-duration: 0.1s;
   background: transparent !important;
 }
@@ -776,7 +776,7 @@ header.search-active .logout-modal {
   #indexpagination.floating ~ main { margin-bottom: 6rem; }
   #indexpagination.bottom ~ main { margin-bottom: 70px; }
   #indexpagination.top ~ main {padding-top: calc(90px - 1.5rem);}
-  #indexpagination.bottom ~ .sidebar {height: calc(100vh - 88px - 69px);}
+  #indexpagination.bottom ~ .sidebar {height: calc(100vh - 80px - 69px);}
   #indexpagination.floating ~ .sidebar {padding-bottom: 6rem;}
   #indexpagination.floating, #indexpagination.bottom {z-index: 1000;}
 }
@@ -816,7 +816,7 @@ main {
 }
 /* Contenido principal */
 .content-section {
-  margin-top:calc(88px + 1.5rem) !important;
+  margin-top:calc(80px + 1.5rem) !important;
   margin-inline: 2rem;
   margin-bottom: 1.5rem;
   flex-grow: 1;
@@ -982,10 +982,10 @@ main {
   gap: 1rem;
  }
  @media (hover: hover) {
- #btn-ver-todo:hover {
-  filter: brightness(1.1);
-  transform: scale(1.02);
-}
+  #btn-ver-todo:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+  }
  }
 @media screen and (max-width: 734px) {
   #header-ultcaps{
@@ -1149,7 +1149,7 @@ section.content-section h2:first-of-type::after {
 }
 #main {
   width: calc(100% - 2rem);
-  margin: calc(88px + 2rem) auto 2rem;
+  margin: calc(80px + 2rem) auto 2rem;
   display: none;
 }
 #ultimos-episodios {
@@ -1645,7 +1645,7 @@ margin-top: 10px;
 
 @media screen and (max-width: 1000px) {
   .sin-resultados {
-    min-height: calc(100dvh - 88px - 10px) !important;
+    min-height: calc(100dvh - 80px - 10px) !important;
 
     grid-template-columns: 1fr !important;
     grid-template-rows: repeat(4, auto) !important;
@@ -1892,29 +1892,28 @@ margin-top: 10px;
 /* Estilos del sidebar colapsado */
 .sidebar-collapsed .sidebar {
   min-width: unset;
-  width: 88px;
+  width: 80px;
 }
 .sidebar span {
   transition: opacity 0.3s ease, position 0.3s ease;
 }
 .sidebar-collapsed .sidebar span {
-  opacity: 0;
-  pointer-events: none;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none;     /* IE 10 y Edge antiguo */
-  user-select: none;
+  display: none;
 }
 .sidebar svg {
-  transition: width 0.3s ease, height 0.3s ease;
+  transition: width 0.3s ease, height 0.3s ease, max-width 0.3s ease, min-width 0.3s ease;
 }
 .sidebar-collapsed .sidebar svg {
+  min-width: 25px;
   width: 25px;
+  max-width: 25px;
   height: 25px;
 }
 .sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-capitulo) {
-  padding-inline:34px ;
+  padding-inline:30.5px ;
 }
-.sidebar-collapsed .sidebar li:not(:has(> a)):hover,
+
+.sidebar-collapsed .sidebar li:not(:has(> a)):hover,  
 .sidebar-collapsed .sidebar li a:hover {
   transform: unset;
 }
@@ -1960,6 +1959,6 @@ margin-top: 10px;
 }
 /* main */
 .sidebar-collapsed .content-section {
-  margin-left: calc(88px + 2rem);
+  margin-left: calc(80px + 2rem);
 }
 }

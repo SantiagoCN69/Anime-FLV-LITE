@@ -68,7 +68,7 @@ header {
 #btn-volver {
   z-index: 1;
   position: absolute;
-  top: calc(88px + 1.5rem);
+  top: calc(80px + 1.5rem);
   font-weight: 600;
   left: 2rem;
   background: var(--p);
@@ -85,7 +85,7 @@ header {
   }
 }
 .anime-details {
-  padding-top: calc(88px + 7rem);
+  padding-top: calc(80px + 7rem);
   padding-inline: 4rem;
   display: grid;
   grid-template-columns: minmax(200px, 20%) minmax(0, calc(80% - 25px));
@@ -1029,7 +1029,7 @@ margin-bottom: 1.5rem;
 }
 .anime-details {
   padding-inline: 1rem;
-  padding-top: calc(88px + 2rem);
+  padding-top: calc(80px + 1.5rem);
   grid-template-columns: minmax(150px, 1fr);
   grid-template-rows: auto auto auto auto;
   grid-template-areas: 
@@ -1330,13 +1330,13 @@ max-height: 500px;
 
 @media screen and (min-width: 701px) {
   #main, .sin-resultados {
-    margin-top: calc(88px + 6rem);
+    margin-top: calc(80px + 6rem);
   }
 }
 .sin-resultados {
   margin: unset !important;
   margin-inline: 1rem !important;
-  margin-top: calc(88px + 2rem) !important;
+  margin-top: calc(80px + 2rem) !important;
 }
 .recomendaciones-ia-busqueda {
   margin: 1rem;
