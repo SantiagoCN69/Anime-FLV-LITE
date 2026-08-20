@@ -953,6 +953,9 @@ mask: url('../icons/pencil.svg') no-repeat center;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.3rem;
+  span {
+    opacity: 1 !important;
+  }
 }
 #subheader {
   display: flex;
