@@ -888,6 +888,7 @@ main {
 }
 
 #header-ultcaps, .headder-section {
+  min-height: 53px;
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
