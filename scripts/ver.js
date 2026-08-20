@@ -894,7 +894,7 @@ async function cargarEpisodios() {
     }
 
     const animeData = {
-      portada: data.cover || '',
+      cover: data.cover || '',
       banner: data.banner || ''
     };
 
@@ -903,7 +903,7 @@ async function cargarEpisodios() {
     await setDoc(doc(db, "datos-animes", animeId), {
       episodios,
       titulo: data.title || animeId,
-      portada: data.cover || '',
+      cover: data.cover || '',
       banner: data.banner || ''
     }, { merge: true });
 
@@ -926,7 +926,7 @@ async function cargarEpisodios() {
 }
 
 function aplicarFondoAnime(anime) {
-  const imagenUrl = anime.portada || anime.banner;
+  const imagenUrl = anime.cover || anime.banner;
   if (imagenUrl) {
     document.body.style.setProperty('--background-image', `url('${imagenUrl}')`);
     document.body.classList.add('fondo-animado');
