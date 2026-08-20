@@ -840,7 +840,7 @@ async function cargarUltimosCapitulos() {
 
 async function cargarhistorial() {
   const historialContainer = document.getElementById('historial');
-  const historialh2 = document.getElementById('historialh2');
+  const historialh2 = document.getElementById('header-section-historial');
   if (!historialContainer) return;
 
   const claves = Object.keys(localStorage);
