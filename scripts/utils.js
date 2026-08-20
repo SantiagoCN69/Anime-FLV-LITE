@@ -251,7 +251,6 @@ export function crearAnimeCard(anime, opciones = {}) {
     // 4. EVENTOS Y VIEW TRANSITIONS
     card.addEventListener('click', () => {
         // Ejecutar funciones globales si existen en tu proyecto
-        if (typeof guardarBusquedaReciente === 'function') guardarBusquedaReciente(anime);
         if (typeof aplicarViewTransition === 'function') aplicarViewTransition(id, ratingHtml, card);
         if (config.onClick) config.onClick(anime);
     });

@@ -331,7 +331,18 @@ function mostrarResultados(data, searchTerm, searchId) {
     if (resultados.length > 0) {
       resultadosContainer.classList.remove('sin-resultados');
       seccionResultados?.classList.remove('hidden');
-      resultados.forEach(anime => resultadosContainer.appendChild(crearAnimeCard(anime)));
+      resultados.forEach(anime => {
+        const card = crearAnimeCard(anime);
+        card.addEventListener('click', () => {
+          guardarBusquedaReciente(anime);
+        });
+        card.addEventListener('auxclick', (e) => {
+          if (e.button === 1) { // Middle click
+            guardarBusquedaReciente(anime);
+          }
+        });
+        resultadosContainer.appendChild(card);
+      });
       if (busquedaH2) busquedaH2.textContent = 'Resultados de busqueda: ' + resultados.length;
       observerAnimeCards();
     } else {
@@ -359,7 +370,18 @@ function mostrarResultados(data, searchTerm, searchId) {
     }
 
     mainContainer.classList.remove('sin-resultados');
-    resultados.forEach(anime => mainContainer.appendChild(crearAnimeCard(anime)));
+    resultados.forEach(anime => {
+      const card = crearAnimeCard(anime);
+      card.addEventListener('click', () => {
+        guardarBusquedaReciente(anime);
+      });
+      card.addEventListener('auxclick', (e) => {
+        if (e.button === 1) { // Middle click
+          guardarBusquedaReciente(anime);
+        }
+      });
+      mainContainer.appendChild(card);
+    });
     observerAnimeCards();
   }
 }
