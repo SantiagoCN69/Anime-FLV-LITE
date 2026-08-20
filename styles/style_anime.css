@@ -24,7 +24,7 @@ body::before {
 }
 
 body.fondo-animado::before {
-  animation: zoom .5s ease-out forwards;
+  animation: zoom .6s ease-out forwards;
 }
 @keyframes zoom {
   0% {
@@ -132,7 +132,7 @@ header {
   position: absolute;
   inset: 0;
   transform: scale(1.03);
-  background-image: var(--anime-portada);
+  background-image: var(--anime-cover);
   background-size: cover;
   background-position: center;
   filter: blur(9px);
@@ -488,7 +488,7 @@ header {
 #titulo {
   height: 1lh;
 }
-#titulocargando, #ratingcargando, .genre-link-cargando, #portadacarga, #statuscargando, #anocargando, #categoriacargando {
+#titulocargando, #ratingcargando, .genre-link-cargando, #covercarga, #statuscargando, #anocargando, #categoriacargando {
   display: inline-block;
   width: 230px;
   height: 1lh;
@@ -517,7 +517,7 @@ header {
   height: calc(1lh + 10px);
 }
 /* Shimmer diagonal */
-#titulocargando::before, #ratingcargando::before, .genre-link-cargando::before, #portadacarga::before, #statuscargando::before, #anocargando::before, #categoriacargando::before {
+#titulocargando::before, #ratingcargando::before, .genre-link-cargando::before, #covercarga::before, #statuscargando::before, #anocargando::before, #categoriacargando::before {
   content: "";
   position: absolute;
   top: 0;
@@ -533,7 +533,7 @@ header {
   );
   animation: shimmer 1.5s infinite;
 }
-#portadacarga {
+#covercarga {
   border-radius: 12px;
   pointer-events: none;
   width: 100%;
@@ -541,11 +541,11 @@ header {
   height: unset;
   aspect-ratio: 5/7;
 }
-#portadacarga::before {
+#covercarga::before {
  width: 300%;  
  animation: shimmer 1.7s infinite; 
 }
-#portadacarga.cargado::before {
+#covercarga.cargado::before {
   animation-duration: 10s; 
  }
 /* Keyframes */
@@ -1057,7 +1057,7 @@ margin-bottom: 1.5rem;
   max-width: 200px;
   margin: 0 auto;
 }
-#portadacarga {
+#covercarga {
   width: 100%;
 }
 .anime-container1 img {
