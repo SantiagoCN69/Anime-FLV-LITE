@@ -879,22 +879,18 @@ main {
   font-family: 'Oxanium', sans-serif;
   position: relative;
 }
-.historialh2 {
-  margin-block: 2rem;
-}
 .section-title {
     font-size: 1.7rem;
     font-family: 'Oxanium', sans-serif;
 }
 
-#header-ultcaps, .headder-section {
+.headder-section {
   min-height: 53px;
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
   grid-template-rows: auto auto;
   gap: 0 1rem;
-  align-items: center;
   margin-bottom: 1rem;
   
   > svg {
@@ -947,25 +943,31 @@ main {
     }
   }
 }
-.svg-header {
-    width: 52px;
-    min-width: 52px;
-    height: 52px;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-    border-radius: 15px;
-    padding: 0.6rem;
+#Busqueda-Resultados svg {
+  z-index: 1;
+}
+#content-section-svg-dynamic {
+  position: absolute;
+  display: block !important;
+}
+/* Icono persistente: MorphSVG anima siempre este path aunque la sección visible cambie. */
+.dynamic-header-icon {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+}
+.svg-header, .dynamic-header-icon {
+  align-self: start;
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  border-radius: 15px;
+  padding: 0.6rem;
  }
+
  @media screen and (max-width: 470px) {
-  .svg-header {
-    display: none;
-  }
- }
-  @media screen and (min-width: 600px) and (max-width: 730px) {
-  .svg-header {
-    display: none;
-  }
- }
- @media screen and (max-width: 380px) {
   
   .btn-fuente-directorios {
     min-width: 50px !important;
@@ -977,12 +979,7 @@ main {
     display: none;
   }
  }
- .header-directorio div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
- }
+
  @media (hover: hover) {
   #btn-ver-todo:hover {
     filter: brightness(1.1);
@@ -1021,16 +1018,19 @@ span {
   }
 }
 .headder-section:not(.headder-section1) {
-  grid-template-rows: 1fr;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  /* margin-left: calc(52px + 1rem); */
+  h2 {
+    flex: 1;
+  }
 }
 #header-section-historial {
   margin-top: 2.5rem;
 }
-/* @media screen and (max-width: 734px) {
-  .headder-section:not(.headder-section1) svg {
-    display: none;
-  }
-} */
+
 section.content-section h2:first-of-type::after {
   color: var(--t1);
   content: "Disponibles: " attr(data-text);
@@ -1049,19 +1049,9 @@ section.content-section h2:first-of-type::after {
   }
 }
 @media screen and (max-width: 360px) {
-   .headder-section:not(.headder-section1) {
-    min-height: 52px;
-   }
-  .headder-section:not(.headder-section1) {
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr;
-}
-  .headder-section:not(.headder-section1) svg {
+  .headder-section:not(.headder-section1) > svg, .dynamic-header-icon, .svg-header {
     display: none;
   }
-  .headder-section:not(.headder-section1) h2 {
-      grid-column: span 2 !important;
-    }
 }
 #busqueda-h2::after, #popularesh2::after {display: none;}
 #Ultimos-Episodios h2:first-of-type::after {

@@ -34,6 +34,48 @@ if ('serviceWorker' in navigator) {
 
 let userID = localStorage.getItem('userID') || "null";
 
+// Todas las siluetas viven en el mismo path para que MorphSVG pueda interpolarlas.
+const iconosDeSeccion = {
+  'Ultimos-Episodios': '',
+  'Mis-Favoritos': 'M31.939 16.483C33.846 6.946 48.506 6.347 54.828 12.668c6.115 6.115 5.721 16.533 0 22.889L31.939 58.445 9.05 35.557C6.016 32.521 4.311 28.405 4.311 24.113S6.016 15.704 9.05 12.668c5.913-5.913 20.981-5.722 22.889 3.815Z',
+  'Viendo': 'M61.154 32.474C61.154 39.122 48.256 52.419 32.344 52.419S3.534 39.122 3.534 32.474 16.432 12.529 32.344 12.529s28.81 13.297 28.81 19.945ZM43.425 32.474a11.081 11.081 0 1 1-22.162 0 11.081 11.081 0 0 1 22.162 0Z',
+  'Pendientes': 'M32.315 21.509v14.371H44.89M3.571 32.287C3.571 48.162 16.44 61.031 32.315 61.031c15.874 0 28.743-12.869 28.743-28.744S48.189 3.544 32.315 3.544 3.571 16.413 3.571 32.287Z',
+  'Completados': 'M19.663 32.285l9.542 9.543 15.904-19.085M61.014 32.285c0 15.811-12.817 28.628-28.628 28.628S3.759 48.096 3.759 32.285 16.576 3.658 32.386 3.658s28.628 12.817 28.628 28.627Z',
+  'DirectorioJK': 'M11.196 14.616c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.848 21.432-10.781M11.196 32.477c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.847 21.432-10.78M11.196 13.566c0-4.644 8.931-9.792 21.432-9.667 12.501.125 21.432 5.547 21.432 10.191v36.773c0 4.644-8.931 10.192-21.432 10.192-12.501 0-21.432-6.073-21.432-10.717V13.566Z',
+  'DirectorioAV1': 'M11.196 14.616c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.848 21.432-10.781M11.196 32.477c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.847 21.432-10.78M11.196 13.566c0-4.644 8.931-9.792 21.432-9.667 12.501.125 21.432 5.547 21.432 10.191v36.773c0 4.644-8.931 10.192-21.432 10.192-12.501 0-21.432-6.073-21.432-10.717V13.566Z',
+  'Populares': 'M41.018 61.686c35.917-8.817 15.805-44.083-8.62-58.777-2.874 10.286-7.187 13.225-15.806 23.511C5.177 40.038 10.848 55.808 26.65 61.686c-2.395-2.939-8.573-9.111-4.313-17.633 1.47-2.939 4.408-5.878 2.941-11.755 2.874 1.469 8.816 2.939 10.284 10.285 2.394-2.939 4.881-9.11 2.581-16.163 17.993 13.224 10.644 26.449 2.875 35.266Z',
+  'Recomendaciones': 'M28.523 44.492a10.247 10.247 0 0 0-4.125-4.125L6.789 35.826a1.644 1.644 0 0 1 0-2.761l17.61-4.544a10.25 10.25 0 0 0 4.125-4.122l4.541-17.61a1.645 1.645 0 0 1 2.764 0l4.537 17.61a10.25 10.25 0 0 0 4.125 4.125l17.61 4.538a1.644 1.644 0 0 1 0 2.767l-17.61 4.538a10.247 10.247 0 0 0-4.125 4.125l-4.541 17.61a1.645 1.645 0 0 1-2.764 0l-4.538-17.61ZM57.408 8.611v11.482M63.149 14.352H51.668M11.482 48.797v5.741M14.352 51.668H8.611',
+  'Horarios': 'M60.288 37.363v-5.581c0-10.526 0-15.789-3.27-19.058-3.269-3.27-8.532-3.27-19.056-3.27M37.962 59.691H26.797c-10.525 0-15.787 0-19.057-3.27-3.27-3.269-3.27-8.532-3.27-19.057v-5.582c0-10.526 0-15.789 3.27-19.058 3.27-3.27 8.532-3.27 19.057-3.27M18.424 9.454V5.268M46.335 9.454V5.268M56.102 55.504l4.186 4.187M58.894 23.409H28.89M4.471 23.409h10.813M57.496 48.527a8.373 8.373 0 1 1-16.746 0 8.373 8.373 0 0 1 16.746 0Z'
+};
+
+function animarSVGCambio(nuevaSeccionId) {
+  if (nuevaSeccionId === 'Ultimos-Episodios') {
+    document.querySelector('.dynamic-header-icon').classList.add('hidden');
+    return;
+  } else {
+    document.querySelector('.dynamic-header-icon').classList.remove('hidden');
+  }
+  const icono = document.querySelector('.dynamic-header-icon');
+  const path = document.getElementById('dynamic-icon-path');
+  const destino = iconosDeSeccion[nuevaSeccionId];
+  if (!icono || !path) return;
+
+  icono.hidden = !destino;
+  if (!destino) return;
+
+  if (window.gsap && window.MorphSVGPlugin) {
+    gsap.registerPlugin(MorphSVGPlugin);
+    gsap.to(path, {
+      duration: 0.55,
+      morphSVG: { shape: destino, map: 'size' },
+      ease: 'power2.inOut',
+      overwrite: true
+    });
+  } else {
+    path.setAttribute('d', destino);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const contadores = document.querySelectorAll('span.contador');
   contadores.forEach(contadorSpan => {
@@ -79,6 +121,9 @@ export function mostrarSeccionDesdesearch() {
   };
 
   if (!document.getElementById(id).classList.contains("hidden")) return;
+
+  // Animar SVGs antes de cambiar de sección
+  animarSVGCambio(id);
 
   document.querySelectorAll(".content-section").forEach(sec => {
     sec.classList.toggle("hidden", sec.id !== id);
@@ -840,7 +885,7 @@ async function cargarUltimosCapitulos() {
 
 async function cargarhistorial() {
   const historialContainer = document.getElementById('historial');
-  const historialh2 = document.getElementById('header-section-historial');
+  const historialheader = document.getElementById('header-section-historial');
   if (!historialContainer) return;
 
   const claves = Object.keys(localStorage);
@@ -876,7 +921,7 @@ async function cargarhistorial() {
       return;
     }
     
-    historialh2.classList.remove('hidden');
+    historialheader.classList.remove('hidden');
     historialContainer.classList.remove('hidden');
     
     // ----------------------------------------------------
@@ -894,7 +939,7 @@ async function cargarhistorial() {
     
     observerAnimeCards();
   } else {
-    historialh2.classList.add('hidden');
+    historialheader.classList.add('hidden');
     historialContainer.classList.add('hidden');
   }
 }
@@ -1123,6 +1168,12 @@ function cargarFetch(direccion) {
 
       const nuevoMain = temp.querySelector('main');
       if (nuevoMain) {
+        // // El icono principal ya está fuera de las secciones; quitamos solo el del header principal cargado.
+        // const headerCargado = nuevoMain.querySelector(':scope > .headder-section');
+        // if (headerCargado) {
+        //   headerCargado.querySelector(':scope > svg, :scope > div > svg')?.remove();
+        //   headerCargado.classList.add('header-icon-extracted');
+        // }
         main.innerHTML = nuevoMain.innerHTML;
       }
 

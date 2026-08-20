@@ -466,18 +466,13 @@ width: 100%;
 height: 550px;
 z-index: -1;
 }
-
+.headerlab {
+  justify-content: start !important;
+}
 .svgheaderlab {
   box-shadow: 0 0 25px 5px rgba(var(--bgt), .1);
 }
-@media (max-width: 406px) {
-  .svgheaderlab {
-    display: none;
-  }
-  .headerlab span {
-    grid-column: 1 !important;
-  }
-}
+
 .Recomendaciones-section-title {
   font-size: 1.7rem;
   font-family: 'Oxanium', sans-serif;
@@ -949,14 +944,17 @@ mask: url('../icons/pencil.svg') no-repeat center;
   height: 20px;
 }
 .header-directorio {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.3rem;
   span {
     opacity: 1 !important;
   }
 }
+.header-directorio div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 #subheader {
   display: flex;
   flex-wrap: wrap;
