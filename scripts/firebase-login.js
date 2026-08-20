@@ -43,7 +43,6 @@ function updateUIForUser(user) {
     btnLogin.innerHTML = `<img src="${user.photoURL || 'icons/user-solid.svg'}" alt="Foto de perfil"><span>${primerNombre}</span>`;
     btnLogin.classList.remove('nouser');
   } else {
-    console.log('[Login] 👤 Usuario desconectado');
     btnLogin.innerHTML = '<span>Login</span>';
     btnLogin.classList.add('nouser');
   }
