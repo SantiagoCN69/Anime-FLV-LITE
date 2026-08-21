@@ -466,7 +466,7 @@ width: 100%;
 height: 550px;
 z-index: -1;
 }
-.headerlab {
+.headerlab, .header-con-subtitulo {
   justify-content: start !important;
 }
 .svgheaderlab {

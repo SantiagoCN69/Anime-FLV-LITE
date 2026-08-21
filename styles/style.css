@@ -866,13 +866,12 @@ main {
 
 
 /* Títulos */
-.content-section h2 {
+.content-section h2, .header-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1.3rem;
   font-size: 1.7rem;
   font-family: 'Oxanium', sans-serif;
   position: relative;

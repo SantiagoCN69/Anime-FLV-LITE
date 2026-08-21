@@ -37,6 +37,7 @@ let userID = localStorage.getItem('userID') || "null";
 // Todas las siluetas viven en el mismo path para que MorphSVG pueda interpolarlas.
 const iconosDeSeccion = {
   'Ultimos-Episodios': '',
+ 'Contacto': 'M36.1768 17.1832L63.4709 5.94446L39.5886 63.9445L29.3533 40.0621M63.4709 5.94446L29.3533 40.0621M29.3533 40.0621L5.47095 29.8268L19.118 24.2074',
   'Mis-Favoritos': 'M31.939 16.483C33.846 6.946 48.506 6.347 54.828 12.668c6.115 6.115 5.721 16.533 0 22.889L31.939 58.445 9.05 35.557C6.016 32.521 4.311 28.405 4.311 24.113S6.016 15.704 9.05 12.668c5.913-5.913 20.981-5.722 22.889 3.815Z',
   'Viendo': 'M61.154 32.474C61.154 39.122 48.256 52.419 32.344 52.419S3.534 39.122 3.534 32.474 16.432 12.529 32.344 12.529s28.81 13.297 28.81 19.945ZM43.425 32.474a11.081 11.081 0 1 1-22.162 0 11.081 11.081 0 0 1 22.162 0Z',
   'Pendientes': 'M32.315 21.509v14.371H44.89M3.571 32.287C3.571 48.162 16.44 61.031 32.315 61.031c15.874 0 28.743-12.869 28.743-28.744S48.189 3.544 32.315 3.544 3.571 16.413 3.571 32.287Z',
@@ -107,6 +108,7 @@ let labCargado = false;
 let popularesCargados = false;
 let horariosCargados = false;
 let preferenciasCargadas = false;
+let contactoCargado = false;
 
 // Flags para prevenir cargas simultáneas
 const cargando = new Set();
@@ -153,6 +155,7 @@ const sectionConfig = {
   'DirectorioJK': { flag: () => directorioJkCargado, setFlag: () => { directorioJkCargado = true; }, load: () => cargarFetch("DirectorioJK") },
   'Recomendaciones': { flag: () => labCargado, setFlag: () => { labCargado = true; }, load: () => cargarFetch("Recomendaciones") },
   'Preferencias': { flag: () => preferenciasCargadas, setFlag: () => { preferenciasCargadas = true; }, load: () => cargarFetch("preferencias") },
+  'Contacto': { flag: () => contactoCargado, setFlag: () => { contactoCargado = true; }, load: () => cargarFetch("contacto") },
   'Populares': { flag: () => popularesCargados, setFlag: () => { popularesCargados = true; }, load: () => cargarFetch("populares") },
   'Horarios': { flag: () => horariosCargados, setFlag: () => { horariosCargados = true; }, load: () => cargarFetch("horarios") }
 };
