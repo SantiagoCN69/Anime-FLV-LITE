@@ -1,9 +1,9 @@
 @import url('fonts.css');
 
 
-@view-transition {
+/* @view-transition {
   navigation: auto;
-}
+} */
 
 /* Aplicamos la animación solo a los elementos que NO tengan la clase .no-animation */
 ::view-transition-group(*) {
@@ -12,6 +12,10 @@
   border-radius: 10px;
 }
 .animaciones-off *, .animaciones-off *::before, .animaciones-off *::after {
+  animation: none !important;
+  transition: none !important;
+}
+.animaciones-off, .animaciones-off::before, .animaciones-off::after {
   animation: none !important;
   transition: none !important;
 }
@@ -901,6 +905,7 @@ main {
   margin-bottom: 1rem;
   
   > svg {
+    align-self: start;
     grid-column: 1;
     grid-row: 1 / span 2;
     width: 52px;
@@ -965,7 +970,6 @@ main {
   left: 0;
 }
 .svg-header, .dynamic-header-icon {
-  align-self: start;
   width: 52px;
   min-width: 52px;
   height: 52px;

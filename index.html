@@ -252,6 +252,16 @@ if (indexpagination) {
       if (localStorage.getItem('animaciones') === 'false') {
         document.body.classList.add('animaciones-off');
       }
+      else {
+      const style = document.createElement('style');
+      style.id = 'dynamic-view-transition';
+       style.textContent = `
+        @view-transition {
+           navigation: auto;
+       }
+    `;
+    document.head.appendChild(style);
+  }
     </script>
   <main>
     <!-- Permanece fuera de las secciones ocultables: MorphSVG solo transforma este path. -->

@@ -35,6 +35,16 @@ window.addEventListener('resize', setRealVh);
     if (localStorage.getItem('animaciones') === 'false') {
       document.body.classList.add('animaciones-off');
     }
+    else {
+    const style = document.createElement('style');
+    style.id = 'dynamic-view-transition';
+    style.textContent = `
+      @view-transition {
+        navigation: auto;
+      }
+    `;
+    document.head.appendChild(style);
+  }
   </script>
 <div id="prueba10"></div>
   <nav class="sidebar">

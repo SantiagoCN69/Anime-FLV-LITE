@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.11';
+const CACHE_VERSION = 'v8.6.12';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;

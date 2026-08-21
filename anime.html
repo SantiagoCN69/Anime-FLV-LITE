@@ -22,6 +22,16 @@
     if (localStorage.getItem('animaciones') === 'false') {
       document.body.classList.add('animaciones-off');
     }
+    else {
+    const style = document.createElement('style');
+    style.id = 'dynamic-view-transition';
+    style.textContent = `
+      @view-transition {
+        navigation: auto;
+      }
+    `;
+    document.head.appendChild(style);
+  }
   </script>
   <nav class="sidebar">
     <ul>
