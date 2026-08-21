@@ -1,0 +1,127 @@
+
+/*Populares*/
+
+#icon-populares {
+  width: 100%;
+  height: 100%;
+}
+@keyframes outright {
+  0% {
+    transform: scale(.7) translate(2rem, 2rem);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 1;
+  }
+}
+#btn-populares-pc {
+  filter: drop-shadow(0 0 20px rgb(255, 91, 91));
+  z-index: 10;
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  width: 65px;
+  height: 65px;
+  background: transparent;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  animation: outright 0.5s ease forwards;
+}
+#btn-populares-pc:hover {
+  filter: drop-shadow(0 0 30px rgb(255, 0, 0));
+  transform: scale(1.1);
+}
+@media (max-width: 600px) {
+  #btn-populares-pc {
+    display: none !important;
+  }
+}
+
+#nav-populares {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1.3rem;
+}
+
+#nav-populares button.active + div {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  pointer-events: auto;
+}
+
+#nav-populares div {
+  z-index: 9;
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%) scale(.9);
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: opacity .2s, transform .2s;
+}
+#popularesh2 {
+  display: inline-block;
+}
+#btn-populares-alert {
+  background-color: transparent;
+  margin-left: 3px;
+  color: var(--t1);
+  opacity: .7;
+  position: absolute;
+  top: 16px;
+  left: 205px;
+}
+
+#btn-populares-alert svg {
+  width: 20px;
+  height: 20px;
+}
+#modal-populares {
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(2);
+  transition: opacity .3s, transform .3s;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  background-color: rgba(var(--bgti), .5);
+  z-index: 99999;
+  padding: 3rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+#modal-populares h3 {
+  color: var(--t1);
+  width: fit-content;
+  margin-inline: auto;
+  font-size: 2rem;
+}
+
+#modal-populares p {
+  color: var(--t1);
+}
+
+#modal-populares .close-modal {
+  background-color: var(--btn);
+  color: var(--t1);
+  padding: 18px;
+  border-radius: 25px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10rem;
+}
+#modal-populares.active {
+  pointer-events: auto;
+  opacity: 1;
+  transform: scale(1);
+}

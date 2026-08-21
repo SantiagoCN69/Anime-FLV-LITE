@@ -1,0 +1,261 @@
+#DirectorioJK {
+  overflow: hidden;
+  p {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
+}
+#subheader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 63px;
+}
+#subheader > div {
+  flex: 1;
+justify-content: space-between;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Contenedor principal de los filtros */
+#filtrosseleccionados {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--t2);
+  font-size: 16px;
+  min-height: 55px;
+}
+
+.filtro-activo {
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--p);
+  color: #f3f4f6;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--btn);
+  position: relative;
+}
+
+/* Estilo del botón de eliminar (la 'x') */
+.filtro-activo button {
+  font-size: 20px;
+  transition: all 0.2s ease;
+  color: var(--btn);
+}
+
+.filtro-activo button:hover {
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+#layout {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+
+#layout button {
+  width: 40px;
+  height: 40px;
+  background: var(--p);
+  border: 1px solid var(--br);
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#layout button:hover {
+  background: var(--btn);
+  border-color: var(--btn);
+  transform: translateY(-2px);
+}
+
+#layout button.active {
+  background: var(--btn);
+  border-color: var(--btn);
+  box-shadow: 0 0 10px rgba(var(--btn), 0.5);
+}
+
+#layout svg {
+  width: 24px;
+  height: 24px;
+  color: var(--t1);
+}
+/* ===== CONTADOR PAG ===== */
+#Num-pag {
+  height: 2lh;
+  display: block;
+  padding: 10px;
+  opacity: 0.8;
+  font-family: 'JetBrains Mono', monospace;
+}
+#contenedor-animes {
+  display: grid;
+  gap: 12px;
+  transition: gap 0.3s ease;
+}
+
+/* =======================================================
+   TRANSICIONES GLOBALES PARA ELEMENTOS INTERNOS
+   ======================================================= */
+.anime-card,
+.anime-card a,
+.anime-card img,
+.container-img,
+.content,
+.anime-card strong {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== LAYOUT 1: GRID TARJETAS ===== */
+#contenedor-animes.layout1 {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+/* ===== LAYOUT 2: MÁS GRANDE ===== */
+#contenedor-animes.layout2 {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* ===== LAYOUT 3: LISTA ===== */
+#contenedor-animes.layout3 {
+  grid-template-columns: 1fr;
+}
+.anime-card-jk a, .anime-card-jk {
+  height: 100%;
+}
+
+#card-synopsis {
+  display: none;
+  font-size: 14px;
+  margin-top: 0;
+  text-align: start;
+  position: static;
+  transform: none;
+  text-overflow: ellipsis;
+  overflow: auto;
+  white-space: wrap;
+}
+#card-synopsis::-webkit-scrollbar-thumb {
+  display: none;
+}
+/* ===== LAYOUT 1: GRID TARJETAS PEQUEÑAS ===== */
+#contenedor-animes.layout1 .card-anime {
+  min-width: 160px;
+  max-width: 200px;
+  transition: min-width 0.35s ease, max-width 0.35s ease;
+}
+
+#contenedor-animes.layout1 .card-anime img {
+  height: auto;
+  aspect-ratio: 26/37;
+  transition: height 0.35s ease, aspect-ratio 0.35s ease;
+}
+
+#contenedor-animes.layout1 .card-anime strong {
+  font-size: 13px;
+  transition: font-size 0.35s ease;
+}
+
+/* ===== LAYOUT 2: TARJETAS GRANDES ===== */
+
+/* #contenedor-animes.layout2 .anime-card strong {
+  text-align: center;
+} */
+
+/* ===== LAYOUT 3: LISTA ===== */
+#contenedor-animes.layout3 .anime-card {
+  display: flex;
+  flex-direction: row;
+}
+
+#contenedor-animes.layout3 .anime-card .container-img {
+  width: 170px;
+  min-width: 170px;
+  height: 100%;
+  transition: width 0.35s ease, min-width 0.35s ease, height 0.35s ease;
+}
+
+#contenedor-animes.layout3 .anime-card .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  padding: 20px;
+  gap: 10px;
+  max-height: 240px;
+  transition: padding 0.35s ease, gap 0.35s ease, max-height 0.35s ease;
+}
+
+#contenedor-animes.layout3 .anime-card strong {
+  font-size: 16px;
+  height: calc(1lh + 1px);
+  min-height: calc(1lh + 1px);
+  padding: 0;
+  margin: 0;
+  transition: font-size 0.35s ease, padding 0.35s ease, margin 0.35s ease;
+  text-align: start;
+}
+
+#contenedor-animes.layout3 #card-synopsis {
+  opacity: 1;
+  max-height: 150px;
+  display: block !important;
+}
+
+/* ===== ESTILOS FALTANTES DIRECTORIO ===== */
+.section-title {
+  color: var(--t1);
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.anime-details {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.span-carga {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  font-size: 1.2rem;
+}
+
+#btn-aleatorio {
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+  color: var(--t1);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+#btn-aleatorio:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+.filtrosjk button {
+  height: 51px;
+}

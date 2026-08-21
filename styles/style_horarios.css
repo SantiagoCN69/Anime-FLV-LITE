@@ -1,0 +1,109 @@
+.header-schedule {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.header-schedule div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.day-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.btn-day {
+  flex: 1;
+  min-width: 125px;
+  background-color: var(--p);
+  color: var(--t1);
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.btn-day:hover {
+  background-color: var(--br);
+  color: var(--t1);
+}
+
+.btn-day.active {
+  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  color: var(--t1);
+  opacity: 1;
+}
+
+.anime-count {
+  margin-left: 0.5rem;
+  min-width: 17px !important;
+  color: var(--btn);
+}
+.active .anime-count {
+  color: var(--t1);
+}
+.search-input {
+  width: 90%;
+  max-width: 500px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 99px;
+  border: 1px solid var(--br);
+  background-color: var(--p);
+  color: var(--t1);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--btn);
+}
+
+.anime-card-schedule .content {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+.anime-card-schedule .content:after {
+  text-transform: capitalize;
+  z-index: 1;
+  content: attr(data-time_ago);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(-100% - 29px);
+  height: 47.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--b);
+  color: var(--t1) ;
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: bottom 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .anime-card-schedule:hover .content:after {
+    bottom: -10px;
+    opacity: 1;
+    color: var(--btn);
+  }
+}
+.anime-card-schedule.touch-hover .content:after {
+  bottom: -10px;
+  opacity: 1;
+  color: var(--btn);
+}

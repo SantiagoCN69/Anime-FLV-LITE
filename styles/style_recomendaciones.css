@@ -1,0 +1,345 @@
+
+
+/*Recomendaciones*/
+#fondolab {
+  background: linear-gradient(
+  to bottom,
+  rgba(124, 58, 237, 0.18) 0%,   /* morado */
+  rgba(236, 72, 153, 0.10) 50%,  /* rosa */
+  var(--b)         /* transparente */
+);
+position: fixed;
+top: 80px;
+left: 0px;
+width: 100%;
+height: 550px;
+z-index: -1;
+}
+.headerlab, .header-con-subtitulo {
+  justify-content: start !important;
+}
+.svgheaderlab {
+  box-shadow: 0 0 25px 5px rgba(var(--bgt), .1);
+}
+
+.Recomendaciones-section-title {
+  font-size: 1.7rem;
+  font-family: 'Oxanium', sans-serif;
+  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 50%, var(--btn) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-text 3s linear infinite;
+}
+
+@keyframes gradient-text {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+#descripcion-personalizadas {
+  display: block;
+  position: static;
+  transform: unset;
+  margin-top: unset;
+  text-align: unset;
+  color: var(--t1);
+  font-family: 'Oxanium', sans-serif;
+  margin-bottom: 1.5rem !important;
+}
+.favoritos {
+  margin-top: 2rem;
+}
+.favoritos h3{
+  color: var(--t1);
+  border-color: var(--t1);
+}
+.personalizadas h3 {
+  color: var(--btn);
+  border-color: var(--btn);
+}
+
+.grid-animes.Recomendaciones {
+  padding-right: 30px;
+ display: flex !important;
+ /* width: fit-content; */
+ max-width: 100%;
+ overflow: hidden;
+ overflow-x: auto;
+ padding-block: 12px;
+}
+.grid-animes.Recomendaciones::-webkit-scrollbar {
+  height: 9px;
+}
+.grid-animes.Recomendaciones::-webkit-scrollbar-thumb {
+  background-color: var(--p);
+  border-radius: 7px;
+}
+.grid-animes.Recomendaciones .anime-card {
+  flex: 1;
+  min-width: 180px;
+  max-width: 180px;
+  text-align: center !important;
+}
+.anime-card.Recomendaciones-card.active {
+  transform: translateY(-5px);
+  border: 1px solid var(--btn);
+}
+.carga {
+  border: 1px solid var(--br);
+  border-radius: 10px;
+}
+.carga strong {
+  text-align: center;
+}
+.grid-animes.Recomendaciones .container-img{
+  aspect-ratio: 1/2;
+}
+
+.search-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: .5rem;
+  position: relative;
+}
+
+#busqueda-personalizada, #filtro-extra {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 20px;
+  background: rgba(var(--bgt), .1);
+  color: var(--t1);
+  font-size: 1rem;
+  border: 1px solid var(--br);
+  padding-left: calc(1rem + 20px + 15px);
+}
+
+.search-container::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  width: 20px;
+  height: 20px;
+  display: block;
+  mask-image: url('../icons/cerebro.svg');
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-image: url('../icons/cerebro.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+  background-color: var(--btn);
+  pointer-events: none;
+  opacity: 0.7;
+}
+#filtro-extra {
+  min-width: auto;
+  flex: 1;
+  padding-left: 1rem;
+}
+#busqueda-personalizada:focus, #filtro-extra:focus {
+  border: 1px solid var(--btn);
+  outline: none;
+}
+
+#sugerencias-busquedas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
+
+.sugerencia-aleatoria {
+  /* flex: 1;
+  min-width: 200px;
+  min-height: 56px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--br);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  color: var(--t1);
+}
+#text-random {
+  background-color: #001A15;
+  display: flex;
+  gap: 10px;
+  border-color: #006B50;
+  color: #006B50;
+
+}
+#text-random:hover{
+  border-color: #00926e;
+  filter: brightness(1.2);
+}
+.sugerencia-fija:hover,
+.sugerencia-aleatoria:hover {
+  color: var(--t2);
+  border-color: var(--btn);
+  transform: translateY(-2px);
+}
+
+.svg-carga-girando {
+  display: block;
+  margin: 120px auto;
+  width: 60px;
+  height: 60px;
+  animation: girar 1s linear infinite;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+}
+
+@keyframes girar {
+  from {
+    transform: translateX(30px) rotate(0deg);
+    filter: brightness(0.3) invert(1);
+  }
+  to {
+    transform: translateX(30px) rotate(-360deg);
+    filter: brightness(1.1) invert(1);
+  }
+}
+.carga .container-img::after {
+  content: unset;
+}
+
+.anime-card.carga.generando {
+  animation: shimmer 3.5s linear infinite;
+  border-color: transparent;
+  background: linear-gradient(
+    90deg, 
+    rgba(var(--bgt), 0.05) 25%, 
+    rgba(var(--bgt), 0.2) 50%, 
+    rgba(var(--bgt), 0.05) 75%
+  );
+  background-size: 200% 100%;
+  opacity: 1 !important;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 3. Spinner de carga (Círculo giratorio) */
+.carga.generando .container-img::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px; /* Ligeramente más grande (antes 30px) */
+  height: 40px;
+  margin: -20px 0 0 -20px; /* Ajustado al nuevo ancho/alto para centrar perfecto */
+  background: none;
+  /* Anillo base casi transparente */
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  
+  /* Detalles del color de giro */
+  border-top: 3px solid var(--btn);
+  border-right: 3px solid transparent; /* Hacer un lado transparente le da un estilo más dinámico */
+  border-radius: 50%;
+  
+  /* Animación más rápida y constante */
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* (Opcional) Si decides usar el pulso, esta es una versión más suave */
+@keyframes pulso-carga-card {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Estilos para los botones de acción */
+.acciones-fav {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.btn-generar {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-generar {
+  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  color: var(--t1);
+}
+@media (hover: hover) {
+.btn-generar:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+}
+.btn-agregar {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: var(--t1);
+}
+
+.btn-agregar::before {
+  -webkit-mask: url('../icons/plus-solid.svg') no-repeat center;
+  mask: url('../icons/plus-solid.svg') no-repeat center;
+}
+#text-random::before {
+  -webkit-mask: url('../icons/arrows-counter-clockwise-bold.svg') no-repeat center;
+  mask: url('../icons/arrows-counter-clockwise-bold.svg') no-repeat center;
+}
+.btn-generar::before {
+-webkit-mask: url('../icons/pencil.svg') no-repeat center;
+mask: url('../icons/pencil.svg') no-repeat center;
+}
+
+.btn-agregar:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}
+
+.btn-generar::before,
+.btn-agregar::before,
+#text-random::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-color: var(--t1);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+#text-random::before {
+  background-color: #006B50;
+}
+/* Estilos responsive */
+@media (max-width: 768px) {
+  .acciones-fav, .search-container {
+    flex-direction: column;
+  }
+
+  .btn-generar,
+  .btn-agregar {
+    width: 100%;
+    justify-content: center;
+  }
+}
