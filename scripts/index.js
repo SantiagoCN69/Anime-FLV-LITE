@@ -52,6 +52,7 @@ const iconosDeSeccion = {
 };
 
 function animarSVGCambio(nuevaSeccionId) {
+  if (document.body.classList.contains('animaciones-off')) return;
   if (nuevaSeccionId === 'Ultimos-Episodios') {
     document.querySelector('.dynamic-header-icon').classList.add('hidden');
     return;

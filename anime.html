@@ -18,7 +18,11 @@
   <link rel="stylesheet" href="styles/style_anime.css">
 </head>
 <body>
-
+  <script>
+    if (localStorage.getItem('animaciones') === 'false') {
+      document.body.classList.add('animaciones-off');
+    }
+  </script>
   <nav class="sidebar">
     <ul>
       <li><a href="/?Ultimos-Episodios">
