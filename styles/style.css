@@ -27,6 +27,9 @@
 .animaciones-off #indexpagination.floating {
   background: var(--p)
 }
+.animaciones-off .filtro-opciones {
+  background: var(--br);
+}
 * {
   margin: 0;
   padding: 0;
