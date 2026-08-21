@@ -21,7 +21,7 @@
   transition: none !important;
   backdrop-filter: unset !important;
 }
-.animaciones-off a:active, .animaciones-off a:hover, .animaciones-off button:active, .animaciones-off .sidebar *, .animaciones-off .anime-card img:first-child, .animaciones-off button:hover:not(.scroll-btn), .animaciones-off hero-slide *, .animaciones-off .sugerencia-aleatoria {
+.animaciones-off a:active, .animaciones-off a:hover, .animaciones-off button:active:not(.scroll-btn), .animaciones-off .sidebar *, .animaciones-off .anime-card img:first-child, .animaciones-off button:hover:not(.scroll-btn), .animaciones-off hero-slide *, .animaciones-off .sugerencia-aleatoria {
   transform: unset !important;
 }
 .animaciones-off #indexpagination.floating {
