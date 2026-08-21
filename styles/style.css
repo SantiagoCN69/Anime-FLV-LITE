@@ -1561,11 +1561,11 @@ h4 {
   align-items: center;
   gap: 1rem;
   text-align: start;
-  padding: 13px 1rem;
+  padding: 15px 1.5rem;
   font-size: 1rem;
   border: 1px solid transparent;
   cursor: pointer;
-  width: 160px;
+  width: 100%;
   color: var(--t1);
   transition: background 0.2s ease, color 0.2s ease;
 }
