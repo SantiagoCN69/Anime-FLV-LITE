@@ -91,6 +91,14 @@ const animeCardObserver = new IntersectionObserver((entries, obs) => {
 });
 
 export function observerAnimeCards() {
+    if (document.body.classList.contains('animaciones-off')) {
+        const cards = document.querySelectorAll(".anime-card");
+        cards.forEach(card => {
+            card.classList.add("show");
+            card.style.transitionDelay = "";
+        });
+        return;
+    }
     const cards = document.querySelectorAll(".anime-card");
     if (!cards.length) return;
 

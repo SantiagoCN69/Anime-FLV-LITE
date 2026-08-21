@@ -1101,8 +1101,8 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
             .filter(Boolean);
         guardarCache2(cacheKey, animesOrdenados);
         
-        // ✅ CORRECCIÓN: Borrar lo viejo e insertar lo nuevo en el mismo ciclo FLIP
-        renderFlipOptimizado(container, () => {
+        // 1. Creamos la función que reemplaza el contenido del contenedor
+        const renderizarContenido = () => {
           container.innerHTML = '';
           const fragment = document.createDocumentFragment();
           animesOrdenados.forEach(anime => {
@@ -1110,7 +1110,15 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
               if (card) fragment.appendChild(card);
           });
           container.appendChild(fragment);
-        });
+        };
+
+        // 2. Verificamos si las animaciones están apagadas
+        if (document.body.classList.contains('animaciones-off')) {
+          renderizarContenido(); // Renderizado normal, sin animación (instantáneo)
+        } else {
+          // Renderizado con animación FLIP
+          renderFlipOptimizado(container, renderizarContenido);
+        }
         
         manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length);
         observerAnimeCards(); 

@@ -285,6 +285,7 @@ function initPreferencias() {
     aplicarAnimaciones(animacionesOn);
     toggleAnimaciones.addEventListener('change', () => {
       aplicarAnimaciones(toggleAnimaciones.checked);
+      location.reload();
     });
   }
 

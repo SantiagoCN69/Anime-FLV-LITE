@@ -1,11 +1,12 @@
 @import url('fonts.css');
 
+
 @view-transition {
   navigation: auto;
 }
 
 /* Aplicamos la animación solo a los elementos que NO tengan la clase .no-animation */
-::view-transition-group(*):not(.animaciones-off) {
+::view-transition-group(*) {
   animation-duration: .4s;
   z-index: 1;
   border-radius: 10px;
@@ -13,6 +14,9 @@
 .animaciones-off *, .animaciones-off *::before, .animaciones-off *::after {
   animation: none !important;
   transition: none !important;
+}
+.animaciones-off a:active, .animaciones-off a:hover, .animaciones-off button:active, .animaciones-off .sidebar *, .animaciones-off .anime-card img:first-child, .animaciones-off button:hover, .animaciones-off hero-slide * {
+  transform: unset !important;
 }
 
 * {
@@ -670,6 +674,7 @@ header.search-active .logout-modal {
   border: 1px solid var(--btn);
   z-index: -2;
   animation: aparecer .3s forwards;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 /* ================= TOP ================= */
@@ -1097,7 +1102,7 @@ section.content-section h2:first-of-type::after {
 }
 .btn-siguiente-capitulo:hover {
   background-color: rgba(var(--bgt), .1);
-  transform: scale(1.02) translateY(-2px) !important;
+  transform: scale(1.02) translateY(-2px);
 }
 .btn-siguiente-capitulo .portada-anime {
   min-width: 45px;
@@ -1160,7 +1165,6 @@ section.content-section h2:first-of-type::after {
   opacity: 0;
   transform: translate(30px, 30px) scale(.9);
   transition: opacity 0.4s ease, transform 0.4s ease;
-  will-change: transform, opacity;
 }
 .anime-card:hover {
   transform: scale(1.02);
