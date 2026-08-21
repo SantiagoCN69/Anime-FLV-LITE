@@ -21,24 +21,6 @@
     }
 }
 
-.header-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1rem;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(var(--bgt), 0.3);
-}
-
-.header-icon svg {
-    color: var(--t1);
-    width: 40px;
-    height: 40px;
-}
-
 /* Formulario */
 .contacto-form {
     margin-top:2rem;
