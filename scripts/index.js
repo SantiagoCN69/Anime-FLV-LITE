@@ -1195,6 +1195,12 @@ function cargarFetch(direccion) {
       script.src = '/scripts/' + recurso + '.js';
       script.type = 'module';
       document.body.appendChild(script);
+
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = '/styles/style_' + recurso + '.css';
+      console.log(css.href);
+      document.head.appendChild(css);
     });
 }
 
