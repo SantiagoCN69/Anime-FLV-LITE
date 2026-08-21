@@ -411,16 +411,15 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   if (internalId) {
     img.className = 'episode-thumb';
     img.src = `https://cdn.animeav1.com/screenshots/${internalId}/${ep.number}.jpg`;
-    img.alt = `Episodio ${ep.number}`;
     img.loading = 'lazy';
+    img.alt = `Episodio ${ep.number}`;
 
     img.onerror = () => {
-      img.remove();
-      btn.classList.add('imgnoloading');
+      btn.classList.add('no-thumb');
     };
   }
   else {
-    img.className = 'episode-thumb no-thumb';
+    btn.classList.add('no-thumb');
   }
   
   const textSpan = document.createElement('span');

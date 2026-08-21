@@ -718,10 +718,7 @@ header {
     transform: scale(.98);
   }
 }
-.episode-btn.ep-visto {
-  color: var(--btn2);
-  background: var(--br);
-}
+
 .episode-thumb {
   width: 100%;
   height: 100%;
@@ -731,21 +728,21 @@ header {
   transition: transform 0.2s, filter 0.2s;
   transform-origin: bottom center; 
 }
-.no-thumb {
-  display: none;
+.no-thumb img {
+  width: 0;
+  transition: width .3s;
+  opacity: 0;
 }
-:has(> .no-thumb) {
+.no-thumb {
   background: var(--p);
   border-radius: 12px;
 }
-.no-thumb ~ .play-icon-anime {
+.no-thumb .play-icon-anime {
   width: 60px;
   height: 60px;
   opacity: 1;
 }
-.imgnoloading {
-  border: 1px solid var(--br) !important;
-}
+
 .episode-text {
   padding: 8px;
   font-weight: 500;
@@ -1102,26 +1099,28 @@ width: 100%;
 max-height: 500px;
 }
 .episodes-list {
-  grid-template-columns: 1fr;
-  }
-  .episode-btn.ep-visto, .episode-btn {
+grid-template-columns: 1fr;
+}
+.episode-btn.ep-visto, .episode-btn {
   border: none
 }
-  .episodes-list li {
+
+.episode-btn.ep-visto {
+  background: var(--br);
+}
+.episodes-list li {
     min-height: 80px;
     max-height: 80px;
-  }
+}
   
-  .episode-btn {
-    flex-direction: row;
-    align-items: center;
-    padding: 10px;
-    background: var(--p);
-    border-radius: 12px;
-  }
-  .imgnoloading {
-    border:none !important;
-  }
+.episode-btn {
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  background: var(--p);
+  border-radius: 12px;
+}
+
   .episode-thumb {
     width: 100px;
     height: 100%;
