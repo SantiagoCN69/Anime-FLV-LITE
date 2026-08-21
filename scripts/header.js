@@ -59,6 +59,7 @@ const isVerPage = pathname.endsWith('/ver.html') || pathname.endsWith('ver.html'
 const isDirectorioPage = pathname.includes('/directorio');
 const isLabPage = pathname.includes('/Recomendaciones');
 const isIndexPage = pathname === '/' || pathname.endsWith('/index.html');
+const isPreferenciasPage = pathname.endsWith('/preferencias.html') || pathname.includes('preferencias');
 const mainContainer = document.getElementById('main');
 const animeDetails = document.querySelector('.anime-details');
 const verAnime = document.getElementById('main-ver');
@@ -357,7 +358,7 @@ function mostrarResultados(data, searchTerm, searchId) {
   mainContainer.innerHTML = '';
   mainContainer.style.display = 'grid';
 
-  if (isAnimePage || isVerPage || isDirectorioPage || isLabPage) {
+  if (isAnimePage || isVerPage || isDirectorioPage || isLabPage || isPreferenciasPage) {
     setDisplay(animeDetails, 'none');
     setDisplay(disqusThread, 'none');
     setDisplay(relacionados, 'none');
@@ -405,7 +406,15 @@ if (busquedaInput) {
   });
   
   busquedaInput.addEventListener('input', () => {
-    ocultarBusquedasRecientes();
+    const valor = busquedaInput.value.trim();
+    
+    // Si el input queda vacío, mostrar búsquedas recientes
+    if (!valor) {
+      renderizarBusquedasRecientes();
+    } else {
+      ocultarBusquedasRecientes();
+    }
+    
     currentSearch++;
     const searchId = currentSearch;
     clearTimeout(busquedaTimer);
@@ -418,7 +427,6 @@ if (busquedaInput) {
     }
     limpiarSeccionIA();
 
-    const valor = busquedaInput.value.trim();
     const loadingSpan = document.getElementById('init-loading-servidores-busqueda');
     const contadorSpan = document.getElementById('contador-busqueda');
     const seccionResultados = document.getElementById('Busqueda-Resultados');
@@ -450,15 +458,25 @@ if (busquedaInput) {
 
     busquedaTimer = setTimeout(() => {
       let countdown = 22;
+      let mostrandoMensajeServidores = false;
 
+      // Mostrar "cargando resultados..." inmediatamente
+      if (searchId === currentSearch && isIndexPage) {
+        console.log('[Search] ⏱️ Mostrando loading inmediato');
+        if (loadingSpan) loadingSpan.style.display = 'block';
+        if (contadorSpan) contadorSpan.textContent = 'cargando resultados...';
+      }
+
+      // Después de 3 segundos, cambiar a contador de servidores
       initialDelayTimer = setTimeout(() => {
         if (searchId === currentSearch && isIndexPage) {
-          console.log('[Search] ⏱️ Mostrando loading después de 100ms');
-          if (loadingSpan) loadingSpan.style.display = 'block';
-          if (contadorSpan) contadorSpan.textContent = countdown + 's';
+          mostrandoMensajeServidores = true;
+          console.log('[Search] ⏱️ Cambiando a contador de servidores');
+          if (contadorSpan) contadorSpan.textContent = 'Iniciando servidores...' + countdown + 's';
+          
           busquedaCountdownInterval = setInterval(() => {
             countdown--;
-            if (contadorSpan) contadorSpan.textContent = countdown + 's';
+            if (contadorSpan) contadorSpan.textContent = 'Iniciando servidores...' + countdown + 's';
             if (countdown <= 0) {
               clearInterval(busquedaCountdownInterval);
               if (searchId === currentSearch && resultadosContainer && resultadosContainer.innerHTML.trim() === '') {
@@ -469,7 +487,7 @@ if (busquedaInput) {
             }
           }, 1000);
         }
-      }, 100);
+      }, 3000);
 
       currentController = new AbortController();
       fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(valor)}`, { signal: currentController.signal })
@@ -482,6 +500,7 @@ if (busquedaInput) {
           clearTimeout(initialDelayTimer);
           clearInterval(busquedaCountdownInterval);
           if (isIndexPage && loadingSpan) loadingSpan.style.display = 'none';
+          if (contadorSpan) contadorSpan.textContent = '';
           
           const resultados = resData || [];
           console.log('[Search] ✅ Enviando', resultados.length, 'resultados directamente a mostrarResultados');
@@ -493,6 +512,7 @@ if (busquedaInput) {
           if (searchId !== currentSearch) return;
           clearTimeout(initialDelayTimer);
           clearInterval(busquedaCountdownInterval);
+          if (contadorSpan) contadorSpan.textContent = '';
           console.error('Error al buscar anime:', err);
           if (isIndexPage) {
             if (loadingSpan) loadingSpan.style.display = 'none';
