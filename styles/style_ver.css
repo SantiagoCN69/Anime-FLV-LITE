@@ -43,7 +43,7 @@ body.fondo-animado::before {
   }
 }
 @media (max-width: 600px) {
-header {
+body:not(.animaciones-off) header {
   background: transparent;
   border-color: transparent;
 }
