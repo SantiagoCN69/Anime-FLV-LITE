@@ -607,9 +607,16 @@ iframe {
   z-index: 2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   padding: 10px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  transition: opacity 0.3s ease, bottom 0.3s ease, transform 0.3s ease;
 }
 .dropdown-capitulos.oculto {
-  display: none;
+    bottom: calc(100% + 15px);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
 }
 .dropdown-titulo {
   font-weight: 600;
