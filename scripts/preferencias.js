@@ -306,7 +306,7 @@ function initPreferencias() {
 
   const selectNav = document.getElementById('select-nav');
   if (selectNav) {
-    const currentNav = localStorage.getItem('indexpaginationPosition') || 'top';
+    const currentNav = localStorage.getItem('indexpaginationPosition') || 'floating';
     selectNav.value = currentNav;
     selectNav.addEventListener('change', (e) => {
       const nextNav = e.target.value;
