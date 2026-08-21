@@ -1182,25 +1182,21 @@ function cargarFetch(direccion) {
   const sectionId = direccion.charAt(0).toUpperCase() + direccion.slice(1);
   const main = document.getElementById(sectionId);
   if (!main) return;
-  const recursos = {
-    DirectorioAV1: 'directorioav1',
-    DirectorioJK: 'directoriojk',
-    Recomendaciones: 'Recomendaciones',
-    populares: 'populares',
-    horarios: 'horarios',
-    preferencias: 'preferencias'
-  };
-  const recurso = recursos[direccion] || direccion;
 
-  fetch(recurso + '.html')
+  const cssHref = `/styles/style_${direccion}.css`;
+
+  // 1. Cargar el CSS primero y evitar duplicados en el <head>
+  if (!document.querySelector(`link[href="${cssHref}"]`)) {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = cssHref;
+    document.head.appendChild(css);
+  }
+
+  // 2. Realizar el fetch del HTML usando directamente la dirección
+  fetch(direccion + '.html')
     .then(res => res.text())
     .then(html => {
-      const css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.href = '/styles/style_' + recurso + '.css';
-      if (recurso === 'contacto' || recurso === 'preferencias') {
-        document.head.appendChild(css);
-      }
       const temp = document.createElement('div');
       temp.innerHTML = html;
 
@@ -1209,12 +1205,17 @@ function cargarFetch(direccion) {
         main.innerHTML = nuevoMain.innerHTML;
       }
 
-      const script = document.createElement('script');
-      script.src = '/scripts/' + recurso + '.js';
-      script.type = 'module';
-      document.body.appendChild(script);
-
-    });
+      // 3. Cargar el script correspondiente evitando duplicados
+      const scriptId = `script-${direccion}`;
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = `/scripts/${direccion}.js`;
+        script.type = 'module';
+        document.body.appendChild(script);
+      }
+    })
+    .catch(err => console.error('Error al cargar el recurso:', err));
 }
 
 function centrarElementoEnVista(seccionId, smooth = true) {
