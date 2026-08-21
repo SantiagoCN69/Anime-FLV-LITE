@@ -1183,12 +1183,6 @@ function cargarFetch(direccion) {
 
       const nuevoMain = temp.querySelector('main');
       if (nuevoMain) {
-        // // El icono principal ya está fuera de las secciones; quitamos solo el del header principal cargado.
-        // const headerCargado = nuevoMain.querySelector(':scope > .headder-section');
-        // if (headerCargado) {
-        //   headerCargado.querySelector(':scope > svg, :scope > div > svg')?.remove();
-        //   headerCargado.classList.add('header-icon-extracted');
-        // }
         main.innerHTML = nuevoMain.innerHTML;
       }
 
@@ -1200,7 +1194,6 @@ function cargarFetch(direccion) {
       const css = document.createElement('link');
       css.rel = 'stylesheet';
       css.href = '/styles/style_' + recurso + '.css';
-      console.log(css.href);
       document.head.appendChild(css);
     });
 }
