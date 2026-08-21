@@ -994,7 +994,7 @@ function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes
 
 async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   if (!userID || userID === "null") {
-    container.innerHTML = '<p>Inicia sesión para ver tus animes en ' + container.id + '</p>';
+    container.innerHTML = '<p class="no-results">Inicia sesión para ver tus animes en ' + container.id + '</p>';
     const h2 = document.querySelector('#' + container.id + 'h2');
     h2.dataset.text = 0;
     return;
