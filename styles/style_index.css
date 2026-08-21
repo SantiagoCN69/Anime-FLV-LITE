@@ -1491,7 +1491,7 @@ justify-content: space-between;
 .hero-slide__synopsis {
   margin: 0;
   flex:1;
-  color: var(--t2);
+  color: rgba(var(--bgt), .7);
   line-height: 1.55;
   font-size: 0.92rem;
   max-width: 560px;
