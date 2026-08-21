@@ -455,6 +455,11 @@ async function cargarUltimosCapsVistos() {
 // UTILS DE FLIP OPTIMIZADO
 // ----------------------------------------------------
 function renderFlipOptimizado(container, renderCallback) {
+  if (document.body.classList.contains('animaciones-off')) {
+    renderCallback();
+    return;
+  }
+
   // 1. FIRST: Capturamos posiciones actuales
   const posicionesAnteriores = new Map();
   Array.from(container.children).forEach(el => {
