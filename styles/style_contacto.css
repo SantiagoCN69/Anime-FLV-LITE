@@ -474,10 +474,6 @@ textarea[aria-invalid="true"]:focus {
         padding: 1rem;
     }
     
-    .contacto-container {
-        margin-top: 1rem;
-    }
-    
     .contacto-form {
         padding: 1.5rem;
     }
