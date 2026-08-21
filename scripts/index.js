@@ -1181,6 +1181,12 @@ function cargarFetch(direccion) {
   fetch(recurso + '.html')
     .then(res => res.text())
     .then(html => {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = '/styles/style_' + recurso + '.css';
+      if (recurso === 'contacto' || recurso === 'preferencias') {
+        document.head.appendChild(css);
+      }
       const temp = document.createElement('div');
       temp.innerHTML = html;
 
@@ -1194,12 +1200,6 @@ function cargarFetch(direccion) {
       script.type = 'module';
       document.body.appendChild(script);
 
-      const css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.href = '/styles/style_' + recurso + '.css';
-      if (recurso === 'contacto' || recurso === 'preferencias') {
-        document.head.appendChild(css);
-      }
     });
 }
 

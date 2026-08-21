@@ -1,0 +1,249 @@
+/* Secciones y Tarjetas */
+.pref-section {
+  margin-bottom: 32px;
+  margin-top: 1rem;
+}
+
+.section-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--t1) !important;
+  opacity: 0.7;
+  letter-spacing: 1.2px !important;
+  margin-bottom: 12px !important;
+  margin-left: 4px !important;
+}
+
+.section-label::after {
+  content: unset !important;
+}
+
+.settings-card {
+  background-color: var(--p);
+  border: 1px solid var(--br);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--br);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+/* Iconos de las opciones */
+.setting-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--btn) 12%, transparent);
+  color: var(--btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+/* Información (Textos) */
+.setting-info {
+  flex-grow: 1;
+}
+
+.setting-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--t1);
+}
+
+.setting-info p {
+  margin: 0;
+  color: var(--t1);
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+/* Controles (Botones, Toggles, Selects) */
+.setting-action {
+  margin-left: 16px;
+}
+
+.btn-outline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--btn);
+  color: var(--btn);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background: rgba(var(--bgt), 0.08);
+  border-color: var(--btn);
+}
+
+.btn-outline.danger {
+  color: var(--btn2);
+  border-color: var(--btn2);
+}
+
+.btn-outline.danger:hover {
+  background: rgba(var(--bgt), 0.08);
+}
+
+/* Select Personalizado */
+.custom-select {
+  appearance: none;
+  background-color: var(--b);
+  border: 1px solid var(--br);
+  color: var(--t1);
+  padding: 10px 36px 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  min-width: 130px;
+}
+
+.custom-select:focus {
+  border-color: var(--btn);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--br);
+  transition: .3s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--t1);
+  transition: .3s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: var(--btn);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+}
+
+.preferencias-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+
+.pref-credits {
+  text-align: center;
+  color: var(--t2);
+}
+
+.pref-credits-mark {
+  display: block;
+  width: 48px;
+  height: 1px;
+  margin: 0 auto 16px;
+  background: var(--br);
+}
+
+.pref-credits-brand {
+  margin: 0 0 6px;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--t1);
+  font-weight: 600;
+}
+
+.pref-credits-author {
+  margin: 0;
+  font-size: 13px;
+  color: var(--t1);
+  opacity: 0.7;
+}
+
+@media screen and (max-width: 600px) {
+  .setting-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .setting-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 0;
+  }
+
+  .setting-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .setting-info h3 {
+    font-size: 15px;
+  }
+
+  .setting-info p {
+    font-size: 13px;
+  }
+
+  .setting-action {
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: stretch;
+  }
+
+  .setting-action .btn-outline,
+  .setting-action .custom-select {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .setting-action .toggle-switch {
+    margin-left: auto;
+  }
+}

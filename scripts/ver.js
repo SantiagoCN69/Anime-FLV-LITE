@@ -28,7 +28,7 @@ let dropdownGenerado = false;
 let episodios = [];
 let episodioActualIndex = parseInt(episodeNumber);
 let embeds = [];
-let bloquearAnuncios = true;
+let bloquearAnuncios = localStorage.getItem("bloquearAnuncios") !== "false";
 // Prioridad: parámetro URL > preferencia localStorage > default (sub)
 let modoDoblado = serversParam === "dob" || (serversParam === null && serversPreference === "dob");
 
@@ -226,8 +226,14 @@ if (btnSelectorCapitulo && dropdownCapitulos) {
 }
 
 
-btnBloquear.addEventListener("click", () => {
+if (btnBloquear) {
+  btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
+  btnBloquear.classList.toggle("activo", bloquearAnuncios);
+}
+
+btnBloquear?.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
+  localStorage.setItem("bloquearAnuncios", String(bloquearAnuncios));
   btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
   btnBloquear.classList.toggle("activo", bloquearAnuncios);
   const servidorActivoBtn = document.querySelector("#controles .servidor-activo");

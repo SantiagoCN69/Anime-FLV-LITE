@@ -104,31 +104,19 @@ function crearmodal(user = false) {
   const modalExistente = loginButton.querySelector('.logout-modal');
   if (modalExistente) modalExistente.remove();
 
-  // Obtener estado actual de Continuar Viendo
-  const currentCv = localStorage.getItem('continuar_viendo_pos') || 'cv-ambas';
-  const cvLabels = {
-    'cv-main': 'Principal',
-    'cv-sidebar': 'Lateral',
-    'cv-ambas': 'Ambas'
-  };
-
-  // Crear nuevo modal
+  // Los ajustes de la aplicación viven en la sección Preferencias.
   const modal = document.createElement('div');
   modal.className = 'logout-modal';
   modal.innerHTML = `
-    <button id="export-data">Exportar datos</button>
-    <a id="contacto-link" href="/contacto">Contacto</a>
-    <button id="clear-cache">Eliminar cache</button>
-    <button id="cv-toggle">CV: ${cvLabels[currentCv]}</button>
-    <button id="theme-toggle">Cambiar tema</button>
-    <button id="sidebar-toggle">Colapsar sidebar</button>
-    <button id="config">Navegación</button>
+    <button id="theme-toggle">Tema</button>
+    <button id="preferencias-btn">Preferencias</button>
+    <button id="contacto-link">Contacto</button>
   `;
   
   if (user) {
-    modal.innerHTML += `<button id='confirm-logout' class="modal-btn-b">Cerrar sesión</button>`;
+    modal.innerHTML += `<button id='confirm-logout' class="modal-btn-b">Salir</button>`;
   } else {
-    modal.innerHTML += `<button id='confirm-login' class="modal-btn-b">Login</button>`;
+    modal.innerHTML += `<button id='confirm-login' class="modal-btn-b">Iniciar</button>`;
   }
   
   loginButton.appendChild(modal);
@@ -141,60 +129,7 @@ function crearmodal(user = false) {
   // ==========================================
   // EVENTOS DEL MODAL
   // ==========================================
-
-  // --- NUEVO: Botón Navegación (#config) ---
-  const configBtn = modal.querySelector('#config');
-  if (configBtn) {
-    configBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation(); // Evita que se cierre el modal
-      
-      const indexpagination = document.getElementById('indexpagination');
-      if (!indexpagination) return;
-
-      const NAV_POSITIONS = { TOP: 'top', BOTTOM: 'bottom', FLOATING: 'floating' };
-      
-      let currentPosition = localStorage.getItem('indexpaginationPosition') ||
-        [...indexpagination.classList].find(cls => Object.values(NAV_POSITIONS).includes(cls)) ||
-        NAV_POSITIONS.TOP;
-
-      // Cambiar de estado
-      if (currentPosition === NAV_POSITIONS.TOP) {
-        currentPosition = NAV_POSITIONS.BOTTOM;
-      } else if (currentPosition === NAV_POSITIONS.BOTTOM) {
-        currentPosition = NAV_POSITIONS.FLOATING;
-      } else {
-        currentPosition = NAV_POSITIONS.TOP;
-      }
-
-      // Guardar y aplicar
-      localStorage.setItem('indexpaginationPosition', currentPosition);
-      indexpagination.classList.remove('top', 'bottom', 'floating', 'fixed');
-      indexpagination.classList.add(currentPosition);
-    });
-  }
-
-  // --- Botón de Continuar Viendo (Toggle) ---
-  const cvToggleBtn = modal.querySelector('#cv-toggle');
-  if (cvToggleBtn) {
-    cvToggleBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const states = ['cv-main', 'cv-sidebar', 'cv-ambas'];
-      const current = localStorage.getItem('continuar_viendo_pos') || 'cv-ambas';
-      const idx = states.indexOf(current);
-      const next = states[(idx + 1) % states.length];
-      
-      localStorage.setItem('continuar_viendo_pos', next);
-      cvToggleBtn.textContent = `CV: ${cvLabels[next]}`;
-      
-      document.body.classList.remove('cv-main', 'cv-sidebar', 'cv-ambas');
-      document.body.classList.add(next);
-    });
-  }
-
-  // --- Botón Cambiar Tema ---
+// --- Botón Cambiar Tema ---
   const themeBtn = modal.querySelector('#theme-toggle');
   if (themeBtn) {
     themeBtn.addEventListener('click', (e) => {
@@ -213,108 +148,6 @@ function crearmodal(user = false) {
           theme: next,
           lastUpdated: serverTimestamp()
         }, { merge: true }).catch(err => console.error("Error guardando tema:", err));
-      }
-    });
-  }
-
-  // --- Botón Limpiar Caché ---
-  const clearCacheBtn = modal.querySelector('#clear-cache');
-  if (clearCacheBtn) {
-    clearCacheBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const originalText = clearCacheBtn.textContent;
-      clearCacheBtn.textContent = 'Limpiando...';
-      clearCacheBtn.disabled = true;
-
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-        if ('caches' in window) {
-          const cacheNames = await caches.keys();
-          await Promise.all(cacheNames.map(name => caches.delete(name)));
-        }
-        
-        clearCacheBtn.textContent = '¡Listo!';
-        setTimeout(() => window.location.reload(), 1000);
-      } catch (error) {
-        console.error('Error al limpiar caché:', error);
-        clearCacheBtn.textContent = 'Error';
-        setTimeout(() => {
-          clearCacheBtn.textContent = originalText;
-          clearCacheBtn.disabled = false;
-        }, 2000);
-      }
-    });
-  }
-
-  // --- Botón Exportar Datos ---
-  const exportButton = modal.querySelector('#export-data');
-  if (exportButton) {
-    exportButton.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const originalText = exportButton.textContent;
-      
-      try {
-        exportButton.textContent = 'Exportando...';
-        exportButton.disabled = true;
-        
-        const currentUser = auth.currentUser;
-        if (!currentUser) throw new Error('No hay usuario autenticado');
-        
-        const userId = currentUser.uid;
-        
-        const getCollectionData = async (collectionName) => {
-          try {
-            const q = query(collection(db, 'usuarios', userId, collectionName));
-            const querySnapshot = await getDocs(q);
-            return querySnapshot.docs.map(doc => doc.data());
-          } catch (error) {
-            return [];
-          }
-        };
-        
-        const [vistos, viendo, completados, favoritos] = await Promise.all([
-          getCollectionData('visto'),
-          getCollectionData('viendo'),
-          getCollectionData('completados'),
-          getCollectionData('favoritos')
-        ]);
-        
-        const userData = {
-          usuario: {
-            email: currentUser.email,
-            displayName: currentUser.displayName,
-            photoURL: currentUser.photoURL
-          },
-          animes: { vistos, viendo, completados, favoritos },
-          fechaExportacion: new Date().toISOString()
-        };
-        
-        const dataStr = JSON.stringify(userData, null, 2);
-        const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
-        const exportFileDefaultName = `animeflv-lite-${userId.slice(0, 8)}.json`;
-        
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
-        
-        exportButton.textContent = '¡Exportado!';
-        setTimeout(() => {
-          exportButton.textContent = originalText;
-          exportButton.disabled = false;
-        }, 2000);
-        
-      } catch (error) {
-        console.error('Error al exportar datos:', error);
-        exportButton.textContent = 'Error al exportar';
-        setTimeout(() => {
-          exportButton.textContent = originalText;
-          exportButton.disabled = false;
-        }, 2000);
       }
     });
   }
@@ -338,17 +171,33 @@ function crearmodal(user = false) {
     });
   }
 
-  // --- Botón Colapsar Sidebar ---
-  const sidebarToggleBtn = modal.querySelector('#sidebar-toggle');
-  if (sidebarToggleBtn) {
-    sidebarToggleBtn.addEventListener('click', (e) => {
+  // --- Botón Preferencias ---
+  const preferenciasBtn = modal.querySelector('#preferencias-btn');
+  if (preferenciasBtn) {
+    preferenciasBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      
-      document.body.classList.toggle('sidebar-collapsed');
-      const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-      localStorage.setItem('sidebarCollapsed', isCollapsed);
-      sidebarToggleBtn.textContent = isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar';
+      if (document.getElementById('Preferencias')) {
+        history.replaceState(null, '', '?Preferencias');
+        window.dispatchEvent(new Event('searchchange'));
+      } else {
+        window.location.href = '/?Preferencias';
+      }
+    });
+  }
+
+  // --- Botón contacto ---
+  const contactoBtn = modal.querySelector('#contacto-link');
+  if (contactoBtn) {
+    contactoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (document.getElementById('Contacto')) {
+        history.replaceState(null, '', '?Contacto');
+        window.dispatchEvent(new Event('searchchange'));
+      } else {
+        window.location.href = '/?Contacto';
+      }
     });
   }
 }
@@ -405,9 +254,6 @@ const btnLogin = document.getElementById('btn-login');
 if (btnLogin) {
   const handleClickOutside = (event) => {
     const modal = document.querySelector('.logout-modal');
-    if (event.target.closest('#config')) {
-      return; 
-    }
     if (modal && !modal.contains(event.target) && !btnLogin.contains(event.target)) {
       modal.classList.remove('show');
       document.removeEventListener('click', handleClickOutside);

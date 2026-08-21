@@ -249,6 +249,9 @@ if (indexpagination) {
       if (sidebarState === 'true') {
         document.body.classList.add('sidebar-collapsed');
       }
+      if (localStorage.getItem('animaciones') === 'false') {
+        document.body.classList.add('animaciones-off');
+      }
     </script>
   <main>
     <!-- Permanece fuera de las secciones ocultables: MorphSVG solo transforma este path. -->
