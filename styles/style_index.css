@@ -484,7 +484,9 @@ nav.filtros {
 }
 
 
-
+.header-con-subtitulo {
+  justify-content: start !important;
+}
 /* ==========================================================================
    HERO SLIDER (Directorio JK cache)
    ========================================================================== */
