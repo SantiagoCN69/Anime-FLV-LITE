@@ -41,7 +41,7 @@ const indexpagination = document.querySelector('#indexpagination');
 const scrollOffset = 30;
 
 const handleScroll = () => {
-  if (window.scrollY > scrollOffset) {
+  if (window.scrollY > scrollOffset && !document.body.classList.contains('animaciones-off')) {
     header.classList.add('scrolled');
     sidebar.classList.add('scrolled');
     if (indexpagination) {
