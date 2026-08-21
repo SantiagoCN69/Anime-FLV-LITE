@@ -1648,7 +1648,6 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   background: rgba(0, 255, 0, .1);
 }
 #confirm-logout {
-  border-color: #ff4d4d;
   color: #ff4d4d;
 }
 #confirm-logout:hover {
