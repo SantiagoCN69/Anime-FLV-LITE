@@ -1197,7 +1197,9 @@ function cargarFetch(direccion) {
       const css = document.createElement('link');
       css.rel = 'stylesheet';
       css.href = '/styles/style_' + recurso + '.css';
-      document.head.appendChild(css);
+      if (recurso === 'contacto' || recurso === 'preferencias') {
+        document.head.appendChild(css);
+      }
     });
 }
 
