@@ -45,7 +45,8 @@ const iconosDeSeccion = {
   'DirectorioAV1': 'M11.196 14.616c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.848 21.432-10.781M11.196 32.477c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.847 21.432-10.78M11.196 13.566c0-4.644 8.931-9.792 21.432-9.667 12.501.125 21.432 5.547 21.432 10.191v36.773c0 4.644-8.931 10.192-21.432 10.192-12.501 0-21.432-6.073-21.432-10.717V13.566Z',
   'Populares': 'M41.018 61.686c35.917-8.817 15.805-44.083-8.62-58.777-2.874 10.286-7.187 13.225-15.806 23.511C5.177 40.038 10.848 55.808 26.65 61.686c-2.395-2.939-8.573-9.111-4.313-17.633 1.47-2.939 4.408-5.878 2.941-11.755 2.874 1.469 8.816 2.939 10.284 10.285 2.394-2.939 4.881-9.11 2.581-16.163 17.993 13.224 10.644 26.449 2.875 35.266Z',
   'Recomendaciones': 'M28.523 44.492a10.247 10.247 0 0 0-4.125-4.125L6.789 35.826a1.644 1.644 0 0 1 0-2.761l17.61-4.544a10.25 10.25 0 0 0 4.125-4.122l4.541-17.61a1.645 1.645 0 0 1 2.764 0l4.537 17.61a10.25 10.25 0 0 0 4.125 4.125l17.61 4.538a1.644 1.644 0 0 1 0 2.767l-17.61 4.538a10.247 10.247 0 0 0-4.125 4.125l-4.541 17.61a1.645 1.645 0 0 1-2.764 0l-4.538-17.61ZM57.408 8.611v11.482M63.149 14.352H51.668M11.482 48.797v5.741M14.352 51.668H8.611',
-  'Horarios': 'M60.288 37.363v-5.581c0-10.526 0-15.789-3.27-19.058-3.269-3.27-8.532-3.27-19.056-3.27M37.962 59.691H26.797c-10.525 0-15.787 0-19.057-3.27-3.27-3.269-3.27-8.532-3.27-19.057v-5.582c0-10.526 0-15.789 3.27-19.058 3.27-3.27 8.532-3.27 19.057-3.27M18.424 9.454V5.268M46.335 9.454V5.268M56.102 55.504l4.186 4.187M58.894 23.409H28.89M4.471 23.409h10.813M57.496 48.527a8.373 8.373 0 1 1-16.746 0 8.373 8.373 0 0 1 16.746 0Z'
+  'Horarios': 'M60.288 37.363v-5.581c0-10.526 0-15.789-3.27-19.058-3.269-3.27-8.532-3.27-19.056-3.27M37.962 59.691H26.797c-10.525 0-15.787 0-19.057-3.27-3.27-3.269-3.27-8.532-3.27-19.057v-5.582c0-10.526 0-15.789 3.27-19.058 3.27-3.27 8.532-3.27 19.057-3.27M18.424 9.454V5.268M46.335 9.454V5.268M56.102 55.504l4.186 4.187M58.894 23.409H28.89M4.471 23.409h10.813M57.496 48.527a8.373 8.373 0 1 1-16.746 0 8.373 8.373 0 0 1 16.746 0Z',
+  'Continuar-viendo': 'M32.3491 62.5454C49.026 62.5454 62.5454 49.0261 62.5454 32.3491C62.5454 15.6722 49.026 2.15283 32.3491 2.15283C15.6721 2.15283 2.15278 15.6722 2.15278 32.3491C2.15278 49.0261 15.6721 62.5454 32.3491 62.5454ZM32.3491 62.5454L64.0139 62.8491M33.0139 31.8491H32.0139M37.8315 15.8732C37.8315 18.901 35.3769 21.3556 32.3491 21.3556C29.3212 21.3556 26.8667 18.901 26.8667 15.8732C26.8667 12.8453 29.3212 10.3908 32.3491 10.3908C35.3769 10.3908 37.8315 12.8453 37.8315 15.8732ZM37.8315 48.825C37.8315 51.8528 35.3769 54.3074 32.3491 54.3074C29.3212 54.3074 26.8667 51.8528 26.8667 48.825C26.8667 45.7971 29.3212 43.3426 32.3491 43.3426C35.3769 43.3426 37.8315 45.7971 37.8315 48.825ZM21.3556 32.3491C21.3556 35.3769 18.901 37.8315 15.8731 37.8315C12.8453 37.8315 10.3907 35.3769 10.3907 32.3491C10.3907 29.3212 12.8453 26.8667 15.8731 26.8667C18.901 26.8667 21.3556 29.3212 21.3556 32.3491ZM54.3074 32.3491C54.3074 35.3769 51.8529 37.8315 48.825 37.8315C45.7972 37.8315 43.3426 35.3769 43.3426 32.3491C43.3426 29.3212 45.7972 26.8667 48.825 26.8667C51.8529 26.8667 54.3074 29.3212 54.3074 32.3491Z'
 };
 
 function animarSVGCambio(nuevaSeccionId) {
@@ -104,6 +105,7 @@ let directorioJkCargado = false;
 let labCargado = false;
 let popularesCargados = false;
 let horariosCargados = false;
+let preferenciasCargadas = false;
 
 // Flags para prevenir cargas simultáneas
 const cargando = new Set();
@@ -149,6 +151,7 @@ const sectionConfig = {
   'DirectorioAV1': { flag: () => directorioAV1Cargado, setFlag: () => { directorioAV1Cargado = true; }, load: () => cargarFetch("DirectorioAV1") },
   'DirectorioJK': { flag: () => directorioJkCargado, setFlag: () => { directorioJkCargado = true; }, load: () => cargarFetch("DirectorioJK") },
   'Recomendaciones': { flag: () => labCargado, setFlag: () => { labCargado = true; }, load: () => cargarFetch("Recomendaciones") },
+  'Preferencias': { flag: () => preferenciasCargadas, setFlag: () => { preferenciasCargadas = true; }, load: () => cargarFetch("preferencias") },
   'Populares': { flag: () => popularesCargados, setFlag: () => { popularesCargados = true; }, load: () => cargarFetch("populares") },
   'Horarios': { flag: () => horariosCargados, setFlag: () => { horariosCargados = true; }, load: () => cargarFetch("horarios") }
 };
@@ -220,7 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
-      const targetId = e.target.getAttribute('data-target');
+      const targetId = e.currentTarget.getAttribute('data-target');
+      if (!targetId) return;
       history.replaceState(null, '', `?${targetId}`);
       mostrarSeccionDesdesearch();
       // Centrar el elemento en la navegación con un pequeño delay
@@ -1157,10 +1161,20 @@ async function cargarContinuarViendo() {
   }
 
 function cargarFetch(direccion) {
-  direccion = direccion.charAt(0).toUpperCase() + direccion.slice(1);
-  const main = document.getElementById(direccion);
+  const sectionId = direccion.charAt(0).toUpperCase() + direccion.slice(1);
+  const main = document.getElementById(sectionId);
   if (!main) return;
-  fetch(direccion + '.html')
+  const recursos = {
+    DirectorioAV1: 'directorioav1',
+    DirectorioJK: 'directoriojk',
+    Recomendaciones: 'Recomendaciones',
+    populares: 'populares',
+    horarios: 'horarios',
+    preferencias: 'preferencias'
+  };
+  const recurso = recursos[direccion] || direccion;
+
+  fetch(recurso + '.html')
     .then(res => res.text())
     .then(html => {
       const temp = document.createElement('div');
@@ -1178,7 +1192,7 @@ function cargarFetch(direccion) {
       }
 
       const script = document.createElement('script');
-      script.src = '/scripts/' + direccion + '.js';
+      script.src = '/scripts/' + recurso + '.js';
       script.type = 'module';
       document.body.appendChild(script);
     });
@@ -1302,6 +1316,7 @@ document.addEventListener("DOMContentLoaded", () => {
     'DirectorioJK': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
     'DirectorioAV1': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
     'Recomendaciones': { left: 'Populares', right: 'DirectorioJK' },
+    'Preferencias': { left: 'Ultimos-Episodios', right: 'Horarios' },
     'Populares': { left: 'Horarios', right: 'Recomendaciones' },
     'Horarios': { right: 'Populares', left: 'Continuar-viendo' },
     'Continuar-viendo': { right: 'Horarios' }
@@ -1357,7 +1372,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // =========================================
 const sectionsOrder = [
   'Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes',
-  'Completados', 'DirectorioJK', 'DirectorioAV1', 'Recomendaciones', 'Populares', 'Horarios', 'Continuar-viendo'
+  'Completados', 'DirectorioJK', 'DirectorioAV1', 'Recomendaciones', 'Populares', 'Horarios', 'Preferencias', 'Continuar-viendo'
 ];
 
 const state = { scrolling: false, timer: null, insist: 0, edge: null, lastTime: 0 };
