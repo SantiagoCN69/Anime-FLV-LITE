@@ -242,13 +242,11 @@ header #busqueda{
 #btn-login span {
   margin-left: 5px;
 }
-#theme-toggle {
-  position: relative;
-}
+
 .theme-indicator {
   position: absolute;
-  right: -5px;
-  bottom: -5px;
+  right: -6px;
+  top: -4px;
   width: 20px;
   height: 20px;
   background-color: var(--btn); 
@@ -855,7 +853,7 @@ main {
   padding: 1rem 0;
 }
 
-.content-section p, .init-loading-servidores, .no-results {
+.init-loading-servidores, .no-results {
   text-align: center;
   margin-top: 2rem;
   color: var(--t1);
@@ -1535,17 +1533,15 @@ h4 {
   position: absolute;
   right: 0;
   top: 0;
-  overflow: hidden;
   transform: scale(0.63);
   height: calc(100% + 26px);
-  background: var(--b);
+  background: var(--p);
   border: 1px solid var(--br);
-  padding: 20px;
-  border-radius: 25px;
+  border-radius: 12px;
   opacity: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
   pointer-events: none;
   transform-origin: top right;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1555,53 +1551,100 @@ h4 {
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
-  top: calc(100% + 10px);
-  overflow: hidden;
+  top: calc(100% + 30px);
   transform: scale(1);
   height: unset;
 }
 
 .logout-modal button,
 .logout-modal a {
-  display: block;
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: start;
+  padding: 10px 1rem;
   font-size: 1rem;
-  border: 1px solid;
-  background: transparent;
+  border: 1px solid transparent;
   cursor: pointer;
-  width: 150px;
-  border-color: var(--br);
-  border-radius: 20px;
+  width: 160px;
   color: var(--t1);
   transition: background 0.2s ease, color 0.2s ease;
 }
 .logout-modal button:hover,
 .logout-modal a:hover {
-background: rgba(255, 248, 248, 0.1);
+  border-color: var(--br);
+  background: rgba(255, 248, 248, 0.1);
 }
-#export-data {
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+
+#confirm-login {
+  color: rgb(0, 194, 0);
 }
-#config {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+
+.logout-modal button::before,
+.logout-modal a::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: var(--t1);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
-#theme-toggle, #clear-cache, #cv-toggle, #sidebar-toggle, #contacto-link {
-  border-radius: 5px;
+#confirm-login::before {
+  background-color: rgb(0, 194, 0);
+    -webkit-mask-image: url("../icons/enter.svg");
+  mask-image: url("../icons/enter.svg");
 }
-@media (max-width: 600px) {
-  #sidebar-toggle {
-    display: none;
+#confirm-logout::before {
+  background-color: #ff4d4d;
+    -webkit-mask-image: url("../icons/enter.svg");
+  mask-image: url("../icons/enter.svg");
+}
+#contacto-link::before {
+    -webkit-mask-image: url("../icons/plane.svg");
+  mask-image: url("../icons/plane.svg");
+}
+
+#preferencias-btn::before {
+    -webkit-mask-image: url("../icons/settings.svg");
+  mask-image: url("../icons/settings.svg");
+}
+.logout-modal :first-child {
+  border-radius: 11px 11px 0 0;
+}
+.logout-modal :last-child {
+    border-radius: 0 0 11px 11px;
+}
+#theme-toggle::before {
+  -webkit-mask-image: url("../icons/theme.svg");
+  mask-image: url("../icons/theme.svg");
+}
+#theme-toggle {
+  position: relative;
+}
+
+#theme-toggle::before {
+background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6);
+  background-size: 300% 300%;
+  animation: gradientAnimation 6s ease infinite;
+}
+/* Animación fluida del degradado */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
-.modal-btn-b {
-margin-top: 10px;
-}
-#confirm-login {
-  border-color: #0f0;
-  color: #0f0;
-}
+
 #confirm-login:hover {
   background: rgba(0, 255, 0, .1);
 }
