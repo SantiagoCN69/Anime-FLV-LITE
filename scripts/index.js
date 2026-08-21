@@ -1065,7 +1065,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
             idsNoEncontrados.push(id);
           } else {
             animes.push({
-              id: docSnap.id,
+              id: id,
               titulo: data.titulo,
               portada: data.portada || data.banner,
               estado: data.estado || 'No disponible',
