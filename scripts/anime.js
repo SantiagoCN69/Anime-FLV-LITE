@@ -1298,6 +1298,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
   const estadoAnteriorBtn = document.querySelector('#btn-viendo.active, #btn-pendiente.active, #btn-visto.active');
   [btnViendo, btnPendiente, btnVisto].forEach(btn => btn.classList.remove('active'));
   btnSeleccionado.classList.add('active');
+  mostrarPildora('actualizando', true, document.getElementById('titulo')?.textContent || '');
   
   try {
     await actualizarEstadoFirebase(estadoId.toUpperCase());
@@ -1412,7 +1413,8 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
     pendiente: { clase: "pildora-pendiente", texto: `${anime} ${accion} pendientes` },
     visto: { clase: "pildora-visto", texto: `${anime} ${accion} vistos` },
     viendo: { clase: "pildora-viendo", texto: `${anime} ${accion} viendo` },
-    capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` }
+    capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` },
+    actualizando: { clase: "pildora-default", texto: `Actualizando ${anime}...` }
   };
 
   const config = opciones[opcion];
