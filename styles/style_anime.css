@@ -559,7 +559,7 @@ body:not(.animaciones-off) header {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
-  min-height: fit-content;
+  min-height: 26px;
 }
   
 .genero a {
