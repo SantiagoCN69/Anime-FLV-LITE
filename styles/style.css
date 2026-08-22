@@ -965,6 +965,9 @@ main {
 #Busqueda-Resultados svg {
   z-index: 1;
 }
+.svg-header {
+  align-self: start;
+}
 #content-section-svg-dynamic {
   position: absolute;
   display: block !important;
