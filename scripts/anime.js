@@ -687,13 +687,17 @@ filtroCapitulo.addEventListener('input', debounce(() => {
 // 3. Manejador de clicks (Optimistic UI - Impecable)
 async function manejarEstadoEpisodio(btn, icon, ep) {
   const userId = auth.currentUser?.uid || localStorage.getItem("userID");
-  if (!userId || capituloToggleInProgress) return;
+  // Evitar doble clic rápido en ESTE mismo botón
+  if (!userId || btn.dataset.loading === "true") return; 
 
   const animeId = id; 
   const tituloAnime = tituloEl.textContent;
   const marcandoComoVisto = !btn.classList.contains('ep-visto');
   
-  // UI Optimista: Cambia al instante
+  // Marcar este botón como ocupado
+  btn.dataset.loading = "true";
+
+  // UI Optimista
   btn.classList.toggle('ep-visto', marcandoComoVisto);
   btn.classList.toggle('ep-no-visto', !marcandoComoVisto);
   icon.src = marcandoComoVisto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
@@ -702,10 +706,13 @@ async function manejarEstadoEpisodio(btn, icon, ep) {
     await toggleCapituloVisto(animeId, tituloAnime, ep.number, marcandoComoVisto);
   } catch (e) {
     console.error('Error al cambiar estado, revirtiendo UI:', e);
-    // Reversión local instantánea si falla el internet/servidor
+    // Reversión local si falla
     btn.classList.toggle('ep-visto', !marcandoComoVisto);
     btn.classList.toggle('ep-no-visto', marcandoComoVisto);
     icon.src = !marcandoComoVisto ? '/icons/eye-solid.svg' : '/icons/eye-slash-solid.svg';
+  } finally {
+    // Liberar el botón pase lo que pase (éxito o error)
+    delete btn.dataset.loading;
   }
 }
 
