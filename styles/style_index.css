@@ -8,14 +8,15 @@ body.cv-main #continuar-viendo-sidebar {
 /* 2. Si el usuario eligió "Lateral" (cv-sidebar), ocultamos el principal */
 body.cv-sidebar #section-continuar-viendo {
   /* display: none !important; */
+  min-height: 0px !important;
   height: 0px !important;
   margin-bottom: 0 !important;
   opacity: 0 !important;
 }
 #section-continuar-viendo {
-  transition: height 0.3s ease-in-out, margin-bottom 0.3s ease-in-out, opacity 0.2s ease-in-out;
+  transition: height 0.3s ease-in-out, min-height 0.3s ease-in-out, margin-bottom 0.3s ease-in-out, opacity 0.2s ease-in-out;
   overflow: hidden;
-  height: 241px;
+  min-height: 241px;
 }
 /* 3. Para "Ambas" (cv-ambas), no ponemos "display: none" a ninguno,
       por lo que se mostrarán los dos normalmente. */
