@@ -805,6 +805,9 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   .botones-reproductor span {
     display: none;
   }
+  .btn-selector-capitulo {
+    min-width: unset !important;
+  }
 }
 /* #prueba10 {
   background-color: red;
