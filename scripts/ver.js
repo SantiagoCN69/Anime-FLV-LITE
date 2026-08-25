@@ -360,7 +360,7 @@ async function toggleYGuardarEstadoCapitulo() {
     console.warn('toggleYGuardarEstadoCapitulo: Operación en progreso, ignorando clic.');
     return;
   }
-
+  mostrarPildora(true, null, true);
   toggleInProgress = true;
 
   try {
@@ -1416,17 +1416,27 @@ cargarEpisodios()
     console.error("Error al cargar episodios inicialmente:", error);
   });
 
-function mostrarPildora(estado = true, cap = null) {
+function mostrarPildora(estado = true, cap = null, actualizando = false) {
   const pillAnterior = document.querySelector('.pildora');
   if (pillAnterior) pillAnterior.remove();
   
   const pill = document.createElement("div");
-  pill.className = `pildora pildora-${estado ? 'visto' : 'eliminado'}`;
+
+  if (actualizando) {
+    pill.className = `pildora pildora-default`;
+  } else {
+    pill.className = `pildora pildora-${estado ? 'visto' : 'eliminado'}`;
+  }
 
   const capTexto = cap ? ` ${cap}` : "";
-  pill.textContent = estado 
-    ? `Capítulo${capTexto} marcado como visto` 
-    : `Capítulo${capTexto} eliminado de vistos`;
+
+  if (actualizando) {
+    pill.textContent = "Actualizando...";
+  } else {
+    pill.textContent = estado 
+      ? `Capítulo${capTexto} marcado como visto` 
+      : `Capítulo${capTexto} eliminado de vistos`;
+  }
 
   document.body.appendChild(pill);
 
