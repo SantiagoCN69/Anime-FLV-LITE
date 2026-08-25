@@ -1267,7 +1267,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- LÓGICA DE DESLIZAMIENTO DEL SIDEBAR ---
   let drag = { active: false, intent: false, startX: 0, startY: 0, width: 0 };
-  const seccionesPermitidas = ['Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes', 'Completados'];
+  const seccionesPermitidas = ['Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes', 'Completados', 'Preferencias', 'Contacto'];
 
   document.addEventListener("touchstart", (e) => {
     const touch = e.touches[0];
