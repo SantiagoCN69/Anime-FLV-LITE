@@ -431,7 +431,7 @@ async function toggleYGuardarEstadoCapitulo() {
     } catch (error) {
       console.error("Error al guardar estado del capítulo en Firestore:", error);
       // Revertir UI en caso de error
-      await refrescarUIEstadoCapitulo();
+      // await refrescarUIEstadoCapitulo();
     }
   } finally {
     toggleInProgress = false;
@@ -461,6 +461,16 @@ btnEstadoCapitulo.addEventListener("click", async () => {
     return;
   }
   try {
+//carga instatanea segun la clase actual 
+    const isVisto = btnEstadoCapitulo.classList.contains('visto');
+    if (isVisto) {
+      btnEstadoCapitulo.classList.remove('visto');
+      btnEstadoCapitulo.classList.add('no-visto');
+    } else {
+      btnEstadoCapitulo.classList.remove('no-visto');
+      btnEstadoCapitulo.classList.add('visto');
+    }
+
     await toggleYGuardarEstadoCapitulo();
     await refrescarUIEstadoCapitulo();
   } catch (error) {
