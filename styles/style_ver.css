@@ -616,7 +616,6 @@ iframe {
     bottom: calc(100% + 15px);
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.8);
 }
 .dropdown-titulo {
   font-weight: 600;
