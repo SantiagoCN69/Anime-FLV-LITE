@@ -1,5 +1,19 @@
 @import url('fonts.css');
 
+
+.no-user .sidebar ul > li:nth-of-type(n+3):nth-of-type(-n+6) {
+  display: none;
+}
+.no-user .sidebar ul {
+  height: unset !important;
+  min-height: unset !important;
+}
+.no-user .sidebar li:not(:has(> a)), .no-user .sidebar a:not(.btn-siguiente-capitulo) {
+  padding: 22px 25px;
+}
+.no-user #menu-toggle {
+  display: none !important;
+}
 /* seccion continuar viendo */
 /* 1. Si el usuario eligió "Principal" (cv-main), ocultamos el del sidebar */
 body.cv-main #continuar-viendo-sidebar {
