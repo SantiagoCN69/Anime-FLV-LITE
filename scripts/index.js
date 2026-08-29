@@ -277,14 +277,12 @@ function crearElementoSiguienteCapitulo(itemData) {
 }
 
 async function cargarUltimosCapsVistos() {
+  const sectionsidebar  = document.getElementById('continuar-viendo-sidebar')
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
   if (!ultimosCapsContainer) return;
 
-  // Variable centralizada para el texto de cuando no hay nada
-  const textoVacio = '<p>No hay capítulos disponibles para continuar viendo.</p>';
-
   if (!userID || userID === "null") {
-    ultimosCapsContainer.innerHTML = '<p>Inicia sesión para ver tu registro de animes!.</p>';
+    sectionsidebar.style.display = 'none';
     inicializarContinuarViendo();
     return;
   }
@@ -292,7 +290,7 @@ async function cargarUltimosCapsVistos() {
   const renderizarBotones = (datos) => {
     ultimosCapsContainer.innerHTML = '';
     if (!datos || datos.length === 0) {
-      ultimosCapsContainer.innerHTML = textoVacio;
+      sectionsidebar.style.display = 'none';
       return;
     }
     const fragment = document.createDocumentFragment();
@@ -332,7 +330,7 @@ async function cargarUltimosCapsVistos() {
 
     // Si el usuario no tiene historial en Firebase
     if (snap.empty) {
-      ultimosCapsContainer.innerHTML = textoVacio;
+      sectionsidebar.style.display = 'none';
       localStorage.setItem(cacheKey, JSON.stringify([])); 
       localStorage.setItem(cacheStateKey, JSON.stringify([]));
       inicializarContinuarViendo();

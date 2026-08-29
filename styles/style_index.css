@@ -534,7 +534,7 @@ nav.filtros {
 .hero-slider {
   position: relative;
   width: 100%;
-  min-height: 460px;
+  min-height: 461px;
   isolation: isolate;
   margin-inline: -2rem;
   margin-top: -2rem;
@@ -1093,8 +1093,9 @@ nav.filtros {
 }
 }
 #collapse-btn-container {
-margin-top:auto;
-display: flex;
+  border-top: 1px solid var(--br);
+  margin-top:auto;
+  display: flex;
 }
 #Collapse-aside {
   display: flex;
