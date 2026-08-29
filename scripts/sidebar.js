@@ -1,47 +1,90 @@
+// ============================================================================
+// CONFIGURACIÓN GLOBAL
+// ============================================================================
+const SIDEBAR_CONFIG = {
+  THRESHOLD: 3,
+  MIN_WIDTH: 600,
+  SWIPE_THRESHOLD: 50,
+  VERTICAL_THRESHOLD: 50
+};
 
-const menuToggle = document.getElementById('menu-toggle');
-const sidebar = document.querySelector('.sidebar');
+// ============================================================================
+// MÓDULO SIDEBAR
+// ============================================================================
 /**
- * Inicializa la funcionalidad del sidebar
- * Configura todos los event listeners necesarios para el funcionamiento del sidebar
- * Incluye soporte para touch y mouse
+ * Inicializa el comportamiento del sidebar encapsulando su propio estado.
+ * @param {string} sidebarSelector - Selector CSS para el sidebar (ej. '.sidebar')
+ * @param {string} toggleId - ID del botón del menú (sin el '#')
  */
-// Configuración inicial
-const THRESHOLD = 20;
-const MIN_WIDTH = 600;
-const swipeThreshold = 50;
-const verticalThreshold = 50;
+function inicializarSidebar(sidebarSelector = '.sidebar', toggleId = 'menu-toggle') {
+  const sidebar = document.querySelector(sidebarSelector);
+  const menuToggle = document.getElementById(toggleId);
 
-// Estado global
-let rafPending = false;
-
-// Estado táctil
-let touchStartX = 0;
-let touchStartY = 0;
-let touchEndX = 0;
-let touchEndY = 0;
-let touchStartedOnRestrictedArea = false;
-
-function inicializarSidebar() {
-  // Verifica que los elementos necesarios existan
-  if (!menuToggle || !sidebar) {
-    console.error('Elementos del sidebar no encontrados');
+  if (!sidebar || !menuToggle) {
+    console.error(`Error: Elementos no encontrados. Verifica que exista un elemento con el selector '${sidebarSelector}' y un ID '${toggleId}'.`);
     return;
   }
 
-  // Event listener para mostrar el sidebar al mover el mouse cerca del borde izquierdo
-  window.addEventListener('mousemove', (e) => onMouseMove(e, sidebar));
-  
-  // Oculta el sidebar cuando el mouse sale de él
-  sidebar.addEventListener('mouseleave', () => onSidebarMouseLeave(sidebar));
+  // Estado encapsulado (Closure). Evita colisiones globales y problemas de "shadowing".
+  let rafPending = false;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let touchEndY = 0;
+  let touchStartedOnRestrictedArea = false;
 
-  // Alternar el estado del sidebar al hacer clic en el botón de toggle
+  // Set para búsquedas en O(1) de los elementos excluidos del gesto swipe
+  const idsRestringidos = new Set([
+    'noticias_container', 'capitulos', 'animes-relacionados',
+    'anime-grid-sin-resultados', 'controles', 
+    'sugerencias-sin-resultados', 'anime-grid-ia-busqueda'
+  ]);
+
+  // Manejadores de eventos internos
+  const handleMouseMove = (event) => {
+    if (sidebar.classList.contains('active') || window.innerWidth <= SIDEBAR_CONFIG.MIN_WIDTH) return;
+
+    if (!rafPending) {
+      rafPending = true;
+      requestAnimationFrame(() => {
+        if (event.clientX < SIDEBAR_CONFIG.THRESHOLD) {
+          sidebar.classList.add('active');
+          menuToggle.classList.add('active');
+        }
+        rafPending = false;
+      });
+    }
+  };
+
+  const handleSwipeGesture = () => {
+    const swipeDistanceX = touchEndX - touchStartX;
+    const swipeDistanceY = Math.abs(touchEndY - touchStartY);
+    const isSwipeRight = swipeDistanceX > SIDEBAR_CONFIG.SWIPE_THRESHOLD;
+    const isSwipeLeft = swipeDistanceX < -SIDEBAR_CONFIG.SWIPE_THRESHOLD;
+    const isValidVertical = swipeDistanceY < SIDEBAR_CONFIG.VERTICAL_THRESHOLD;
+
+    if (isSwipeRight && !sidebar.classList.contains('active') && isValidVertical && !touchStartedOnRestrictedArea) {
+      sidebar.classList.add('active');
+      menuToggle.classList.add('active');
+    } else if (isSwipeLeft && sidebar.classList.contains('active') && isValidVertical) {
+      sidebar.classList.remove('active');
+      menuToggle.classList.remove('active');
+    }
+  };
+
+  // Asignación de Listeners
+  window.addEventListener('mousemove', handleMouseMove);
+  
+  sidebar.addEventListener('mouseleave', () => {
+    sidebar.classList.remove('active');
+    menuToggle.classList.remove('active');
+  });
+
   menuToggle.addEventListener('click', () => {
     sidebar.classList.toggle('active');
     menuToggle.classList.toggle('active');
   });
 
-  // Oculta el sidebar al hacer clic fuera de él
   document.addEventListener('click', (event) => {
     const isClickInsideSidebar = sidebar.contains(event.target);
     const isClickOnMenuToggle = menuToggle.contains(event.target);
@@ -52,41 +95,21 @@ function inicializarSidebar() {
     }
   });
 
-  // Manejo de scroll en el sidebar
-  sidebar.addEventListener('touchstart', function(e) {
-    this._startY = e.touches[0].pageY;
-    this._startScroll = this.scrollTop;
-  }, { passive: false });
-
-  sidebar.addEventListener('touchmove', function(e) {
-    const y = e.touches[0].pageY;
-    const dy = this._startY - y;
-    const atTop = this.scrollTop === 0;
-    const atBottom = this.scrollTop + this.clientHeight >= this.scrollHeight;
-    if ((atTop && dy < 0) || (atBottom && dy > 0)) {
-      e.preventDefault();
-    }
-  }, { passive: false });
-
-  // Configuración de gestos táctiles
   document.addEventListener('touchstart', (event) => {
     touchStartX = event.changedTouches[0].screenX;
     touchStartY = event.changedTouches[0].screenY;
     
-    // Verificar si el toque empezó en un área restringida
-    const elementosExcluidos = [
-      document.getElementById('noticias_container'),
-      document.getElementById('capitulos'),
-      document.getElementById('animes-relacionados'),
-      document.getElementById('anime-grid-sin-resultados'),
-      document.getElementById('controles'),
-      document.getElementById('sugerencias-sin-resultados'),
-      document.getElementById('anime-grid-ia-busqueda')
-    ];
+    let currentElement = event.target;
+    touchStartedOnRestrictedArea = false;
     
-    touchStartedOnRestrictedArea = elementosExcluidos.some(elemento => {
-      return elemento?.contains(event.target);
-    });
+    // Subir por el árbol DOM para verificar si el toque inició en un área restringida
+    while (currentElement && currentElement !== document) {
+      if (currentElement.id && idsRestringidos.has(currentElement.id)) {
+        touchStartedOnRestrictedArea = true;
+        break;
+      }
+      currentElement = currentElement.parentNode;
+    }
   }, { passive: true });
 
   document.addEventListener('touchend', (event) => {
@@ -97,50 +120,13 @@ function inicializarSidebar() {
   }, { passive: true });
 }
 
-// Inicializar todo cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-  inicializarSidebar();
-  cargarUltimosCapsVistos();
-});
-
-// Funciones de manejo de eventos
-function onMouseMove(event) {
-  if (sidebar.classList.contains('active')) return;
-  if (window.innerWidth <= MIN_WIDTH) return;
-
-  if (!rafPending) {
-    rafPending = true;
-    requestAnimationFrame(() => {
-      if (event.clientX < THRESHOLD) {
-        sidebar.classList.add('active');
-        menuToggle.classList.add("active")
-      }
-      rafPending = false;
-    });
-  }
-}
-
-function onSidebarMouseLeave() {
-  sidebar.classList.remove('active');
-  menuToggle.classList.remove("active")
-}
-
-function handleSwipeGesture() {
-  const swipeDistanceX = touchEndX - touchStartX;
-  const swipeDistanceY = Math.abs(touchEndY - touchStartY);
-  const isSwipeRight = swipeDistanceX > swipeThreshold;
-  const isSwipeLeft = swipeDistanceX < -swipeThreshold;
-
-  if (isSwipeRight && !sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold && !touchStartedOnRestrictedArea) {
-    sidebar.classList.add('active');
-    menuToggle.classList.add('active');
-  } else if (isSwipeLeft && sidebar.classList.contains('active') && swipeDistanceY < verticalThreshold) {
-    sidebar.classList.remove('active');
-    menuToggle.classList.remove('active');
-  }
-}
-
-// Funciones para el componente de capítulos
+// ============================================================================
+// MÓDULO DE CAPÍTULOS
+// ============================================================================
+/**
+ * Crea un elemento DOM para el siguiente capítulo.
+ * Utiliza textContent en lugar de innerHTML para prevenir vulnerabilidades XSS.
+ */
 function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id, totalCapitulos }) {
   const btn = document.createElement('a');
   btn.className = 'btn-siguiente-capitulo';
@@ -148,28 +134,33 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id
 
   const img = document.createElement('img');
   img.src = portada;
-  img.alt = titulo;
+  img.alt = titulo; 
   img.className = 'portada-anime';
   img.onerror = () => {
-    img.src = 'path/to/default/image.png';
+    img.src = 'path/to/default/image.png'; // Nota: Ajusta esta ruta a tu imagen por defecto real
   };
 
   const contenedorTexto = document.createElement('div');
   contenedorTexto.className = 'contenedor-texto-capitulo';
 
-  contenedorTexto.innerHTML = `
-    <span class="texto-2-lineas">${titulo}</span>
-    <span class="texto-episodio">Ver episodio ${siguienteCapitulo} / ${totalCapitulos || 'X'}</span>
-  `;
+  // Inyección segura de datos dinámicos
+  const spanTitulo = document.createElement('span');
+  spanTitulo.className = 'texto-2-lineas';
+  spanTitulo.textContent = titulo;
 
+  const spanEpisodio = document.createElement('span');
+  spanEpisodio.className = 'texto-episodio';
+  spanEpisodio.textContent = `Ver episodio ${siguienteCapitulo} / ${totalCapitulos || 'X'}`;
+
+  contenedorTexto.append(spanTitulo, spanEpisodio);
   btn.append(img, contenedorTexto);
 
   return btn;
 }
 
-
-
-
+/**
+ * Carga y renderiza los últimos capítulos vistos desde el almacenamiento local.
+ */
 async function cargarUltimosCapsVistos() {
   const container = document.getElementById('ultimos-caps-viendo');
   if (!container) return;
@@ -188,9 +179,8 @@ async function cargarUltimosCapsVistos() {
     container.appendChild(fragment);
   };
 
-
-  const userID = localStorage.getItem('userID') || "null";
-  const cacheKey = `ultimosCapsVistosCache_` + userID;
+  const userID = localStorage.getItem('userID') || 'null';
+  const cacheKey = `ultimosCapsVistosCache_${userID}`;
   
   try {
     const cache = localStorage.getItem(cacheKey);
@@ -205,8 +195,17 @@ async function cargarUltimosCapsVistos() {
       container.innerHTML = '<p>No hay datos en caché. Actualiza desde la página principal.</p>';
     }
   } catch (e) {
-    console.error("Error al leer caché:", e);
+    console.error('Error al leer caché:', e);
     localStorage.removeItem(cacheKey);
     container.innerHTML = '<p>Error al cargar datos locales</p>';
   }
 }
+
+// ============================================================================
+// INICIALIZACIÓN
+// ============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Se llama a la función asegurando que mapea con los atributos exactos de tu HTML
+  inicializarSidebar('.sidebar', 'menu-toggle'); 
+  cargarUltimosCapsVistos();
+});

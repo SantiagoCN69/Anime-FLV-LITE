@@ -587,6 +587,7 @@ body:not(.animaciones-off) header {
   font-size: .9rem; 
   font-family: 'DM Sans', sans-serif;
   margin: 0;
+  transition: max-height 0.3s ease;
 }
 
 /* 2. Contenedor principal */
@@ -607,6 +608,8 @@ body:not(.animaciones-off) header {
 .anime-description-container.collapsed .anime-description {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
+  max-height: 3lh;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -615,6 +618,7 @@ body:not(.animaciones-off) header {
 .anime-description-container.expanded .anime-description {
   display: block;
   overflow: visible;
+  max-height: 20lh;
 }
 
 /* 5. Estilos del botón */

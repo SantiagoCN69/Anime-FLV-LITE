@@ -443,6 +443,7 @@ header.search-active .logout-modal {
 }
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
+  overscroll-behavior-y: contain;
   display: flex;
   flex-direction: column;
   z-index: 9;
