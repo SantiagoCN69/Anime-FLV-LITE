@@ -611,10 +611,6 @@ body:not(.animaciones-off) header {
   overflow: hidden;
 }
 
-/* 4. Estado expandido: remueve el límite de ancho y muestra todo el texto */
-.anime-description-container.expanded {
-  max-width: unset;
-}
 
 .anime-description-container.expanded .anime-description {
   display: block;
