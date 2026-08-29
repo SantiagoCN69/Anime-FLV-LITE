@@ -1037,7 +1037,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
       h2.dataset.text = titulos.length;
 
       if (titulos.length === 0) {
-          container.innerHTML = '<p>No tienes animes en ' + container.id + '</p>';
+          container.innerHTML = '<p class="no-results">No tienes animes en ' + container.id + '</p>';
           localStorage.removeItem(cacheKey);
           return;
       }
