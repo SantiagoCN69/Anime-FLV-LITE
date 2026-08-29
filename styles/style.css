@@ -30,6 +30,9 @@
 .animaciones-off .filtro-opciones {
   background: var(--br);
 }
+.animaciones-off .search-active #btn-search {
+  display: none !important;
+}
 * {
   margin: 0;
   padding: 0;
