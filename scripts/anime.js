@@ -332,6 +332,54 @@ async function aplicarFondoAnime(anime) {
     document.body.classList.add('fondo-animado');
   }
 }
+function setAnimeDescripcion(descripcionEl, texto) {
+  if (!descripcionEl) return;
+
+  const contenedor = descripcionEl.parentElement;
+  if (!contenedor) return;
+
+  // 1. Asignar texto e inicializar
+  descripcionEl.textContent = texto;
+
+  // Limpiar botón y eventos previos si se reutiliza el nodo
+  const btnPrevio = contenedor.querySelector('.btn-toggle-desc');
+  if (btnPrevio) btnPrevio.remove();
+
+  contenedor.classList.add('collapsed');
+  contenedor.classList.remove('expanded');
+
+  // 2. Medir desbordamiento tras el renderizado del DOM
+  requestAnimationFrame(() => {
+    const tieneDesbordamiento = descripcionEl.scrollHeight > descripcionEl.clientHeight;
+
+    if (tieneDesbordamiento) {
+      // Crear el botón
+      const btn = document.createElement('button');
+      btn.className = 'btn-toggle-desc';
+      btn.textContent = 'Ver más';
+      contenedor.appendChild(btn);
+
+      // Indicar visualmente que todo el bloque es interactivo
+      contenedor.classList.add('is-clickable');
+
+      // 3. Manejador de evento ÚNICO en el contenedor padre
+      contenedor.onclick = (e) => {
+        e.stopPropagation(); // Evita accionar tarjetas o enlaces externos
+
+        const estaColapsado = contenedor.classList.toggle('collapsed');
+        contenedor.classList.toggle('expanded');
+
+        // Actualizar el texto del botón independientemente de dónde se hizo clic
+        btn.textContent = estaColapsado ? 'Ver más' : 'Ver menos';
+      };
+    } else {
+      // Si no desborda, remover listeners o estilos interactivos
+      contenedor.onclick = null;
+      contenedor.classList.remove('is-clickable');
+    }
+  });
+}
+
 const renderAnime = anime => {
   console.log(anime);
   
@@ -363,7 +411,7 @@ const renderAnime = anime => {
   portadaEl.src = anime.portada;
   document.querySelector('.anime-container1').style.setProperty('--anime-portada', `url(${anime.portada})`);
   aplicarFondoAnime(anime);
-  descripcionEl.textContent = anime.descripcion;
+  setAnimeDescripcion(descripcionEl, anime.descripcion);
   renderGeneros(generoContainer, anime.generos);
   // if (anime.rating === null) {
   //   ratingEl.style.display = 'none';

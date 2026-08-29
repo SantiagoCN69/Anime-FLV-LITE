@@ -691,7 +691,7 @@ nav.filtros {
   line-clamp: 5;
   max-height: 5lh;
   -webkit-box-orient: vertical;
-  overflow: auto;
+  overflow: hidden;
 }
 .hero-slide__synopsis::-webkit-scrollbar {
   display: none;
