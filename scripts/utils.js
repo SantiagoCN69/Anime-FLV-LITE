@@ -165,6 +165,10 @@ export function crearAnimeCard(anime, opciones = {}) {
     if (!id && anime.url) {
         id = anime.url.replace(/\/$/, '').split('/').pop();
     }
+    if (!id && anime.cover) {
+        // Extraer nombre del archivo del cover como fallback
+        id = anime.cover.replace(/\/$/, '').split('/').pop().replace(/\.[^/.]+$/, '');
+    }
     if (!id) {
         id = titleText.toLowerCase().trim().replace(/[\s\W-]+/g, '-'); // Fallback Slug
     }
