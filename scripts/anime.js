@@ -403,7 +403,16 @@ const renderAnime = anime => {
     }
   }
   console.log(categoriaTransformada);
-
+//tranformas estado 
+let estadoTransformado = anime.estado;
+if (anime.estado) {
+  const estadoLower = anime.estado.toLowerCase();
+  if (estadoLower === 'en emisión') {
+    estadoTransformado = 'emision';
+  } else if (estadoLower === 'finalizado') {
+    estadoTransformado = 'finalizados';
+  }
+}
   // Add category
   if (categoriaTransformada && !categoriaTransformada.includes('Desconocido')) {
     infoParts.push(`<a href="/?DirectorioJK&tipo=${categoriaTransformada}" class="span-text-anime1" id="categoriacargado">${anime.category}</a>`);
@@ -418,7 +427,7 @@ const renderAnime = anime => {
   
   // Add status with icon
   if (anime.estado) {
-    infoParts.push(`<a href="/?DirectorioJK&estado=${anime.estado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
+    infoParts.push(`<a href="/?DirectorioJK&estado=${estadoTransformado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
   }
   
   // Join with bullet points
