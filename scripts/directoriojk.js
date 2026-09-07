@@ -302,7 +302,7 @@ const renderAnime = (animes) => {
   c.innerHTML = "";
   
   if (!animes || animes.length === 0) {
-    c.innerHTML = "<p>No se encontraron resultados.</p>";
+    c.innerHTML = "<p class='span-carga'>No se encontraron resultados.</p>";
     return;
   }
 
