@@ -381,26 +381,44 @@ function setAnimeDescripcion(descripcionEl, texto) {
 }
 
 const renderAnime = anime => {
-  console.log(anime);
   
   // Build info1 content dynamically
   const infoParts = [];
-  
+  console.log(anime.category);
+  // Transformar categoría según condiciones
+  let categoriaTransformada = anime.category;
+  if (anime.category) {
+    const categoriaLower = anime.category.toLowerCase();
+    if (categoriaLower === 'ova') {
+      categoriaTransformada = 'ovas';
+    } else if (categoriaLower === 'ona') {
+      categoriaTransformada = 'onas';
+    } else if (categoriaLower === 'tv anime') {
+      categoriaTransformada = 'animes';
+    } else if (categoriaLower === 'película') {
+      categoriaTransformada = 'peliculas';
+    }
+    else if (categoriaLower === 'especial') {
+      categoriaTransformada = 'especiales';
+    }
+  }
+  console.log(categoriaTransformada);
+
   // Add category
-  if (anime.category && !anime.category.includes('Desconocido')) {
-    infoParts.push(`<p class="span-text-anime1" id="categoriacargado">${anime.category}</p>`);
+  if (categoriaTransformada && !categoriaTransformada.includes('Desconocido')) {
+    infoParts.push(`<a href="/?DirectorioJK&tipo=${categoriaTransformada}" class="span-text-anime1" id="categoriacargado">${anime.category}</a>`);
   }
   
   // Add year
   if (anime.startDate) {
     const yearMatch = String(anime.startDate).match(/(\d{4})/);
     const year = yearMatch ? yearMatch[1] : anime.startDate;
-    infoParts.push(`<p class="span-text-anime1" id="anocargado">${year}</p>`);
+    infoParts.push(`<a href="/?DirectorioJK&fecha=${year}" class="span-text-anime1" id="anocargado">${year}</a>`);
   }
   
   // Add status with icon
   if (anime.estado) {
-    infoParts.push(`<p class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</p>`);
+    infoParts.push(`<a href="/?DirectorioJK&estado=${anime.estado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
   }
   
   // Join with bullet points

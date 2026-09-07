@@ -400,7 +400,7 @@ body:not(.animaciones-off) header {
   gap: 10px;
   min-height: 21.5px;
 }
-#info1 p {
+#info1 a {
   font-size: .9rem;
   font-weight: 500;
   opacity: .9;
@@ -408,7 +408,7 @@ body:not(.animaciones-off) header {
   align-items: center;
   font-family: 'JetBrains Mono', monospace;
 }
-#info1 p:nth-child(3) {
+#info1 a:nth-child(3) {
   position: relative;
 }
 #anocargado::before, #categoriacargado::before, #statuscargado::before {
