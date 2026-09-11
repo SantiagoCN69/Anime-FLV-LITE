@@ -893,63 +893,84 @@ async function cargarUltimosCapitulos() {
 }
 
 async function cargarhistorial() {
+
   const historialContainer = document.getElementById('historial');
   const historialheader = document.getElementById('header-section-historial');
+
   if (!historialContainer) return;
 
   const claves = Object.keys(localStorage);
   const animesRecientes = [];
-  
   const clavesAnime = claves.filter(clave => clave.startsWith('anime_'));
-  
+
   for (const clave of clavesAnime) {
+
     try {
+
       const datos = JSON.parse(localStorage.getItem(clave));
-      if (datos && datos._cachedAt) { 
+
+      if (datos && datos._cachedAt) {
+
+        // Si el anime no tiene portada, eliminarlo del localStorage
+        if (!datos.portada || datos.portada.trim() === '') {
+          localStorage.removeItem(clave);
+          continue;
+        }
+
         animesRecientes.push({
-          id: clave.replace('anime_', ''), 
+          id: clave.replace('anime_', ''),
           titulo: datos.titulo || 'Sin título',
           estado: datos.estado || 'Sin estado',
           rating: datos.rating || '',
-          portada: datos.portada || '',
+          portada: datos.portada,
           _cachedAt: datos._cachedAt
         });
       }
+
     } catch (e) {
+
       console.error('Error al procesar datos del localStorage:', e);
+
+      // Si el dato está corrupto, también se puede eliminar
+      localStorage.removeItem(clave);
     }
   }
-  
+
   animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
+
   const animesAMostrar = animesRecientes.slice(0, 20);
-  
+
   if (animesAMostrar.length > 0) {
-    if (verificarYLimpiarCacheBackground(null, animesAMostrar, 'portada', (items) => {
-      items.forEach(anime => localStorage.removeItem('anime_' + anime.id));
-    }, true)) {
-      return;
-    }
-    
+
     historialheader.classList.remove('hidden');
     historialContainer.classList.remove('hidden');
-    
-    // ----------------------------------------------------
-    // Modificación: Integrado renderFlipOptimizado
-    // ----------------------------------------------------
+
     renderFlipOptimizado(historialContainer, () => {
+
       historialContainer.innerHTML = '';
+
       const fragment = document.createDocumentFragment();
+
       animesAMostrar.forEach(anime => {
+
         const card = crearAnimeCard(anime);
-        if (card) fragment.appendChild(card);
+
+        if (card) {
+          fragment.appendChild(card);
+        }
+
       });
+
       historialContainer.appendChild(fragment);
     });
-    
+
     observerAnimeCards();
+
   } else {
+
     historialheader.classList.add('hidden');
     historialContainer.classList.add('hidden');
+
   }
 }
 
