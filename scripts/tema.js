@@ -70,7 +70,7 @@ bgti: '13, 10, 22'  // RGB del fondo #0D0A16
         }
     };
 
-    applyTheme(localStorage.getItem('theme') || 'dark');
+    applyTheme(localStorage.getItem('theme') || 'morado_medianoche');
 
     addEventListener('storage', e => e.key === 'theme' && applyTheme(e.newValue || 'dark'));
     addEventListener('themeChanged', e => applyTheme(e.detail?.theme || 'morado_medianoche'));
