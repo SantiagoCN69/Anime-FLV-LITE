@@ -1166,10 +1166,17 @@ section.content-section h2:first-of-type::after {
     gap: 17px;
 }
 #main {
-  width: calc(100% - 2rem);
+  width: calc(100% - 4rem);
   margin: calc(80px + 2rem) auto 2rem;
   display: none;
 }
+@media screen and (max-width: 600px) {
+  #main {
+    width: calc(100% - 2rem);
+  }
+}
+
+
 #ultimos-episodios {
   position: relative;
 }
