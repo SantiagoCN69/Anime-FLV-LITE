@@ -935,7 +935,7 @@ async function cargarEpisodios() {
     console.error("Error al cargar episodios desde API:", err);
     const controles = document.getElementById("controles");
     if (controles) {
-      controles.innerHTML = "<span class='span-carga'><h2>Error</h2><br>No se pudieron cargar los episodios.</span>";
+      controles.innerHTML = "<span class='span-carga'>404 No se pudieron cargar los episodios.</span>";
     }
     throw err;
   }
