@@ -424,8 +424,8 @@ nav.filtros {
 
 .pagination {
   width: fit-content;
-  /* max-width: 614px; */
-  max-width: 100%;
+  max-width: 614px;
+  /* max-width: 100%; */
   margin: 0 auto;
   display: flex;
   gap: 10px;
