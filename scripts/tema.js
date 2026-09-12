@@ -1,16 +1,5 @@
 (() => {
 const themes = {
-dark: {
-p: '#1c1f2b',        // Panel: superficies (cards, header, sidebar)
-b: '#0b0d12',        // Background: fondo principal
-t1: '#e6e6e6',       // Texto principal
-t2: '#c084fc',       // Acento activo (tabs, botones activos)
-br: '#464e65',       // Bordes y separadores
-btn: '#8b5cf6',      // Color principal de acción
-btn2: '#ec4899',     // Color secundario (gradientes)
-bgt: '255, 255, 255',// Transparencias claras
-bgti: '10, 12, 18'   // Transparencias oscuras
-},
 
 nocturno: {
 p: '#0f172a',
@@ -19,33 +8,21 @@ t1: '#f1f5f9',
 t2: '#38bdf8',       // Más vivo para estados activos
 br: '#2e3a59',
 btn: '#3b82f6',
-btn2: '#22d3ee',
+btn2: '#95f1ff',
 bgt: '255, 255, 255',
 bgti: '2, 6, 23'
 },
 
 sakura: {
-p: '#2a1a2a',
-b: '#140b14',
+p: '#1b0f14',
+b: '#000000',
 t1: '#fdf2f8',
 t2: '#f472b6',
 br: '#4c244c',
-btn: '#db2777',
-btn2: '#f9a8d4',     // Más suave para mejor gradiente
+btn: '#d21e6e',
+btn2: '#ff7a7a',     // Más suave para mejor gradiente
 bgt: '255, 255, 255',
 bgti: '20, 11, 20'
-},
-
-cyberpunk: {
-p: '#0f0f1a',
-b: '#05050a',
-t1: '#f3f4f6',
-t2: '#22d3ee',       // Menos agresivo que el cyan puro
-br: '#2e3a59',
-btn: '#06b6d4',
-btn2: '#ff007f',
-bgt: '255, 255, 255',
-bgti: '5, 5, 10'
 },
 
 sunset: {

@@ -498,7 +498,7 @@ header.search-active .logout-modal {
   justify-content: space-between;
   flex-shrink: 0;
   min-height: 501px;
-  height: calc(100vh - 82px - 3rem);
+  height: calc(100vh - 81px - 3rem);
   max-height: 613px;
   list-style: none;
   padding: 0;
@@ -520,6 +520,7 @@ header.search-active .logout-modal {
   cursor: pointer;
   white-space: nowrap;
   transition: transform .2s, padding-inline .3s ease;
+  opacity: 8
 }
 
 .sidebar li:not(:has(> a)):hover, .sidebar li a:hover {
@@ -532,6 +533,7 @@ header.search-active .logout-modal {
   transform: translateX(4px);
   color: var(--t2);
   font-weight: 500;
+  opacity: 1
 }
 
 .sidebar .active-indicator {
@@ -1226,7 +1228,7 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   position: relative;
   display: flex;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 .anime-card span {
   position: absolute;
