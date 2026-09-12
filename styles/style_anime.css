@@ -1381,9 +1381,14 @@ grid-template-columns: 1fr;
 }
 
 @media screen and (min-width: 701px) {
-  #main, .sin-resultados {
+  #busquedas, .sin-resultados {
     margin-top: calc(80px + 6rem);
   }
+  
+.titulo-busquedas {
+    top: 113px;
+    left: 140px;
+}
 }
 .sin-resultados {
   margin: unset !important;

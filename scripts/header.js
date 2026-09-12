@@ -2,14 +2,17 @@ import { observerAnimeCards, crearAnimeCard } from './utils.js';
 import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from './ai-recommendations.js';
 
 // === UTILIDADES ===
-function normalizarTexto(texto) {
-  return texto.toLowerCase().normalize('NFD').replace(/\u0300-\u036f/g, '');
-}
-
 function mostrarMensajeError(container, mensaje) {
   if (!container) return;
   container.classList.remove('sin-resultados');
   container.innerHTML = `<span class="no-results">${mensaje}</span>`;
+}
+
+function agregarEventListenersBusqueda(card, anime) {
+  card.addEventListener('click', () => guardarBusquedaReciente(anime));
+  card.addEventListener('auxclick', (e) => {
+    if (e.button === 1) guardarBusquedaReciente(anime);
+  });
 }
 
 function setDisplay(element, value) {
@@ -20,16 +23,18 @@ function setDisplay(element, value) {
 
 function limpiarVistaAnimePage() {
   setDisplay(animeDetails, 'grid');
-  if (mainContainer) {
-    mainContainer.innerHTML = '';
-    mainContainer.style.display = 'none';
-    mainContainer.classList.remove('sin-resultados');
+  if (busquedasContainer) {
+    busquedasContainer.innerHTML = '';
+    busquedasContainer.style.display = 'none';
+    busquedasContainer.classList.remove('sin-resultados');
   }
+  // Eliminar h2 de resultados si existe
+  const tituloBusquedas = busquedasContainer?.querySelector('.titulo-busquedas');
+  if (tituloBusquedas) tituloBusquedas.remove();
   limpiarSeccionIA();
   setDisplay(disqusThread, 'block');
   setDisplay(relacionados, 'flex');
   setDisplay(verAnime, 'flex');
-  setDisplay(mainLab, 'flex');
 }
 
 function limpiarSeccionIA() {
@@ -56,14 +61,10 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
 const pathname = location.pathname;
 const isAnimePage = pathname.endsWith('/anime.html') || pathname.endsWith('anime.html') || pathname.endsWith('anime');
 const isVerPage = pathname.endsWith('/ver.html') || pathname.endsWith('ver.html') || pathname.endsWith('ver');
-const isDirectorioPage = pathname.includes('/directorio');
-const isLabPage = pathname.includes('/Recomendaciones');
 const isIndexPage = pathname === '/' || pathname.endsWith('/index.html');
-const isPreferenciasPage = pathname.endsWith('/preferencias.html') || pathname.includes('preferencias');
-const mainContainer = document.getElementById('main');
+const busquedasContainer = document.getElementById('busquedas');
 const animeDetails = document.querySelector('.anime-details');
 const verAnime = document.getElementById('main-ver');
-const mainLab = document.getElementById('main-Recomendaciones');
 const sidebar = document.querySelector('.sidebar');
 const menuBtn = document.getElementById('menu-toggle');
 const disqusThread = document.getElementById('disqus_thread');
@@ -334,14 +335,7 @@ function mostrarResultados(data, searchTerm, searchId) {
       seccionResultados?.classList.remove('hidden');
       resultados.forEach(anime => {
         const card = crearAnimeCard(anime);
-        card.addEventListener('click', () => {
-          guardarBusquedaReciente(anime);
-        });
-        card.addEventListener('auxclick', (e) => {
-          if (e.button === 1) { // Middle click
-            guardarBusquedaReciente(anime);
-          }
-        });
+        agregarEventListenersBusqueda(card, anime);
         resultadosContainer.appendChild(card);
       });
       if (busquedaH2) busquedaH2.textContent = 'Resultados de busqueda: ' + resultados.length;
@@ -354,34 +348,38 @@ function mostrarResultados(data, searchTerm, searchId) {
     return;
   }
 
-  if (!mainContainer) return;
-  mainContainer.innerHTML = '';
-  mainContainer.style.display = 'grid';
+  if (!busquedasContainer) return;
+  busquedasContainer.innerHTML = '';
+  busquedasContainer.style.display = 'grid';
 
-  if (isAnimePage || isVerPage || isDirectorioPage || isLabPage || isPreferenciasPage) {
+  if (isAnimePage || isVerPage) {
     setDisplay(animeDetails, 'none');
     setDisplay(disqusThread, 'none');
     setDisplay(relacionados, 'none');
-    setDisplay(mainLab, 'none');
     setDisplay(verAnime, 'none');
 
+    // Agregar h2 de resultados dinámicamente si no existe
+    let tituloBusquedas = busquedasContainer.querySelector('.titulo-busquedas');
+    if (!tituloBusquedas) {
+      tituloBusquedas = document.createElement('h2');
+      tituloBusquedas.className = 'titulo-busquedas';
+      tituloBusquedas.textContent = 'Resultados de busqueda: 0';
+      busquedasContainer.insertBefore(tituloBusquedas, busquedasContainer.firstChild);
+    }
+
+    // Actualizar h2 con número de resultados
+    tituloBusquedas.textContent = 'Resultados de busqueda: ' + resultados.length;
+
     if (resultados.length === 0) {
-      renderSinResultados(mainContainer, searchTerm, searchId);
+      renderSinResultados(busquedasContainer, searchTerm, searchId);
       return;
     }
 
-    mainContainer.classList.remove('sin-resultados');
+    busquedasContainer.classList.remove('sin-resultados');
     resultados.forEach(anime => {
       const card = crearAnimeCard(anime);
-      card.addEventListener('click', () => {
-        guardarBusquedaReciente(anime);
-      });
-      card.addEventListener('auxclick', (e) => {
-        if (e.button === 1) { // Middle click
-          guardarBusquedaReciente(anime);
-        }
-      });
-      mainContainer.appendChild(card);
+      agregarEventListenersBusqueda(card, anime);
+      busquedasContainer.appendChild(card);
     });
     observerAnimeCards();
   }
@@ -449,29 +447,23 @@ if (busquedaInput) {
       }
       limpiarSeccionIA();
     } else {
-      if (mainContainer) {
-        mainContainer.innerHTML = '';
-        mainContainer.classList.remove('sin-resultados');
+      if (busquedasContainer) {
+        busquedasContainer.innerHTML = '';
+        busquedasContainer.classList.remove('sin-resultados');
       }
       limpiarSeccionIA();
     }
 
     busquedaTimer = setTimeout(() => {
       let countdown = 22;
-      let mostrandoMensajeServidores = false;
 
-      // Mostrar "cargando resultados..." inmediatamente
       if (searchId === currentSearch && isIndexPage) {
-        console.log('[Search] ⏱️ Mostrando loading inmediato');
         if (loadingSpan) loadingSpan.style.display = 'block';
         if (contadorSpan) contadorSpan.textContent = 'cargando resultados...';
       }
 
-      // Después de 3 segundos, cambiar a contador de servidores
       initialDelayTimer = setTimeout(() => {
         if (searchId === currentSearch && isIndexPage) {
-          mostrandoMensajeServidores = true;
-          console.log('[Search] ⏱️ Cambiando a contador de servidores');
           if (contadorSpan) contadorSpan.textContent = 'Iniciando servidores...' + countdown + 's';
           
           busquedaCountdownInterval = setInterval(() => {
@@ -503,8 +495,6 @@ if (busquedaInput) {
           if (contadorSpan) contadorSpan.textContent = '';
           
           const resultados = resData || [];
-          console.log('[Search] ✅ Enviando', resultados.length, 'resultados directamente a mostrarResultados');
-          
           mostrarResultados(resultados, valor, searchId);
         })
         .catch(err => {
@@ -518,8 +508,8 @@ if (busquedaInput) {
             if (loadingSpan) loadingSpan.style.display = 'none';
             seccionResultados?.classList.remove('hidden');
             mostrarMensajeError(resultadosContainer, 'Error al buscar.');
-          } else if (mainContainer) {
-            mostrarMensajeError(mainContainer, 'Error al buscar.');
+          } else if (busquedasContainer) {
+            mostrarMensajeError(busquedasContainer, 'Error al buscar.');
           }
         });
     }, 300);

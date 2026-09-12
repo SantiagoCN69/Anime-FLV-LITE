@@ -1158,20 +1158,25 @@ section.content-section h2:first-of-type::after {
 #ultimos-episodios .anime-card img {
   aspect-ratio: 3/2;
 }
-#main, .grid-animes {
+#busquedas, .grid-animes {
     height: fit-content;
     min-height: 267px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 17px;
 }
-#main {
+#busquedas {
   width: calc(100% - 4rem);
-  margin: calc(80px + 2rem) auto 2rem;
+  margin: calc(80px + 35px + 2rem) auto 1.5rem;
   display: none;
 }
+.titulo-busquedas {
+  color: var(--t1);
+  position: absolute;
+  top: 95px
+}
 @media screen and (max-width: 600px) {
-  #main {
+  #busquedas {
     width: calc(100% - 2rem);
   }
 }
