@@ -54,15 +54,16 @@
   
 }
 html {
-  --b: #121212;
-  --p: #1F1F1F;
-  --br: #888;
-  --t1: #fff;
-  --t2: #ccc;
-  --btn: #CEA5FF;
-  --btn2: #FFD700;
-  --f: 1;
-  --bt: 255, 255, 255;
+  --p: #181323;
+  --b: #0D0A16; 
+  --t1: #F8FAFC;
+  --t2: #C084FC;
+  --br: #2D2340;
+  --btn: #A855F7;
+  --btn2: #EC4899;
+  --bgt: 255, 255, 255;
+  --bgti: 13, 10, 22;
+
   overflow-x: hidden;
   scrollbar-gutter: stable;
 }
