@@ -152,10 +152,10 @@ const sectionConfig = {
   'DirectorioAV1': { flag: () => directorioAV1Cargado, setFlag: () => { directorioAV1Cargado = true; }, load: () => cargarFetch("DirectorioAV1") },
   'DirectorioJK': { flag: () => directorioJkCargado, setFlag: () => { directorioJkCargado = true; }, load: () => cargarFetch("DirectorioJK") },
   'Recomendaciones': { flag: () => labCargado, setFlag: () => { labCargado = true; }, load: () => cargarFetch("Recomendaciones") },
-  'Preferencias': { flag: () => preferenciasCargadas, setFlag: () => { preferenciasCargadas = true; }, load: () => cargarFetch("preferencias") },
-  'Contacto': { flag: () => contactoCargado, setFlag: () => { contactoCargado = true; }, load: () => cargarFetch("contacto") },
-  'Populares': { flag: () => popularesCargados, setFlag: () => { popularesCargados = true; }, load: () => cargarFetch("populares") },
-  'Horarios': { flag: () => horariosCargados, setFlag: () => { horariosCargados = true; }, load: () => cargarFetch("horarios") }
+  'Preferencias': { flag: () => preferenciasCargadas, setFlag: () => { preferenciasCargadas = true; }, load: () => cargarFetch("Preferencias") },
+  'Contacto': { flag: () => contactoCargado, setFlag: () => { contactoCargado = true; }, load: () => cargarFetch("Contacto") },
+  'Populares': { flag: () => popularesCargados, setFlag: () => { popularesCargados = true; }, load: () => cargarFetch("Populares") },
+  'Horarios': { flag: () => horariosCargados, setFlag: () => { horariosCargados = true; }, load: () => cargarFetch("Horarios") }
 };
 
 const config = sectionConfig[id];
@@ -1161,14 +1161,18 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
 }
 
 function cargarFetch(direccion) {
-  const sectionId = direccion.charAt(0).toUpperCase() + direccion.slice(1);
-  const main = document.getElementById(sectionId);
+  console.log('cargarFetch iniciado con:', direccion);
+  
+  const main = document.getElementById(direccion);
   if (!main) return;
 
-  const cssHref = `/styles/style_${direccion}.css`;
+  const direccionMinus = direccion.toLowerCase();
+
+  const cssHref = `/styles/style_${direccionMinus}.css`;
 
   // 1. Cargar el CSS primero y evitar duplicados en el <head>
   if (!document.querySelector(`link[href="${cssHref}"]`)) {
+    console.log('Cargando CSS:', cssHref);
     const css = document.createElement('link');
     css.rel = 'stylesheet';
     css.href = cssHref;
@@ -1176,7 +1180,8 @@ function cargarFetch(direccion) {
   }
 
   // 2. Realizar el fetch del HTML usando directamente la dirección
-  fetch(direccion + '.html')
+  console.log('Fetching HTML:', direccionMinus + '.html');
+  fetch(direccionMinus + '.html')
     .then(res => res.text())
     .then(html => {
       const temp = document.createElement('div');
@@ -1188,11 +1193,11 @@ function cargarFetch(direccion) {
       }
 
       // 3. Cargar el script correspondiente evitando duplicados
-      const scriptId = `script-${direccion}`;
+      const scriptId = `script-${direccionMinus}`;
       if (!document.getElementById(scriptId)) {
         const script = document.createElement('script');
         script.id = scriptId;
-        script.src = `/scripts/${direccion}.js`;
+        script.src = `/scripts/${direccionMinus}.js`;
         script.type = 'module';
         document.body.appendChild(script);
       }
