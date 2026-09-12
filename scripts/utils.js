@@ -74,48 +74,47 @@ window.addEventListener('scroll', () => {
 
 
 // Único observador global para todas las tarjetas de anime
-const animeCardObserver = new IntersectionObserver((entries, obs) => {
-    for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-
-        const card = entry.target;
-
-        card.classList.add("show");
-        card.style.transitionDelay = "";
-
-        obs.unobserve(card);
-    }
+const animeCardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const card = entry.target;
+            card.classList.add("show");
+            card.style.removeProperty("transition-delay");
+            animeCardObserver.unobserve(card);
+        }
+    });
 }, {
     threshold: 0.05,
     rootMargin: "0px 0px -1% 0px"
 });
 
 export function observerAnimeCards() {
-    if (document.body.classList.contains('animaciones-off')) {
-        const cards = document.querySelectorAll(".anime-card");
-        cards.forEach(card => {
-            card.classList.add("show");
-            card.style.transitionDelay = "";
-        });
-        return;
-    }
     const cards = document.querySelectorAll(".anime-card");
     if (!cards.length) return;
 
-    const container = cards[0].parentElement;
-    const columns = Math.max(
-        1,
-        getComputedStyle(container).gridTemplateColumns.split(" ").length
-    );
+    // Si las animaciones están desactivadas, mostrar todas las tarjetas inmediatamente
+    if (document.body.classList.contains('animaciones-off')) {
+        cards.forEach(card => {
+            card.classList.add("show");
+            card.style.removeProperty("transition-delay");
+        });
+        return;
+    }
 
+    // Calcular columnas del grid para el efecto en cascada
+    const container = cards[0].parentElement;
+    const gridStyles = getComputedStyle(container);
+    const columnCount = Math.max(1, gridStyles.gridTemplateColumns.split(" ").length);
+
+    // Aplicar delays escalonados basados en posición (row + col)
     cards.forEach((card, index) => {
-        const row = Math.floor(index / columns);
-        const col = index % columns;
-        card.style.transitionDelay = `${(row + col) * 0.05}s`;
+        const row = Math.floor(index / columnCount);
+        const col = index % columnCount;
+        const delay = (row + col) * 0.05;
+        card.style.setProperty("transition-delay", `${delay}s`);
     });
 
-    document.body.offsetHeight;
-
+    // Observar tarjetas en el siguiente frame de animación
     requestAnimationFrame(() => {
         cards.forEach(card => animeCardObserver.observe(card));
     });
