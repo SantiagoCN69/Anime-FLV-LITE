@@ -1069,15 +1069,22 @@ cargarAnime();
 
 
 // Toggle búsqueda de capítulos
-document.getElementById('btn-search-capitulo').addEventListener('click', function () {
-  document.querySelector('.header-caps').classList.add('search-active');
-  document.getElementById('filtro-capitulo').focus();
-});
+const btnSearchCapitulo = document.getElementById('btn-search-capitulo');
+const btnCloseSearchCapitulo = document.getElementById('btn-close-search-capitulo');
 
-document.getElementById('btn-close-search-capitulo').addEventListener('click', function () {
-  document.querySelector('.header-caps').classList.remove('search-active');
-  document.getElementById('filtro-capitulo').value = "";
-});
+if (btnSearchCapitulo) {
+  btnSearchCapitulo.addEventListener('click', function () {
+    document.querySelector('.header-caps').classList.add('search-active');
+    document.getElementById('filtro-capitulo').focus();
+  });
+}
+
+if (btnCloseSearchCapitulo) {
+  btnCloseSearchCapitulo.addEventListener('click', function () {
+    document.querySelector('.header-caps').classList.remove('search-active');
+    document.getElementById('filtro-capitulo').value = "";
+  });
+}
 
 
 
