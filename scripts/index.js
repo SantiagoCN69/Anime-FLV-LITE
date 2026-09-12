@@ -7,7 +7,6 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('Service Worker registrado con éxito:', registration.scope);
         
         // Verificar actualizaciones del service worker
         registration.addEventListener('updatefound', () => {
@@ -1161,7 +1160,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
 }
 
 function cargarFetch(direccion) {
-  console.log('cargarFetch iniciado con:', direccion);
   
   const main = document.getElementById(direccion);
   if (!main) return;
@@ -1172,7 +1170,6 @@ function cargarFetch(direccion) {
 
   // 1. Cargar el CSS primero y evitar duplicados en el <head>
   if (!document.querySelector(`link[href="${cssHref}"]`)) {
-    console.log('Cargando CSS:', cssHref);
     const css = document.createElement('link');
     css.rel = 'stylesheet';
     css.href = cssHref;
@@ -1180,7 +1177,6 @@ function cargarFetch(direccion) {
   }
 
   // 2. Realizar el fetch del HTML usando directamente la dirección
-  console.log('Fetching HTML:', direccionMinus + '.html');
   fetch(direccionMinus + '.html')
     .then(res => res.text())
     .then(html => {
