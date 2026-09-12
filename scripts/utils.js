@@ -174,7 +174,7 @@ export function crearAnimeCard(anime, opciones = {}) {
 
     // Imagen (Soporta tu API, Jikan API y fallback)
     const coverImage = anime.cover || anime.image || anime.portada || anime.images?.webp?.image_url || 'img/loading.png';
-    const rating = (anime.rating || anime.score)?.toString().split(/\s+/)[0];
+    const rating = (anime.score || anime.rating)?.toString().split(/\s+/)[0];
     const type = anime.type;
     const capitulo = anime.Capitulo || anime.last_episode;
     const estado = anime.estado || anime.status;
