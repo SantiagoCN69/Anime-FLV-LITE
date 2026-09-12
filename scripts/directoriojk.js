@@ -155,7 +155,6 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
   }).toString();
 
   if (usarCache) {
-    console.log("Leyendo cache...");
 
     let cache = null;
 
@@ -164,8 +163,6 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
 
       if (raw) {
         cache = JSON.parse(raw);
-
-        console.log("Cache encontrado");
 
         totalPaginas = Number(cache.PaginasTotales || 1);
 
@@ -183,7 +180,6 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
     }
 
     try {
-      console.log("Consultando API...");
 
       const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?${params}`);
       const data = await res.json();
