@@ -35,7 +35,11 @@
 .setting-row:last-child {
   border-bottom: none;
 }
-
+@media (max-width: 600px) {
+  #setting-row-sidebar-colap {
+    display: none;
+  }
+}
 /* Iconos de las opciones */
 .setting-icon {
   width: 44px;
