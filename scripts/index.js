@@ -629,7 +629,6 @@ const getEstadoBadge = (estado) => {
 };
 
 function buildHeroSlide(anime, index) {
-  console.log(anime)
   const id = slugFromTitle(anime.title);
   const url1 = `/anime?id=${id}`;
   const url2 = `/ver?id=${id}&episode=1`;
