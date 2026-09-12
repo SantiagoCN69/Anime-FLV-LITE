@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://anizenlite.netlify.app/</loc>
+    <loc>https://ani.zenlite.workers.dev/</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://anizenlite.netlify.app/index.html</loc>
+    <loc>https://ani.zenlite.workers.dev/index.html</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://anizenlite.netlify.app/directorioav1.html</loc>
+    <loc>https://ani.zenlite.workers.dev/directorioav1.html</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://anizenlite.netlify.app/directoriojk.html</loc>
+    <loc>https://ani.zenlite.workers.dev/directoriojk.html</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://anizenlite.netlify.app/horarios.html</loc>
+    <loc>https://ani.zenlite.workers.dev/horarios.html</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://anizenlite.netlify.app/populares.html</loc>
+    <loc>https://ani.zenlite.workers.dev/populares.html</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

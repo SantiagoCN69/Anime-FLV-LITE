@@ -1516,7 +1516,7 @@ document.getElementById("btn-volver").addEventListener("click", () => {
   if (history.length > 1) {
     history.back();
   } else {
-    window.location.href = "https://anizenlite.netlify.app/";
+    window.location.href = "https://ani.zenlite.workers.dev/";
   }
 });
 
