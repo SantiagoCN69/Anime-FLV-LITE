@@ -411,6 +411,8 @@ if (anime.estado) {
     estadoTransformado = 'emision';
   } else if (estadoLower === 'finalizado') {
     estadoTransformado = 'finalizados';
+  } else if (estadoLower === "por estrenar") {
+    estadoTransformado = "estrenos";
   }
 }
   // Add category
