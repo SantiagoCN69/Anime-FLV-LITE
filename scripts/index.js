@@ -437,7 +437,6 @@ async function cargarUltimosCapsVistos() {
     localStorage.setItem(cacheStateKey, JSON.stringify(currentState));
     
     inicializarContinuarViendo();
-    cargarContinuarViendo();
   } catch (error) {
     console.error('Error crítico en cargarUltimosCapsVistos:', error);
     // Feedback opcional para el usuario en caso de que se caiga el internet o la BD
@@ -1373,6 +1372,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // 2. CONTINUAR VIENDO & SIDEBAR
 // =========================================
 function inicializarContinuarViendo() {
+  
   const userID = localStorage.getItem('userID');
   const cachekey = "ultimosCapsVistosCache_" + userID;
   const container = document.getElementById('section-continuar-viendo');
@@ -1456,6 +1456,9 @@ function inicializarContinuarViendo() {
         btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 660 : -660, behavior: 'smooth' });
       }
     });
+    
+    // Aplicar observerAnimeCards a las tarjetas de continuar viendo
+    observerAnimeCards();
   }
 }
 
