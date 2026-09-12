@@ -60,6 +60,12 @@
   padding: 3rem;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  div {
+    max-width: 400px
+  }
 }
 
 #modal-populares h3 {
