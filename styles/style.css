@@ -33,6 +33,19 @@
 .animaciones-off .search-active #btn-search {
   display: none !important;
 }
+
+
+.no-user .sidebar ul > li:nth-of-type(n+2):nth-of-type(-n+5),
+.no-user #continuar-viendo-sidebar {
+  display: none;
+}
+.no-user .sidebar ul {
+  height: unset !important;
+  min-height: unset !important;
+}
+.no-user .sidebar li:not(:has(> a)), .no-user .sidebar a:not(.btn-siguiente-capitulo) {
+  padding: 22px 25px;
+}
 * {
   margin: 0;
   padding: 0;
@@ -456,6 +469,7 @@ header.search-active .logout-modal {
   left: 0;
   overflow-y: auto;
   border-right: 1px solid var(--br);
+  border-bottom: 1px solid var(--br);
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   background: var(--p);

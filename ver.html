@@ -144,6 +144,9 @@ window.addEventListener('resize', setRealVh);
           btnLogin.innerHTML = '<img src="' + photoSrc + '" alt="Foto de perfil"><span>' + primerNombre + '</span>';
         }
       }
+      else {
+        document.body.classList.add('no-user');
+      }
     </script>
 
     <button type="button" id="menu-toggle" title="Menú" aria-label="Abrir menú">
