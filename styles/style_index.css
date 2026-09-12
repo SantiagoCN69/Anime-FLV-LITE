@@ -4,6 +4,11 @@
 .no-user #continuar-viendo-sidebar {
   display: none;
 }
+@media (max-width: 600px) {
+  .no-user .sidebar {
+    display: none;
+  }
+}
 .no-user #menu-toggle {
   display: none !important;
 }
