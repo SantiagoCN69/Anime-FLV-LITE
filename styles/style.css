@@ -673,7 +673,7 @@ header.search-active .logout-modal {
 }
 }
 #indexpagination button:active { transform: scale(.95); }
-#indexpagination button svg { width: 20px; height: 20px; }
+#indexpagination button svg { width: 19px; height: 19px; }
 
 /* ACTIVO BASE */
 #indexpagination .active-menu-item { color: var(--t1); }
@@ -724,12 +724,13 @@ header.search-active .logout-modal {
   width: fit-content;
   padding: 5px 0;
   gap: 3px;
-  font-size: .8rem;
+  font-size: .75rem;
   border-radius: 20px;
   background: none;
+  opacity: .8
 }
 
-#indexpagination.floating button.active-menu-item { padding: 5px 10px; }
+#indexpagination.floating button.active-menu-item { padding: 5px 10px; opacity: 1}
 #indexpagination.floating span:nth-of-type(2), #indexpagination.bottom span:nth-of-type(2) { display: none; }
 
 #indexpagination.floating .active-menu-item::after {
