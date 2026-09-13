@@ -1,5 +1,10 @@
 @import url('fonts.css');
 
+.no-user .sidebar ul > li:nth-of-type(n+2):nth-of-type(-n+5),
+.no-user #continuar-viendo-sidebar {
+  display: none;
+}
+
 body {
   overflow-x: hidden !important;
   overflow-y: auto;

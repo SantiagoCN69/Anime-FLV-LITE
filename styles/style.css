@@ -34,11 +34,6 @@
   display: none !important;
 }
 
-
-.no-user .sidebar ul > li:nth-of-type(n+2):nth-of-type(-n+5),
-.no-user #continuar-viendo-sidebar {
-  display: none;
-}
 .no-user .sidebar ul {
   height: unset !important;
   min-height: unset !important;
