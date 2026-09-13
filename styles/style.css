@@ -1332,6 +1332,7 @@ section.content-section h2:first-of-type::after {
 }
 
 .anime-card strong {
+  text-transform: capitalize;
   font-size: .9rem;
   text-align: start;
   color: var(--t1);
