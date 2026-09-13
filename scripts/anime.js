@@ -384,7 +384,6 @@ const renderAnime = anime => {
   
   // Build info1 content dynamically
   const infoParts = [];
-  console.log(anime.category);
   // Transformar categoría según condiciones
   let categoriaTransformada = anime.category;
   if (anime.category) {
@@ -402,7 +401,6 @@ const renderAnime = anime => {
       categoriaTransformada = 'especiales';
     }
   }
-  console.log(categoriaTransformada);
 //tranformas estado 
 let estadoTransformado = anime.estado;
 if (anime.estado) {
