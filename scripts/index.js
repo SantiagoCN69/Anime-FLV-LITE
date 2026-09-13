@@ -656,7 +656,7 @@ function buildHeroSlide(anime, index) {
       ${badgeHtml ? `<div class="hero-slide__badges">${badgeHtml}</div>` : ''}
       <h2 class="hero-slide__title">${anime.title || 'Sin título'}</h2>
       ${synopsisCompleta ? `<p class="hero-slide__synopsis">${synopsisCompleta}</p>` : ''}
-      <div class="hero-slide__actions">
+      <div class="hero-slide__actions ${isPorEstrenar ? 'left-align' : ''}">
         <a href="${url2}" class="hero-btn hero-btn--primary ${isPorEstrenar ? 'hidden' : ''}">
           <span class="hero-btn__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
