@@ -1739,6 +1739,22 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   background: linear-gradient(135deg, rgba(96, 125, 139, 0.9), rgba(69, 90, 100, 0.8));
   border-color: rgba(96, 125, 139, 0.4);
 }
+.pildora-no-user {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(245, 124, 0, 0.8));
+  border-color: rgba(255, 152, 0, 0.4);
+  pointer-events: all;
+  cursor: pointer;
+}
+.pildora-no-user::after {
+  content:"";
+  position: absolute;
+  left: 24px;
+  bottom: 12px;
+  border-radius: 99px;
+  width: 82px;
+  height: 2px;
+  background: var(--t1);
+}
 @media (min-width: 600px) {
 /* Estilos del sidebar colapsado */
 .sidebar-collapsed .sidebar {

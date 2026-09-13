@@ -1110,7 +1110,7 @@ function actualizarEstadoFavorito() {
 
 btnFav.addEventListener("click", async () => {
   if (!auth.currentUser) {
-    alert("Debes iniciar sesión para agregar a favoritos.");
+    mostrarPildora('no-user');
     return;
   }
 
@@ -1352,8 +1352,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
   const user = localStorage.getItem("userID");
 
   if (!user) {
-    console.warn('manejarEstadoSeleccionado: No hay usuario autenticado.');
-    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
+    mostrarPildora('no-user');
     return;
   }
 
@@ -1497,21 +1496,31 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
   const accion = estado ? "Agregado a" : "Eliminado de";
 
   // Mapeo de textos y clases según la opción
-  const opciones = {
-    fav: { clase: "pildora-fav", texto: `${anime} ${accion} favoritos` },
-    pendiente: { clase: "pildora-pendiente", texto: `${anime} ${accion} pendientes` },
-    visto: { clase: "pildora-visto", texto: `${anime} ${accion} vistos` },
-    viendo: { clase: "pildora-viendo", texto: `${anime} ${accion} viendo` },
-    capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` },
-    actualizando: { clase: "pildora-default", texto: `Actualizando ${anime}...` }
-  };
+const opciones = {
+  fav: { clase: "pildora-fav", texto: `${anime} ${accion} favoritos` },
+  pendiente: { clase: "pildora-pendiente", texto: `${anime} ${accion} pendientes` },
+  visto: { clase: "pildora-visto", texto: `${anime} ${accion} vistos` },
+  viendo: { clase: "pildora-viendo", texto: `${anime} ${accion} viendo` },
+  capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` },
+  actualizando: { clase: "pildora-default", texto: `Actualizando ${anime}...` },
+  "no-user": { clase: "pildora-no-user", texto: "Inicia sesión para guardar tu progreso" }
+};
 
-  const config = opciones[opcion];
+const config = opciones[opcion];
 
   if (config) {
     pill.textContent = config.texto;
     // Si el estado es falso, forzamos la clase 'eliminado'
     pill.classList.add(estado ? config.clase : "pildora-eliminado");
+    
+    // Si la opción es "no-user", asignamos el evento de clic a la píldora
+    if (opcion === "no-user") {
+      pill.onclick = () => {
+        const confirmBtn = document.getElementById("confirm-login");
+        if (confirmBtn) confirmBtn.click();
+      };
+      console.log("Pildora de no-user creada con evento de clic");
+    }
   } else {
     pill.textContent = estado ? "Acción realizada" : "Acción revertida";
     pill.classList.add(estado ? "pildora-default" : "pildora-eliminado");
