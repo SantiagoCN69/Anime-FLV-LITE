@@ -1335,7 +1335,7 @@ nav.filtros {
   right: 0;
 }
 
-@media (max-width: 425px) {
+@media (max-width: 370px) {
   .scroll-btn {
     display: none;
 }
