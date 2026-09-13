@@ -1435,7 +1435,10 @@ function inicializarContinuarViendo() {
             <span class="chapter ep-badge">EP ${data.siguienteCapitulo}</span>
           </div>
           <div class="card-info">
-            <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%"></div></div>
+            <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%">
+            <div class="progress-fill-background"></div>
+            </div>
+            </div>
             <strong>${data.titulo}</strong>
             <span class="card-meta">${capsVistos}/${total} eps</span>
           </div>`;
