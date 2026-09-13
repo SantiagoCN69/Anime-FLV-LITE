@@ -65,7 +65,6 @@ justify-content: space-between;
 #layout {
   display: flex;
   gap: 10px;
-  padding: 10px;
 }
 
 #layout button {
@@ -74,7 +73,7 @@ justify-content: space-between;
   background: var(--p);
   border: 1px solid var(--br);
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 12px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -194,6 +193,8 @@ justify-content: space-between;
   width: 170px;
   min-width: 170px;
   height: 100%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
   transition: width 0.35s ease, min-width 0.35s ease, height 0.35s ease;
 }
 
@@ -206,6 +207,9 @@ justify-content: space-between;
   gap: 10px;
   max-height: 240px;
   transition: padding 0.35s ease, gap 0.35s ease, max-height 0.35s ease;
+  background: var(--p);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 #contenedor-animes.layout3 .anime-card strong {

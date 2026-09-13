@@ -301,6 +301,7 @@ body.cv-sidebar #section-continuar-viendo {
    1. ESTILOS DEL FILTRO DE LETRAS (A-Z)
    ========================================= */
 .filtro-letras {
+  height: 63px;
   max-width: 100%;
   display: flex;
   flex-wrap: nowrap;
@@ -589,9 +590,9 @@ nav.filtros {
 .btn-filtros {
   display: none;
   background-color: var(--p);
-  color: var(--txt);
+  color: var(--t1);
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 12px;
   width: 100px;
   justify-content: center;
   align-items: center;
@@ -600,6 +601,10 @@ nav.filtros {
   margin-left: auto;
   margin-top: 1rem;
   transition: background 0.3s ease, transform 0.3s ease;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--t1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
   svg {
     width: 20px;
     height: 20px;
@@ -696,10 +701,8 @@ nav.filtros {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-left: 10px;
-  margin-right: 10px;
   min-width: 150px;
-          background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--t1);
   border: 1px solid rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(8px);
@@ -947,7 +950,9 @@ nav.filtros {
   bottom: 2rem;
   width: calc(100% - 4rem);
 }
-
+.left-align {
+  justify-content: flex-end;
+}
 .hero-btn {
   display: inline-flex;
   align-items: center;
@@ -1140,6 +1145,9 @@ nav.filtros {
 .hero-slide__content {
   padding-inline: 1rem;
 }
+  .hero-slide__actions {
+    width: calc(100% - 2rem);
+  }
 #indexpagination.top ~ main .hero-slider {
   margin-top: -90px;
   min-height: 470px;
