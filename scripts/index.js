@@ -617,13 +617,16 @@ async function precargarCacheDirectorioJK() {
 }
 
 const getEstadoBadge = (estado) => {
+  if (!estado) return '';
+
   const badges = {
     'En emision': '<span class="hero-badge hero-badge--ongoing">En emisión</span>',
     'Por estrenar': '<span class="hero-badge hero-badge--new">Por estrenar</span>',
     'Concluido': '<span class="hero-badge hero-badge--status">Concluido</span>',
     'Finalizado': '<span class="hero-badge hero-badge--status">Finalizado</span>'
   };
-  return estado ? (badges[estado] || `<span class="hero-badge hero-badge--status">${estado}</span>`) : '';
+
+  return badges[estado] || `<span class="hero-badge hero-badge--status">${estado}</span>`;
 };
 
 function buildHeroSlide(anime, index) {
@@ -632,35 +635,41 @@ function buildHeroSlide(anime, index) {
   const url2 = `/ver?id=${id}&episode=1`;
   const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
 
-  const badges = [
-    getEstadoBadge(anime.estado),
-    (index === 0 && anime.estado !== 'Por estrenar') ? '<span class="hero-badge hero-badge--new">Reciente</span>' : ''
-  ].filter(Boolean).join('');
+  const badgeHtml = getEstadoBadge(anime.status);
+
+  // Evalúa si se debe agregar la clase hidden al botón principal
+  const isPorEstrenar = anime.status === 'Por estrenar';
 
   const slide = document.createElement('article');
   slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
   slide.dataset.index = index;
   slide.dataset.id = id;
-  slide.style.setProperty('--bg-image', `url('${anime.image || anime.cover || ''}')`);
+  
+  const bgUrl = anime.image || anime.cover || '';
+  slide.style.setProperty('--bg-image', `url('${bgUrl}')`);
   
   slide.innerHTML = `
-  <div class="hero-background">
-    <div class="hero-slide__bg" style="background-image:url('${anime.image || anime.cover || ''}')"></div>
-  </div>
+    <div class="hero-background">
+      <div class="hero-slide__bg" style="background-image:url('${bgUrl}')"></div>
+    </div>
     <div class="hero-slide__content">
-      ${badges ? `<div class="hero-slide__badges">${badges}</div>` : ''}
+      ${badgeHtml ? `<div class="hero-slide__badges">${badgeHtml}</div>` : ''}
       <h2 class="hero-slide__title">${anime.title || 'Sin título'}</h2>
       ${synopsisCompleta ? `<p class="hero-slide__synopsis">${synopsisCompleta}</p>` : ''}
       <div class="hero-slide__actions">
-        <a href="${url2}" class="hero-btn hero-btn--primary">
+        <a href="${url2}" class="hero-btn hero-btn--primary ${isPorEstrenar ? 'hidden' : ''}">
           <span class="hero-btn__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.49 9.59965L5.6 16.7696C4.9 17.1896 4 16.6896 4 15.8696V7.86965C4 4.37965 7.77 2.19965 10.8 3.93965L15.39 6.57965L17.48 7.77965C18.17 8.18965 18.18 9.18965 17.49 9.59965Z" fill="currentColor"></path>
+              <path d="M18.0888 15.4606L14.0388 17.8006L9.99883 20.1306C8.54883 20.9606 6.90883 20.7906 5.71883 19.9506C5.13883 19.5506 5.20883 18.6606 5.81883 18.3006L18.5288 10.6806C19.1288 10.3206 19.9188 10.6606 20.0288 11.3506C20.2788 12.9006 19.6388 14.5706 18.0888 15.4606Z" fill="currentColor"></path>
+            </svg>
           </span>
-          <span class="hero-btn__label">Ver ahora</span>
+          Ver Ahora
         </a>
+     
         <a href="${url1}" class="hero-btn hero-btn--secondary">
           <span class="hero-btn__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 17V11" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path> <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="Currentcolor"></circle> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
           </span>
           <span class="hero-btn__label">Más información</span>
         </a>
