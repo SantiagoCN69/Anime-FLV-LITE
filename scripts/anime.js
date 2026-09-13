@@ -448,7 +448,12 @@ if (anime.estado) {
   //   ratingEl.textContent = anime.rating + "/5";
   // }
   if (anime.estado === "Por estrenar") {
-    document.getElementsByClassName("anime-container3")[0].innerHTML = "<span id='anime-proximo-estrenar'>Próximamente en estreno. Los capítulos aún no están disponibles.</span>";
+const container = document.querySelector(".anime-container3");
+
+if (container) {
+  container.style.minHeight = "unset";
+  container.innerHTML = "<span id='anime-proximo-estrenar'>Próximamente en estreno. Los capítulos aún no están disponibles.</span>";
+}
     return;
   } else {
     const mensajeProximoEstrenar = document.getElementById('anime-proximo-estrenar');
