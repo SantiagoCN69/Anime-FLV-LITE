@@ -1372,7 +1372,7 @@ section.content-section h2:first-of-type::after {
   padding: 10px;
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  max-height: 400px;
+  max-height: calc(100vh - 80px - 28px - 80px - 8px);
   overflow-y: auto;
 }
 h4 {
