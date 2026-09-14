@@ -1259,10 +1259,10 @@ z-index: 0;
   pointer-events: none;
   background: linear-gradient(
     to bottom, 
-    rgba(0, 0, 0, 0.8) 12%,   /* Desvanecimiento rápido */
-    transparent 50%,           /* Centro limpio */
-    rgba(0, 0, 0, 0.9) 74%,   /* Desvanecimiento rápido */  
-    var(--b) 100%               /* Cierre con tu variable abajo */
+    color-mix(in srgb, var(--b) 80%, transparent) 12%,  /* Reemplaza rgba(0,0,0, 0.8) */
+    color-mix(in srgb, var(--b) 0%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
+    color-mix(in srgb, var(--b) 90%, transparent) 74%,  /* Reemplaza rgba(0,0,0, 0.9) */
+    var(--b) 100%                                       /* Color sólido al final */
   );
   z-index: 2;
 }
