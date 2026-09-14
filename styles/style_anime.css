@@ -1405,6 +1405,8 @@ z-index: 0;
   backdrop-filter: blur(12px) saturate(180%);
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  gap: 15px;
   align-items: center;
   z-index: 9999;
   opacity: 0;
@@ -1445,7 +1447,26 @@ z-index: 0;
   transform: scale(1);
   animation: modalAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+  width: clamp(100px, 85vw, 500px);
+  flex-wrap: wrap;
+  justify-content: space-between;
 
+}
+#btn-descargar-imagen, #btn-compartir-anime {
+  padding: .5rem 1rem;
+  flex:1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(var(--bgt), .1);
+  border: 1px solid rgba(var(--bgt), .1);
+  color: var(--t1);
+}
 @keyframes modalAppear {
   0% {
     opacity: 0;

@@ -1465,11 +1465,124 @@ scrollContainer.addEventListener('wheel', (e) => {
 //modal portada
 const modal = document.createElement('div');
 modal.id = 'modalImagen';
-modal.innerHTML = `<img src="" alt="Vista Ampliada">`;
+modal.innerHTML = `
+  <img src="" alt="Vista Ampliada">
+  <div class="modal-acciones">
+    <!-- Botón Compartir -->
+    <button id="btn-compartir-anime">
+      Compartir anime
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.8358 16.1305L9.02549 12.1985L8.27549 13.4976L15.0858 17.4295L15.8358 16.1305Z" fill="#BFBFBF"></path> 
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.8358 7.8656L9.02549 11.7976L8.27549 10.4985L15.0858 6.56657L15.8358 7.8656Z" fill="#BFBFBF"></path> 
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M6.15 13.6438C7.06127 13.6438 7.8 12.905 7.8 11.9938C7.8 11.0825 7.06127 10.3438 6.15 10.3438C5.23873 10.3438 4.5 11.0825 4.5 11.9938C4.5 12.905 5.23873 13.6438 6.15 13.6438ZM6.15 15.1438C7.8897 15.1438 9.3 13.7334 9.3 11.9938C9.3 10.2541 7.8897 8.84375 6.15 8.84375C4.4103 8.84375 3 10.2541 3 11.9938C3 13.7334 4.4103 15.1438 6.15 15.1438Z" fill="currentColor"></path> 
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.85 16.3455C18.7612 16.3455 19.5 17.0842 19.5 17.9955C19.5 18.9068 18.7612 19.6455 17.85 19.6455C16.9387 19.6455 16.2 18.9068 16.2 17.9955C16.2 17.0842 16.9387 16.3455 17.85 16.3455ZM17.85 14.8455C19.5896 14.8455 21 16.2558 21 17.9955C21 19.7352 19.5896 21.1455 17.85 21.1455C16.1103 21.1455 14.7 19.7352 14.7 17.9955C14.7 16.2558 16.1103 14.8455 17.85 14.8455Z" fill="currentColor"></path> 
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.85 7.64961C18.7612 7.64961 19.5 6.91088 19.5 5.99961C19.5 5.08834 18.7612 4.34961 17.85 4.34961C16.9387 4.34961 16.2 5.08834 16.2 5.99961C16.2 6.91088 16.9387 7.64961 17.85 7.64961ZM17.85 9.14961C19.5896 9.14961 21 7.73931 21 5.99961C21 4.25991 19.5896 2.84961 17.85 2.84961C16.1103 2.84961 14.7 4.25991 14.7 5.99961C14.7 7.73931 16.1103 9.14961 17.85 9.14961Z" fill="currentColor"></path>
+      </svg>
+    </button>
+    <!-- Botón Descargar -->
+    <button id="btn-descargar-imagen">
+      Descargar portada 
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path opacity="0.5" d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M12 3V16M12 16L16 11.625M12 16L8 11.625" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+  </div>`;
 document.body.appendChild(modal);
 
+// ---- SELECCIÓN DE ELEMENTOS ----
+const btnDescargarImagen = modal.querySelector('#btn-descargar-imagen');
+const btnCompartirAnime = modal.querySelector('#btn-compartir-anime');
 const modalImg = modal.querySelector('img');
 
+// ---- FUNCIONES AUXILIARES ----
+// Extraer la obtención del título crudo para que ambos botones lo usen
+const obtenerTituloAnime = () => {
+  const tituloEl = document.getElementById('titulo');
+  return tituloEl ? tituloEl.textContent.trim() : 'Este increíble anime';
+};
+
+// Sanitización exclusiva para el nombre de archivo a descargar
+const obtenerNombreSanitizado = (tituloCrudo) => {
+  return tituloCrudo
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Elimina acentos
+    .replace(/\s+/g, '_')                             // Espacios por guiones bajos
+    .replace(/[^\w.-]+/g, '');                        // Solo caracteres válidos para archivos
+};
+
+// ---- EVENTO: COMPARTIR ----
+btnCompartirAnime.addEventListener('click', async (e) => {
+  e.stopPropagation();
+
+  const tituloCrudo = obtenerTituloAnime();
+  const urlActual = window.location.href; 
+  
+  // Mensaje optimizado y amigable invitando a la plataforma Anizen
+  const datosACompartir = {
+    title: `¡Mira ${tituloCrudo} en Anizen!`,
+    text: `¡Te recomiendo ver ${tituloCrudo}! 🍿 Disfrútalo ahora mismo en Anizen:`,
+    url: urlActual
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(datosACompartir);
+    } else {
+      // El salto de línea (\n) asegura que la URL quede debajo del mensaje al pegar en WhatsApp/Telegram
+      await navigator.clipboard.writeText(`${datosACompartir.text}\n${datosACompartir.url}`);
+      
+      const textoOriginal = btnCompartirAnime.textContent;
+      btnCompartirAnime.textContent = "¡Enlace copiado!";
+      setTimeout(() => { 
+        btnCompartirAnime.innerHTML = `Compartir anime ${btnCompartirAnime.querySelector('svg').outerHTML}`; 
+      }, 2000);
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError') { 
+      console.error('Error al compartir:', error);
+    }
+  }
+});
+
+// ---- EVENTO: DESCARGAR ----
+btnDescargarImagen.addEventListener('click', async (e) => {
+  e.stopPropagation();
+  
+  const src = modalImg.src;
+  if (!src) return;
+
+  const contenidoOriginalBtn = btnDescargarImagen.innerHTML;
+  btnDescargarImagen.disabled = true;
+  btnDescargarImagen.textContent = 'Descargando...';
+
+  try {
+    const response = await fetch(src, { mode: "cors" });
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+    
+    const blob = await response.blob();
+    const mimeType = blob.type;
+    const extension = mimeType.split('/')[1] || 'jpg'; 
+
+    const tituloCrudo = obtenerTituloAnime();
+    const nombreAnime = obtenerNombreSanitizado(tituloCrudo);
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `portada-${nombreAnime}.${extension}`;
+    
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Error en la descarga:', err);
+    alert('No se pudo descargar la imagen.');
+  } finally {
+    btnDescargarImagen.disabled = false;
+    btnDescargarImagen.innerHTML = contenidoOriginalBtn;
+  }
+});
 portadaEl.addEventListener('click', () => {
   modalImg.src = portadaEl.src;
   modal.classList.add('active');
