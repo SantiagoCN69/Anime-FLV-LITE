@@ -786,20 +786,24 @@ body:not(.animaciones-off) header {
   left: 0;
   width: 100%;
   border-radius: 12px;
-  height: 60%;
+  height: 40%;
   background: linear-gradient(to top, rgba(var(--bgti), 1), transparent);
   pointer-events: none;
   z-index: 1;
   transition: bottom 0.3s ease;
 }
 .ep-visto::after {
-  background: linear-gradient(to top, var(--br), transparent);
+  background: linear-gradient(
+    to top, 
+    color-mix(in srgb, var(--t2) 60%, transparent), 
+    color-mix(in srgb, var(--t2) 0%, transparent)
+  );
 }
 .episode-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 13px;
   transition: transform 0.2s, filter 0.2s;
   transform-origin: bottom center; 
 }
@@ -852,7 +856,7 @@ body:not(.animaciones-off) header {
   transition: filter 0.2s, background-color 0.2s;
 }
 .ep-visto .icon-eye {
-  background-color: var(--br);
+  background-color: var(--t2);
 }
 .ep-visto .icon-eye::after, .ep-no-visto .icon-eye::after {
   content: "";
@@ -1195,7 +1199,9 @@ grid-template-columns: 1fr;
   background: var(--p);
   border-radius: 12px;
 }
-
+.episode-btn::after {
+  content: none
+}
   .episode-thumb {
     width: 100px;
     height: 100%;
@@ -1260,8 +1266,8 @@ z-index: 0;
   background: linear-gradient(
     to bottom, 
     color-mix(in srgb, var(--b) 80%, transparent) 12%,  /* Reemplaza rgba(0,0,0, 0.8) */
-    color-mix(in srgb, var(--b) 0%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
-    color-mix(in srgb, var(--b) 90%, transparent) 74%,  /* Reemplaza rgba(0,0,0, 0.9) */
+    color-mix(in srgb, var(--b) 10%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
+    color-mix(in srgb, var(--b) 75%, transparent) 70%,  /* Reemplaza rgba(0,0,0, 0.9) */
     var(--b) 100%                                       /* Color sólido al final */
   );
   z-index: 2;
