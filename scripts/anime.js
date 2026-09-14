@@ -266,7 +266,6 @@ function renderRelacionados(anime) {
 const BANNER_PESO_MIN_BYTES = 7 * 1024;
 const BANNER_PESO_PROXIES = [
   'https://anizenlite.netlify.app/.netlify/functions/banner-peso',
-  // Puedes agregar tu localhost aquí
 ];
 
 async function obtenerPesoBanner(url) {
@@ -286,51 +285,19 @@ async function obtenerPesoBanner(url) {
   return null;
 }
 
-function verificarCargaImagen(url) {
-  return new Promise(resolve => {
-    const img = new Image();
-    
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-
-    img.src = url;
-  });
-}
-
 async function esBannerValido(url) {
-  const [peso, cargaOk] = await Promise.all([
-    obtenerPesoBanner(url),
-    verificarCargaImagen(url)
-  ]);
-
-  if (!peso || peso < BANNER_PESO_MIN_BYTES) return false;
-  
-  if (!cargaOk) return false;
-
-  return true;
+  const peso = await obtenerPesoBanner(url);
+  return typeof peso === 'number' && peso >= BANNER_PESO_MIN_BYTES;
 }
 
 async function aplicarFondoAnime(anime) {
   const portada = anime.portada || anime.cover;
   const banner = anime.banner;
-  
-  const imagenUsar = banner ? banner : portada;
-  
-  if (!imagenUsar) {
-    document.body.style.setProperty('--background-image', 'none');
-    document.body.classList.add('fondo-animado');
-    return;
-  }
+  const usarBanner = banner && await esBannerValido(banner);
+  const imagenUrl = usarBanner ? banner : portada;
 
-  const bannerValido = await esBannerValido(banner);
-
-  if (bannerValido) {
-    document.body.style.setProperty('--background-image', `url(${banner})`);
-    document.body.classList.add('fondo-animado');
-  } else {
-    document.body.style.setProperty('--background-image', portada ? `url(${portada})` : 'none');
-    document.body.classList.add('fondo-animado');
-  }
+  document.body.style.setProperty('--background-image', imagenUrl ? `url(${imagenUrl})` : 'none');
+  document.body.classList.add('fondo-animado');
 }
 function setAnimeDescripcion(descripcionEl, texto) {
   if (!descripcionEl) return;
