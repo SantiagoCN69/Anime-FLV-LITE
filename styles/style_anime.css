@@ -1244,7 +1244,7 @@ grid-template-columns: 1fr;
   height: unset;
   max-height: 560px;
 z-index: 0;
-  margin-bottom: -180px;
+  margin-bottom: -190px;
 }
 .anime-container1 img {
   border-radius: 0;
@@ -1255,7 +1255,7 @@ z-index: 0;
   content: "";
   position: absolute;
   aspect-ratio: 1 / 1.4;
-  width: 101vw;
+  width: 100vw;
   pointer-events: none;
   background: linear-gradient(
     to bottom, 
