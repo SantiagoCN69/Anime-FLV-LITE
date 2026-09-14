@@ -942,11 +942,39 @@ async function cargarEpisodios() {
 }
 
 function aplicarFondoAnime(anime) {
-  const imagenUrl = anime.cover || anime.banner;
-  if (imagenUrl) {
-    document.body.style.setProperty('--background-image', `url('${imagenUrl}')`);
-    document.body.classList.add('fondo-animado');
+  const bannerUrl = anime.banner;
+  const portadaUrl = anime.portada;
+
+  // Función auxiliar para no repetir código al inyectar el CSS
+  const aplicarEstilos = (url) => {
+    if (url) {
+      document.body.style.setProperty('--background-image', `url('${url}')`);
+      document.body.classList.add('fondo-animado');
+    }
+  };
+
+  // Si por alguna razón el banner viene vacío o nulo de origen, aplicamos portada directamente
+  if (!bannerUrl) {
+    aplicarEstilos(portadaUrl);
+    return;
   }
+
+  // Creamos una imagen en memoria para comprobar si el link es accesible
+  const img = new Image();
+
+  img.onload = () => {
+    // El link es válido y la imagen cargó correctamente
+    aplicarEstilos(bannerUrl);
+  };
+
+  img.onerror = () => {
+    // El link está roto, la imagen no existe o tiene bloqueos de CORS
+    console.warn(`Error al cargar el banner: ${bannerUrl}. Usando portada como respaldo.`);
+    aplicarEstilos(portadaUrl);
+  };
+
+  // Al asignar el src, el navegador intenta descargarla y dispara onload u onerror
+  img.src = bannerUrl;
 }
 
 async function cargarVideoDesdeEpisodio(index) {
