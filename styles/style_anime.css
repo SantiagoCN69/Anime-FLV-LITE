@@ -388,6 +388,7 @@ body:not(.animaciones-off) header {
   align-items: center;
   gap: 10px;
   min-height: 21.5px;
+  z-index: 1;
 }
 #info1 a {
   font-size: .9rem;
@@ -1243,7 +1244,7 @@ grid-template-columns: 1fr;
   height: unset;
   max-height: 560px;
 z-index: 0;
-  margin-bottom: -220px;
+  margin-bottom: -180px;
 }
 .anime-container1 img {
   border-radius: 0;
