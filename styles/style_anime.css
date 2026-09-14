@@ -778,13 +778,27 @@ body:not(.animaciones-off) header {
     transform: scale(.98);
   }
 }
-
+.episode-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 12px;
+  height: 60%;
+  background: linear-gradient(to top, rgba(var(--bgti), 1), transparent);
+  pointer-events: none;
+  z-index: 1;
+  transition: bottom 0.3s ease;
+}
+.ep-visto::after {
+  background: linear-gradient(to top, var(--br), transparent);
+}
 .episode-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px; 
-  border-bottom-left-radius: 20px;
+  border-radius: 12px;
   transition: transform 0.2s, filter 0.2s;
   transform-origin: bottom center; 
 }
@@ -804,26 +818,27 @@ body:not(.animaciones-off) header {
 }
 
 .episode-text {
-  padding: 8px;
+  padding: 8px 12px;
   font-weight: 500;
   text-align: center;
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: end;
+  justify-content: space-between;
   font-size: 0.9rem;
   position: absolute;
+  width: 100%;
   bottom: 0;
   left: 0;
-  background: var(--p);
-  border-top-right-radius: 12px;
+  z-index: 2;
+  border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
   font-family: 'JetBrains Mono', monospace;
 }
 .ep-visto .episode-text {
   color: var(--t1);
-  background:var(--btn);
 }
+
 .icon-eye {
   width: 45px;
   height: 40px;
@@ -836,7 +851,7 @@ body:not(.animaciones-off) header {
   transition: filter 0.2s, background-color 0.2s;
 }
 .ep-visto .icon-eye {
-  background-color: var(--btn);
+  background-color: var(--br);
 }
 .ep-visto .icon-eye::after, .ep-no-visto .icon-eye::after {
   content: "";
@@ -874,7 +889,6 @@ body:not(.animaciones-off) header {
   opacity: 0;
 }
 @media screen and (hover:hover) {
-  .episode-btn:hover {transform: translateY(-3px);}
   .icon-eye:hover {filter: brightness(1.2);}
 
   .episode-btn:hover .play-icon-anime {width: 60px;height: 60px;
