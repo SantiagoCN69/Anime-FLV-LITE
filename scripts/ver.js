@@ -1398,7 +1398,8 @@ btnSiguiente.addEventListener("click", async (e) => {
   const ultimoEpisodio = episodios[episodios.length - 1];
   if (ultimoEpisodio && episodioActualIndex < ultimoEpisodio.number) {
     const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
-    if (marcarVistoBtn && !marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
+    const user = localStorage.getItem("userID");
+    if (user && marcarVistoBtn && !marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
       await toggleYGuardarEstadoCapitulo();
     }
     await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
