@@ -1255,6 +1255,7 @@ z-index: 0;
 .anime-container1 img {
   border-radius: 0;
   opacity: 0;
+  transform: translateY(-3px);
   filter:brightness(0.7) saturate(1.2);
 }
 .animaciones-off .anime-container1 img {
