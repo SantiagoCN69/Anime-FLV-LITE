@@ -360,11 +360,11 @@ async function toggleYGuardarEstadoCapitulo() {
     console.warn('toggleYGuardarEstadoCapitulo: Operación en progreso, ignorando clic.');
     return;
   }
-    const user = localStorage.getItem("userID");
-    if (!user) {
+  const user = localStorage.getItem("userID");
+  if (!user) {
     mostrarPildora("no-user");
-      return;
-    }
+    return;
+  }
   mostrarPildora(true, null, true);
   toggleInProgress = true;
 
@@ -517,14 +517,23 @@ function crearNoticiaHTML(noticia, base64img) {
   
   tarjeta.innerHTML = `
     <img src="${imagenSrc}" 
-         alt="${noticia.title}" 
-         class="noticia-imagen"
-         loading="lazy">
+        alt="${noticia.title}" 
+        class="noticia-imagen"
+        loading="lazy">
     <h3 class="noticia-titulo">${noticia.title}</h3>
     <p class="noticia-fecha">${noticia.date}</p>
   `;
 
   return tarjeta;
+}
+
+function extraerListaNoticias(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (!payload || typeof payload !== "object") return [];
+  if (Array.isArray(payload.noticias)) return payload.noticias;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.items)) return payload.items;
+  return [];
 }
 
 async function manejarNoticias() {
@@ -537,7 +546,7 @@ async function manejarNoticias() {
     const noticiasRef = doc(db, "noticias", "noticias");
     const docSnap = await getDoc(noticiasRef);
     if (docSnap.exists()) {
-      noticiasFirestore = docSnap.data().noticias;
+      noticiasFirestore = extraerListaNoticias(docSnap.data()?.noticias);
       // Mostrar noticias desde caché
       initLoadingNoticias.style.display = 'none';
       noticiasFirestore.forEach(noticia => {
@@ -552,7 +561,12 @@ async function manejarNoticias() {
   // 2. Verificar API en segundo plano
   try {
     const respuesta = await fetch("https://backend-noticias-anime.onrender.com/api/noticias");
-    const noticiasAPI = await respuesta.json();
+    const payloadAPI = await respuesta.json().catch(() => null);
+    if (!respuesta.ok) {
+      throw new Error(`API noticias ${respuesta.status}`);
+    }
+
+    const noticiasAPI = extraerListaNoticias(payloadAPI);
 
     // Función para comparar noticias
     const sonIguales = (a, b) => {
@@ -565,7 +579,7 @@ async function manejarNoticias() {
     };
 
     // Si son diferentes o no hay en Firestore, actualizar
-    if (!noticiasFirestore.length || !sonIguales(noticiasAPI, noticiasFirestore)) {
+    if (noticiasAPI.length && (!noticiasFirestore.length || !sonIguales(noticiasAPI, noticiasFirestore))) {
       
       // Procesar imágenes
       const noticiasActualizadas = await Promise.all(
@@ -1474,8 +1488,8 @@ function mostrarPildora(estado = true, cap = null, actualizando = false) {
   } else {
     const capTexto = cap ? ` ${cap}` : "";
     pill.className = `pildora pildora-${estado ? "visto" : "eliminado"}`;
-    pill.textContent = estado 
-      ? `Capítulo${capTexto} marcado como visto` 
+    pill.textContent = estado
+      ? `Capítulo${capTexto} marcado como visto`
       : `Capítulo${capTexto} eliminado de vistos`;
   }
 
