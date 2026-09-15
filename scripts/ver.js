@@ -360,15 +360,15 @@ async function toggleYGuardarEstadoCapitulo() {
     console.warn('toggleYGuardarEstadoCapitulo: Operación en progreso, ignorando clic.');
     return;
   }
+    const user = localStorage.getItem("userID");
+    if (!user) {
+    mostrarPildora("no-user");
+      return;
+    }
   mostrarPildora(true, null, true);
   toggleInProgress = true;
 
   try {
-    const user = localStorage.getItem("userID");
-    if (!user) {
-      console.warn('toggleYGuardarEstadoCapitulo: No hay usuario autenticado.');
-      return;
-    }
 
     const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
     const docSnap = await getDoc(animeRef);
@@ -453,7 +453,7 @@ document.addEventListener("authStateReady", async (event) => {
 btnEstadoCapitulo.addEventListener("click", async () => {
   const user = localStorage.getItem("userID");
   if (!user) {
-    window.alert('Inicia sesión para guardar tu progreso de capítulos, animes y mucho más!.');
+    mostrarPildora("no-user");
     return
   }
   if (toggleInProgress) {
@@ -1461,17 +1461,19 @@ function mostrarPildora(estado = true, cap = null, actualizando = false) {
   
   const pill = document.createElement("div");
 
-  if (actualizando) {
-    pill.className = `pildora pildora-default`;
-  } else {
-    pill.className = `pildora pildora-${estado ? 'visto' : 'eliminado'}`;
-  }
-
-  const capTexto = cap ? ` ${cap}` : "";
-
-  if (actualizando) {
+  if (estado === "no-user") {
+    pill.className = "pildora pildora-no-user";
+    pill.textContent = "Inicia sesión para guardar tu progreso";
+    pill.onclick = () => {
+      const confirmBtn = document.getElementById("confirm-login");
+      if (confirmBtn) confirmBtn.click();
+    };
+  } else if (actualizando) {
+    pill.className = "pildora pildora-default";
     pill.textContent = "Actualizando...";
   } else {
+    const capTexto = cap ? ` ${cap}` : "";
+    pill.className = `pildora pildora-${estado ? "visto" : "eliminado"}`;
     pill.textContent = estado 
       ? `Capítulo${capTexto} marcado como visto` 
       : `Capítulo${capTexto} eliminado de vistos`;
