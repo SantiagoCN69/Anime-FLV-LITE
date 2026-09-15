@@ -1255,9 +1255,13 @@ z-index: 0;
 .anime-container1 img {
   border-radius: 0;
   opacity: 0;
-  transform: translateY(-10px);
   filter:brightness(0.7) saturate(1.2);
 }
+.animaciones-off .anime-container1 img {
+  opacity: 1;
+  filter:blur(0) brightness(.9) saturate(1.1);
+}
+
 .anime-container1 img.cargo {
   animation: zoom2 .6s ease-out forwards;
 
@@ -1265,12 +1269,10 @@ z-index: 0;
 @keyframes zoom2 {
   0% {
     opacity: 0;
-    transform: translateY(-10px);
     filter: blur(1px) brightness(0.7) saturate(1.2);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
     filter:blur(0) brightness(.9) saturate(1.1);
   }
 }
