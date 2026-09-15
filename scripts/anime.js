@@ -735,7 +735,11 @@ filtroCapitulo.addEventListener('input', debounce(() => {
 async function manejarEstadoEpisodio(btn, icon, ep) {
   const userId = auth.currentUser?.uid || localStorage.getItem("userID");
   // Evitar doble clic rápido en ESTE mismo botón
-  if (!userId || btn.dataset.loading === "true") return; 
+  if (!userId) {
+    mostrarPildora('no-user');
+    return
+  }
+  if (btn.dataset.loading === "true") return; 
 
   const animeId = id; 
   const tituloAnime = tituloEl.textContent;
