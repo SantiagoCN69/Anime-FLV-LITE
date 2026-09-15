@@ -401,8 +401,9 @@ if (anime.estado) {
   info1El.innerHTML = infoParts.join(' • ');
 
   tituloEl.textContent = anime.titulo;
-  document.getElementById("portadacarga").classList.add("cargado");
+  document.getElementById("covercarga").classList.add("cargado");
   portadaEl.src = anime.portada;
+  portadaEl.classList.add("cargo")
   document.querySelector('.anime-container1').style.setProperty('--anime-portada', `url(${anime.portada})`);
   aplicarFondoAnime(anime);
   setAnimeDescripcion(descripcionEl, anime.descripcion);
