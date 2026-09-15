@@ -1254,8 +1254,26 @@ z-index: 0;
 }
 .anime-container1 img {
   border-radius: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  filter:brightness(0.7) saturate(1.2);
 }
+.anime-container1 img.cargo {
+  animation: zoom2 .6s ease-out forwards;
 
+}
+@keyframes zoom2 {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(1px) brightness(0.7) saturate(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter:blur(0) brightness(.9) saturate(1.1);
+  }
+}
 /* Capa 1: Tu degradado natural (arriba oscuro, centro limpio, abajo var(--b)) */
 .anime-container1::before {
   content: "";
