@@ -22,7 +22,7 @@
   .content-section {margin-inline: 1rem !important;}
   #indexpagination {display: flex;}
 
-  #btn-Recomendaciones, #btn-directorio2, #btn-horarios, #btn-populares {display: none;}
+  #btn-Recomendaciones, #btn-directorio2, #btn-horarios, #btn-populares, #btn-ultimos-caps {display: none;}
 }
 /* ================= BASE ================= */
 #indexpagination {
