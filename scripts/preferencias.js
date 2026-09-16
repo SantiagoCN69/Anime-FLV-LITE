@@ -3,18 +3,18 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstati
 import { auth, db } from "./firebase-login.js";
 
 const THEME_CONFIG = {
-  themes: ['dark', 'nocturno', 'sakura', 'cyberpunk', 'sunset', 'morado_medianoche'],
-  defaultTheme: 'dark'
+  themes: ['nocturno', 'sakura', 'sunset', 'morado_medianoche'],
+  defaultTheme: 'morado_medianoche'
 };
 
 const THEME_LABELS = {
-  dark: 'Oscuro',
   nocturno: 'Nocturno',
   sakura: 'Sakura',
-  cyberpunk: 'Cyberpunk',
   sunset: 'Sunset',
   morado_medianoche: 'Medianoche'
 };
+
+const temaValido = (tema) => THEME_CONFIG.themes.includes(tema) ? tema : THEME_CONFIG.defaultTheme;
 
 const provider = new GoogleAuthProvider();
 let userCached = null;
@@ -22,15 +22,16 @@ let userCached = null;
 console.log('[Preferencias] módulo cargado. readyState=', document.readyState);
 
 const aplicarTema = (tema) => {
-  console.log('[Preferencias] aplicarTema ->', tema);
-  localStorage.setItem('theme', tema);
-  window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: tema } }));
+  const next = temaValido(tema);
+  console.log('[Preferencias] aplicarTema ->', next);
+  localStorage.setItem('theme', next);
+  window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
 };
 
 const actualizarBtnTema = () => {
   const btn = document.getElementById('btn-theme-toggle');
   if (!btn) return;
-  const current = localStorage.getItem('theme') || THEME_CONFIG.defaultTheme;
+  const current = temaValido(localStorage.getItem('theme'));
   btn.textContent = THEME_LABELS[current] || current;
 };
 
@@ -239,7 +240,7 @@ function initPreferencias() {
     actualizarBtnTema();
     btnThemeToggle.addEventListener('click', (e) => {
       e.preventDefault();
-      const current = localStorage.getItem('theme') || THEME_CONFIG.defaultTheme;
+      const current = temaValido(localStorage.getItem('theme'));
       const idx = THEME_CONFIG.themes.indexOf(current);
       const next = THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
       console.log('[Preferencias] click tema', current, '->', next);

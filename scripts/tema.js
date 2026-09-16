@@ -50,28 +50,21 @@ bgti: '13, 10, 22'  // RGB del fondo #0D0A16
 }
 };
 
-    
+    const DEFAULT_THEME = 'morado_medianoche';
+
     const applyTheme = t => {
-        try {
-            const theme = themes[t] || themes.dark;
-            if (!theme) throw new Error(`Theme ${t} not found`);
-            
-            for (const [k, v] of Object.entries(theme)) {
-                if (v !== undefined && v !== null) {
-                    document.documentElement.style.setProperty(`--${k}`, v);
-                }
-            }
-        } catch (err) {
-            console.error('[Theme] ❌ Error:', err);
-            const fallbackTheme = themes.dark;
-            for (const [k, v] of Object.entries(fallbackTheme)) {
+        const theme = themes[t] || themes[DEFAULT_THEME];
+        if (!theme) return;
+
+        for (const [k, v] of Object.entries(theme)) {
+            if (v !== undefined && v !== null) {
                 document.documentElement.style.setProperty(`--${k}`, v);
             }
         }
     };
 
-    applyTheme(localStorage.getItem('theme') || 'morado_medianoche');
+    applyTheme(localStorage.getItem('theme') || DEFAULT_THEME);
 
-    addEventListener('storage', e => e.key === 'theme' && applyTheme(e.newValue || 'dark'));
-    addEventListener('themeChanged', e => applyTheme(e.detail?.theme || 'morado_medianoche'));
+    addEventListener('storage', e => e.key === 'theme' && applyTheme(e.newValue || DEFAULT_THEME));
+    addEventListener('themeChanged', e => applyTheme(e.detail?.theme || DEFAULT_THEME));
 })();
