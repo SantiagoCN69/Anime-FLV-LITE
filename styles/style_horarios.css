@@ -98,7 +98,7 @@
   background: var(--p);
   border: 1px solid var(--br);
   border-radius: 18px;
-  padding: 0.75rem 1.1rem;
+  padding: 0.75rem;
 }
 
 .anime-card-schedule:hover {
@@ -220,7 +220,7 @@
   .anime-card-schedule {
     grid-template-columns: 52px minmax(0, 1fr);
     column-gap: 0.65rem;
-    padding: 0.7rem 0.8rem;
+    padding: 0.7rem;
   }
   .anime-card-schedule .schedule-time {
     font-size: 0.68rem;
