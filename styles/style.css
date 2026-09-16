@@ -801,7 +801,7 @@ main {
 @media (hover: hover) {
   body:not(.animaciones-off) #btn-ver-todo:hover {
     color: var(--btn);
-    transform: translate(5px, -50%) !important;
+    transform: translate(0px, -50%) rotate(10deg) scale(1.05) !important;
     border-color: var(--btn);
   }
   body:not(.animaciones-off) #btn-ver-todo:hover span {
