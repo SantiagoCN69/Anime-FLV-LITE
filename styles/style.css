@@ -1775,14 +1775,15 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   width: 80px;
 }
 .sidebar span {
-  transition: opacity 0.3s ease, position 0.3s ease;
+  transition: opacity 0.3s ease, position 0.3s ease, transform .3s;
 }
-.sidebar-collapsed .sidebar span {
+.sidebar-collapsed .sidebar span, .sidebar-collapsed #Collapse-aside span {
   opacity: 0; 
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
   z-index: -1;
+  transform: translateX(10px);
 }
 .sidebar svg {
   transition: width 0.3s ease, height 0.3s ease, max-width 0.3s ease, min-width 0.3s ease;
@@ -1810,11 +1811,8 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
 }
 
 .sidebar-collapsed #Collapse-aside {
-  padding: 1rem 1rem;
+  padding-inline:12px ;
   width: 25px;
-  span {
-    display: none;
-  }
   svg {
     margin-inline-end: 0;
   }
