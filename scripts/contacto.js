@@ -15,9 +15,19 @@ scriptFormspree.onload = () => {
         onSuccess: function() {
             const form = document.getElementById('contactoForm');
             const charCount = document.getElementById('charCount');
+            const successDiv = document.querySelector('[data-fs-success]');
             
             if (form) form.reset();
             if (charCount) charCount.textContent = '0';
+            if (successDiv) {
+                successDiv.textContent = '¡Mensaje enviado correctamente! Gracias por tu feedback.';
+                successDiv.style.display = 'block';
+                
+                // Ocultar el mensaje después de 5 segundos
+                setTimeout(() => {
+                    successDiv.style.display = 'none';
+                }, 5000);
+            }
         }
     });
 };
