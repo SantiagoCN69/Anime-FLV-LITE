@@ -112,11 +112,24 @@ const renderInitialGrid = () => {
   DOM.grid.innerHTML = '';
   
   const fragment = document.createDocumentFragment();
+  const query = DOM.search ? DOM.search.value.trim().toLowerCase() : '';
 
   scheduleData.forEach(d => {
     d.animes.forEach(a => {
       const card = crearHorarioCard(a);
       card.dataset.day = d.day;
+
+      // Evaluar visibilidad antes de agregar al DOM
+      const isVisible = query === '' 
+        ? d.day === currentDay 
+        : (card.dataset.title || '').includes(query);
+
+      if (!isVisible) {
+        card.style.display = 'none';
+      } else {
+        card.classList.add('show');
+      }
+
       fragment.appendChild(card);
     });
   });
@@ -166,12 +179,13 @@ const processData = (data, isInitial = false) => {
     if (!currentDay) {
       const hoy = getTodayName();
       const existeHoy = scheduleData.some(d => d.day.toLowerCase() === hoy.toLowerCase());
-      currentDay = existeHoy ? scheduleData.find(d => d.day.toLowerCase() === hoy.toLowerCase()).day : scheduleData[0].day;
+      currentDay = existeHoy 
+        ? scheduleData.find(d => d.day.toLowerCase() === hoy.toLowerCase()).day 
+        : scheduleData[0].day;
     }
     
     renderButtons();
-    renderInitialGrid(); 
-    applyFilter(DOM.search ? DOM.search.value : ''); 
+    renderInitialGrid(); // Inserta solo con los elementos del día visible
     
     if (!eventsBound && DOM.search) {
       DOM.search.addEventListener('input', (e) => applyFilter(e.target.value));
