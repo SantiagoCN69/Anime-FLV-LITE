@@ -467,7 +467,7 @@ nav.filtros {
   content: "▼";
 }
 .btn-filtro.active {
-  background-color: var(--btn);
+  filter: brightness(1.5);
   color: var(--t1);
 }
 .btn-filtro.active::after {
