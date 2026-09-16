@@ -22,7 +22,6 @@
 
 .btn-day {
   flex: 1;
-  min-width: 125px;
   background-color: var(--p);
   color: var(--t1);
   padding: 0.6rem 1.2rem;
@@ -44,6 +43,21 @@
   opacity: 1;
 }
 
+.day-hoy {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: var(--btn);
+  color: var(--t1);
+  vertical-align: middle;
+}
+.active .day-hoy {
+  background: var(--t1);
+  color: var(--btn);
+}
 .anime-count {
   margin-left: 0.5rem;
   min-width: 17px !important;
@@ -69,41 +83,150 @@
   border-color: var(--btn);
 }
 
-.anime-card-schedule .content {
-  position: relative;
-  width: 100%;
-  overflow: visible;
+#Horarios .grid-animes.schedule-grid {
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
 }
-.anime-card-schedule .content:after {
-  text-transform: capitalize;
-  z-index: 1;
-  content: attr(data-time_ago);
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(-100% - 29px);
-  height: 47.5px;
+
+.anime-card-schedule {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.9rem;
+  text-align: left;
+  overflow: hidden;
+  background: var(--p);
+  border: 1px solid var(--br);
+  border-radius: 18px;
+  padding: 0.75rem 1.1rem;
+}
+
+.anime-card-schedule:hover {
+  transform: translate(0, 0) scale(1.01);
+  border-color: var(--btn);
+}
+
+.anime-card-schedule span {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  padding-inline: 0;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  opacity: 1 !important;
+  transform: none !important;
+  border-radius: 0;
+  font-size: inherit;
+  display: inline-flex !important;
+  white-space: nowrap;
+}
+
+.anime-card-schedule .schedule-time {
+  color: var(--btn);
+  font-weight: 600;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.schedule-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.anime-card-schedule .container-img {
+  width: 58px;
+  min-width: 58px;
+  max-height: none;
+  border-radius: 12px;
+  filter: none;
+  overflow: hidden;
+}
+
+.anime-card-schedule .container-img::after {
+  display: none;
+}
+
+.anime-card-schedule img,
+.anime-card-schedule .cover {
+  aspect-ratio: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none;
+}
+
+.anime-card-schedule:hover .cover {
+  transform: none;
+}
+
+.schedule-info {
+  min-width: 0;
+}
+
+.schedule-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.schedule-info strong {
+  flex: 1;
+  min-width: 0;
+  color: var(--t1);
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: var(--b);
-  color: var(--t1) ;
-  padding: 0.2rem 0.5rem;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: bottom 0.2s ease, opacity 0.2s ease;
-  opacity: 0;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-width: 0;
 }
-@media (hover: hover) and (pointer: fine) {
-  .anime-card-schedule:hover .content:after {
-    bottom: -10px;
-    opacity: 1;
-    color: var(--btn);
+
+.schedule-ep {
+  padding: 0.18rem 0.5rem !important;
+  border-radius: 8px !important;
+  background: var(--br) !important;
+  color: var(--t2) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.schedule-status {
+  flex-shrink: 0;
+  padding: 0.3rem 0.75rem !important;
+  border-radius: 999px !important;
+  background: rgba(52, 211, 153, 0.14) !important;
+  color: #34d399 !important;
+  font-size: 0.78rem !important;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 640px) {
+  .anime-card-schedule {
+    grid-template-columns: 52px minmax(0, 1fr);
+    column-gap: 0.65rem;
+    padding: 0.7rem 0.8rem;
   }
-}
-.anime-card-schedule.touch-hover .content:after {
-  bottom: -10px;
-  opacity: 1;
-  color: var(--btn);
+  .anime-card-schedule .schedule-time {
+    font-size: 0.68rem;
+  }
+  .anime-card-schedule .container-img {
+    width: 52px;
+    min-width: 52px;
+  }
 }
