@@ -69,8 +69,8 @@
 .search-input {
   width: 90%;
   max-width: 500px;
-  padding: 0.6rem 1.2rem;
-  border-radius: 99px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
   border: 1px solid var(--br);
   background-color: var(--p);
   color: var(--t1);
