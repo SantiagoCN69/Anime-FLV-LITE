@@ -854,8 +854,19 @@ nav.filtros {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, var(--b) 0%, rgba(0, 0, 0, 0.72) 32%, rgba(0, 0, 0, 0.25) 100%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.55) 100%);
+/* Gradient horizontal (izquierda a derecha): Pura a progresivamente transparente */
+    linear-gradient(
+      90deg, 
+      var(--b) 0%, 
+      color-mix(in srgb, var(--b) 72%, transparent) 32%, 
+      color-mix(in srgb, var(--b) 25%, transparent) 100%
+    ),
+    /* Gradient vertical (arriba a abajo): Sombra sutil para profundidad sobre la imagen */
+    linear-gradient(
+      180deg, 
+      color-mix(in srgb, var(--b) 15%, transparent) 0%, 
+      color-mix(in srgb, var(--b) 55%, transparent) 100%
+    );
 }
 
 /* ===== 3. CONTENIDO (Textos, Badges, Botones) ===== */
