@@ -1287,9 +1287,9 @@ z-index: 0;
   pointer-events: none;
   background: linear-gradient(
     to bottom, 
-    color-mix(in srgb, var(--b) 80%, transparent) 12%,  /* Reemplaza rgba(0,0,0, 0.8) */
-    color-mix(in srgb, var(--b) 10%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
-    color-mix(in srgb, var(--b) 75%, transparent) 70%,  /* Reemplaza rgba(0,0,0, 0.9) */
+    color-mix(in srgb, var(--b) 80%, transparent) 5%,  /* Reemplaza rgba(0,0,0, 0.8) */
+    color-mix(in srgb, var(--b) 8%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
+    color-mix(in srgb, var(--b) 75%, transparent) 73%,  /* Reemplaza rgba(0,0,0, 0.9) */
     var(--b) 100%                                       /* Color sólido al final */
   );
   z-index: 2;
