@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.15';
+const CACHE_VERSION = 'v8.6.16';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -74,24 +74,55 @@ self.addEventListener('install', (event) => {
   console.log('[SW] Instalando:', CACHE_VERSION);
 
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => {
-        console.log('[SW] Precargando recursos estáticos');
+    (async () => {
+      const cache = await caches.open(STATIC_CACHE);
 
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => {
-        console.log('[SW] Instalación completada');
+      console.log('[SW] Precargando recursos estáticos');
 
-        return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('[SW] Error durante instalación:', error);
+      const failed = [];
 
-        throw error;
-      })
+      await Promise.all(
+        STATIC_ASSETS.map(async (url) => {
+          try {
+            await cacheAsset(cache, url);
+          } catch (error) {
+            failed.push(url);
+            console.warn('[SW] No se pudo precachear:', url, error);
+          }
+        })
+      );
+
+      if (failed.length) {
+        console.warn(
+          '[SW] Recursos no precacheados:',
+          failed
+        );
+      }
+
+      console.log('[SW] Instalación completada');
+
+      await self.skipWaiting();
+    })()
   );
 });
+
+// cache.addAll() falla por completo si un solo recurso
+// responde 404 o con redirección (p. ej. /index.html → /).
+async function cacheAsset(cache, url) {
+  const response = await fetch(url, { cache: 'reload' });
+
+  if (!response.ok) {
+    throw new Error(`${response.status} ${url}`);
+  }
+
+  const copy = new Response(await response.blob(), {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers
+  });
+
+  await cache.put(url, copy);
+}
 
 // ─────────────────────────────────────────────
 // ACTIVACIÓN
