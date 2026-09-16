@@ -463,6 +463,7 @@ header.search-active .logout-modal {
   width: 230px;
   height: calc(100dvh - 80px);
   left: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   border-right: 1px solid var(--br);
   border-bottom: 1px solid var(--br);
@@ -1785,7 +1786,11 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   transition: opacity 0.3s ease, position 0.3s ease;
 }
 .sidebar-collapsed .sidebar span {
-  display: none;
+  opacity: 0; 
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: -1;
 }
 .sidebar svg {
   transition: width 0.3s ease, height 0.3s ease, max-width 0.3s ease, min-width 0.3s ease;
