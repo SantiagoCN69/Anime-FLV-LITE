@@ -380,6 +380,7 @@ body:not(.animaciones-off) header {
   color:var(--t1);
   z-index: 1;
   font-family: 'Oxanium', sans-serif;
+  cursor: pointer;
 }
 #info1 {
   display: flex;

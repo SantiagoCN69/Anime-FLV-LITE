@@ -401,6 +401,11 @@ if (anime.estado) {
   info1El.innerHTML = infoParts.join(' • ');
 
   tituloEl.textContent = anime.titulo;
+  tituloEl.addEventListener('click', () => {
+    navigator.clipboard.writeText(tituloEl.textContent);
+    mostrarPildora("alerta texto");
+  });
+  
   document.getElementById("covercarga").classList.add("cargado");
   portadaEl.src = anime.portada;
   portadaEl.classList.add("cargo")
@@ -1569,6 +1574,7 @@ window.addEventListener('scroll', () => {
 });
 
 //pildora visual check 
+
 function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
   const pillAnterior = document.querySelector('.pildora');
   if (pillAnterior) pillAnterior.remove();
@@ -1578,25 +1584,23 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
 
   const accion = estado ? "Agregado a" : "Eliminado de";
 
-  // Mapeo de textos y clases según la opción
-const opciones = {
-  fav: { clase: "pildora-fav", texto: `${anime} ${accion} favoritos` },
-  pendiente: { clase: "pildora-pendiente", texto: `${anime} ${accion} pendientes` },
-  visto: { clase: "pildora-visto", texto: `${anime} ${accion} vistos` },
-  viendo: { clase: "pildora-viendo", texto: `${anime} ${accion} viendo` },
-  capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` },
-  actualizando: { clase: "pildora-default", texto: `Actualizando ${anime}...` },
-  "no-user": { clase: "pildora-no-user", texto: "Inicia sesión para guardar tu progreso" }
-};
+  const opciones = {
+    fav: { clase: "pildora-fav", texto: `${anime} ${accion} favoritos` },
+    pendiente: { clase: "pildora-pendiente", texto: `${anime} ${accion} pendientes` },
+    visto: { clase: "pildora-visto", texto: `${anime} ${accion} vistos` },
+    viendo: { clase: "pildora-viendo", texto: `${anime} ${accion} viendo` },
+    capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` },
+    actualizando: { clase: "pildora-default", texto: `Actualizando ${anime}...` },
+    "no-user": { clase: "pildora-no-user", texto: "Inicia sesión para guardar tu progreso" },
+    "alerta texto": { clase: "pildora-default", texto: "Título copiado al portapapeles" }
+  };
 
-const config = opciones[opcion];
+  const config = opciones[opcion];
 
   if (config) {
     pill.textContent = config.texto;
-    // Si el estado es falso, forzamos la clase 'eliminado'
     pill.classList.add(estado ? config.clase : "pildora-eliminado");
     
-    // Si la opción es "no-user", asignamos el evento de clic a la píldora
     if (opcion === "no-user") {
       pill.onclick = () => {
         const confirmBtn = document.getElementById("confirm-login");
@@ -1611,7 +1615,6 @@ const config = opciones[opcion];
 
   document.body.appendChild(pill);
 
-  // Escuchamos el final del keyframe para eliminar el elemento del DOM
   pill.addEventListener('animationend', () => {
     pill.remove();
   }, { once: true });
