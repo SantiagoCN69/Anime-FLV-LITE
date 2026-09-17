@@ -71,55 +71,31 @@ window.addEventListener('scroll', () => {
         ticking = false;
     });
 }, { passive: true });
-
-
-// Único observador global para todas las tarjetas de anime
+ // Único observador global reutilizable
 const animeCardObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const card = entry.target;
-            card.classList.add("show");
-            card.style.removeProperty("transition-delay");
-            animeCardObserver.unobserve(card);
-        }
-    });
+  entries.forEach(entry => {
+      if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+          animeCardObserver.unobserve(entry.target); // Dejar de observar inmediatamente
+      }
+  });
 }, {
-    threshold: 0.05,
-    rootMargin: "0px 0px -1% 0px"
+  threshold: 0.05,
+  rootMargin: "0px 0px 50px 0px" // Carga ligeramente antes de entrar
 });
 
 export function observerAnimeCards() {
-    const cards = document.querySelectorAll(".anime-card");
-    if (!cards.length) return;
+  // Si las animaciones están desactivadas, CSS se encarga (no requiere JS)
+  if (document.body.classList.contains('animaciones-off')) return;
 
-    // Si las animaciones están desactivadas, mostrar todas las tarjetas inmediatamente
-    if (document.body.classList.contains('animaciones-off')) {
-        cards.forEach(card => {
-            card.classList.add("show");
-            card.style.removeProperty("transition-delay");
-        });
-        return;
-    }
+  // Solo seleccionar tarjetas que NO han sido procesadas aún
+  const pendingCards = document.querySelectorAll(".anime-card:not(.show):not([data-observed])");
 
-    // Calcular columnas del grid para el efecto en cascada
-    const container = cards[0].parentElement;
-    const gridStyles = getComputedStyle(container);
-    const columnCount = Math.max(1, gridStyles.gridTemplateColumns.split(" ").length);
-
-    // Aplicar delays escalonados basados en posición (row + col)
-    cards.forEach((card, index) => {
-        const row = Math.floor(index / columnCount);
-        const col = index % columnCount;
-        const delay = (row + col) * 0.05;
-        card.style.setProperty("transition-delay", `${delay}s`);
-    });
-
-    // Observar tarjetas en el siguiente frame de animación
-    requestAnimationFrame(() => {
-        cards.forEach(card => animeCardObserver.observe(card));
-    });
+  pendingCards.forEach((card) => {
+      card.dataset.observed = "true";
+      animeCardObserver.observe(card);
+  });
 }
-
 
 //INDICADOR funcion cambiar tema
 document.addEventListener('authStateReady', function() {
