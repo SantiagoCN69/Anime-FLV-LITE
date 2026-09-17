@@ -159,6 +159,7 @@ body:not(.animaciones-off) header {
   gap: 5px;
   width: 100%;
   margin-top: 1rem;
+  min-height: 40px;
 }
   #botones-estados-sp {
     margin-top: unset;
@@ -282,8 +283,8 @@ body:not(.animaciones-off) header {
   flex-direction: column;
   font-size: .7rem;
   align-items: start;
-  padding: 5px 10px;
-  gap: 5px;
+  padding: 8px 11px;
+  gap: 4px;
   justify-content: start;
   min-width: 90px;
   max-width: 242px;
@@ -388,8 +389,8 @@ body:not(.animaciones-off) header {
   z-index: 1;
   font-family: 'Oxanium', sans-serif;
   cursor: pointer;
-  min-height: 1lh;
-  max-height: 1lh;
+  min-height: 37px;
+  max-height: 37px;
   text-transform: capitalize;
 }
 #info1 {
@@ -397,7 +398,7 @@ body:not(.animaciones-off) header {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  min-height: 21.5px;
+  min-height: 22px;
   z-index: 1;
 }
 #info1 a {
@@ -557,7 +558,7 @@ body:not(.animaciones-off) header {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
-  min-height: 26px;
+  min-height: 27px;
 }
   
 .genero a {
@@ -1177,8 +1178,8 @@ padding-bottom: 1px;
 display: flex;
 text-align: center;
 margin-inline: auto;
-min-height: 2lh;
-max-height: 2lh;
+min-height: 73px;
+max-height: 73px;
 align-items: end;
 }
 .anime-rating {
