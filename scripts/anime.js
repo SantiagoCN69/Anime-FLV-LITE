@@ -401,10 +401,14 @@ if (anime.estado) {
   info1El.innerHTML = infoParts.join(' • ');
 
   tituloEl.textContent = anime.titulo;
-  tituloEl.addEventListener('click', () => {
-    navigator.clipboard.writeText(tituloEl.textContent);
-    mostrarPildora("alerta texto");
-  });
+  tituloEl.onclick = () => (navigator.clipboard.writeText(anime.titulo), mostrarPildora("alerta texto"));
+  
+  const r = document.createRange();
+  r.selectNodeContents(tituloEl);
+  if (r.getClientRects().length === 1) {
+    tituloEl.style.display = "flex";
+    tituloEl.style.alignItems = "end";
+  }
   
   document.getElementById("covercarga").classList.add("cargado");
   portadaEl.src = anime.portada;
