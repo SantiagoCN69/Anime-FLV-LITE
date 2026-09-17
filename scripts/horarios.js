@@ -30,6 +30,45 @@ const getAnimeId = (anime, titleText) => {
   return titleText.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
 };
 
+// Función auxiliar para convertir "Hace X minutos/horas" o número de episodio a un peso comparable
+const parseTimeWeight = (timeAgo = '', episode = '') => {
+  const text = timeAgo.toLowerCase();
+  let weight = 0;
+
+  if (text.includes('minuto')) {
+    const match = text.match(/\d+/);
+    weight = match ? parseInt(match[0], 10) : 1;
+  } else if (text.includes('hora')) {
+    const match = text.match(/\d+/);
+    weight = (match ? parseInt(match[0], 10) : 1) * 60;
+  } else if (text.includes('día') || text.includes('ayer')) {
+    const match = text.match(/\d+/);
+    weight = (match ? parseInt(match[0], 10) : 1) * 1440;
+  } else {
+    weight = 999999; // Los más antiguos o sin tiempo definido van al final
+  }
+
+  return weight;
+};
+
+// Función para ordenar los animes: del más reciente al más antiguo
+const ordenarAnimesRecientes = (animes) => {
+  return animes.sort((a, b) => {
+    const weightA = parseTimeWeight(a.time_ago, a.last_episode);
+    const weightB = parseTimeWeight(b.time_ago, b.last_episode);
+    
+    // Menor peso de tiempo transcurrido (hace menos tiempo) significa que salió más reciente -> va arriba
+    if (weightA !== weightB) {
+      return weightA - weightB;
+    }
+    
+    // Criterio de respaldo: si tienen el mismo tiempo, ordenar por número de episodio descendente (EP más alto arriba)
+    const epA = parseInt(a.last_episode, 10) || 0;
+    const epB = parseInt(b.last_episode, 10) || 0;
+    return epB - epA;
+  });
+};
+
 const crearHorarioCard = (anime) => {
   const titleText = anime.title || 'Título desconocido';
   const cover = anime.cover || 'img/loading.png';
@@ -81,7 +120,7 @@ const renderButtons = () => {
     btn.className = `btn-day ${item.day === currentDay ? 'active' : ''}`;
     btn.dataset.day = item.day;
     
-    const dayText = document.createElement('span');
+    const dayText = document.print || document.createElement('span'); // Manteniendo compatibilidad
     dayText.textContent = item.day;
     
     const countBadge = document.createElement('span');
@@ -119,7 +158,6 @@ const renderInitialGrid = () => {
       const card = crearHorarioCard(a);
       card.dataset.day = d.day;
 
-      // Evaluar visibilidad antes de agregar al DOM
       const isVisible = query === '' 
         ? d.day === currentDay 
         : (card.dataset.title || '').includes(query);
@@ -153,19 +191,19 @@ const applyFilter = (filterText = '') => {
   const noResultsMessage = document.getElementById('no-results-message');
   let visibleCount = 0;
 
-    cards.forEach(card => {
-      const visible = query === ''
-        ? card.dataset.day === currentDay
-        : (card.dataset.title || '').includes(query);
+  cards.forEach(card => {
+    const visible = query === ''
+      ? card.dataset.day === currentDay
+      : (card.dataset.title || '').includes(query);
 
-      card.style.display = visible ? '' : 'none';
-      if (visible) card.classList.add('show');
-      if (visible) visibleCount++;
-    });
+    card.style.display = visible ? '' : 'none';
+    if (visible) card.classList.add('show');
+    if (visible) visibleCount++;
+  });
 
-    document.querySelectorAll('.btn-day').forEach(b => {
-      b.classList.toggle('active', query === '' && b.dataset.day === currentDay);
-    });
+  document.querySelectorAll('.btn-day').forEach(b => {
+    b.classList.toggle('active', query === '' && b.dataset.day === currentDay);
+  });
 
   if (noResultsMessage) {
     noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
@@ -173,9 +211,13 @@ const applyFilter = (filterText = '') => {
 };
 
 const processData = (data, isInitial = false) => {
-  scheduleData = data;
+  // Ordenar los animes de cada día para que los más recientes salgan primero
+  scheduleData = data.map(item => ({
+    ...item,
+    animes: ordenarAnimesRecientes([...item.animes])
+  }));
+
   if (scheduleData.length > 0) {
-    
     if (!currentDay) {
       const hoy = getTodayName();
       const existeHoy = scheduleData.some(d => d.day.toLowerCase() === hoy.toLowerCase());
@@ -185,7 +227,7 @@ const processData = (data, isInitial = false) => {
     }
     
     renderButtons();
-    renderInitialGrid(); // Inserta solo con los elementos del día visible
+    renderInitialGrid();
     
     if (!eventsBound && DOM.search) {
       DOM.search.addEventListener('input', (e) => applyFilter(e.target.value));
@@ -228,7 +270,7 @@ const init = async () => {
   } catch (error) {
     console.error("❌ Error de conexión al cargar la API de horarios:", error);
     if (!cachedString && DOM.grid) {
-      DOM.grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: #ff6b6b;">Error de conexión al cargar horarios.</p>';
+      console.log("Error de conexión al cargar horarios.");
     }
   }
 };
