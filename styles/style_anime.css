@@ -370,17 +370,17 @@ body:not(.animaciones-off) header {
   }
 }
 
-.anime-title {
+#titulo{
   font-size: 1.8rem;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   width: fit-content;
-  max-width: 80%;
   color:var(--t1);
   z-index: 1;
   font-family: 'Oxanium', sans-serif;
   cursor: pointer;
+  min-height: 1lh;
+  max-height: 1lh;
+  text-transform: capitalize;
 }
 #info1 {
   display: flex;
@@ -475,10 +475,7 @@ body:not(.animaciones-off) header {
   50% { filter: brightness(0.8); }
   100% { filter: brightness(1.2); }
 }
-#titulo {
-  height: 1lh;
-  text-transform: capitalize;
-}
+
 #titulocargando, #ratingcargando, .genre-link-cargando, #covercarga, #statuscargando, #anocargando, #categoriacargando {
   display: inline-block;
   width: 230px;
@@ -1163,10 +1160,13 @@ line-height: 1.3;
 margin-bottom: auto;
 padding-bottom: 1px;
 }
-.anime-title {
-font-size: 1.3rem;
+#titulo {
+display: flex;
+text-align: center;
 margin-inline: auto;
-max-width: 100%;
+min-height: 2lh;
+max-height: 2lh;
+align-items: end;
 }
 .anime-rating {
 font-size: .8rem;
@@ -1251,7 +1251,7 @@ grid-template-columns: 1fr;
   height: unset;
   max-height: 560px;
 z-index: 0;
-  margin-bottom: -190px;
+  margin-bottom: calc(-36px - 190px); /*190 fijo + 36 que es 1lh del titulo*/
 }
 .anime-container1 img {
   border-radius: 0;
