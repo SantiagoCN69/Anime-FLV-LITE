@@ -90,6 +90,7 @@
 
 .anime-card-schedule {
   display: grid;
+  height: 98px;
   grid-template-columns: 58px minmax(0, 1fr);
   align-items: center;
   column-gap: 0.9rem;
