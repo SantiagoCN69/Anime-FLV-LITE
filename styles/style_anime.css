@@ -284,7 +284,9 @@ body:not(.animaciones-off) header {
   min-width: 90px;
   max-width: 242px;
   overflow: hidden;
-  p {
+  p, #text2 {
+    font-size: .7rem;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -292,7 +294,11 @@ body:not(.animaciones-off) header {
     min-height: 1lh;
   }
 }
-
+@media screen and (max-width:428px){
+  #text2 {
+    display: none;
+  }
+}
 #btn-progreso {
   position: relative;
   overflow: hidden;
