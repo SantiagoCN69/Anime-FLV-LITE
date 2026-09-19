@@ -719,13 +719,11 @@ main {
     grid-column: 2;
     grid-row: 1;
     margin: 0;
-    color: var(--t1);
   }
   
   span {
     grid-column: 2;
     grid-row: 2;
-    color: var(--t1);
     opacity: .7;
     font-size: 0.9rem;
   }
@@ -734,20 +732,18 @@ main {
     cursor: pointer;
     border-radius: 12px;
     padding: 0.7rem 1rem;
-    color: var(--t1);
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 5px;
     transition: all 0.3s;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.28);
+
     backdrop-filter: blur(8px);
-    color: var(--t1);
+    color: var(--btn2);
     right: 0;
     svg {
       width: 18px;
@@ -808,27 +804,26 @@ main {
     color: var(--btn);
   }
 }
-@media screen and (max-width: 425px) {
-  #btn-ver-todo {
-    padding: .7rem !important;
-  }
-  #btn-ver-todo span {
-    display: none !important;
-  }
-  #btn-ver-todo svg {
-    width: 20px !important;
-    height: 20px !important;
-  }
-}
-@media screen and (max-width: 325px){
+
+@media screen and (max-width: 425px), (min-width: 600px) and (max-width: 700px) {
   #btn-ver-todo {
     display: none !important;
   }
-}
 
 .headder-section1 {
   display: flex;
   flex-direction: column;
+  padding-left: 15px;
+}
+.headder-section1::before {
+  content: "";
+  width: 4px;
+  border-radius: 99px;
+  height: 53px;
+  display: block;
+  background: var(--btn);
+  position: absolute;
+  left: 0;
 }
 .headder-section:not(.headder-section1) {
   display: flex;
