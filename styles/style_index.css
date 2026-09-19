@@ -943,6 +943,7 @@ nav.filtros {
 
 .hero-slide__synopsis {
   margin: 0;
+  margin-bottom: 55px;
   flex:1;
   color: rgba(var(--bgt), .7);
   line-height: 1.55;
