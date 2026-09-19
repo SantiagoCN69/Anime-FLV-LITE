@@ -90,7 +90,7 @@
 
 .anime-card-schedule {
   display: grid;
-  height: 98px;
+  height: 104px;
   grid-template-columns: 58px minmax(0, 1fr);
   align-items: center;
   column-gap: 0.9rem;
@@ -99,7 +99,7 @@
   background: var(--p);
   border: 1px solid var(--br);
   border-radius: 18px;
-  padding: 0.75rem;
+  padding: 12px;
 }
 
 .anime-card-schedule:hover {
@@ -144,7 +144,7 @@
 .anime-card-schedule .container-img {
   width: 58px;
   min-width: 58px;
-  max-height: none;
+  height: 80px;
   border-radius: 12px;
   filter: none;
   overflow: hidden;
