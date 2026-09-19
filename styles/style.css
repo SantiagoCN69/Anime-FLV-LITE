@@ -938,7 +938,7 @@ section.content-section h2:first-of-type::after {
 }
 
 #ultimos-episodios .anime-card img {
-  aspect-ratio: 3/2;
+  aspect-ratio: 2;
 }
 #busquedas, .grid-animes {
     height: fit-content;
@@ -977,6 +977,9 @@ section.content-section h2:first-of-type::after {
   opacity: 0;
   transform: translate(30px, 30px) scale(.9);
   transition: opacity 0.4s ease, transform 0.4s ease;
+  background: var(--p);
+  border: 1px solid var(--br);
+  border-radius: 12px;
 }
 .anime-card:hover {
   transform: scale(1.02);
@@ -1008,7 +1011,8 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   position: relative;
   display: flex;
-  border-radius: 8px;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
 }
 .anime-card span {
   position: absolute;
@@ -1032,9 +1036,9 @@ section.content-section h2:first-of-type::after {
   color: var(--t1);
 }
 .anime-card .chapter {
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: .8rem ;
-  padding: 12px ;
+  padding: 9px ;
 }
 .anime-card span img {
   width: 10px;
@@ -1112,7 +1116,7 @@ section.content-section h2:first-of-type::after {
   text-align: start;
   color: var(--t1);
   overflow: hidden;
-  margin-block: 8px;
+  margin: 10px 5px;
   line-height: 1.05rem;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -1781,7 +1785,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   user-select: none;
   -webkit-user-select: none;
   z-index: -1;
-  transform: translateX(10px);
+  transform: translateX(15px);
 }
 .sidebar svg {
   transition: width 0.3s ease, height 0.3s ease, max-width 0.3s ease, min-width 0.3s ease;

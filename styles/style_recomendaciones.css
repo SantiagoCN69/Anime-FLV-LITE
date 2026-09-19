@@ -210,28 +210,6 @@ z-index: -1;
   content: unset;
 }
 
-.anime-card.carga.generando {
-  animation: shimmer 3.5s linear infinite;
-  border-color: transparent;
-  background: linear-gradient(
-    90deg, 
-    rgba(var(--bgt), 0.05) 25%, 
-    rgba(var(--bgt), 0.2) 50%, 
-    rgba(var(--bgt), 0.05) 75%
-  );
-  background-size: 200% 100%;
-  opacity: 1 !important;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
 /* 3. Spinner de carga (Círculo giratorio) */
 .carga.generando .container-img::after {
   content: "";
