@@ -1230,7 +1230,7 @@ nav.filtros {
   visibility: visible !important; */
 }
 
-.continue-card:hover img {
+.continue-card:hover .container-img > img:first-of-type {
   transform: scale(1.25);
 }
 
@@ -1369,7 +1369,7 @@ nav.filtros {
 }
 #Collapse-aside {
   display: flex;
-  gap: .5rem;
+  gap: 12px;
   padding: 1rem 3rem;
   border-radius: 8px;
   margin-inline: 1rem;

@@ -817,9 +817,9 @@ main {
 .headder-section1 {
   display: flex;
   flex-direction: column;
-  padding-left: 15px;
+  /* padding-left: 15px; */
 }
-.headder-section1::before {
+/* .headder-section1::before {
   content: "";
   width: 4px;
   border-radius: 99px;
@@ -828,7 +828,7 @@ main {
   background: var(--btn);
   position: absolute;
   left: 0;
-}
+} */
 .headder-section:not(.headder-section1) {
   display: flex;
   gap: 1rem;
@@ -943,7 +943,7 @@ section.content-section h2:first-of-type::after {
 }
 
 #ultimos-episodios .anime-card img {
-  aspect-ratio: 2;
+  aspect-ratio: 3 / 2;
 }
 #busquedas, .grid-animes {
     height: fit-content;
@@ -982,9 +982,6 @@ section.content-section h2:first-of-type::after {
   opacity: 0;
   transform: translate(30px, 30px) scale(.9);
   transition: opacity 0.4s ease, transform 0.4s ease;
-  background: var(--p);
-  border: 1px solid var(--br);
-  border-radius: 12px;
 }
 .anime-card:hover {
   transform: scale(1.02);
@@ -1016,8 +1013,7 @@ section.content-section h2:first-of-type::after {
   overflow: hidden;
   position: relative;
   display: flex;
-  border-top-right-radius: 8px;
-  border-top-left-radius: 8px;
+  border-radius: 8px;
 }
 .anime-card span {
   position: absolute;
@@ -1041,7 +1037,7 @@ section.content-section h2:first-of-type::after {
   color: var(--t1);
 }
 .anime-card .chapter {
-  border-radius: 6px;
+  border-radius: 5px;
   font-size: .8rem ;
   padding: 9px ;
 }
@@ -1121,7 +1117,7 @@ section.content-section h2:first-of-type::after {
   text-align: start;
   color: var(--t1);
   overflow: hidden;
-  margin: 10px 5px;
+  margin-block: 6px;
   line-height: 1.05rem;
   display: -webkit-box;
   -webkit-box-orient: vertical;
