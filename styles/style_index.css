@@ -931,6 +931,7 @@ nav.filtros {
 .hero-slide__title {
   padding-bottom: 5px;
   margin: 0 !important;
+  margin-top: auto !important;
   font-size: clamp(1.75rem, 3.8vw, 2.65rem) !important;
   line-height: 1.08;
   font-weight: 800;
@@ -949,10 +950,10 @@ nav.filtros {
   max-width: 560px;
   opacity: 0.95;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
-  min-height: 5lh;
-  line-clamp: 5;
-  max-height: 5lh;
+  -webkit-line-clamp: 2;
+  min-height: 2lh;
+  line-clamp: 2;
+  max-height: 2lh;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -966,6 +967,7 @@ nav.filtros {
   justify-content: space-between;
   gap: 0.85rem;
   position: absolute;
+  height: 41PX;
 
   bottom: 2rem;
   width: calc(100% - 4rem);
@@ -1122,12 +1124,6 @@ nav.filtros {
   .hero-slide__content {
     min-height: 380px;
   }
-  .hero-slide__synopsis {
-    line-clamp: 3;
-    -webkit-line-clamp: 3;
-    min-height: 3lh;
-    max-height: 3lh;
-  }
 
 }
 @media screen and (max-width: 600px) {
@@ -1188,13 +1184,11 @@ nav.filtros {
 @media screen and (max-width: 520px) {
 
   .hero-slide__synopsis {
-    max-height: 5lh;
-    line-clamp: 5;
-    -webkit-line-clamp: 5;
+    margin-bottom: 41px;
     font-size: .8rem;
   }
   .hero-slide__title {
-    font-size: .9rem;
+    font-size: 1.5rem !important;
     margin-bottom: 0 !important;
   }
   .hero-slide__actions {
