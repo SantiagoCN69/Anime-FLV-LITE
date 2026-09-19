@@ -180,17 +180,25 @@ function actualizarIndicadorActivo() {
   const indicator = document.querySelector('.active-indicator');
   const activeItem = document.querySelector('.sidebar .menu-item.active-menu-item');
   const sidebarUl = document.querySelector('.sidebar ul');
-  
-  if (!indicator || !activeItem || !sidebarUl) return;
-  
+
+  if (!indicator || !sidebarUl) return;
+
+  // Evalúa si no hay ítem activo o si no pertenece directamente a la lista principal
+  const esDeListaPrincipal = activeItem && activeItem.parentElement === sidebarUl;
+
+  if (!activeItem || !esDeListaPrincipal) {
+    console.log('No hay elemento activo principal: aplicando translateX(-4px)');
+    indicator.style.transform = 'translateX(-4px)';
+    return;
+  }
+
+  // Si el ítem activo es válido
   const ulRect = sidebarUl.getBoundingClientRect();
   const itemRect = activeItem.getBoundingClientRect();
-  
-  const top = itemRect.top - ulRect.top;
-  const height = itemRect.height;
-  
-  indicator.style.top = top + 'px';
-  indicator.style.height = height + 'px';
+
+  indicator.style.top = (itemRect.top - ulRect.top) + 'px';
+  indicator.style.height = itemRect.height + 'px';
+  indicator.style.transform = 'none'; // Restablece la posición normal
   indicator.classList.add('visible');
 }
 
