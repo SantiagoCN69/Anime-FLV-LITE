@@ -149,7 +149,7 @@ justify-content: space-between;
   display: none;
   font-size: 14px;
   margin-top: 0;
-  margin: 0;
+  margin: 0 !important;
   text-align: start;
   position: static;
   transform: none;
