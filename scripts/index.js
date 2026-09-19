@@ -936,7 +936,7 @@ async function cargarhistorial() {
           id: clave.replace('anime_', ''),
           titulo: datos.titulo || 'Sin título',
           estado: datos.estado || 'Sin estado',
-          rating: datos.rating || '',
+          type: datos.category || '',
           portada: datos.portada,
           _cachedAt: datos._cachedAt
         });
@@ -978,13 +978,12 @@ async function cargarhistorial() {
 
       historialContainer.appendChild(fragment);
     });
-
+    document.getElementById('section-historial').classList.remove('hidden');
     observerAnimeCards();
 
   } else {
 
-    historialheader.classList.add('hidden');
-    historialContainer.classList.add('hidden');
+    console.log("no hay historial")
 
   }
 }
@@ -1473,7 +1472,7 @@ function inicializarContinuarViendo() {
       const btn = container.querySelector(`.scroll-btn-${dir}`);
       if (btn) {
         btn.style.cssText = 'opacity: 1; pointer-events: auto;';
-        btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 660 : -660, behavior: 'smooth' });
+        btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 634 : -634, behavior: 'smooth' });
       }
     });
     
