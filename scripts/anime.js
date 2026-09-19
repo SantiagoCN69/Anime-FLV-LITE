@@ -405,9 +405,8 @@ if (anime.estado) {
   
   const r = document.createRange();
   r.selectNodeContents(tituloEl);
-  if (r.getClientRects().length === 1) {
-    tituloEl.style.display = "flex";
-    tituloEl.style.alignItems = "end";
+  if (r.getClientRects().length >= 2) {
+    tituloEl.style.setProperty("align-items", "start", "important");
   }
   
   document.getElementById("covercarga").classList.add("cargado");

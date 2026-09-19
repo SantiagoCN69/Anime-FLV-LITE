@@ -381,7 +381,7 @@ body:not(.animaciones-off) header {
   }
 }
 
-#titulo{
+#titulo {
   font-size: 1.8rem;
   overflow: hidden;
   width: fit-content;
@@ -1178,6 +1178,7 @@ padding-bottom: 1px;
 display: flex;
 text-align: center;
 margin-inline: auto;
+align-items: end;
 min-height: 73px;
 max-height: 73px;
 }
