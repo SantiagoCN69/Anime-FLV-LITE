@@ -156,7 +156,7 @@ export function crearAnimeCard(anime, opciones = {}) {
     const estado = anime.estado || anime.status;
 
     // 2. CONSTRUCCIÓN DE ELEMENTOS HTML
-    let chapterHtml = capitulo ? `<span class="chapter">Capítulo ${capitulo}</span>` : '';
+    let chapterHtml = capitulo ? `<span class="chapter">EP ${capitulo}</span>` : '';
     let typeHtml = type ? `<span class="type supder">${type}</span>` : '';
     
     // Lógica inteligente para el estado y los colores de los círculos

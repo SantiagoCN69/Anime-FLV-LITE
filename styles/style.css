@@ -1032,6 +1032,11 @@ section.content-section h2:first-of-type::after {
   opacity: 1;
   color: var(--t1);
 }
+.anime-card .chapter {
+  border-radius: 8px;
+  font-size: .8rem ;
+  padding: 12px ;
+}
 .anime-card span img {
   width: 10px;
   height: 10px;
