@@ -1025,10 +1025,8 @@ nav.filtros {
 
 .hero-btn--secondary {
   padding: 0.7rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--t1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(8px);
+  background: var(--btn);
+  border-radius: 12px;
 }
 
 @media (hover: hover) {
@@ -1207,12 +1205,9 @@ nav.filtros {
   }
 }
 @media screen and (max-width: 375px) {
-  .hero-slide__actions {
+  /* .hero-slide__actions {
     justify-content: start;
-  }
-  .hero-slide__actions a:last-child {
-    display: none;
-  }
+  } */
 }
   .hero-slider__prev,
   .hero-slider__next {
