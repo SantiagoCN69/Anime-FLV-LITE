@@ -911,6 +911,7 @@ async function cargarhistorial() {
 
   const historialContainer = document.getElementById('historial');
   const historialheader = document.getElementById('header-section-historial');
+  const sectionHistorial = document.getElementById('section-historial');
 
   if (!historialContainer) return;
 
@@ -953,11 +954,12 @@ async function cargarhistorial() {
 
   animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
 
-  const animesAMostrar = animesRecientes.slice(0, 20);
+  const animesAMostrar = animesRecientes.slice(0, 15);
 
-  if (animesAMostrar.length > 0) {
+  // Solo renderiza si hay MÁS de 3 elementos (> 3)
+  if (animesAMostrar.length > 4) {
 
-    historialheader.classList.remove('hidden');
+    if (historialheader) historialheader.classList.remove('hidden');
     historialContainer.classList.remove('hidden');
 
     renderFlipOptimizado(historialContainer, () => {
@@ -978,12 +980,18 @@ async function cargarhistorial() {
 
       historialContainer.appendChild(fragment);
     });
-    document.getElementById('section-historial').classList.remove('hidden');
+
+    if (sectionHistorial) sectionHistorial.classList.remove('hidden');
     observerAnimeCards();
 
   } else {
 
-    console.log("no hay historial")
+    // Oculta las secciones si hay 3 o menos elementos
+    if (historialheader) historialheader.classList.add('hidden');
+    historialContainer.classList.add('hidden');
+    if (sectionHistorial) sectionHistorial.classList.add('hidden');
+
+    console.log("Historial insuficiente (se requieren más de 3 elementos)");
 
   }
 }
