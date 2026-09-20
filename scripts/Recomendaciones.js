@@ -377,7 +377,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
                 titulo: anime.title || '',
                 portada: anime.cover || anime.portada || anime.banner || anime.image,
                 descripcion: anime.synopsis || '',
-                rating: anime.rating || null,
+                score: anime.score || null,
                 episodios: anime.episodes?.map(ep => ({ 
                     number: ep.number, 
                     url: ep.url 
@@ -389,7 +389,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
                 id: anime.id,
                 title: anime.title,
                 cover: anime.cover || anime.portada || anime.banner || anime.image,
-                rating: anime.rating,
+                score: anime.score,
                 type: anime.type
             });
         }
