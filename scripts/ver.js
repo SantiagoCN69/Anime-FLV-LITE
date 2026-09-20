@@ -506,15 +506,20 @@ if (btnShare) {
 }
 
 
-function crearNoticiaHTML(noticia, base64img) {
+function crearNoticiaHTML(noticia) {
   const tarjeta = document.createElement('a');
   tarjeta.className = 'tarjeta-noticia';
-  // Usar el enlace directo de la API
-  tarjeta.href = noticia.enlace || `https://somoskudasai.com/noticias/${noticia.slug}`;
-  tarjeta.target = '_blank';
   
-  // Usar la imagen en base64 si está disponible, si no, usar la imagen original
-  const imagenSrc = base64img || noticia.imagenBase64 || noticia.image;
+  // Usar el enlace directo del nuevo formato
+  const enlace = noticia.enlace || noticia.slug || '';
+  tarjeta.href = enlace || '#';
+  if (enlace) tarjeta.target = '_blank';
+  
+  // Usar la imagen URL del nuevo formato
+  const imagenSrc = noticia.imagenUrl || noticia.image || '';
+  
+  // Obtener título del nuevo formato
+  const titulo = noticia.titulo || noticia.title || 'Sin título';
   
   // Filtrar la fecha para quitar lo que está después de "por"
   const fechaOriginal = noticia.fechaAutor || noticia.date || '';
@@ -524,11 +529,12 @@ function crearNoticiaHTML(noticia, base64img) {
   
   tarjeta.innerHTML = `
     <img src="${imagenSrc}" 
-        alt="${noticia.titulo || noticia.title}" 
+        alt="${titulo}" 
         class="noticia-imagen"
-        loading="lazy">
-    <h3 class="noticia-titulo">${noticia.titulo || noticia.title}</h3>
-    <p class="noticia-fecha">${fechaFiltrada}</p>
+        loading="lazy"
+        onerror="this.style.display='none'">
+    <h3 class="noticia-titulo">${titulo}</h3>
+    <p class="noticia-fecha">${fechaFiltrada || 'Sin fecha'}</p>
   `;
 
   return tarjeta;
@@ -547,30 +553,53 @@ async function manejarNoticias() {
   const contenedorNoticias = document.getElementById('noticias_container');
   const initLoadingNoticias = document.getElementById('init-loading-noticias');
   let noticiasFirestore = [];
+  
+  console.log('[Noticias] Iniciando carga de noticias');
+  console.log('[Noticias] Contenedor encontrado:', !!contenedorNoticias);
+  console.log('[Noticias] Loading encontrado:', !!initLoadingNoticias);
 
-  // 1. Cargar primero de Firestore (caché rápido) - solo metadatos, sin imágenes
+  // 1. Cargar primero de Firestore (caché rápido) con URLs de imágenes
   try {
     const noticiasRef = doc(db, "noticias", "noticias");
     const docSnap = await getDoc(noticiasRef);
+    console.log('[Noticias] Firestore existe:', docSnap.exists());
+    
     if (docSnap.exists()) {
-      noticiasFirestore = extraerListaNoticias(docSnap.data()?.noticias);
-      // No mostramos noticias desde Firestore porque no tienen imágenes
-      // Solo las usamos para comparación y actualización
+      const datosFirestore = docSnap.data();
+      console.log('[Noticias] Datos Firestore:', datosFirestore);
+      noticiasFirestore = extraerListaNoticias(datosFirestore?.noticias);
+      console.log('[Noticias] Noticias de Firestore:', noticiasFirestore.length);
+      
+      // Mostrar noticias desde caché con URLs de imágenes
+      initLoadingNoticias.style.display = 'none';
+      noticiasFirestore.forEach((noticia, index) => {
+        console.log(`[Noticias] Procesando noticia ${index}:`, noticia);
+        const tarjeta = crearNoticiaHTML(noticia);
+        console.log(`[Noticias] Tarjeta creada ${index}:`, !!tarjeta);
+        contenedorNoticias.appendChild(tarjeta);
+      });
+      console.log('[Noticias] Noticias agregadas al DOM desde Firestore');
     }
   } catch (error) {
     console.error("Error al cargar noticias de Firestore:", error);
   }
 
-  // 2. Cargar noticias desde la API con imágenes en base64
+  // 2. Cargar noticias desde la API con URLs de imágenes
   try {
+    console.log('[Noticias] Consultando API...');
     const respuesta = await fetch("https://backend-noticias-anime.onrender.com/api/noticias");
     const payloadAPI = await respuesta.json().catch(() => null);
+    console.log('[Noticias] Respuesta API:', payloadAPI);
     
     if (!respuesta.ok) {
       throw new Error(`API noticias ${respuesta.status}`);
     }
 
     const noticiasAPI = extraerListaNoticias(payloadAPI);
+    console.log('[Noticias] Noticias de API:', noticiasAPI.length);
+    if (noticiasAPI.length > 0) {
+      console.log('[Noticias] Primera noticia API:', noticiasAPI[0]);
+    }
 
     // Función para comparar noticias (adaptada al nuevo formato)
     const sonIguales = (a, b) => {
@@ -582,47 +611,29 @@ async function manejarNoticias() {
       );
     };
 
-    // Si son diferentes o no hay en Firestore, actualizar
-    if (noticiasAPI.length && (!noticiasFirestore.length || !sonIguales(noticiasAPI, noticiasFirestore))) {
-      // Procesar imágenes - usar base64 de la API para mostrar
-      const noticiasConImagenes = noticiasAPI.map(noticia => {
-        return {
-          ...noticia,
-          image: noticia.imagenBase64 || noticia.image // Usar base64 de la API
-        };
-      });
-
-      // Actualizar UI con las noticias completas (con imágenes)
+    // FORZAR ACTUALIZACIÓN: Siempre actualizar con datos de la API
+    if (noticiasAPI.length) {
+      console.log('[Noticias] Forzando actualización con datos de API');
+      // Actualizar UI con las noticias completas (con URLs de imágenes)
       contenedorNoticias.innerHTML = '';
-      noticiasConImagenes.forEach(noticia => {
-        const tarjeta = crearNoticiaHTML(noticia, noticia.image);
+      noticiasAPI.forEach((noticia, index) => {
+        console.log(`[Noticias] Creando tarjeta API ${index}:`, noticia);
+        const tarjeta = crearNoticiaHTML(noticia);
+        console.log(`[Noticias] Tarjeta API creada ${index}:`, !!tarjeta);
         contenedorNoticias.appendChild(tarjeta);
       });
+      console.log('[Noticias] Noticias API agregadas al DOM');
 
-      // Guardar solo metadatos en Firestore (sin imágenes base64)
+      // Guardar noticias en Firestore (con URLs de imágenes - mucho más ligero)
       try {
-        const noticiasMetadatos = noticiasAPI.map(noticia => ({
-          titulo: noticia.titulo || noticia.title,
-          enlace: noticia.enlace || noticia.slug,
-          fechaAutor: noticia.fechaAutor || noticia.date
-        }));
-        
         const noticiasRef = doc(db, "noticias", "noticias");
-        await setDoc(noticiasRef, { noticias: noticiasMetadatos });
+        await setDoc(noticiasRef, { noticias: noticiasAPI });
+        console.log('[Noticias] Guardado en Firestore exitoso');
       } catch (error) {
-        console.error("Error al guardar metadatos en Firestore:", error);
+        console.error("Error al guardar noticias en Firestore:", error);
       }
     } else {
-      // Si son iguales, mostrar las noticias de la API con sus imágenes
-      contenedorNoticias.innerHTML = '';
-      noticiasAPI.forEach(noticia => {
-        const noticiaConImagen = {
-          ...noticia,
-          image: noticia.imagenBase64 || noticia.image
-        };
-        const tarjeta = crearNoticiaHTML(noticiaConImagen, noticiaConImagen.image);
-        contenedorNoticias.appendChild(tarjeta);
-      });
+      console.log('[Noticias] No hay noticias de API para actualizar');
     }
   } catch (error) {
     console.error("Error al verificar noticias:", error);
