@@ -516,13 +516,19 @@ function crearNoticiaHTML(noticia, base64img) {
   // Usar la imagen en base64 si está disponible, si no, usar la imagen original
   const imagenSrc = base64img || noticia.imagenBase64 || noticia.image;
   
+  // Filtrar la fecha para quitar lo que está después de "por"
+  const fechaOriginal = noticia.fechaAutor || noticia.date || '';
+  const fechaFiltrada = fechaOriginal.includes(' por ') 
+    ? fechaOriginal.split(' por ')[0] 
+    : fechaOriginal;
+  
   tarjeta.innerHTML = `
     <img src="${imagenSrc}" 
         alt="${noticia.titulo || noticia.title}" 
         class="noticia-imagen"
         loading="lazy">
     <h3 class="noticia-titulo">${noticia.titulo || noticia.title}</h3>
-    <p class="noticia-fecha">${noticia.fechaAutor || noticia.date}</p>
+    <p class="noticia-fecha">${fechaFiltrada}</p>
   `;
 
   return tarjeta;
@@ -542,27 +548,24 @@ async function manejarNoticias() {
   const initLoadingNoticias = document.getElementById('init-loading-noticias');
   let noticiasFirestore = [];
 
-  // 1. Cargar primero de Firestore (caché rápido)
+  // 1. Cargar primero de Firestore (caché rápido) - solo metadatos, sin imágenes
   try {
     const noticiasRef = doc(db, "noticias", "noticias");
     const docSnap = await getDoc(noticiasRef);
     if (docSnap.exists()) {
       noticiasFirestore = extraerListaNoticias(docSnap.data()?.noticias);
-      // Mostrar noticias desde caché
-      initLoadingNoticias.style.display = 'none';
-      noticiasFirestore.forEach(noticia => {
-        const tarjeta = crearNoticiaHTML(noticia, noticia.image);
-        contenedorNoticias.appendChild(tarjeta);
-      });
+      // No mostramos noticias desde Firestore porque no tienen imágenes
+      // Solo las usamos para comparación y actualización
     }
   } catch (error) {
     console.error("Error al cargar noticias de Firestore:", error);
   }
 
-  // 2. Verificar API en segundo plano
+  // 2. Cargar noticias desde la API con imágenes en base64
   try {
     const respuesta = await fetch("https://backend-noticias-anime.onrender.com/api/noticias");
     const payloadAPI = await respuesta.json().catch(() => null);
+    
     if (!respuesta.ok) {
       throw new Error(`API noticias ${respuesta.status}`);
     }
@@ -581,33 +584,45 @@ async function manejarNoticias() {
 
     // Si son diferentes o no hay en Firestore, actualizar
     if (noticiasAPI.length && (!noticiasFirestore.length || !sonIguales(noticiasAPI, noticiasFirestore))) {
-      
-      // Procesar imágenes (la API ya devuelve imagenBase64, usar directamente)
-      const noticiasActualizadas = noticiasAPI.map(noticia => {
-        // Si la API ya envía imagenBase64, usarla. Si no, mantener la imagen original
-        if (noticia.imagenBase64) {
-          return { ...noticia, image: noticia.imagenBase64 };
-        }
-        // Fallback al formato antiguo si aún tiene image
-        return noticia;
+      // Procesar imágenes - usar base64 de la API para mostrar
+      const noticiasConImagenes = noticiasAPI.map(noticia => {
+        return {
+          ...noticia,
+          image: noticia.imagenBase64 || noticia.image // Usar base64 de la API
+        };
       });
 
-      // Actualizar UI
-      if (noticiasFirestore.length === 0) {
-        contenedorNoticias.innerHTML = '';
-        noticiasActualizadas.forEach(noticia => {
-          const tarjeta = crearNoticiaHTML(noticia, noticia.image);
-          contenedorNoticias.appendChild(tarjeta);
-        });
-      }
+      // Actualizar UI con las noticias completas (con imágenes)
+      contenedorNoticias.innerHTML = '';
+      noticiasConImagenes.forEach(noticia => {
+        const tarjeta = crearNoticiaHTML(noticia, noticia.image);
+        contenedorNoticias.appendChild(tarjeta);
+      });
 
-      // Guardar en Firestore
+      // Guardar solo metadatos en Firestore (sin imágenes base64)
       try {
+        const noticiasMetadatos = noticiasAPI.map(noticia => ({
+          titulo: noticia.titulo || noticia.title,
+          enlace: noticia.enlace || noticia.slug,
+          fechaAutor: noticia.fechaAutor || noticia.date
+        }));
+        
         const noticiasRef = doc(db, "noticias", "noticias");
-        await setDoc(noticiasRef, { noticias: noticiasActualizadas });
+        await setDoc(noticiasRef, { noticias: noticiasMetadatos });
       } catch (error) {
-        console.error("Error al guardar en Firestore:", error);
+        console.error("Error al guardar metadatos en Firestore:", error);
       }
+    } else {
+      // Si son iguales, mostrar las noticias de la API con sus imágenes
+      contenedorNoticias.innerHTML = '';
+      noticiasAPI.forEach(noticia => {
+        const noticiaConImagen = {
+          ...noticia,
+          image: noticia.imagenBase64 || noticia.image
+        };
+        const tarjeta = crearNoticiaHTML(noticiaConImagen, noticiaConImagen.image);
+        contenedorNoticias.appendChild(tarjeta);
+      });
     }
   } catch (error) {
     console.error("Error al verificar noticias:", error);
