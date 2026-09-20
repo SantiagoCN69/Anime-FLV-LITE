@@ -980,8 +980,13 @@ section.content-section h2:first-of-type::after {
   height: fit-content;
   text-align: center;
   opacity: 0;
-  transform: translate(30px, 30px) scale(.9);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translate(15px, 15px) scale(.9);
+  will-change: opacity, transform; 
+  transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  contain: paint;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 172px; /* Ancho y alto estimado de tu card para evitar saltos de scroll */
 }
 .anime-card:hover {
   transform: scale(1.02);
@@ -991,16 +996,6 @@ section.content-section h2:first-of-type::after {
   opacity: 1;
   transform: translate(0, 0) scale(1);
 }
-
-.anime-card.anime-card-entering {
-  opacity: 0;
-}
-
-.anime-card.anime-card-leaving {
-  pointer-events: none;
-  z-index: 1;
-}
-
 
 .anime-card:active {
   transform: scale(0.95);
