@@ -246,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('a');
-  console.log(itemData)
  // ✅ CORRECTO
   btn.dataset.title = `ver ${itemData.titulo} EP ${itemData.siguienteCapitulo}`;
   btn.className = 'btn-siguiente-capitulo';
