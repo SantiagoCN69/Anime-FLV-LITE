@@ -158,7 +158,7 @@ export function crearAnimeCard(anime, opciones = {}) {
     // 2. CONSTRUCCIÓN DE ELEMENTOS HTML
     let chapterHtml = capitulo ? `<span class="chapter">EP ${capitulo}</span>` : '';
     let typeHtml = (type && type.toLowerCase() !== 'desconocido') 
-    ? `<span class="type supder">${type}</span>` 
+    ? `<span class="type">${type}</span>` 
     : '';
     
     // Lógica inteligente para el estado y los colores de los círculos

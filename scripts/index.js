@@ -940,6 +940,7 @@ async function cargarhistorial() {
           titulo: datos.titulo || 'Sin título',
           estado: datos.estado || 'Sin estado',
           type: datos.category || '',
+          score: datos.score || '',
           portada: datos.portada,
           _cachedAt: datos._cachedAt
         });
@@ -1114,7 +1115,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
               titulo: data.titulo,
               portada: data.portada || data.banner,
               estado: data.estado || 'No disponible',
-              rating: data.rating || null
+              score: data.score || null
             });
           }
         } else {

@@ -320,7 +320,7 @@ body.cv-sidebar #section-continuar-viendo {
   border: 1px solid var(--br);
   background: var(--p);
   display: grid;
-  height: 90px;
+  height: 95px;
   grid-template-columns: 58px minmax(0, 1fr);
   column-gap: 12px;
   border-radius: 8px;
@@ -336,9 +336,10 @@ body.cv-sidebar #section-continuar-viendo {
   .play-icon {
     bottom: 12px;
     right: 12px;
-    width: 20px !important;
-    height: 20px !important;
+    width: 22px !important;
+    height: 22px !important;
     transform: none;
+    border: 1px solid rgba(var(--bgt), .5);
   }
   .anime-card:hover .play-icon {
     transform: none !important;
@@ -356,12 +357,22 @@ body.cv-sidebar #section-continuar-viendo {
   .type {
     top: unset;
     bottom: 12px;
-    left: calc(106px + 82px + 12px);
+    left: calc(106px + 82px + 9.5px);
     transform: none;
     opacity: 1;
     padding-block: 10px;
     border: 1px solid var(--btn2);
     color: var(--btn2);
+    width: 64px;
+  }
+  .rating {
+    top: unset;
+    bottom: 12px;
+    left: calc(106px + 82px + 9.5px + 64px + 9.5px);
+    padding-block: 10px;
+    transform: none;
+    opacity: 1;
+    border: 1px solid rgba(var(--bgt), .5);
   }
   strong {
     margin: 0;
@@ -386,7 +397,7 @@ body.cv-sidebar #section-continuar-viendo {
   #historial {grid-template-columns: 1fr; padding-bottom: 1px;}
   #historial .anime-card {
     display: grid;
-    height: 90px;
+    height: 95px;
     grid-template-columns: 58px minmax(0, 1fr);
     column-gap: 12px;
     border-radius: 8px;
@@ -402,9 +413,10 @@ body.cv-sidebar #section-continuar-viendo {
     .play-icon {
       bottom: 12px;
       right: 12px;
-      width: 20px !important;
-      height: 20px !important;
+      width: 22px !important;
+      height: 22px !important;
       transform: none;
+      border: 1px solid rgba(var(--bgt), .5);
     }
     .anime-card:hover .play-icon {
       transform: none !important;
@@ -428,6 +440,16 @@ body.cv-sidebar #section-continuar-viendo {
       padding-block: 10px;
       border: 1px solid var(--btn2);
       color: var(--btn2);
+      width: 64px;
+    }
+    .rating {
+      top: unset;
+      bottom: 12px;
+      left: calc(106px + 82px + 9.5px + 64px + 9.5px);
+      padding-block: 10px;
+      transform: none;
+      opacity: 1;
+      border: 1px solid rgba(var(--bgt), .5);
     }
     strong {
       margin: 0;

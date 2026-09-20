@@ -910,7 +910,8 @@ function compararDatos(a, b) {
     ['category', strEqual],
     ['startDate', strEqual],
     ['internalId', strEqual],
-    ['id', strEqual] // Nuevo campo obligatorio
+    ['id', strEqual], // Nuevo campo obligatorio
+    ['score', strEqual]
   ];
 
   if (camposBasicos.some(([campo, comparar]) => 
@@ -972,7 +973,8 @@ function normalizarDatosAPI(data) {
     // Campos adicionales según función
     type: data.type || null, // Para search
     chapter: data.chapter || null, // Para getLatestEpisodes
-    url: data.url || null // Para search
+    url: data.url || null, // Para search
+    score: data.score || null
   };
 }
 
