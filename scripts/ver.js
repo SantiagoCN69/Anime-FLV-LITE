@@ -509,19 +509,20 @@ if (btnShare) {
 function crearNoticiaHTML(noticia, base64img) {
   const tarjeta = document.createElement('a');
   tarjeta.className = 'tarjeta-noticia';
-  tarjeta.href = `https://somoskudasai.com/noticias/${noticia.slug}`;
+  // Usar el enlace directo de la API
+  tarjeta.href = noticia.enlace || `https://somoskudasai.com/noticias/${noticia.slug}`;
   tarjeta.target = '_blank';
   
-  // Usar la imagen en base64 si está disponible, si no, usar la URL original
-  const imagenSrc = base64img || noticia.image;
+  // Usar la imagen en base64 si está disponible, si no, usar la imagen original
+  const imagenSrc = base64img || noticia.imagenBase64 || noticia.image;
   
   tarjeta.innerHTML = `
     <img src="${imagenSrc}" 
-        alt="${noticia.title}" 
+        alt="${noticia.titulo || noticia.title}" 
         class="noticia-imagen"
         loading="lazy">
-    <h3 class="noticia-titulo">${noticia.title}</h3>
-    <p class="noticia-fecha">${noticia.date}</p>
+    <h3 class="noticia-titulo">${noticia.titulo || noticia.title}</h3>
+    <p class="noticia-fecha">${noticia.fechaAutor || noticia.date}</p>
   `;
 
   return tarjeta;
@@ -568,33 +569,28 @@ async function manejarNoticias() {
 
     const noticiasAPI = extraerListaNoticias(payloadAPI);
 
-    // Función para comparar noticias
+    // Función para comparar noticias (adaptada al nuevo formato)
     const sonIguales = (a, b) => {
       if (a.length !== b.length) return false;
       return a.every((n, i) => 
-        n.title === b[i].title && 
-        n.slug === b[i].slug && 
-        n.date === b[i].date
+        (n.titulo === b[i].titulo || n.title === b[i].title) && 
+        (n.enlace === b[i].enlace || n.slug === b[i].slug) && 
+        (n.fechaAutor === b[i].fechaAutor || n.date === b[i].date)
       );
     };
 
     // Si son diferentes o no hay en Firestore, actualizar
     if (noticiasAPI.length && (!noticiasFirestore.length || !sonIguales(noticiasAPI, noticiasFirestore))) {
       
-      // Procesar imágenes
-      const noticiasActualizadas = await Promise.all(
-        noticiasAPI.map(async noticia => {
-          try {
-            const res = await fetch(`https://backend-noticias-anime.onrender.com/api/imagen-base64?url=${noticia.image}`);
-            initLoadingNoticias.style.display = 'none';
-            const { base64 } = await res.json();
-            return { ...noticia, image: base64 || noticia.image };
-          } catch (error) {
-            console.error('Error al procesar imagen:', error);
-            return noticia;
-          }
-        })
-      );
+      // Procesar imágenes (la API ya devuelve imagenBase64, usar directamente)
+      const noticiasActualizadas = noticiasAPI.map(noticia => {
+        // Si la API ya envía imagenBase64, usarla. Si no, mantener la imagen original
+        if (noticia.imagenBase64) {
+          return { ...noticia, image: noticia.imagenBase64 };
+        }
+        // Fallback al formato antiguo si aún tiene image
+        return noticia;
+      });
 
       // Actualizar UI
       if (noticiasFirestore.length === 0) {
