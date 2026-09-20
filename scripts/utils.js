@@ -71,6 +71,7 @@ window.addEventListener('scroll', () => {
         ticking = false;
     });
 }, { passive: true });
+
  // Único observador global reutilizable
 const animeCardObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -124,7 +125,6 @@ document.addEventListener('authStateReady', function() {
 export function crearAnimeCard(anime, opciones = {}) {
     // Valores por defecto de las opciones
     const config = {
-        isLink: true,             // Si es false, desactiva el click
         episodioUrl: null,        // Para redirigir a un episodio específico (ej: /ver?id=...)
         variant: 'default',       // 'default', 'schedule' (horarios), 'jk' (con sinopsis)
         onClick: null,            // Función extra a ejecutar al hacer click
@@ -162,18 +162,17 @@ export function crearAnimeCard(anime, opciones = {}) {
     // Lógica inteligente para el estado y los colores de los círculos
     let estadoHtml = '';
     if (estado) {
-        const estNormalizado = estado.toLowerCase();
-        let icon = 'circle-solid.svg'; // Finalizado o default
-        let textoEstado = estado;
+      const estNormalizado = estado.toLowerCase().split(/\s+/)[0];
 
-        if (estNormalizado.includes('emisión') || estNormalizado.includes('emision') || estNormalizado.includes('airing')) {
+        let icon = 'circle-solid.svg'; // Finalizado o default
+        let textoEstado = "Finalizado";
+
+        if (estNormalizado.includes('emisión') || estNormalizado.includes('emision') || estNormalizado.includes('currently')) {
             icon = 'circle-solid-blue.svg';
             textoEstado = 'En emisión';
         } else if (estNormalizado.includes('estrenar') || estNormalizado.includes('proximamente')) {
             icon = 'circle-solid-yellow.svg';
             textoEstado = 'Próximamente';
-        } else if (!config.isLink) {
-            textoEstado = 'Próximamente'; // Lógica de tu funcion 2
         }
 
         estadoHtml = `<span class="estado"><img src="../icons/${icon}" alt="${textoEstado}">${textoEstado}</span>`;
@@ -182,11 +181,11 @@ export function crearAnimeCard(anime, opciones = {}) {
     }
 
     // Lógica para la calificación
-    let ratingHtml = '';
-    if (rating) {
-        const displayRating = anime.score ? `${rating}/10` : rating;
-        ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${rating}">${displayRating}</span>`;
-    }
+  let ratingHtml = '';
+  if (rating) {
+      const displayRating = anime.score ? `${rating}/10` : rating;
+      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${rating}">${displayRating}</span>`;
+  }
 
     // Lógica especial para horarios (Schedule) y JK
     let extraTopHtml = '';
@@ -207,24 +206,18 @@ export function crearAnimeCard(anime, opciones = {}) {
     const card = document.createElement('a');
     
     // Asignar clases dinámicas
-    card.className = `anime-card ${config.variant === 'schedule' ? 'anime-card-schedule hover-touch' : ''} ${config.variant === 'jk' ? 'anime-card-jk' : ''}`.trim();
-    card.style.setProperty('--cover', `url(${coverImage})`);
-    card.dataset.id = id;
+    card.className = `anime-card ${config.variant === 'schedule' ? 'anime-card-schedule' : ''} ${config.variant === 'jk' ? 'anime-card-jk' : ''}`.trim();
+    
     if (anime.day) card.dataset.day = anime.day;
-    if (title) card.dataset.title = title.toLowerCase();
 
     // Enlace de destino
-    const href = config.episodioUrl ? `/ver?id=${id}&episode=${config.episodioUrl}` : `/anime?id=${id}`;
-    card.href = config.isLink ? href : '#';
-    card.id = `anime-${id}`;
-    
-    if (!config.isLink) card.style.pointerEvents = 'none';
+    card.href = config.episodioUrl ? `/ver?id=${id}&episode=${config.episodioUrl}` : `/anime?id=${id}`;
     
     // Estructura interna
     card.innerHTML = `
         <div class="container-img">
             <img src="${coverImage}" class="cover" alt="${titleText}" loading="lazy">
-            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="play" onerror="this.style.display='none'">
+            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="play">
             ${chapterHtml}
             ${estadoHtml}
             ${ratingHtml}

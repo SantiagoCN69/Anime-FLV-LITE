@@ -87,7 +87,7 @@ async function cargarPopulares() {
     container.innerHTML = '';
     
     animes.forEach(anime => {
-      const card = crearAnimeCard(anime, { isLink: filters !== 'upcoming' });
+      const card = crearAnimeCard(anime);
       if (card) container.appendChild(card);
     });
     
