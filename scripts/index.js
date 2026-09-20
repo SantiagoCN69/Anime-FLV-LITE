@@ -246,6 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('a');
+  console.log(itemData)
+ // ✅ CORRECTO
+  btn.dataset.title = `ver ${itemData.titulo} EP ${itemData.siguienteCapitulo}`;
   btn.className = 'btn-siguiente-capitulo';
   btn.href = `/ver?id=${itemData.id}&episode=${itemData.siguienteCapitulo}`;
   
@@ -1496,12 +1499,22 @@ document.getElementById('Collapse-aside')?.addEventListener('click', () => {
 
 
 // =========================================
-// 3. TOOLTIP ULTRA-OPTIMIZADO V2
+// 3. TOOLTIP ULTRA-OPTIMIZADO V2 (EXTENDIDO)
 // =========================================
 (() => {
   let tooltip, active, rafId, timer, obs;
   let isLarge = window.matchMedia('(min-width: 601px)').matches;
   let isCollapsed = document.body.classList.contains('sidebar-collapsed');
+
+  // Selector unificado para elementos con tooltip en el sidebar
+  const SELECTOR = '.menu-item, #ultimos-caps-viendo a';
+
+  // Extrae el texto según el atributo presente
+  const getTooltipText = (el) => {
+    if (el.dataset.title) return el.dataset.title;
+    if (el.dataset.target) return el.dataset.target.replace(/-/g, ' ');
+    return null;
+  };
 
   const hide = () => {
     tooltip?.classList.remove('show');
@@ -1510,8 +1523,11 @@ document.getElementById('Collapse-aside')?.addEventListener('click', () => {
   };
 
   const show = (el) => {
-    if (!isLarge || !isCollapsed || !el.closest('.sidebar') || !el.dataset.target) return;
-    
+    if (!isLarge || !isCollapsed || !el.closest('.sidebar')) return;
+
+    const text = getTooltipText(el);
+    if (!text) return;
+
     if (!tooltip) {
       tooltip = document.createElement('div');
       tooltip.className = 'custom-tooltip';
@@ -1519,19 +1535,22 @@ document.getElementById('Collapse-aside')?.addEventListener('click', () => {
       document.body.appendChild(tooltip);
     }
 
-    tooltip.textContent = el.dataset.target.replace(/-/g, ' ');
+    tooltip.textContent = text;
     active = el;
     if (rafId) cancelAnimationFrame(rafId);
 
     rafId = requestAnimationFrame(() => {
       const rect = el.getBoundingClientRect();
-      tooltip.style.transform = `translate3d(${rect.right + 15}px, ${rect.top + (rect.height - tooltip.offsetHeight)/2}px, 0)`;
+      tooltip.style.transform = `translate3d(90px, ${rect.top + (rect.height - tooltip.offsetHeight) / 2}px, 0)`;
       tooltip.classList.add('show');
     });
   };
 
-  window.matchMedia('(min-width: 601px)').addEventListener('change', e => { isLarge = e.matches; if(!isLarge) hide(); });
-  
+  window.matchMedia('(min-width: 601px)').addEventListener('change', e => {
+    isLarge = e.matches;
+    if (!isLarge) hide();
+  });
+
   let lastScroll = 0;
   window.addEventListener('scroll', () => {
     if (performance.now() - lastScroll < 100) return;
@@ -1541,15 +1560,26 @@ document.getElementById('Collapse-aside')?.addEventListener('click', () => {
     timer = setTimeout(() => active && show(active), 150);
   }, { passive: true, capture: true });
 
-  document.addEventListener('mouseover', e => { const t = e.target.closest('.menu-item'); if (t && t !== active) show(t); }, { passive: true });
-  document.addEventListener('mouseout', e => {
-    if (active && (!e.relatedTarget || !active.contains(e.relatedTarget)) && e.target.closest('.menu-item') === active) hide();
+  document.addEventListener('mouseover', e => {
+    const t = e.target.closest(SELECTOR);
+    if (t && t !== active) show(t);
   }, { passive: true });
+
+  document.addEventListener('mouseout', e => {
+    // Evaluación agnóstica del elemento activo para evitar acoplamiento a una sola clase CSS
+    if (active && (!e.relatedTarget || !active.contains(e.relatedTarget)) && active.contains(e.target)) {
+      hide();
+    }
+  }, { passive: true });
+
   document.addEventListener('click', hide, { passive: true });
 
   obs = new MutationObserver(() => {
     clearTimeout(timer);
-    timer = setTimeout(() => { isCollapsed = document.body.classList.contains('sidebar-collapsed'); if(!isCollapsed) hide(); }, 50);
+    timer = setTimeout(() => {
+      isCollapsed = document.body.classList.contains('sidebar-collapsed');
+      if (!isCollapsed) hide();
+    }, 50);
   });
   obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 

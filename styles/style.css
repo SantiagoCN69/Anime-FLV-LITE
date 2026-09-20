@@ -872,22 +872,18 @@ section.content-section h2:first-of-type::after {
 #busqueda-h2::after, #popularesh2::after {display: none;}
 
 /* Estilos para el bloque "Continuar viendo" */
-.sidebar h3 {
-  width: clamp(0px, 100%, 1000px);
-  margin-top: 2rem;
-  padding-bottom: 1rem;
-  font-size: 1.1rem;
-  border-bottom: 1px solid var(--br);
-  color: var(--t1);
+.sidebar h2 {
+  margin-bottom: 1rem;
+
 }
 #continuar-viendo-sidebar {
   border-top: 1px solid var(--br);
   height: auto;
   padding: 1rem;
   padding-bottom: 1.5rem;
+  transition: padding .3s;
 }
 #ultimos-caps-viendo {
-  margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -900,7 +896,7 @@ section.content-section h2:first-of-type::after {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px;
+  padding: 5px;
   font-size: 0.9rem;
   transition: background .5s, transform .3s, padding .3s;
   border-radius: 8px;
@@ -911,7 +907,7 @@ section.content-section h2:first-of-type::after {
 }
 .btn-siguiente-capitulo .portada-anime {
   min-width: 45px;
-  height: 50px;
+  height: 65px;
   object-fit: cover;
   border-radius: 4px;
 }
@@ -1817,7 +1813,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
 }
 /* continuarviendosidebar */
 .sidebar h2, .texto-2-lineas, .texto-episodio {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, height .3s, margin .3s;
   max-height: 1lh;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1827,7 +1823,9 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   max-height: 2lh;
   white-space: wrap;
 }
-
+.sidebar-collapsed #continuar-viendo-sidebar {
+  padding-inline: 12px;
+}
 .sidebar-collapsed .sidebar h2 {
   opacity: 0;
 }
