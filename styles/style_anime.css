@@ -63,7 +63,21 @@ body::after {
   z-index: -1;
   pointer-events: none;
 }
-@media (max-width: 600px) {
+.scrolled:not(.floating) {
+  background: rgba(var(--bgti), .5) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  backdrop-filter: blur(30px) !important;
+  border-color: rgba(var(--bgt), .3) !important;
+}
+ .scrolled #continuar-viendo-sidebar {
+  border-color: rgba(var(--bgt), .3) !important;
+ }
+#busqueda {
+    border: 1px solid rgba(var(--bgt), .3) !important;
+}
+header #busqueda{
+  transition: border .3s ease;
+}
 body:not(.animaciones-off) header {
   background: transparent;
   border-color: transparent;
@@ -72,7 +86,7 @@ body:not(.animaciones-off) header {
   background: var(--p);
   border-color: var(--br);
 }
-}
+
 .title {
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
@@ -82,11 +96,13 @@ body:not(.animaciones-off) header {
   top: calc(80px + 2rem);
   font-weight: 600;
   left: 2rem;
-  background: var(--p);
   backdrop-filter: blur(10px);
+  background: rgba(var(--bgt), .1);
+  color: var(--t1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(var(--bgt), .1);
   border-radius: 12px;
   padding: 0.6rem 1rem;
-  color: var(--t1);
   display: flex;
   justify-content: center;
   gap: 8px;
