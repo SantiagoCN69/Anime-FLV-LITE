@@ -305,9 +305,146 @@ body.cv-sidebar #section-continuar-viendo {
   }
 }
 
- /*Directorio*/
- /* =========================================
-   1. ESTILOS DEL FILTRO DE LETRAS (A-Z)
+/*historial en pantalla muy anchas*/
+
+
+/* Pantallas de más de 1200px cuando la sidebar está colapsada */
+@media (min-width: 1241px) {
+.sidebar-collapsed #sections-ultcaps-historial {display: flex;gap: 2rem;}
+.sidebar-collapsed #section-ultcaps {flex:1;}
+.sidebar-collapsed #section-historial {width: 374px;}
+.sidebar-collapsed #header-section-historial {margin-top: 0;}
+
+.sidebar-collapsed #historial {grid-template-columns: 1fr;padding-bottom: 1px;}
+.sidebar-collapsed #historial .anime-card {
+  border: 1px solid var(--br);
+  background: var(--p);
+  display: grid;
+  height: 90px;
+  grid-template-columns: 58px minmax(0, 1fr);
+  column-gap: 12px;
+  border-radius: 8px;
+  padding: 12px;
+  .container-img {
+    border-radius: 4px;
+    position: unset;
+    filter: unset;
+  }
+  .container-img::after {
+    display: none;
+  }
+  .play-icon {
+    bottom: 12px;
+    right: 12px;
+    width: 20px !important;
+    height: 20px !important;
+    transform: none;
+  }
+  .anime-card:hover .play-icon {
+    transform: none !important;
+  }
+  .estado {
+    bottom: 12px;
+    left: 82px;
+    transform: none;
+    opacity: 1;
+    width: 106px;
+    border: 1px solid var(--btn);
+    color: var(--btn);
+    padding-block: 10px;
+  }
+  .type {
+    top: unset;
+    bottom: 12px;
+    left: calc(106px + 82px + 12px);
+    transform: none;
+    opacity: 1;
+    padding-block: 10px;
+    border: 1px solid var(--btn2);
+    color: var(--btn2);
+  }
+  strong {
+    margin: 0;
+  }
+  estado {
+    position: absolute;
+    left: 0;
+  }
+}
+.sidebar-collapsed #historial .anime-card:hover {
+  border-color: var(--btn);
+}
+}
+
+/* Pantallas de más de 1300px (sin importar ninguna clase) */
+@media (min-width: 1391px) {
+  #sections-ultcaps-historial {display: flex;gap: 2rem;}
+  #section-ultcaps {flex:1;}
+  #section-historial {width: 374px;}
+  #header-section-historial {margin-top: 0;}
+  
+  #historial {grid-template-columns: 1fr; padding-bottom: 1px;}
+  #historial .anime-card {
+    display: grid;
+    height: 90px;
+    grid-template-columns: 58px minmax(0, 1fr);
+    column-gap: 12px;
+    border-radius: 8px;
+    padding: 12px;
+    .container-img {
+      border-radius: 4px;
+      position: unset;
+      filter: unset;
+    }
+    .container-img::after {
+      display: none;
+    }
+    .play-icon {
+      bottom: 12px;
+      right: 12px;
+      width: 20px !important;
+      height: 20px !important;
+      transform: none;
+    }
+    .anime-card:hover .play-icon {
+      transform: none !important;
+    }
+    .estado {
+      bottom: 12px;
+      left: 82px;
+      transform: none;
+      opacity: 1;
+      width: 106px;
+      border: 1px solid var(--btn);
+      color: var(--btn);
+      padding-block: 10px;
+    }
+    .type {
+      top: unset;
+      bottom: 12px;
+      left: calc(106px + 82px + 12px);
+      transform: none;
+      opacity: 1;
+      padding-block: 10px;
+      border: 1px solid var(--btn2);
+      color: var(--btn2);
+    }
+    strong {
+      margin: 0;
+    }
+    estado {
+      position: absolute;
+      left: 0;
+    }
+  }
+  #historial .anime-card:hover {
+    border-color: var(--btn);
+  }
+}
+
+/*Directorio*/
+/* =========================================
+  1. ESTILOS DEL FILTRO DE LETRAS (A-Z)
    ========================================= */
 .filtro-letras {
   height: 63px;
