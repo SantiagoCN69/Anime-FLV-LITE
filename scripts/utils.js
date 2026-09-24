@@ -183,11 +183,14 @@ export function crearAnimeCard(anime, opciones = {}) {
     }
 
     // Lógica para la calificación
-  let ratingHtml = '';
-  if (rating) {
-      const displayRating = anime.score ? `${rating}/10` : rating;
-      ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${rating}">${displayRating}</span>`;
-  }
+    let ratingHtml = '';
+    if (rating) {
+        // Redondea a 1 decimal (ej: 8.55 -> 8.6)
+        const formattedRating = Math.round(rating * 10) / 10;
+        
+        const displayRating = anime.score ? `${formattedRating}/10` : formattedRating;
+        ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${formattedRating}">${displayRating}</span>`;
+    }
 
     // Lógica especial para horarios (Schedule) y JK
     let extraTopHtml = '';
