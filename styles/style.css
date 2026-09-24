@@ -1028,7 +1028,7 @@ section.content-section h2:first-of-type::after {
   color: var(--t1);
 }
 .anime-card .chapter {
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: .8rem ;
   padding: 9px ;
 }

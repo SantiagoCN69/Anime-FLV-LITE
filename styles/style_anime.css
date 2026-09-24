@@ -229,7 +229,8 @@ body:not(.animaciones-off) header {
 #contenedor-barra-progreso {
   cursor: default;
   border: none;
-  background: var(--p);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 .btn-estado#contenedor-barra-progreso::after {
   display: none;
@@ -240,9 +241,9 @@ body:not(.animaciones-off) header {
     visibility: visible;
     transform: translateX(-50%) translateY(0);
   }
-  .btn-estado:not(#contenedor-barra-progreso):hover {
+  /* .btn-estado:not(#contenedor-barra-progreso):hover {
     transform: translateY(-2px);
-  }
+  } */
 }
 @media (hover: none) {
   .btn-estado.touch-hover::after {
@@ -251,9 +252,9 @@ body:not(.animaciones-off) header {
     transform: translateX(-50%) translateY(0);
   }
 }
-.btn-estado:not(#contenedor-barra-progreso):active {
+/* .btn-estado:not(#contenedor-barra-progreso):active {
   transform: translateY(-2px) scale(.9) !important;
-}
+} */
 #btn-fav {
   grid-area: fav;
   background: #5a131aad;
@@ -296,16 +297,16 @@ body:not(.animaciones-off) header {
   display: flex;
   flex: 1;
   flex-direction: column;
-  font-size: .7rem;
   align-items: start;
-  padding: 8px 11px;
+  padding: 7px 11px;
+  padding-top: 5px;
   gap: 4px;
   justify-content: start;
   min-width: 90px;
   max-width: 242px;
   overflow: hidden;
   p, #text2 {
-    font-size: .7rem;
+    font-size: .8rem;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
@@ -327,6 +328,7 @@ body:not(.animaciones-off) header {
   width: calc(100% - 30px);
   border-radius: 99px;
   --progreso: 0;
+  background: rgba(255, 255, 255, 0.08);
 }
 #progreso {
   position: absolute;
@@ -341,7 +343,7 @@ body:not(.animaciones-off) header {
   bottom: 5px;
   font-weight: 500;
   font-size: .7rem;
-  color: var(--t1);
+  color: var(--t2);
 }
  /* @media (max-width: 380px) {
 
@@ -574,6 +576,7 @@ body:not(.animaciones-off) header {
   gap: 5px;
   flex-wrap: wrap;
   min-height: 27px;
+  z-index: 1;
 }
   
 .genero a {
@@ -755,7 +758,9 @@ body:not(.animaciones-off) header {
   outline: none;
   border-color: var(--btn);
 }
-
+#init-loading-cap {
+  margin-top: -45px;
+}
 .episodes-list {
   grid-area: episodios;
   margin:auto;
