@@ -188,7 +188,6 @@ body:not(.animaciones-off) header {
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   height: 40px !important;
   background: var(--p);
-  box-shadow: 0 0px 30px rgba(var(--bgt), 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
