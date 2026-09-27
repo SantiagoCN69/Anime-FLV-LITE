@@ -42,6 +42,7 @@ function updateUIForUser(user) {
     
     btnLogin.innerHTML = `<img src="${user.photoURL || 'icons/user-solid.svg'}" alt="Foto de perfil"><span>${primerNombre}</span>`;
     btnLogin.classList.remove('nouser');
+    document.body.classList.remove('no-user');
   } else {
     btnLogin.innerHTML = '<span>Login</span>';
     btnLogin.classList.add('nouser');
