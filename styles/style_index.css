@@ -1452,9 +1452,9 @@ nav.filtros {
 .continue-card strong {
   margin: 0;
   margin-top: 12px;
-  white-space: nowrap;
   overflow: hidden;
-  height: unset !important;
+  max-height: 17px;
+  height: 17px !important;
   text-overflow: ellipsis;
 }
 
