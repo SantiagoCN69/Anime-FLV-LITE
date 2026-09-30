@@ -1048,6 +1048,8 @@ nav.filtros {
   height: 100%;
   padding: 2rem;
   max-width: 60%;
+  
+  padding-bottom: calc(60px + 2rem);
 }
 
 .hero-slide__badges {
@@ -1102,7 +1104,6 @@ nav.filtros {
 
 .hero-slide__synopsis {
   margin: 0;
-  margin-bottom: 55px;
   flex:1;
   color: rgba(var(--bgt), .7);
   line-height: 1.55;
