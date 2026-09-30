@@ -86,6 +86,8 @@
 #Horarios .grid-animes.schedule-grid {
   grid-template-columns: 1fr;
   gap: 0.75rem;
+  min-height: unset;
+  flex: unset
 }
 
 .anime-card-schedule {
