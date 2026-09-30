@@ -47,7 +47,43 @@
             "name": "Directorio",
             "short_name": "Directorio",
             "description": "Explorar el directorio de anime",
-            "url": "/index.html?DirectorioJK",
+            "url": "/index.html?DirectorioAV1",
+            "icons": [
+                {
+                    "src": "icons/icon.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Recomendaciones",
+            "short_name": "Recomendaciones",
+            "description": "Ver animes recomendados para ti",
+            "url": "/index.html?Recomendaciones",
+            "icons": [
+                {
+                    "src": "icons/icon.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Populares",
+            "short_name": "Populares",
+            "description": "Ver los animes más populares",
+            "url": "/index.html?Populares",
+            "icons": [
+                {
+                    "src": "icons/icon.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Horarios",
+            "short_name": "Horarios",
+            "description": "Ver horarios de emisión de anime",
+            "url": "/index.html?Horarios",
             "icons": [
                 {
                     "src": "icons/icon.png",
