@@ -553,16 +553,11 @@ async function manejarNoticias() {
   const contenedorNoticias = document.getElementById('noticias_container');
   const initLoadingNoticias = document.getElementById('init-loading-noticias');
   let noticiasFirestore = [];
-  
-  console.log('[Noticias] Iniciando carga de noticias');
-  console.log('[Noticias] Contenedor encontrado:', !!contenedorNoticias);
-  console.log('[Noticias] Loading encontrado:', !!initLoadingNoticias);
 
   // 1. Cargar primero de Firestore (caché rápido) con URLs de imágenes
   try {
     const noticiasRef = doc(db, "noticias", "noticias");
     const docSnap = await getDoc(noticiasRef);
-    console.log('[Noticias] Firestore existe:', docSnap.exists());
     
     if (docSnap.exists()) {
       const datosFirestore = docSnap.data();
@@ -573,9 +568,7 @@ async function manejarNoticias() {
       // Mostrar noticias desde caché con URLs de imágenes
       initLoadingNoticias.style.display = 'none';
       noticiasFirestore.forEach((noticia, index) => {
-        console.log(`[Noticias] Procesando noticia ${index}:`, noticia);
         const tarjeta = crearNoticiaHTML(noticia);
-        console.log(`[Noticias] Tarjeta creada ${index}:`, !!tarjeta);
         contenedorNoticias.appendChild(tarjeta);
       });
       console.log('[Noticias] Noticias agregadas al DOM desde Firestore');
@@ -613,27 +606,21 @@ async function manejarNoticias() {
 
     // FORZAR ACTUALIZACIÓN: Siempre actualizar con datos de la API
     if (noticiasAPI.length) {
-      console.log('[Noticias] Forzando actualización con datos de API');
       // Actualizar UI con las noticias completas (con URLs de imágenes)
       contenedorNoticias.innerHTML = '';
       noticiasAPI.forEach((noticia, index) => {
-        console.log(`[Noticias] Creando tarjeta API ${index}:`, noticia);
         const tarjeta = crearNoticiaHTML(noticia);
-        console.log(`[Noticias] Tarjeta API creada ${index}:`, !!tarjeta);
         contenedorNoticias.appendChild(tarjeta);
       });
-      console.log('[Noticias] Noticias API agregadas al DOM');
 
       // Guardar noticias en Firestore (con URLs de imágenes - mucho más ligero)
       try {
         const noticiasRef = doc(db, "noticias", "noticias");
         await setDoc(noticiasRef, { noticias: noticiasAPI });
-        console.log('[Noticias] Guardado en Firestore exitoso');
       } catch (error) {
         console.error("Error al guardar noticias en Firestore:", error);
       }
     } else {
-      console.log('[Noticias] No hay noticias de API para actualizar');
     }
   } catch (error) {
     console.error("Error al verificar noticias:", error);
