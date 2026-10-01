@@ -1017,6 +1017,7 @@ async function cargarAnime(idauxiliar) {
     console.log(anime)
     if (!anime.id || !anime.titulo) {
       console.log("anime no contiene ni titulo ni id")
+      mostrarResultadosBusqueda(id);
       return
     }
     if (!compararDatos(cached, anime)) {
@@ -1040,20 +1041,23 @@ async function cargarAnime(idauxiliar) {
     }
     
     if (data.message === 'Anime no encontrado en ninguna fuente') {
-    const inputBusqueda = document.getElementById('busqueda');
-    const id = new URLSearchParams(window.location.search).get('id');
-    if (inputBusqueda) {
-    document.querySelector('header')?.classList.add('search-active');
-    
-    inputBusqueda.value = id; 
-    
-    inputBusqueda.dispatchEvent(new Event('input'));
-}}
+      mostrarResultadosBusqueda(id);
+    }
    }
     catch (err) {
     console.error('Error carga anime:', err)
   }
 };
+
+function mostrarResultadosBusqueda(termino) {
+  const inputBusqueda = document.getElementById('busqueda');
+  if (!inputBusqueda || !termino) return;
+
+  document.querySelector('header')?.classList.add('search-active');
+  inputBusqueda.value = termino;
+  inputBusqueda.dispatchEvent(new Event('input'));
+}
+
 cargarAnime();
 
 
