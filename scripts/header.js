@@ -5,7 +5,7 @@ import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid
 function mostrarMensajeError(container, mensaje) {
   if (!container) return;
   container.classList.remove('sin-resultados');
-  container.innerHTML = `<span class="no-span">${mensaje}</span>`;
+  container.innerHTML = `<span class="span-carga">${mensaje}</span>`;
 }
 
 function agregarEventListenersBusqueda(card, anime) {
