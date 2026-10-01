@@ -392,7 +392,6 @@ async function cargarUltimosCapsVistos() {
         const datosCacheados = cachedData.find(d => d.id === cap.id);
         if (datosCacheados) {
           freshData[index] = datosCacheados; // Reutilizamos sin gastar lecturas
-          console.log('♻️ Reusando caché:', cap.id, 'Ep último visto:', cap.ultimoVisto);
           return; // Saltamos a la siguiente iteración
         }
       }
@@ -401,7 +400,6 @@ async function cargarUltimosCapsVistos() {
       indicesFetch.push(index);
       promesasFetch.push(getDoc(doc(db, "datos-animes", cap.id)));
     });
-    console.log('🔄 Fetching nuevos animes:', promesasFetch.length, 'de', currentState.length);
     
     // 3. Ejecutamos las llamadas a Firebase SOLAMENTE para los que faltan
     if (promesasFetch.length > 0) {
@@ -579,58 +577,45 @@ const shuffleArray = (array) => {
 };
 
 function leerCacheDirectorioAV1() {
-  console.log('📖 Leyendo cache del directorio AV1...');
   if (animesCacheMemoria) {
-    console.log('✅ Cache en memoria encontrada:', animesCacheMemoria.length, 'animes');
     return animesCacheMemoria;
   }
 
   try {
     const raw = localStorage.getItem(DIRECTORIO_AV1_CACHE_KEY);
     if (!raw) {
-      console.log('❌ No hay cache en localStorage');
       return null;
     }
 
     const data = JSON.parse(raw);
-    console.log('📦 Formato del cache:', data ? Object.keys(data) : 'null');
 
     // El cache de directorioav1 tiene formato { data: [...], page: ..., PaginasTotales: ... }
     const animesArray = data?.data || data?.animes;
 
     if (Array.isArray(animesArray) && animesArray.length > 0) {
       animesCacheMemoria = shuffleArray(animesArray.slice(0, 10));
-      console.log('✅ Cache cargada desde localStorage:', animesCacheMemoria.length, 'animes');
       return animesCacheMemoria;
     } else {
-      console.log('❌ Cache no tiene formato válido o está vacío');
     }
   } catch (e) {
-    console.error('❌ Error leyendo cache del directorio AV1:', e);
   }
   return null;
 }
 
 async function precargarCacheDirectorioAV1() {
-  console.log('🔄 Iniciando precarga del directorio AV1...');
   if (animesCacheMemoria || localStorage.getItem(DIRECTORIO_AV1_CACHE_KEY)) {
-    console.log('⏭️ Cache ya existe, omitiendo precarga');
     return;
   }
   if (precargaDirectorioAV1Promise) {
-    console.log('⏳ Precarga ya en progreso');
     return precargaDirectorioAV1Promise;
   }
 
-  console.log('📡 No hay cache cargado del api, fetch a API...');
   precargaDirectorioAV1Promise = (async () => {
     try {
       const res = await fetch('https://backend-animeflv-lite.vercel.app/api/browse?source=animeav1&p=1');
-      console.log('📡 Response status:', res.status);
       if (!res.ok) throw new Error('Respuesta inválida');
 
       const data = await res.json();
-      console.log('📦 Datos recibidos:', data?.animes?.length, 'animes');
       if (!Array.isArray(data?.animes) || data.animes.length === 0) return;
 
       // Guardar en el formato que espera directorioav1.js: { data: [...], page: ..., PaginasTotales: ... }
@@ -641,15 +626,12 @@ async function precargarCacheDirectorioAV1() {
       };
       localStorage.setItem(DIRECTORIO_AV1_CACHE_KEY, JSON.stringify(cacheData));
       animesCacheMemoria = shuffleArray(data.animes.slice(0, 10));
-      console.log('💾 Cache guardada en localStorage y memoria:', animesCacheMemoria.length, 'animes');
 
       const section = document.getElementById('Ultimos-Episodios');
       if (section && !section.classList.contains('hidden')) {
-        console.log('🎬 Sección activa, cargando hero slider');
         cargarHeroSlider();
       }
     } catch (e) {
-      console.error('❌ Error precargando cache del directorio AV1:', e);
     } finally {
       precargaDirectorioAV1Promise = null;
     }
@@ -809,23 +791,19 @@ function initHeroSliderControls(container, slidesLength) {
 }
 
 function cargarHeroSlider() {
-  console.log('🎬 Cargando hero slider...');
   const container = document.getElementById('hero-slider');
   if (!container) {
-    console.log('❌ Contenedor hero-slider no encontrado');
     return;
   }
 
   const animes = leerCacheDirectorioAV1();
   if (!animes) {
-    console.log('❌ No hay animes en cache, ocultando slider y precargando...');
     container.classList.add('hidden');
     container.replaceChildren();
     precargarCacheDirectorioAV1();
     return;
   }
 
-  console.log('✅ Animes cargados:', animes.length, 'slides');
   container.classList.remove('hidden');
 
   container.innerHTML = `
@@ -843,7 +821,6 @@ function cargarHeroSlider() {
   animes.forEach((anime, i) => fragment.appendChild(buildHeroSlide(anime, i)));
   track.appendChild(fragment);
 
-  console.log('🎨 Inicializando controles del slider con', animes.length, 'slides');
   initHeroSliderControls(container, animes.length);
 }
 
