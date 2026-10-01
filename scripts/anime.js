@@ -1764,6 +1764,12 @@ async function ejecutarMantenimientoUnaVez() {
     // Si ya está en true, no hacemos nada
     console.log("✅ El mantenimiento de la base de datos ya se realizó anteriormente.");
   } else {
+    const userId = auth.currentUser?.uid || localStorage.getItem("userID");
+    if (!userId) {
+      console.warn("⏳ El mantenimiento se pospone hasta que haya un usuario autenticado.");
+      return;
+    }
+
     // Si no existe o es falso, ejecutamos el proceso
     try {
       console.log("⏳ Iniciando limpieza y actualización de documentos...");
