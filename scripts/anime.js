@@ -380,6 +380,10 @@ if (anime.estado) {
     estadoTransformado = "estrenos";
   }
 }
+  //Add rating
+  if (anime.score && anime.score !== 0) {
+    infoParts.push(`<a href="/?DirectorioAV1&score=${anime.score}" class="span-text-anime1" id="scorecargado">${anime.score}</a>`);
+  }
   // Add category
   if (categoriaTransformada && !categoriaTransformada.includes('Desconocido')) {
     infoParts.push(`<a href="/?DirectorioAV1&tipo=${categoriaTransformada}" class="span-text-anime1" id="categoriacargado">${anime.category}</a>`);
@@ -416,11 +420,7 @@ if (anime.estado) {
   aplicarFondoAnime(anime);
   setAnimeDescripcion(descripcionEl, anime.descripcion);
   renderGeneros(generoContainer, anime.generos);
-  // if (anime.rating === null) {
-  //   ratingEl.style.display = 'none';
-  // } else {
-  //   ratingEl.textContent = anime.rating + "/5";
-  // }
+
   if (anime.estado === "Por estrenar") {
 const container = document.querySelector(".anime-container3");
 
