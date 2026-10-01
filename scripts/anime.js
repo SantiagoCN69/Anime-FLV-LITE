@@ -1014,7 +1014,11 @@ async function cargarAnime(idauxiliar) {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     const anime = normalizarDatosAPI(data);
-
+    console.log(anime)
+    if (!anime.id || !anime.titulo) {
+      console.log("anime no contiene ni titulo ni id")
+      return
+    }
     if (!compararDatos(cached, anime)) {
       // Preservar servidores existentes en Firestore
       const docSnap = await getDoc(doc(db, 'datos-animes', id));
