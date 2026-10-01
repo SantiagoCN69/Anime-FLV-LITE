@@ -219,12 +219,12 @@ function renderizarBusquedasRecientes() {
       <h4>Tendencias</h4>
     </div>
     <div class="tendencias-tags">
-      <a href="/?DirectorioJK&genero=isekai" class="tendencia-tag">isekai</a>
-      <a href="/?DirectorioJK&temporada=invierno" class="tendencia-tag">Invierno</a>
-      <a href="/?DirectorioJK&genero=shonen" class="tendencia-tag">shonen</a>
-      <a href="/?DirectorioJK&genero=romance" class="tendencia-tag">romance</a>
-      <a href="/?DirectorioJK&genero=seinen" class="tendencia-tag">seinen</a>
-      <a href="/?DirectorioJK&fecha=2025" class="tendencia-tag">2025</a>
+      <a href="/?DirectorioAV1&genero=isekai" class="tendencia-tag">isekai</a>
+      <a href="/?DirectorioAV1&temporada=invierno" class="tendencia-tag">Invierno</a>
+      <a href="/?DirectorioAV1&genero=shonen" class="tendencia-tag">shonen</a>
+      <a href="/?DirectorioAV1&genero=romance" class="tendencia-tag">romance</a>
+      <a href="/?DirectorioAV1&genero=seinen" class="tendencia-tag">seinen</a>
+      <a href="/?DirectorioAV1&fecha=2025" class="tendencia-tag">2025</a>
     </div>
   `;
   dropdown.appendChild(tendenciasSection);

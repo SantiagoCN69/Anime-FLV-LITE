@@ -108,7 +108,7 @@ const renderGeneros = (container, generos) => {
       a.textContent = g;
       a.className = 'genre-link';
       const generoUrl = g.toLowerCase() === 'aventuras' ? 'aventura' : g;
-      a.href = `/?DirectorioJK&genero=${quitarTildesYEspacios(generoUrl)}`;
+      a.href = `/?DirectorioAV1&genero=${quitarTildesYEspacios(generoUrl)}`;
 
 
       container.appendChild(a);
@@ -382,19 +382,19 @@ if (anime.estado) {
 }
   // Add category
   if (categoriaTransformada && !categoriaTransformada.includes('Desconocido')) {
-    infoParts.push(`<a href="/?DirectorioJK&tipo=${categoriaTransformada}" class="span-text-anime1" id="categoriacargado">${anime.category}</a>`);
+    infoParts.push(`<a href="/?DirectorioAV1&tipo=${categoriaTransformada}" class="span-text-anime1" id="categoriacargado">${anime.category}</a>`);
   }
   
   // Add year
   if (anime.startDate) {
     const yearMatch = String(anime.startDate).match(/(\d{4})/);
     const year = yearMatch ? yearMatch[1] : anime.startDate;
-    infoParts.push(`<a href="/?DirectorioJK&fecha=${year}" class="span-text-anime1" id="anocargado">${year}</a>`);
+    infoParts.push(`<a href="/?DirectorioAV1&fecha=${year}" class="span-text-anime1" id="anocargado">${year}</a>`);
   }
   
   // Add status with icon
   if (anime.estado) {
-    infoParts.push(`<a href="/?DirectorioJK&estado=${estadoTransformado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
+    infoParts.push(`<a href="/?DirectorioAV1&estado=${estadoTransformado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
   }
   
   // Join with bullet points

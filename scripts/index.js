@@ -227,7 +227,7 @@ window.handlesearchChange = function () {
 document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
-    precargarCacheDirectorioJK(),
+    precargarCacheDirectorioAV1(),
   ])
   const sidebarItems = document.querySelectorAll('.menu-item');
   sidebarItems.forEach(item => {
@@ -558,10 +558,10 @@ function guardarCache(key, data) {
     localStorage.removeItem(key);
   }
 }
-const DIRECTORIO_JK_CACHE_KEY = 'cache-directoriojk';
+const DIRECTORIO_AV1_CACHE_KEY = 'animes_cache_directorio';
 
 let animesCacheMemoria = null;
-let precargaDirectorioJKPromise = null;
+let precargaDirectorioAV1Promise = null;
 
 const slugFromTitle = (str = '') => 
   str.toLowerCase()
@@ -578,52 +578,84 @@ const shuffleArray = (array) => {
   return shuffled;
 };
 
-function leerCacheDirectorioJK() {
-  if (animesCacheMemoria) return animesCacheMemoria;
-  
+function leerCacheDirectorioAV1() {
+  console.log('📖 Leyendo cache del directorio AV1...');
+  if (animesCacheMemoria) {
+    console.log('✅ Cache en memoria encontrada:', animesCacheMemoria.length, 'animes');
+    return animesCacheMemoria;
+  }
+
   try {
-    const raw = localStorage.getItem(DIRECTORIO_JK_CACHE_KEY);
-    if (!raw) return null;
-    
+    const raw = localStorage.getItem(DIRECTORIO_AV1_CACHE_KEY);
+    if (!raw) {
+      console.log('❌ No hay cache en localStorage');
+      return null;
+    }
+
     const data = JSON.parse(raw);
-    if (Array.isArray(data?.animes) && data.animes.length > 0) {
-      animesCacheMemoria = shuffleArray(data.animes.slice(0, 10));
+    console.log('📦 Formato del cache:', data ? Object.keys(data) : 'null');
+
+    // El cache de directorioav1 tiene formato { data: [...], page: ..., PaginasTotales: ... }
+    const animesArray = data?.data || data?.animes;
+
+    if (Array.isArray(animesArray) && animesArray.length > 0) {
+      animesCacheMemoria = shuffleArray(animesArray.slice(0, 10));
+      console.log('✅ Cache cargada desde localStorage:', animesCacheMemoria.length, 'animes');
       return animesCacheMemoria;
+    } else {
+      console.log('❌ Cache no tiene formato válido o está vacío');
     }
   } catch (e) {
-    console.error('Error leyendo cache del directorio JK:', e);
+    console.error('❌ Error leyendo cache del directorio AV1:', e);
   }
   return null;
 }
 
-async function precargarCacheDirectorioJK() {
-  if (animesCacheMemoria || localStorage.getItem(DIRECTORIO_JK_CACHE_KEY)) return;
-  if (precargaDirectorioJKPromise) return precargaDirectorioJKPromise;
-  
-  console.log('No hay cache cargado del api..');
-  precargaDirectorioJKPromise = (async () => {
+async function precargarCacheDirectorioAV1() {
+  console.log('🔄 Iniciando precarga del directorio AV1...');
+  if (animesCacheMemoria || localStorage.getItem(DIRECTORIO_AV1_CACHE_KEY)) {
+    console.log('⏭️ Cache ya existe, omitiendo precarga');
+    return;
+  }
+  if (precargaDirectorioAV1Promise) {
+    console.log('⏳ Precarga ya en progreso');
+    return precargaDirectorioAV1Promise;
+  }
+
+  console.log('📡 No hay cache cargado del api, fetch a API...');
+  precargaDirectorioAV1Promise = (async () => {
     try {
-      const res = await fetch('https://backend-animeflv-lite.onrender.com/api/browse?source=jkanime&p=1');
+      const res = await fetch('https://backend-animeflv-lite.vercel.app/api/browse?source=animeav1&p=1');
+      console.log('📡 Response status:', res.status);
       if (!res.ok) throw new Error('Respuesta inválida');
-      
+
       const data = await res.json();
+      console.log('📦 Datos recibidos:', data?.animes?.length, 'animes');
       if (!Array.isArray(data?.animes) || data.animes.length === 0) return;
 
-      localStorage.setItem(DIRECTORIO_JK_CACHE_KEY, JSON.stringify(data));
+      // Guardar en el formato que espera directorioav1.js: { data: [...], page: ..., PaginasTotales: ... }
+      const cacheData = {
+        data: data.animes,
+        page: 1,
+        PaginasTotales: data.PaginasTotales || 1
+      };
+      localStorage.setItem(DIRECTORIO_AV1_CACHE_KEY, JSON.stringify(cacheData));
       animesCacheMemoria = shuffleArray(data.animes.slice(0, 10));
+      console.log('💾 Cache guardada en localStorage y memoria:', animesCacheMemoria.length, 'animes');
 
       const section = document.getElementById('Ultimos-Episodios');
       if (section && !section.classList.contains('hidden')) {
+        console.log('🎬 Sección activa, cargando hero slider');
         cargarHeroSlider();
       }
     } catch (e) {
-      console.error('Error precargando cache del directorio JK:', e);
+      console.error('❌ Error precargando cache del directorio AV1:', e);
     } finally {
-      precargaDirectorioJKPromise = null;
+      precargaDirectorioAV1Promise = null;
     }
   })();
 
-  return precargaDirectorioJKPromise;
+  return precargaDirectorioAV1Promise;
 }
 
 const getEstadoBadge = (estado) => {
@@ -777,19 +809,25 @@ function initHeroSliderControls(container, slidesLength) {
 }
 
 function cargarHeroSlider() {
+  console.log('🎬 Cargando hero slider...');
   const container = document.getElementById('hero-slider');
-  if (!container) return;
-
-  const animes = leerCacheDirectorioJK();
-  if (!animes) {
-    container.classList.add('hidden');
-    container.replaceChildren();
-    precargarCacheDirectorioJK();
+  if (!container) {
+    console.log('❌ Contenedor hero-slider no encontrado');
     return;
   }
 
+  const animes = leerCacheDirectorioAV1();
+  if (!animes) {
+    console.log('❌ No hay animes en cache, ocultando slider y precargando...');
+    container.classList.add('hidden');
+    container.replaceChildren();
+    precargarCacheDirectorioAV1();
+    return;
+  }
+
+  console.log('✅ Animes cargados:', animes.length, 'slides');
   container.classList.remove('hidden');
-  
+
   container.innerHTML = `
     <div class="hero-slider__track"></div>
     <button type="button" class="hero-slider__prev" aria-label="Anterior">
@@ -805,6 +843,7 @@ function cargarHeroSlider() {
   animes.forEach((anime, i) => fragment.appendChild(buildHeroSlide(anime, i)));
   track.appendChild(fragment);
 
+  console.log('🎨 Inicializando controles del slider con', animes.length, 'slides');
   initHeroSliderControls(container, animes.length);
 }
 
