@@ -1345,7 +1345,6 @@ nav.filtros {
 @media screen and (max-width: 520px) {
 
   .hero-slide__synopsis {
-    margin-bottom: 41px;
     font-size: .8rem;
   }
   .hero-slide__title {
