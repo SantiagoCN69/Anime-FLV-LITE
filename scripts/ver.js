@@ -776,10 +776,30 @@ async function guardarServidoresEnFirestore(ep, servidores) {
   if (!animeDatos.episodios) animeDatos.episodios = [];
   const episodioIndex = animeDatos.episodios.findIndex(e => e.url === ep.url);
 
+  // Preservar servidores de jkanime y mediafire existentes
+  let servidoresExistentes = [];
+  if (episodioIndex !== -1 && animeDatos.episodios[episodioIndex].servidores) {
+    servidoresExistentes = animeDatos.episodios[episodioIndex].servidores.filter(s => {
+      const url = (s.url || "").toLowerCase();
+      return url.includes("jkanime.net") || url.includes("jkplayer") || url.includes("mediafire.com");
+    });
+  }
+
+  // Combinar servidores nuevos con los de jkanime y mediafire existentes
+  const servidoresFinales = [...servidores];
+  
+  // Agregar servidores de jkanime y mediafire que no estén duplicados
+  const urlsNuevas = new Set(servidores.map(s => s.url));
+  servidoresExistentes.forEach(srvExistente => {
+    if (!urlsNuevas.has(srvExistente.url)) {
+      servidoresFinales.push(srvExistente);
+    }
+  });
+
   if (episodioIndex !== -1) {
-    animeDatos.episodios[episodioIndex].servidores = servidores;
+    animeDatos.episodios[episodioIndex].servidores = servidoresFinales;
   } else {
-    animeDatos.episodios.push({ ...ep, servidores });
+    animeDatos.episodios.push({ ...ep, servidores: servidoresFinales });
   }
 
   await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
@@ -1043,44 +1063,61 @@ async function cargarVideoDesdeEpisodio(index) {
   }
 
   // 3. Sincronizar con la API en segundo plano
-  try {
-    const servidoresApi = await obtenerServidoresDesdeApi(ep);
+// 3. Sincronizar con la API en segundo plano
+try {
+  const servidoresApi = await obtenerServidoresDesdeApi(ep);
 
-    if (servidoresApi === null) {
-      // API falló, mantener los de Firestore si existen
-      if (!servidoresFirestore.length) {
-        document.getElementById("video").innerHTML = "No se encontraron servidores.";
-        document.getElementById("controles").innerHTML = "";
-      }
-      actualizarEstadoBotones();
-      return ep;
-    }
-
-    if (servidoresApi.length) {
-      const iguales = servidoresSonIguales(servidoresFirestore, servidoresApi);
-
-      if (!iguales) {
-        // Actualizar Firestore con los nuevos servidores
-        await guardarServidoresEnFirestore(ep, servidoresApi);
-      }
-
-      // Si los servidores son diferentes, actualizar la UI
-      if (!iguales) {
-        ep.servidores = reordenarServidores(servidoresApi);
-        renderizarServidores(ep.servidores);
-      }
-    } else if (!servidoresFirestore.length) {
-      // API no devolvió servidores y no hay en Firestore
+  if (servidoresApi === null) {
+    // API falló, mantener los de Firestore si existen
+    if (!servidoresFirestore.length) {
       document.getElementById("video").innerHTML = "No se encontraron servidores.";
       document.getElementById("controles").innerHTML = "";
     }
-  } catch (error) {
-    console.error("[cargarVideoDesdeEpisodio] Error al sincronizar con API:", error);
-    if (!servidoresFirestore.length) {
-      document.getElementById("video").innerHTML = "Error al cargar servidores.";
-      document.getElementById("controles").innerHTML = "";
-    }
+    actualizarEstadoBotones();
+    return ep;
   }
+
+  if (servidoresApi.length) {
+    // 1. Filtrar únicamente los servidores de la API que NO están en Firestore
+    const servidoresNuevos = servidoresApi.filter(nuevo => 
+      !servidoresFirestore.some(existente => 
+        (existente.url && existente.url === nuevo.url) ||
+        (existente.code && existente.code === nuevo.code) ||
+        (existente.name === nuevo.name && existente.url === nuevo.url)
+      )
+    );
+
+    // 2. Si hay servidores verdaderamente nuevos
+    if (servidoresNuevos.length > 0) {
+      // Fusionar los existentes con los nuevos
+      const servidoresCombinados = [...servidoresFirestore, ...servidoresNuevos];
+
+      // Reordenar la lista combinada
+      ep.servidores = reordenarServidores(servidoresCombinados);
+
+      // Guardar en Firestore la lista completa fusionada
+      await guardarServidoresEnFirestore(ep, ep.servidores);
+
+      // Actualizar la interfaz
+      renderizarServidores(ep.servidores);
+    } else if (!servidoresFirestore.length) {
+      // Caso inicial: Firestore estaba vacío y la API devolvió resultados
+      ep.servidores = reordenarServidores(servidoresApi);
+      await guardarServidoresEnFirestore(ep, ep.servidores);
+      renderizarServidores(ep.servidores);
+    }
+  } else if (!servidoresFirestore.length) {
+    // API no devolvió servidores y no hay en Firestore
+    document.getElementById("video").innerHTML = "No se encontraron servidores.";
+    document.getElementById("controles").innerHTML = "";
+  }
+} catch (error) {
+  console.error("[cargarVideoDesdeEpisodio] Error al sincronizar con API:", error);
+  if (!servidoresFirestore.length) {
+    document.getElementById("video").innerHTML = "Error al cargar servidores.";
+    document.getElementById("controles").innerHTML = "";
+  }
+}
 
   actualizarEstadoBotones();
 
