@@ -890,7 +890,11 @@ body:not(.animaciones-off) header {
   font-family: 'JetBrains Mono', monospace;
 }
 
-
+.ep-visto .episode-text {
+  background: var(--br);
+  color: var(--t1);
+  filter: brightness(1.3);
+}
 .icon-eye {
   width: 45px;
   height: 40px;
