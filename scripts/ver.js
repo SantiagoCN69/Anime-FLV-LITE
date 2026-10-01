@@ -552,81 +552,61 @@ function extraerListaNoticias(payload) {
 async function manejarNoticias() {
   const contenedorNoticias = document.getElementById('noticias_container');
   const initLoadingNoticias = document.getElementById('init-loading-noticias');
-  let noticiasFirestore = [];
 
-  // 1. Cargar primero de Firestore (caché rápido) con URLs de imágenes
+  if (!contenedorNoticias || !initLoadingNoticias) return;
+
+  // 1. Cargar primero de Firestore (caché rápido)
   try {
     const noticiasRef = doc(db, "noticias", "noticias");
     const docSnap = await getDoc(noticiasRef);
-    
+
     if (docSnap.exists()) {
       const datosFirestore = docSnap.data();
-      console.log('[Noticias] Datos Firestore:', datosFirestore);
-      noticiasFirestore = extraerListaNoticias(datosFirestore?.noticias);
-      console.log('[Noticias] Noticias de Firestore:', noticiasFirestore.length);
-      
-      // Mostrar noticias desde caché con URLs de imágenes
+      const noticiasFirestore = extraerListaNoticias(datosFirestore?.noticias);
+
       initLoadingNoticias.style.display = 'none';
-      noticiasFirestore.forEach((noticia, index) => {
+      noticiasFirestore.forEach((noticia) => {
         const tarjeta = crearNoticiaHTML(noticia);
         contenedorNoticias.appendChild(tarjeta);
       });
-      console.log('[Noticias] Noticias agregadas al DOM desde Firestore');
     }
   } catch (error) {
     console.error("Error al cargar noticias de Firestore:", error);
   }
 
-  // 2. Cargar noticias desde la API con URLs de imágenes
+  // 2. Cargar noticias desde la API
   try {
-    console.log('[Noticias] Consultando API...');
     const respuesta = await fetch("https://backend-noticias-anime.onrender.com/api/noticias");
     const payloadAPI = await respuesta.json().catch(() => null);
-    console.log('[Noticias] Respuesta API:', payloadAPI);
-    
+
     if (!respuesta.ok) {
       throw new Error(`API noticias ${respuesta.status}`);
     }
 
     const noticiasAPI = extraerListaNoticias(payloadAPI);
-    console.log('[Noticias] Noticias de API:', noticiasAPI.length);
-    if (noticiasAPI.length > 0) {
-      console.log('[Noticias] Primera noticia API:', noticiasAPI[0]);
-    }
 
-    // Función para comparar noticias (adaptada al nuevo formato)
-    const sonIguales = (a, b) => {
-      if (a.length !== b.length) return false;
-      return a.every((n, i) => 
-        (n.titulo === b[i].titulo || n.title === b[i].title) && 
-        (n.enlace === b[i].enlace || n.slug === b[i].slug) && 
-        (n.fechaAutor === b[i].fechaAutor || n.date === b[i].date)
-      );
-    };
-
-    // FORZAR ACTUALIZACIÓN: Siempre actualizar con datos de la API
     if (noticiasAPI.length) {
-      // Actualizar UI con las noticias completas (con URLs de imágenes)
       contenedorNoticias.innerHTML = '';
-      noticiasAPI.forEach((noticia, index) => {
+      noticiasAPI.forEach((noticia) => {
         const tarjeta = crearNoticiaHTML(noticia);
         contenedorNoticias.appendChild(tarjeta);
       });
 
-      // Guardar noticias en Firestore (con URLs de imágenes - mucho más ligero)
+      // Guardar actualización en Firestore
       try {
         const noticiasRef = doc(db, "noticias", "noticias");
         await setDoc(noticiasRef, { noticias: noticiasAPI });
       } catch (error) {
         console.error("Error al guardar noticias en Firestore:", error);
       }
-    } else {
     }
   } catch (error) {
     console.error("Error al verificar noticias:", error);
   } finally {
     initLoadingNoticias.style.display = 'none';
   }
+
+  // Scroll horizontal en pantallas pequeñas
   contenedorNoticias.addEventListener('wheel', (evento) => {
     if (evento.deltaY !== 0 && window.innerWidth <= 1100) {
       evento.preventDefault();
