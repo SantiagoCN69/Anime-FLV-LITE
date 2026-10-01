@@ -110,6 +110,114 @@ let contactoCargado = false;
 
 // Flags para prevenir cargas simultáneas
 const cargando = new Set();
+// Constantes globales
+const CDN_PORTADAS_ANIME = 'https://cdn.jkdesa.com/assets/images/animes/image';
+const TIEMPO_MAXIMO_LECTURA_LISTA_MS = 12000;
+const IMAGEN_PREDETERMINADA = 'img/loading.png';
+const idsDeListasCargados = new Map();
+
+// Cache de promesas para desduplicar peticiones a Firestore y evitar lecturas repetidas
+const cacheAnimesFirestore = new Map();
+
+function obtenerDatosAnimeFirestore(animeId) {
+  if (cacheAnimesFirestore.has(animeId)) {
+    return cacheAnimesFirestore.get(animeId);
+  }
+
+  const promesaLectura = getDoc(doc(db, 'datos-animes', animeId))
+    .then(snap => snap.exists() ? snap.data() : null)
+    .catch(error => {
+      // Un error de red no debe bloquear futuros intentos de esta portada.
+      cacheAnimesFirestore.delete(animeId);
+      console.warn(`[Firestore] Error al consultar datos de ${animeId}:`, error);
+      return null;
+    });
+
+  cacheAnimesFirestore.set(animeId, promesaLectura);
+  return promesaLectura;
+}
+
+function conTiempoMaximo(promesa, milisegundos, mensaje) {
+  let temporizador;
+  const limite = new Promise((_, rechazar) => {
+    temporizador = setTimeout(() => rechazar(new Error(mensaje)), milisegundos);
+  });
+
+  return Promise.race([promesa, limite]).finally(() => clearTimeout(temporizador));
+}
+
+function generarTituloDesdeId(animeId) {
+  if (!animeId) return 'Título desconocido';
+
+  let slug = String(animeId);
+  try {
+    slug = decodeURIComponent(slug);
+  } catch {
+    // Si falla la decodificación, se mantiene la cadena original
+  }
+
+  // Capitalización directa mediante Regex sin instanciar arrays intermedios
+  const titulo = slug
+    .replace(/[-_]+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, caracter => caracter.toUpperCase());
+
+  return titulo || 'Título desconocido';
+}
+
+function crearResumenAnimeDesdeId(animeId) {
+  const idSeguro = encodeURIComponent(String(animeId));
+  return {
+    id: animeId,
+    titulo: generarTituloDesdeId(animeId),
+    portada: `${CDN_PORTADAS_ANIME}/${idSeguro}.jpg`,
+    portadaGenerada: true
+  };
+}
+
+function crearTarjetaDeLista(anime) {
+  const card = crearAnimeCard(anime);
+  const usaPortadaGenerada = anime?.portadaGenerada || anime?.portada?.startsWith(CDN_PORTADAS_ANIME);
+  if (!card || !usaPortadaGenerada) return card;
+
+  const imagen = card.querySelector('img.cover');
+  if (!imagen) return card;
+
+  imagen.onerror = async function () {
+    // 1. Desvincular el evento actual para prevenir bucles de ejecución
+    this.onerror = null;
+
+    try {
+      // 2. Consulta desduplicada mediante cache
+      const datos = await obtenerDatosAnimeFirestore(anime.id);
+      const portadaReal = datos?.portada || datos?.banner || datos?.cover;
+
+      if (portadaReal) {
+        // Asignar fallback seguro por si la URL recuperada de Firestore también falla al cargar
+        this.onerror = () => {
+          this.onerror = null;
+          this.src = IMAGEN_PREDETERMINADA;
+        };
+
+        this.src = portadaReal;
+
+        if (datos?.titulo) {
+          this.alt = datos.titulo;
+          const tituloEl = card.querySelector('strong');
+          if (tituloEl) tituloEl.textContent = datos.titulo;
+        }
+        return;
+      }
+    } catch (error) {
+      console.warn(`[Portada] Fallo al recuperar fallback de Firestore para ${anime.id}:`, error);
+    }
+
+    // 3. Fallback final si Firestore no tiene datos o la consulta falla
+    this.src = IMAGEN_PREDETERMINADA;
+  };
+
+  return card;
+}
 
 export function mostrarSeccionDesdesearch() {
   let search = window.location.search;
@@ -1036,7 +1144,7 @@ function agregarAnimesAlContenedor(animes, contenedor) {
   renderFlipOptimizado(contenedor, () => {
     const fragment = document.createDocumentFragment();
     animes.forEach(anime => {
-        const card = crearAnimeCard(anime);
+        const card = crearTarjetaDeLista(anime);
         if (card) fragment.appendChild(card);
     });
     contenedor.appendChild(fragment);
@@ -1044,7 +1152,7 @@ function agregarAnimesAlContenedor(animes, contenedor) {
   observerAnimeCards();
 }
 
-function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes) {
+function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes, idsCargados = null) {
   const btnAnterior = container.querySelector('.ver-mas-btn');
   if (btnAnterior) {
     container.removeChild(btnAnterior);
@@ -1054,12 +1162,19 @@ function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes
     const verMasBtn = document.createElement('button');
     verMasBtn.className = 'ver-mas-btn';
     verMasBtn.textContent = 'Ver más';
-    verMasBtn.onclick = () => cargarDatos(container, DocRef, limite, offset + numAnimes);
+    verMasBtn.onclick = () => cargarDatos(
+      container,
+      DocRef,
+      // Los IDs ya están en memoria: mostrar todos los restantes en un solo clic.
+      idsCargados ? idsCargados.length : limite,
+      offset + numAnimes,
+      idsCargados
+    );
     container.appendChild(verMasBtn);
   }
 }
 
-async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
+async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargados = null) {
   if (!userID || userID === "null") {
     container.innerHTML = '<p class="span-carga">Inicia sesión para ver tus animes en ' + container.id + '</p>';
     const h2 = document.querySelector('#' + container.id + 'h2');
@@ -1088,14 +1203,33 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
   if (cachedData && offset === 0) {
     if (verificarYLimpiarCacheBackground(cacheKey, cachedData, 'portada', null, true)) {
     } else {
-      agregarAnimesAlContenedor(cachedData, container);
+      // Reemplazamos el indicador inicial de carga; no lo dejamos mezclado
+      // con las tarjetas de la caché.
+      container.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+      cachedData.forEach(anime => {
+        const card = crearTarjetaDeLista(anime);
+        if (card) fragment.appendChild(card);
+      });
+      container.appendChild(fragment);
+      observerAnimeCards();
       h2.dataset.text = cachedData.length;
     }
   }
 
   try {
-      const Doc = await getDoc(DocRef);
-      let titulos = Doc.exists() ? [...(Doc.data().animes || [])].filter(titulo => titulo != null).reverse() : [];
+      let titulos = idsCargados || idsDeListasCargados.get(container.id);
+      if (!titulos) {
+        const Doc = await conTiempoMaximo(
+          getDoc(DocRef),
+          TIEMPO_MAXIMO_LECTURA_LISTA_MS,
+          'La lista tardó demasiado en responder.'
+        );
+        titulos = Doc.exists()
+          ? [...(Doc.data().animes || [])].filter(titulo => titulo != null).reverse()
+          : [];
+        idsDeListasCargados.set(container.id, titulos);
+      }
       h2.dataset.text = titulos.length;
 
       if (titulos.length === 0) {
@@ -1104,63 +1238,32 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           return;
       }
 
+      // La lista se valida con una sola lectura, pero si sus primeras tarjetas
+      // no cambiaron conservamos el DOM y la caché: no se vuelve a renderizar.
       if (offset === 0 && cachedData) {
-          const ultimosTitulos = titulos.slice(0, limite).toString();
-          const titulosCache = cachedData.map(a => a.id).slice(0, limite).toString();
-          if (ultimosTitulos === titulosCache) {
-              const hayMas = offset + limite < titulos.length;
-              manejarBotonVerMas(container, DocRef, hayMas, limite, offset, cachedData.length);
-              return;
-          } 
-        }
-        
-      const idsABuscar = titulos.slice(offset, offset + limite);
-      let animes = [];
-      const idsNoEncontrados = [];
-      
-      for (const id of idsABuscar) {
-        const docSnap = await getDoc(doc(db, "datos-animes", id));
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (!data.titulo || data.titulo.trim() === '') {
-            console.log(`El anime con ID: ${id} no tiene título, se eliminará de la lista`);
-            idsNoEncontrados.push(id);
-          } else {
-            animes.push({
-              id: id,
-              titulo: data.titulo,
-              portada: data.portada || data.banner,
-              estado: data.estado || 'No disponible',
-              score: data.score || null
-            });
-          }
-        } else {
-          console.log(`No se encontró el anime con ID: ${id} en datos-animes, se eliminará de la lista`);
-          idsNoEncontrados.push(id);
+        const idsActuales = titulos.slice(0, limite).toString();
+        const idsEnCache = cachedData.map(anime => anime.id).slice(0, limite).toString();
+        if (idsActuales === idsEnCache) {
+          manejarBotonVerMas(
+            container,
+            DocRef,
+            limite < titulos.length,
+            limite,
+            0,
+            cachedData.length,
+            titulos
+          );
+          return;
         }
       }
-      
-      console.log('Animes cargados:', animes);
-      
-      if (idsNoEncontrados.length > 0) {
-        const nuevosTitulos = titulos.filter(id => !idsNoEncontrados.includes(id));
-        if (nuevosTitulos.length !== titulos.length) {
-          try {
-            await updateDoc(DocRef, { animes: nuevosTitulos });
-            console.log(`Se eliminaron ${idsNoEncontrados.length} animes no encontrados de ${container.id}`);
-          } catch (error) {
-            console.error('Error al actualizar la lista de animes:', error);
-          }
-        }
-      }
+
+      const animes = titulos
+        .slice(offset, offset + limite)
+        .map(crearResumenAnimeDesdeId);
       
 // Actualizar caché si es primera página
       if (offset === 0) {
-        const cacheAnimes = animes.slice(0, limite);
-        const animesOrdenados = titulos
-            .slice(0, limite)
-            .map(id => cacheAnimes.find(a => a.id === id))
-            .filter(Boolean);
+        const animesOrdenados = animes;
         guardarCache2(cacheKey, animesOrdenados);
         
         // 1. Creamos la función que reemplaza el contenido del contenedor
@@ -1168,7 +1271,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           container.innerHTML = '';
           const fragment = document.createDocumentFragment();
           animesOrdenados.forEach(anime => {
-              const card = crearAnimeCard(anime);
+              const card = crearTarjetaDeLista(anime);
               if (card) fragment.appendChild(card);
           });
           container.appendChild(fragment);
@@ -1182,13 +1285,13 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0) {
           renderFlipOptimizado(container, renderizarContenido);
         }
         
-        manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length);
+        manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length, titulos);
         observerAnimeCards(); 
         return;
       }
       
       agregarAnimesAlContenedor(animes, container);
-      manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animes.length);
+      manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animes.length, titulos);
 
   } catch (error) {
       console.error('Error al cargar favoritos:', error);
