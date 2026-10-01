@@ -809,87 +809,82 @@ async function guardarServidoresEnFirestore(ep, servidores) {
 const serverCache = new Map();
 const CACHE_TTL = 5 * 60 * 1000;
 
-async function sincronizarServidoresConApi(ep) {
-  const cacheKey = `servers_${animeId}_${ep.number}`;
- 
-  let servidoresFirestore = [];
+function obtenerServidoresValidosDeFirestore(animeDatos, episodio) {
+  const episodioGuardado = animeDatos?.episodios?.find(e => e.url === episodio.url);
+  const servidores = episodioGuardado?.servidores;
 
+  if (!servidores?.length) return [];
+
+  // No usar el formato anterior: necesita renovarse desde la API.
+  const esFormatoViejo = servidores.some(s => s.nombre && s.name === undefined);
+  return esFormatoViejo ? [] : servidores;
+}
+
+function guardarServidoresEnCache(episodio, servidores) {
+  const servidoresOrdenados = reordenarServidores(servidores);
+  const cacheKey = `servers_${animeId}_${episodio.number}`;
+  serverCache.set(cacheKey, { data: servidoresOrdenados, time: Date.now() });
+  return servidoresOrdenados;
+}
+
+function obtenerSiguienteEpisodio(index) {
+  return episodios.find(e => String(e.number) === String(Number(index) + 1));
+}
+
+async function precargarSiguienteEpisodio(index, datosFirestore = undefined) {
+  const siguiente = obtenerSiguienteEpisodio(index);
+  if (!siguiente) return;
+
+  const cacheKey = `servers_${animeId}_${siguiente.number}`;
+  const cached = serverCache.get(cacheKey);
+  if (cached && Date.now() - cached.time < CACHE_TTL) {
+    siguiente.servidores = cached.data;
+    return;
+  }
+
+  // La primera lectura ya trae todos los episodios del anime. Reutilizarla evita
+  // una petición adicional y deja listo el siguiente capítulo de inmediato.
+  const servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, siguiente);
+  if (servidoresFirestore.length) {
+    siguiente.servidores = guardarServidoresEnCache(siguiente, servidoresFirestore);
+    return;
+  }
+
+  // Si Firestore no tiene servidores válidos, conservar la precarga actual desde API.
+  const servidores = await sincronizarServidoresConApi(siguiente, datosFirestore);
+  if (servidores?.length) {
+    siguiente.servidores = servidores;
+  }
+}
+
+async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
+  // Si no recibimos la lectura inicial, consultar Firestore antes de acudir a la API.
   try {
+    if (datosFirestore === undefined) {
+      const animeDatosRef = doc(db, "datos-animes", animeId);
+      const animeDatosSnap = await getDoc(animeDatosRef);
+      datosFirestore = animeDatosSnap.data() || {};
+    }
 
-    const animeDatosRef = doc(db, "datos-animes", animeId);
-    const animeDatosSnap = await getDoc(animeDatosRef);
-    
-    if (animeDatosSnap.exists()) {
-      const animeDatos = animeDatosSnap.data();
-      const episodioGuardado = animeDatos.episodios?.find(e => e.url === ep.url);
-      
-      if (episodioGuardado?.servidores?.length) {
-        // 🔥 NUEVO: Rechazar formato viejo en segundo plano también
-        const esFormatoViejo = episodioGuardado.servidores.some(s => s.nombre && s.name === undefined);
-        
-        if (!esFormatoViejo) {
-          servidoresFirestore = episodioGuardado.servidores;
-
-        } else {
-
-        }
-      } else {
-
-      }
-    } else {
-
+    const servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
+    if (servidoresFirestore.length) {
+      return guardarServidoresEnCache(ep, servidoresFirestore);
     }
   } catch (error) {
     console.error("[Servidores] ❌ Error al leer Firestore:", error);
   }
 
-  // --- INTENTO DE LECTURA API ---
+  // Firestore no tenía servidores válidos: usar el respaldo actual de la API.
   try {
-
     const servidoresApi = await obtenerServidoresDesdeApi(ep);
-
-    if (servidoresApi === null) {
-
-      if (servidoresFirestore.length) {
-        const result = reordenarServidores(servidoresFirestore);
-        serverCache.set(cacheKey, { data: result, time: Date.now() });
-        return result;
-      }
+    if (!servidoresApi?.length) {
       return [];
     }
 
-    if (servidoresApi.length) {
-
-      const iguales = servidoresSonIguales(servidoresFirestore, servidoresApi);
-
-      if (!iguales) {
-
-        await guardarServidoresEnFirestore(ep, servidoresApi);
-      }
-
-      const result = reordenarServidores(servidoresApi);
-      serverCache.set(cacheKey, { data: result, time: Date.now() });
-
-      return result;
-    }
-
-    // --- RESPALDO SI API ES [] ---
-    if (servidoresFirestore.length) {
-
-      const result = reordenarServidores(servidoresFirestore);
-      serverCache.set(cacheKey, { data: result, time: Date.now() });
-      return result;
-    }
-
-    return [];
+    await guardarServidoresEnFirestore(ep, servidoresApi);
+    return guardarServidoresEnCache(ep, servidoresApi);
   } catch (error) {
     console.error("[Servidores] ❌ Error inesperado al consultar API:", error);
-    if (servidoresFirestore.length) {
-
-      const result = reordenarServidores(servidoresFirestore);
-      serverCache.set(cacheKey, { data: result, time: Date.now() });
-      return result;
-    }
     throw error;
   }
 }
@@ -1014,7 +1009,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `/ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `/ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;
@@ -1022,40 +1017,30 @@ async function cargarVideoDesdeEpisodio(index) {
   const cached = serverCache.get(cacheKey);
   
   if (cached && Date.now() - cached.time < CACHE_TTL) {
-
-    renderizarServidores( cached.data );
+    renderizarServidores(cached.data);
+    precargarSiguienteEpisodio(index).catch(() => {});
     return;
-  }
-  else{
-
   }
 
   // 1. Cargar servidores de Firestore primero (instantáneo)
   let servidoresFirestore = [];
+  let datosFirestore = null;
   try {
     const animeDatosRef = doc(db, "datos-animes", animeId);
     const animeDatosSnap = await getDoc(animeDatosRef);
-    const animeDatos = animeDatosSnap.data() || {};
-    const episodioGuardado = animeDatos.episodios?.find(e => e.url === ep.url);
-
-    if (episodioGuardado?.servidores?.length) {
-      // 🔥 NUEVO: Solo cargamos de Firestore si NO es el formato viejo
-      const esFormatoViejo = episodioGuardado.servidores.some(s => s.nombre && s.name === undefined);
-      
-      if (!esFormatoViejo) {
-        servidoresFirestore = episodioGuardado.servidores;
-
-      } else {
-
-      }
-    }
+    datosFirestore = animeDatosSnap.data() || {};
+    servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
   } catch (error) {
     console.error("[cargarVideoDesdeEpisodio] Error al leer servidores de Firestore:", error);
   }
 
+  // Dejar preparado el siguiente capítulo con los datos que ya devolvió Firestore.
+  // Solo consultará la API para ese capítulo si no hay servidores guardados.
+  precargarSiguienteEpisodio(index, datosFirestore).catch(() => {});
+
   // 2. Si hay servidores en Firestore, mostrarlos inmediatamente
   if (servidoresFirestore.length) {
-    ep.servidores = reordenarServidores(servidoresFirestore);
+    ep.servidores = guardarServidoresEnCache(ep, servidoresFirestore);
     renderizarServidores(ep.servidores);
   } else {
     // Si no hay en Firestore, mostrar indicador de carga
@@ -1098,12 +1083,15 @@ try {
       // Guardar en Firestore la lista completa fusionada
       await guardarServidoresEnFirestore(ep, ep.servidores);
 
+      guardarServidoresEnCache(ep, ep.servidores);
+
       // Actualizar la interfaz
       renderizarServidores(ep.servidores);
     } else if (!servidoresFirestore.length) {
       // Caso inicial: Firestore estaba vacío y la API devolvió resultados
       ep.servidores = reordenarServidores(servidoresApi);
       await guardarServidoresEnFirestore(ep, ep.servidores);
+      guardarServidoresEnCache(ep, ep.servidores);
       renderizarServidores(ep.servidores);
     }
   } else if (!servidoresFirestore.length) {
@@ -1120,20 +1108,6 @@ try {
 }
 
   actualizarEstadoBotones();
-
-  // Pre-cargar siguiente episodio (si existe)
-
-const siguiente = episodios.find(e => String(e.number) === String(index + 1));
-
-if (siguiente) {
-  sincronizarServidoresConApi(siguiente)
-    .then(servidores => {
-      if (servidores?.length) {
-        siguiente.servidores = servidores;
-      }
-    })
-    .catch(() => {});
-}
 
   return ep;
 }
