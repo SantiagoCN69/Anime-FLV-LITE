@@ -1,7 +1,16 @@
 import { observerAnimeCards, crearAnimeCard } from "./utils.js";
+
+// --- CONSTANTES GLOBALES ---
+const API_BASE_URL = 'https://backend-animeflv-lite.onrender.com/api/browse?source=animeav1&order=score';
+const CACHE_KEY = 'animes_cache_populares';
+
+// Mapeos de valores (igual que directorioav1)
+const MAPA_TIPOS = { 'tv': 'tv-anime', 'movie': 'pelicula', 'special': 'especial', 'ova': 'ova' };
+const MAPA_ESTADOS = { '1': 'emision', '2': 'finalizado', '3': 'proximamente' };
+
 let currentPage = 1;
-let type = null;
-let filters = null;
+let tipoFiltro = null;
+let estadoFiltro = null;
 function formatAnimeId(title) {
   if (!title) return '';
   return title
@@ -31,10 +40,11 @@ function centrarPaginacion() {
   }
 }
 
-function updatePagination(pagination) {
+function updatePagination(PaginasTotales) {
   const paginationContainer = document.getElementById('pagination-populares');
   paginationContainer.innerHTML = '';
-  for (let i = 1; i <= pagination.last_visible_page; i++) {
+  const totalPages = parseInt(PaginasTotales) || 1;
+  for (let i = 1; i <= totalPages; i++) {
     const button = document.createElement('button');
     button.className = 'page-button';
     button.textContent = i;
@@ -48,59 +58,51 @@ function cambiarPagina(page) {
   cargarPopulares();
 }
 
+// --- UTILIDADES DE FETCH ---
+async function fetchData(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Error en la red');
+  return response.json();
+}
+
 async function cargarPopulares() {
-    type = type || null;
-    filters = filters || null;
   try {
     const container = document.getElementById('populares');
-    
-    if (!container) return;
-    
-    container.innerHTML = '<span class="span-carga">Cargando animes populares...</div>';
-		let url = 'https://api.jikan.moe/v4/top/anime';
-		const params = new URLSearchParams();
-		if (type) params.append('type', type);
-		if (filters) params.append('filter', filters);
-		if (filters !== 'upcoming' && type !== 'ova' && type !== 'ona') {
-			params.append('page', currentPage);
-		}
-		url += '?' + params.toString();
-		const response = await fetch(url);
-		if (!response.ok) {
-      console.error("Error al cargar los datos:", response.status);
-      let errorMessage = 'Error al cargar los animes.';
-      if (response.status === 504) {
-        errorMessage = 'La API no da respuestas válidas. Intenta más tarde.';
-      } else if (response.status === 429) {
-        errorMessage = 'Has hecho demasiadas solicitudes. Espera un momento antes de intentar de nuevo.';
-      } else if (response.status >= 500) {
-        errorMessage = 'Error en el servidor de la API. Intenta más tarde.';
-      } else if (response.status === 404) {
-        errorMessage = 'No se encontraron resultados.';
-      }
-      container.innerHTML = `<span class="span-carga">${errorMessage}</span>`;
-      return;
-		}
-		const data = await response.json();
-    const animes = data.data || [];
 
-    container.innerHTML = '';
-    
-    animes.forEach(anime => {
-      const card = crearAnimeCard(anime);
-      if (card) container.appendChild(card);
-    });
-    
-    observerAnimeCards();
-    
-    if (filters !== 'upcoming' && type !== 'ova' && type !== 'ona') {
-      updatePagination(data.pagination);
+    if (!container) return;
+
+    container.innerHTML = '<span class="span-carga">Cargando animes populares...</span>';
+
+    const params = new URLSearchParams();
+    if (tipoFiltro) params.append('category', MAPA_TIPOS[tipoFiltro] || tipoFiltro);
+    if (estadoFiltro) params.append('status', MAPA_ESTADOS[estadoFiltro] || estadoFiltro);
+    params.append('page', currentPage);
+
+    const url = `${API_BASE_URL}&${params.toString()}`;
+
+    // Verificar cache primero
+    const cacheKey = `${CACHE_KEY}_${tipoFiltro || 'all'}_${estadoFiltro || 'all'}_${currentPage}`;
+    const cachedData = localStorage.getItem(cacheKey);
+
+    if (cachedData) {
+      const { data: cachedAnimes, PaginasTotales } = JSON.parse(cachedData);
+      renderizarResultados(cachedAnimes);
+      updatePagination(PaginasTotales);
       centrarPaginacion();
-    } else {
-      document.getElementById('pagination-populares').innerHTML = '';
     }
-    
-    
+
+    // Fetch para actualizar en segundo plano
+    const data = await fetchData(url);
+    const animes = data.animes || [];
+
+    // Si no había cache o los datos cambiaron, actualizar
+    if (!cachedData || (animes[0]?.title !== JSON.parse(cachedData).data[0]?.title)) {
+      renderizarResultados(animes);
+      updatePagination(data.PaginasTotales);
+      centrarPaginacion();
+      localStorage.setItem(cacheKey, JSON.stringify({ data: animes, PaginasTotales: data.PaginasTotales }));
+    }
+
   } catch (error) {
     console.error('Error al cargar populares:', error);
     const container = document.getElementById('populares');
@@ -108,7 +110,20 @@ async function cargarPopulares() {
       container.innerHTML = '<span class="span-carga">Error al cargar los animes. Api en mantenimiento.</span>';
     }
   }
+}
 
+function renderizarResultados(animes) {
+  const container = document.getElementById('populares');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  animes.forEach(anime => {
+    const card = crearAnimeCard(anime);
+    if (card) container.appendChild(card);
+  });
+
+  observerAnimeCards();
 }
 
 cargarPopulares();
@@ -121,11 +136,11 @@ btns.forEach(btn => {
         });
     });
 
-// Función para manejar los botones de filtro
+// Función para manejar los botones de filtro (tipo y estado)
 function setupFilterButtons(buttonsSelector, targetButtonId, filterType) {
     const buttons = document.querySelectorAll(buttonsSelector);
     const targetButton = document.getElementById(targetButtonId);
-    
+
     buttons.forEach(btn => {
         btn.addEventListener('click', () => {
             buttons.forEach(b => b.classList.remove('active'));
@@ -137,21 +152,21 @@ function setupFilterButtons(buttonsSelector, targetButtonId, filterType) {
                     span.textContent = btn.textContent.trim();
                 }
             }
-            
-            if (filterType === 'type') {
-                type = btn.dataset.type || null;
-            } else if (filterType === 'filter') {
-                filters = btn.dataset.type || null;
+
+            if (filterType === 'tipo') {
+                tipoFiltro = btn.dataset.type || null;
+            } else if (filterType === 'estado') {
+                estadoFiltro = btn.dataset.type || null;
             }
-            
+
             currentPage = 1;
             cargarPopulares();
         });
     });
 }
 
-setupFilterButtons('#nav-populares-type-section > button', 'btn-populares-filtro-type', 'type');
-setupFilterButtons('#nav-populares-filtro-section > button', 'btn-populares-filtro-filters', 'filter');
+setupFilterButtons('#nav-populares-type-section > button', 'btn-populares-filtro-type', 'tipo');
+setupFilterButtons('#nav-populares-filtro-section > button', 'btn-populares-filtro-filters', 'estado');
 
 const btnAlert = document.getElementById('btn-populares-alert');
 const modal = document.getElementById('modal-populares');

@@ -1,11 +1,14 @@
-
+#headder-section-populares {
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
 
 #nav-populares {
+  max-width: 400px;
   position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 1.3rem;
 }
 
 #nav-populares button.active + div {
@@ -30,6 +33,9 @@
 }
 #popularesh2 {
   display: inline-block;
+  margin-right: 35px;
+  height: 34px;
+  margin-block: 9px;
 }
 #btn-populares-alert {
   background-color: transparent;
@@ -40,7 +46,11 @@
   top: 16px;
   left: 205px;
 }
-
+@media (max-width: 360px) {
+  #btn-populares-alert {
+    left: 140px;
+  }
+}
 #btn-populares-alert svg {
   width: 20px;
   height: 20px;
