@@ -752,10 +752,7 @@ const getEstadoBadge = (estado) => {
   if (!estado) return '';
 
   const badges = {
-    'En emision': '<span class="hero-badge hero-badge--ongoing">En emisión</span>',
-    'Por estrenar': '<span class="hero-badge hero-badge--new">Por estrenar</span>',
-    'Concluido': '<span class="hero-badge hero-badge--status">Concluido</span>',
-    'Finalizado': '<span class="hero-badge hero-badge--status">Finalizado</span>'
+    'TV Anime': '<span class="hero-badge hero-badge--ongoing">TV Anime</span>',
   };
 
   return badges[estado] || `<span class="hero-badge hero-badge--status">${estado}</span>`;
@@ -766,11 +763,10 @@ function buildHeroSlide(anime, index) {
   const url1 = `/anime?id=${id}`;
   const url2 = `/ver?id=${id}&episode=1`;
   const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
-
-  const badgeHtml = getEstadoBadge(anime.status);
+  const badgeHtml = getEstadoBadge(anime.type);
 
   // Evalúa si se debe agregar la clase hidden al botón principal
-  const isPorEstrenar = anime.status === 'Por estrenar';
+  const isPorEstrenar = anime.type === 'Por estrenar';
 
   const slide = document.createElement('article');
   slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
@@ -1081,7 +1077,7 @@ async function cargarhistorial() {
 
   animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
 
-  const animesAMostrar = animesRecientes.slice(0, 15);
+  const animesAMostrar = animesRecientes.slice(0, 10);
 
   // Solo renderiza si hay MÁS de 3 elementos (> 3)
   if (animesAMostrar.length > 4) {
