@@ -759,26 +759,39 @@ const getEstadoBadge = (estado) => {
 };
 
 function buildHeroSlide(anime, index) {
-  const id = slugFromTitle(anime.title);
+  // 1. Extracción segura del ID/Slug desde anime.url
+  let id = '';
+  if (anime.url) {
+    // Elimina slashes finales si existen y extrae el último segmento
+    const cleanPath = anime.url.replace(/\/+$/, '');
+    id = cleanPath.split('/').pop();
+  } else {
+    // Fallback al título si anime.url no viene presente
+    id = slugFromTitle(anime.title);
+  }
+
   const url1 = `/anime?id=${id}`;
   const url2 = `/ver?id=${id}&episode=1`;
   const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
   const badgeHtml = getEstadoBadge(anime.type);
 
-  // Evalúa si se debe agregar la clase hidden al botón principal
+  // 2. Construcción de URLs de imagen con fallback
+  const fallbackBgUrl = anime.image || anime.cover || '';
+  const cdnBgUrl = id ? `https://cdn.jkdesa.com/assets/images/animes/image/${id}.jpg` : fallbackBgUrl;
+
   const isPorEstrenar = anime.type === 'Por estrenar';
 
   const slide = document.createElement('article');
   slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
   slide.dataset.index = index;
   slide.dataset.id = id;
-  
-  const bgUrl = anime.image || anime.cover || '';
-  slide.style.setProperty('--bg-image', `url('${bgUrl}')`);
-  
+
+  // Asignamos inicialmente la imagen del CDN
+  slide.style.setProperty('--bg-image', `url('${cdnBgUrl}')`);
+
   slide.innerHTML = `
     <div class="hero-background">
-      <div class="hero-slide__bg" style="background-image:url('${bgUrl}')"></div>
+      <div class="hero-slide__bg" style="background-image: url('${cdnBgUrl}')"></div>
     </div>
     <div class="hero-slide__content">
       ${badgeHtml ? `<div class="hero-slide__badges">${badgeHtml}</div>` : ''}
@@ -794,16 +807,36 @@ function buildHeroSlide(anime, index) {
           </span>
           Ver Ahora
         </a>
-     
+      
         <a href="${url1}" class="hero-btn hero-btn--secondary">
           <span class="hero-btn__icon" aria-hidden="true">
-<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 17V11" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path> <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="Currentcolor"></circle> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_iconCarrier">
+                <path d="M12 17V11" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path>
+                <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="Currentcolor"></circle>
+                <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path>
+              </g>
+            </svg>
           </span>
           <span class="hero-btn__label">Más información</span>
         </a>
       </div>
     </div>
   `;
+
+  // 3. Verificación de carga en segundo plano para fallback en caso de error HTTP 404
+  if (cdnBgUrl !== fallbackBgUrl && fallbackBgUrl) {
+    const imgCheck = new Image();
+    imgCheck.src = cdnBgUrl;
+    imgCheck.onerror = () => {
+      const bgElement = slide.querySelector('.hero-slide__bg');
+      if (bgElement) {
+        bgElement.style.backgroundImage = `url('${fallbackBgUrl}')`;
+      }
+      slide.style.setProperty('--bg-image', `url('${fallbackBgUrl}')`);
+    };
+  }
+
   return slide;
 }
 
