@@ -493,11 +493,12 @@ body.cv-sidebar #section-continuar-viendo {
   font-weight: 500;
   transition: all 0.2s ease-in-out;
 }
-
-.btn-letra:hover {
-    background-color: var(--btn2);
-    color: var(--t1);
-    transform: translateY(-2px);
+@media (hover: hover) {
+  .btn-letra:hover {
+      background-color: var(--btn2);
+      color: var(--t1);
+      transform: translateY(-2px);
+  }
 }
 
 .btn-letra.active {
