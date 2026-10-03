@@ -414,12 +414,12 @@ body:not(.animaciones-off) header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 9px;
   min-height: 22px;
   z-index: 1;
 }
 #info1 a {
-  font-size: .9rem;
+  font-size: .8rem;
   font-weight: 500;
   opacity: .9;
   display: inline-flex;
@@ -435,7 +435,7 @@ body:not(.animaciones-off) header {
   background-color: var(--t1);
   width: 16px;
   height: 16px;
-  margin-right: 7px;
+  margin-right: 5px;
   vertical-align: middle;
 }
 #scorecargado {
@@ -534,16 +534,15 @@ body:not(.animaciones-off) header {
   width: 70px;
   height: 21.5px;
   margin: 0;
-  margin-right: 35px;
 }
 #categoriacargando {
-  width: 92px;
+  width: 82px;
 }
 #anocargando, #scorecargando {
-  width: 57px;
+  width: 52px;
 }
 #statuscargando::before {
-  width: 100px;
+  width: 98px;
 }
 .genre-link-cargando {
   width: unset;
