@@ -347,6 +347,37 @@ function setAnimeDescripcion(descripcionEl, texto) {
   });
 }
 
+// Función helper para obtener la URL de la portada
+function getPortadaUrl(anime) {
+  // Extrae el ID si viene de anime.url o usa anime.id / slugFromTitle directamente
+  let id = anime.id;
+  
+  if (!id && anime.url) {
+    id = anime.url.replace(/\/+$/, '').split('/').pop();
+  } else if (!id && anime.title) {
+    id = slugFromTitle(anime.title);
+  }
+
+  const cdnUrl = id ? `https://cdn.jkdesa.com/assets/images/animes/image/${id}.jpg` : null;
+  const fallbackUrl = anime.portada || anime.image || anime.cover || '';
+
+  return { cdnUrl, fallbackUrl };
+}
+
+// Aplicar al elemento <img>
+function setAnimePortada(portadaEl, anime) {
+  const { cdnUrl, fallbackUrl } = getPortadaUrl(anime);
+
+  // Manejador de error para activar el fallback si el CDN devuelve 404
+  portadaEl.onerror = function() {
+    if (this.src !== fallbackUrl && fallbackUrl) {
+      this.src = fallbackUrl;
+    }
+  };
+
+  portadaEl.src = cdnUrl || fallbackUrl;
+}
+
 const renderAnime = anime => {
   
   // Build info1 content dynamically
@@ -414,7 +445,8 @@ if (anime.estado) {
   }
   
   document.getElementById("covercarga").classList.add("cargado");
-  portadaEl.src = anime.portada;
+  
+  setAnimePortada(portadaEl, anime);
   portadaEl.classList.add("cargo")
   document.querySelector('.anime-container1').style.setProperty('--anime-portada', `url(${anime.portada})`);
   aplicarFondoAnime(anime);
