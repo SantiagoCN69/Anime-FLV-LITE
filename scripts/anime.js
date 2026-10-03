@@ -356,16 +356,16 @@ const renderAnime = anime => {
   if (anime.category) {
     const categoriaLower = anime.category.toLowerCase();
     if (categoriaLower === 'ova') {
-      categoriaTransformada = 'ovas';
+      categoriaTransformada = 'ova';
     } else if (categoriaLower === 'ona') {
       categoriaTransformada = 'onas';
     } else if (categoriaLower === 'tv anime') {
-      categoriaTransformada = 'animes';
+      categoriaTransformada = 'tv-anime';
     } else if (categoriaLower === 'película') {
-      categoriaTransformada = 'peliculas';
+      categoriaTransformada = 'pelicula';
     }
     else if (categoriaLower === 'especial') {
-      categoriaTransformada = 'especiales';
+      categoriaTransformada = 'especial';
     }
   }
 //tranformas estado 
@@ -375,30 +375,30 @@ if (anime.estado) {
   if (estadoLower === 'en emisión' || "en emision") {
     estadoTransformado = 'emision';
   } else if (estadoLower === 'finalizado') {
-    estadoTransformado = 'finalizados';
+    estadoTransformado = 'finalizado';
   } else if (estadoLower === "por estrenar") {
-    estadoTransformado = "estrenos";
+    estadoTransformado = "proximamente";
   }
 }
   //Add rating
   if (anime.score && anime.score !== 0) {
-    infoParts.push(`<a href="/?DirectorioAV1&score=${anime.score}" class="span-text-anime1" id="scorecargado">${anime.score}</a>`);
+    infoParts.push(`<a href="/?DirectorioAV1&order=score" class="span-text-anime1" id="scorecargado">${anime.score}</a>`);
   }
   // Add category
   if (categoriaTransformada && !categoriaTransformada.includes('Desconocido')) {
-    infoParts.push(`<a href="/?DirectorioAV1&tipo=${categoriaTransformada}" class="span-text-anime1" id="categoriacargado">${anime.category}</a>`);
+    infoParts.push(`<a href="/?DirectorioAV1&category=${categoriaTransformada}" class="span-text-anime1" id="categoriacargado">${anime.category}</a>`);
   }
   
   // Add year
   if (anime.startDate) {
     const yearMatch = String(anime.startDate).match(/(\d{4})/);
     const year = yearMatch ? yearMatch[1] : anime.startDate;
-    infoParts.push(`<a href="/?DirectorioAV1&fecha=${year}" class="span-text-anime1" id="anocargado">${year}</a>`);
+    infoParts.push(`<a href="/?DirectorioAV1&minYear=${year}&maxYear=${year}" class="span-text-anime1" id="anocargado">${year}</a>`);
   }
   
   // Add status with icon
   if (anime.estado) {
-    infoParts.push(`<a href="/?DirectorioAV1&estado=${estadoTransformado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
+    infoParts.push(`<a href="/?DirectorioAV1&status=${estadoTransformado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
   }
   
   // Join with bullet points
