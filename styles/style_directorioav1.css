@@ -1,0 +1,15 @@
+#filtrosseleccionados {
+    top: -12px;
+    right: -12px;
+    background: transparent;
+    color: #888;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: normal;
+    z-index: 1000;
+    margin-block: 12px;
+}
+#btnfiltrosav1 {
+    margin-top: 0;
+}

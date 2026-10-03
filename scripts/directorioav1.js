@@ -31,6 +31,7 @@ const DOM = {
     btnFuenteDirectorio: document.getElementById('btn-fuente-directorio-av1'),
     contador: document.getElementById('contador-av1'),
     initLoading: document.getElementById('init-loading-av1'),
+    filtrosSeleccionados: document.getElementById('filtrosseleccionados'),
     slider: {
         min: document.getElementById('ano-min'),
         max: document.getElementById('ano-max'),
@@ -50,6 +51,25 @@ const FILTROS_CONFIG = [
 
 // --- UTILIDADES Y HELPERS ---
 const valorFiltroav1 = (btn) => btn.id.replace(/-av1$/, '');
+
+// Actualizar texto de filtros activos en botón móvil
+function actualizarTextoFiltrosActivos() {
+    const filtros = [];
+
+    const letra = document.querySelector('.btn-letra.active');
+    if (letra) filtros.push(`Letra: ${letra.dataset.letra}`);
+
+    if (DOM.slider.min && DOM.slider.max) {
+        const min = parseInt(DOM.slider.min.value), max = parseInt(DOM.slider.max.value);
+        if (min !== 1991 || max !== 2026) filtros.push(`Año: ${min}-${max}`);
+    }
+
+    ['#filtro-genero-av1', '#filtro-tipo-av1', '#filtro-estado-av1', '#filtro-orden-av1'].forEach(sel => {
+        document.querySelectorAll(`${sel} .btn-filtro-opcion.active`).forEach(btn => filtros.push(btn.textContent.trim()));
+    });
+
+    DOM.filtrosSeleccionados.textContent = filtros.length ? `Filtros activos: ${filtros.join(', ')}` : 'Sin filtros seleccionados';
+}
 
 // Timer inicial
 let count = 100;
@@ -212,8 +232,9 @@ function bindFilterEvents() {
         if (min > max) [min, max] = [max, min];
         DOM.slider.valMin.textContent = min;
         DOM.slider.valMax.textContent = max;
+        actualizarTextoFiltrosActivos();
     };
-    
+
     if (DOM.slider.min && DOM.slider.max) {
         DOM.slider.min.addEventListener('input', actualizarTextosSlider);
         DOM.slider.max.addEventListener('input', actualizarTextosSlider);
@@ -239,12 +260,13 @@ function bindFilterEvents() {
             btn.addEventListener('click', () => {
                 if (isRadio) opciones.forEach(b => b.classList.remove('active'));
                 btn.classList.toggle('active');
-                
+
                 const activos = Array.from(opciones).filter(b => b.classList.contains('active'));
                 const span = btnFiltroMain.querySelector('span');
                 if (span) span.textContent = isRadio ? btn.textContent : (activos.length > 0 ? `(${activos.length})` : 'Todos');
-                
+
                 actualizarLinkBusqueda();
+                actualizarTextoFiltrosActivos();
             });
         });
     });
@@ -255,6 +277,7 @@ function bindFilterEvents() {
             const isActive = btn.classList.contains('active');
             document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('active'));
             if (!isActive) btn.classList.add('active');
+            actualizarTextoFiltrosActivos();
             ejecutarBusqueda();
         });
     });
@@ -384,5 +407,8 @@ function inicializarFiltrosDesdeURL() {
     activarBotonesURL('category', '#filtro-tipo-av1', MAPA_TIPOS_INV, 'btn-filtro-tipo-av1');
     activarBotonesURL('status', '#filtro-estado-av1', MAPA_ESTADOS_INV, 'btn-filtro-estado-av1');
     activarBotonesURL('order', '#filtro-orden-av1', MAPA_ORDEN_INV, 'btn-filtro-orden-av1');
+
+    // Actualizar texto de filtros activos
+    actualizarTextoFiltrosActivos();
 }
 cargarAnimesConCache();
