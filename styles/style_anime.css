@@ -1358,7 +1358,8 @@ z-index: 0;
   content: "";
   position: absolute;
   aspect-ratio: 1 / 1.4; /* Mantiene la proporción que necesitas */
-  width: 100vw;
+  width: 98vw;
+  height: 110%;
   /* Desenfoque de la imagen de fondo en toda la capa */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
