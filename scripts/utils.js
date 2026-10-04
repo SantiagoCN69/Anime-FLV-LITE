@@ -169,7 +169,7 @@ export function crearAnimeCard(anime, opciones = {}) {
         let icon = 'circle-solid.svg'; // Finalizado o default
         let textoEstado = "Finalizado";
 
-        if (estNormalizado.includes('emisión') || estNormalizado.includes('emision') || estNormalizado.includes('currently') || estNormalizado.includes('en')) {
+        if (estNormalizado.includes('emisión') || estNormalizado.includes('emision') || estNormalizado.includes('currently')) {
             icon = 'circle-solid-blue.svg';
             textoEstado = 'En emisión';
         } else if (estNormalizado.includes('estrenar') || estNormalizado.includes('proximamente') || estNormalizado.includes('por')) {
