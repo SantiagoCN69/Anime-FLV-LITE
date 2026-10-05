@@ -425,8 +425,10 @@ overflow: hidden;
   background-color: var(--br);
   border-bottom: 2px solid var(--btn);
 }
-#controles button:hover {
-  background-color: var(--br);
+@media (hover: hover) {
+  #controles button:hover {
+    background-color: var(--br);
+  }
 }
 #video {
   display: flex;
