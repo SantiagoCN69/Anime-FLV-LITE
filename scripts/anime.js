@@ -17,7 +17,9 @@ let animeActual = null; // Guardar referencia al anime actual para invertir orde
 let ordenInvertido = false; // Estado del orden de capítulos
 let overlayCompletadosActivo = false; // Evitar overlay duplicado al invertir
 
-document.title = "AniZen - " + id;
+const titulo = id.replaceAll("-", " ").toLowerCase();
+const tituloFormateado = titulo.charAt(0).toUpperCase() + titulo.slice(1);
+document.title = "AniZen - " + tituloFormateado;
 
 const userID = localStorage.getItem("userID");
 
