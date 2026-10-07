@@ -1408,7 +1408,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const excepcionesSelector = [
     '.pagination', '#indexpagination', '.hero-slider', '#recomendaciones-favoritos',
     '#recomendaciones-personalizadas', '#sugerencias-sin-resultados',
-    '#anime-grid-ia-busqueda', '#filtro-letras-av1', '#section-ultimos-caps-viendo'
+    '#anime-grid-ia-busqueda', '#filtro-letras-av1', '#section-ultimos-caps-viendo',
+    '#filtro-anos-av1'
   ].join(','); 
   
   const isException = (element) => element?.closest(excepcionesSelector) !== null;
@@ -1485,14 +1486,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- LÓGICA DE NAVEGACIÓN ENTRE SECCIONES ---
   const navigationMap = {
-    'Ultimos-Episodios': { left: 'DirectorioJK' },
+    'Ultimos-Episodios': { left: 'DirectorioAV1' },
     'Mis-Favoritos': { left: null, right: null },
     'Viendo': { left: null, right: null },
     'Pendientes': { left: null, right: null },
     'Completados': { left: null, right: null },
     'DirectorioJK': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
     'DirectorioAV1': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
-    'Recomendaciones': { left: 'Populares', right: 'DirectorioJK' },
+    'Recomendaciones': { left: 'Populares', right: 'DirectorioAV1' },
     'Populares': { left: 'Horarios', right: 'Recomendaciones' },
     'Horarios': { right: 'Populares', left: null }
   };
