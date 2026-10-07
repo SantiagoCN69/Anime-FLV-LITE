@@ -348,8 +348,8 @@ overflow: hidden;
 }
 #controles {
   display: flex;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   height: 50px;
   margin-right: 0;
   
@@ -357,6 +357,7 @@ overflow: hidden;
 }
 #controles.cargado {
   border: 1px solid var(--br);
+  border-bottom: none;
 }
 #controles.con-mediafire {
   border-top-right-radius: 0px;
@@ -389,8 +390,11 @@ overflow: hidden;
   background-color: var(--p);
   color: var(--t1);
   border-right: 1px solid var(--br);
+  border-bottom: 1px solid var(--br);
 }
-
+#controles button:last-child {
+  border-right: none;
+}
 #controles a {
   display: flex;
   align-items: center;
@@ -427,7 +431,7 @@ overflow: hidden;
 }
 @media (hover: hover) {
   #controles button:hover {
-    background-color: var(--br);
+    filter: brightness(1.5);
   }
 }
 #video {
@@ -439,8 +443,8 @@ overflow: hidden;
 #controles.cargado ~ #video {
   border: 1px solid var(--br);
   border-top: none;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 iframe {
   height: 100%;
