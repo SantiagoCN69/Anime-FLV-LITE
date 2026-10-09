@@ -313,7 +313,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 const btnCap = document.getElementById("btn-cap");
-tituloAnime.textContent = animeId;
+tituloAnime.textContent = animeId.replaceAll("-", " ");
 btnCap.textContent = `Episodio ${episodioActualIndex}`;
 
 // Inicializar el número del capítulo después de que btnCap esté disponible
