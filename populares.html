@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Populares</title>
-    <script>
+    <link rel="stylesheet" href="styles/style_populares.css">
+    <!-- Comentado para pruebas locales - descomentar para producción -->
+    <!-- <script>
        window.location.href = "https://ani.zenlite.workers.dev/?Populares";
-    </script>
+    </script> -->
 </head>
 
 <body>
@@ -26,22 +28,17 @@
         <h2 id="popularesh2" data-text="cargando..">Populares</h2>
             <nav id="nav-populares">
         <section class="filtro-section">
-        <button type="button" id="btn-populares-filtro-type" class="btn-filtro" title="Filtro">Tipo: <span>Todos</span></button>
-        <div id="nav-populares-type-section" class="filtro-opciones">
-            <button data-type="" type="button" id="btn-populares-normal" class="btn-filtro-opcion">Todos</button>
-            <button data-type="tv" type="button" id="btn-populares-tv" class="btn-filtro-opcion">TV</button>
-            <button data-type="movie" type="button" id="btn-populares-movie" class="btn-filtro-opcion">Película</button>
-            <button data-type="special" type="button" id="btn-populares-special" class="btn-filtro-opcion">Especial</button>
-            <button data-type="ova" type="button" id="btn-populares-ova" class="btn-filtro-opcion">OVA</button>
-        </div>
-        </section>
-        <section class="filtro-section">
-        <button type="button" id="btn-populares-filtro-filters" class="btn-filtro" title="Filtro">Estado: <span>Todos</span></button>
-        <div id="nav-populares-filtro-section" class="filtro-opciones">
-            <button data-type="" type="button" id="btn-populares-estado-todos" class="btn-filtro-opcion">Todos</button>
-            <button data-type="1" type="button" id="btn-populares-estado-emision" class="btn-filtro-opcion">En emisión</button>
-            <button data-type="2" type="button" id="btn-populares-estado-finalizado" class="btn-filtro-opcion">Finalizado</button>
-            <button data-type="3" type="button" id="btn-populares-estado-proximamente" class="btn-filtro-opcion">Próximamente</button>
+        <button type="button" id="btn-populares-filtro-ranking" class="btn-filtro" title="Filtro">Ranking: <span>Populares</span></button>
+        <div id="nav-populares-ranking-section" class="filtro-opciones">
+            <button data-ranking="bypopularity" type="button" id="btn-populares-ranking-populares" class="btn-filtro-opcion">Populares</button>
+            <button data-ranking="all" type="button" id="btn-populares-ranking-top" class="btn-filtro-opcion">Top Rated</button>
+            <button data-ranking="airing" type="button" id="btn-populares-ranking-emision" class="btn-filtro-opcion">En emisión</button>
+            <button data-ranking="upcoming" type="button" id="btn-populares-ranking-proximos" class="btn-filtro-opcion">Próximos</button>
+            <button data-ranking="tv" type="button" id="btn-populares-ranking-tv" class="btn-filtro-opcion">TV</button>
+            <button data-ranking="movie" type="button" id="btn-populares-ranking-movie" class="btn-filtro-opcion">Películas</button>
+            <button data-ranking="ova" type="button" id="btn-populares-ranking-ova" class="btn-filtro-opcion">OVAs</button>
+            <button data-ranking="special" type="button" id="btn-populares-ranking-special" class="btn-filtro-opcion">Especiales</button>
+            <button data-ranking="favorite" type="button" id="btn-populares-ranking-favorite" class="btn-filtro-opcion">Favoritos</button>
         </div>
         </section>
     </nav>
@@ -58,6 +55,8 @@
     <div id="pagination-populares" class="pagination">
     </div>
 </main>
+
+<script type="module" src="scripts/populares.js"></script>
 
 </body>
 </html>
