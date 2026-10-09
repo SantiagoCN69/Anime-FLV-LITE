@@ -9,7 +9,7 @@ btnVolver.href = `/anime?id=${animeId}`;
 // Leer preferencia de servidores de localStorage
 const serversPreference = localStorage.getItem("serverPreference");
 
-document.title = "AniZen - " + animeId + " - " + episodeNumber;
+document.title = "AniZen - " + animeId.replaceAll("-", " ") + " - " + episodeNumber;
 
 const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
 const btnAnterior = document.getElementById("btn-anterior-capitulo");
