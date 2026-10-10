@@ -293,6 +293,7 @@ body.cv-sidebar #section-continuar-viendo {
 
 .sidebar {
   transform: translateX(0);
+  opacity: 1;
 }
 @media screen and (max-width: 600px) {
 

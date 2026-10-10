@@ -493,6 +493,7 @@ header.search-active .logout-modal {
 }
 .sidebar.active {
   transform: translateX(0);
+  opacity: 1;
 }
 
 .sidebar ul {
@@ -568,7 +569,7 @@ header.search-active .logout-modal {
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
-  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease, height 0.3s ease, padding-bottom 0.3s ease, width 0.3s ease;
+  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease, height 0.3s ease, padding-bottom 0.3s ease, width 0.3s ease, opacity 0.3s ease;
 }
 
 @media screen and (max-width: 600px) {
@@ -579,6 +580,7 @@ header.search-active .logout-modal {
     height: calc(100dvh - 80px);
     transform: translateX(-120%);
     overflow-y: auto;
+    opacity: 0;
   }
  .sidebar ul {
   height: unset;
