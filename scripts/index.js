@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-login.js';
-import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where, startAfter} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
 
 // Registro del Service Worker para PWA
@@ -399,10 +399,14 @@ async function cargarUltimosCapsVistos() {
   if (!ultimosCapsContainer) return;
 
   if (!userID || userID === "null") {
+    console.log('⚠️ Usuario no autenticado');
     sectionsidebar.style.display = 'none';
     inicializarContinuarViendo();
     return;
   }
+
+  const MAX_VALIDOS = 10;
+  const BATCH_SIZE = 20;
 
   const renderizarBotones = (datos) => {
     ultimosCapsContainer.innerHTML = '';
@@ -442,20 +446,43 @@ async function cargarUltimosCapsVistos() {
 
   try {
     const ref = collection(db, "usuarios", userID, "caps-vistos");
-    const q = query(ref, where('esFinalizadoPorVistos', '==', false), limit(10));
-    const snap = await getDocs(q);
+    let allDocs = [];
+    let lastDoc = null;
+    let hasMore = true;
+
+    // Fetch iterativo hasta tener suficientes candidatos
+    while (hasMore && allDocs.length < BATCH_SIZE * 2) {
+      let q = query(ref, where('esFinalizadoPorVistos', '==', false), limit(BATCH_SIZE));
+      if (lastDoc) {
+        q = query(q, startAfter(lastDoc));
+      }
+
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        hasMore = false;
+        break;
+      }
+
+      allDocs = [...allDocs, ...snap.docs];
+      lastDoc = snap.docs[snap.docs.length - 1];
+
+      if (allDocs.length >= BATCH_SIZE * 2) {
+        hasMore = false;
+      }
+    }
 
     // Si el usuario no tiene historial en Firebase
-    if (snap.empty) {
+    if (allDocs.length === 0) {
       sectionsidebar.style.display = 'none';
-      localStorage.setItem(cacheKey, JSON.stringify([])); 
+      localStorage.setItem(cacheKey, JSON.stringify([]));
       localStorage.setItem(cacheStateKey, JSON.stringify([]));
       inicializarContinuarViendo();
       return;
     }
 
     const currentState = [];
-    snap.docs.forEach(docSnap => {
+    allDocs.forEach(docSnap => {
       const data = docSnap.data();
       const vistos = (data.episodiosVistos || []).map(Number);
       if (vistos.length > 0) {
@@ -466,11 +493,12 @@ async function cargarUltimosCapsVistos() {
            fechaMilisegundos = new Date(data.fechaAgregado).getTime();
         }
 
-        currentState.push({
+        const item = {
           id: docSnap.id,
           ultimoVisto: Math.max(...vistos),
-          fechaAgregado: fechaMilisegundos 
-        });
+          fechaAgregado: fechaMilisegundos
+        };
+        currentState.push(item);
       }
     });
     
@@ -483,28 +511,25 @@ async function cargarUltimosCapsVistos() {
 
     // Validamos si TODO está exactamente igual (ahorra ejecución)
     if (cachedState && cachedData.length > 0 && JSON.stringify(currentState) === JSON.stringify(cachedState)) {
-      return; 
+      return;
     }
 
     // --- 2. OPTIMIZACIÓN: Solo pedir a Firebase los animes que cambiaron ---
     const promesasFetch = [];
     const indicesFetch = [];
     const freshData = new Array(currentState.length).fill(null);
-    
+
     currentState.forEach((cap, index) => {
-      // ¿Este anime y su último capítulo visto ya estaban en la caché?
       const estadoAnterior = cachedState.find(c => c.id === cap.id && c.ultimoVisto === cap.ultimoVisto);
-      
+
       if (estadoAnterior && Array.isArray(cachedData)) {
-        // Rescatamos los datos visuales (portada, título) de la caché
         const datosCacheados = cachedData.find(d => d.id === cap.id);
         if (datosCacheados) {
-          freshData[index] = datosCacheados; // Reutilizamos sin gastar lecturas
-          return; // Saltamos a la siguiente iteración
+          freshData[index] = datosCacheados;
+          return;
         }
       }
-      
-      // Si es un anime nuevo o vio un capítulo nuevo, preparamos la petición
+
       indicesFetch.push(index);
       promesasFetch.push(getDoc(doc(db, "datos-animes", cap.id)));
     });
@@ -512,19 +537,17 @@ async function cargarUltimosCapsVistos() {
     // 3. Ejecutamos las llamadas a Firebase SOLAMENTE para los que faltan
     if (promesasFetch.length > 0) {
       const animeDocsSnap = await Promise.all(promesasFetch);
-      
+
       animeDocsSnap.forEach((docSnap, i) => {
         if (docSnap.exists()) {
           const animeDetails = docSnap.data();
-          const originalIndex = indicesFetch[i]; // Recuperamos su posición original
+          const originalIndex = indicesFetch[i];
           const cap = currentState[originalIndex];
-          
+
           const siguienteCapitulo = cap.ultimoVisto + 1;
           const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
           const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
-          
-          console.log('🔍 Anime:', cap.id, '| Último visto:', cap.ultimoVisto, '| Buscando Ep:', siguienteCapitulo, '| Encontrado:', !!siguienteEpisodio);
-          
+
           if (siguienteEpisodio) {
             freshData[originalIndex] = {
               id: cap.id,
@@ -534,24 +557,24 @@ async function cargarUltimosCapsVistos() {
               siguienteCapituloUrl: siguienteEpisodio.url,
               totalCapitulos: episodios.length
             };
-          } else {
-            console.warn('⚠️ No se encontró siguiente capítulo para:', cap.id, 'Título:', animeDetails.titulo, '| Ep buscado:', siguienteCapitulo, '| Total eps:', episodios.length);
           }
-        } else {
-          console.error('❌ Documento no existe en Firebase:', currentState[indicesFetch[i]].id);
         }
       });
     }
-    
+
     // 4. Limpiamos cualquier anime nulo (por si ya no hay más capítulos para ver de ese anime)
     const datosFinales = freshData.filter(Boolean);
-    console.log('✅ Animes a renderizar:', datosFinales.map(d => ({ id: d.id, titulo: d.titulo, siguienteEp: d.siguienteCapitulo })));
-    
-    // 5. Render final y actualización de cachés
-    renderizarBotones(datosFinales);
-    localStorage.setItem(cacheKey, JSON.stringify(datosFinales));
-    localStorage.setItem(cacheStateKey, JSON.stringify(currentState));
-    
+
+    // 5. Limitar a MAX_VALIDOS y mantener solo el estado correspondiente
+    const datosFinalesLimitados = datosFinales.slice(0, MAX_VALIDOS);
+    const idsFinales = new Set(datosFinalesLimitados.map(d => d.id));
+    const currentStateLimitado = currentState.filter(c => idsFinales.has(c.id));
+
+    // 6. Render final y actualización de cachés
+    renderizarBotones(datosFinalesLimitados);
+    localStorage.setItem(cacheKey, JSON.stringify(datosFinalesLimitados));
+    localStorage.setItem(cacheStateKey, JSON.stringify(currentStateLimitado));
+
     inicializarContinuarViendo();
   } catch (error) {
     console.error('Error crítico en cargarUltimosCapsVistos:', error);
