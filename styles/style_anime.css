@@ -618,6 +618,7 @@ body:not(.animaciones-off) header {
   color: var(--t1);
   opacity: .7;
   font-size: .9rem; 
+  text-align: start;
   font-family: 'DM Sans', sans-serif;
   margin: 0;
   transition: max-height 0.3s ease;
@@ -656,8 +657,13 @@ body:not(.animaciones-off) header {
 
 .anime-description-container.expanded .anime-description {
   display: block;
-  overflow: visible;
+  overflow: hidden;
   max-height: 20lh;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-wrap: break-word;
+  -webkit-line-clamp: 20;
+  line-clamp: 20;
 }
 
 /* 5. Estilos del botón */
@@ -775,7 +781,12 @@ body:not(.animaciones-off) header {
   border-color: var(--btn);
 }
 #init-loading-cap {
-  margin-top: -19px;
+  margin-top: calc(-21px - 1rem);
+}
+@media (min-width: 700px) {
+  #init-loading-cap {
+    margin-top: -1rem;
+  }
 }
 .episodes-list {
   grid-area: episodios;
