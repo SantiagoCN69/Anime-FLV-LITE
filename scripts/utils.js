@@ -77,19 +77,17 @@ const animeCardObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
       if (entry.isIntersecting) {
           entry.target.classList.add("show");
-          animeCardObserver.unobserve(entry.target); // Dejar de observar inmediatamente
+          animeCardObserver.unobserve(entry.target);
       }
   });
 }, {
-  threshold: 0.05,
-  rootMargin: "0px 0px 50px 0px" // Carga ligeramente antes de entrar
+  threshold: 0.01,
+  rootMargin: "0px 0px 100px 0px"
 });
 
 export function observerAnimeCards() {
-  // Si las animaciones están desactivadas, CSS se encarga (no requiere JS)
   if (document.body.classList.contains('animaciones-off')) return;
 
-  // Solo seleccionar tarjetas que NO han sido procesadas aún
   const pendingCards = document.querySelectorAll(".anime-card:not(.show):not([data-observed])");
 
   pendingCards.forEach((card) => {
@@ -209,7 +207,7 @@ export function crearAnimeCard(anime, opciones = {}) {
 
     // 3. CREACIÓN DEL NODO DOM
     const card = document.createElement('a');
-    
+
     // Asignar clases dinámicas
     card.className = `anime-card ${config.variant === 'schedule' ? 'anime-card-schedule' : ''} ${config.variant === 'jk' ? 'anime-card-jk' : ''}`.trim();
     
@@ -217,7 +215,13 @@ export function crearAnimeCard(anime, opciones = {}) {
 
     // Enlace de destino
     card.href = config.episodioUrl ? `/ver?id=${id}&episode=${config.episodioUrl}` : `/anime?id=${id}`;
-    
+
+    // Atributo aria-label para accesibilidad
+    const linkText = config.episodioUrl
+      ? `Ver ${titleText} episodio ${config.episodioUrl}`
+      : `Ver ${titleText}`;
+    card.setAttribute('aria-label', linkText);
+
     // Estructura interna
     card.innerHTML = `
         <div class="container-img">
