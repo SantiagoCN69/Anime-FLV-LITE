@@ -31,6 +31,11 @@ let embeds = [];
 let bloquearAnuncios = localStorage.getItem("bloquearAnuncios") !== "false";
 // Prioridad: parámetro URL > preferencia localStorage > default (sub)
 let modoDoblado = serversParam === "dob" || (serversParam === null && serversPreference === "dob");
+let servidorActualIndex = 0;
+let loadingTimeout = null;
+
+const CACHE_TTL = 5 * 60 * 1000;
+const serverCache = new Map();
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 
@@ -685,69 +690,40 @@ function mapearServidoresApi(servidoresApi) {
 function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
 
-  const players = []; 
-  const youruploadServers = [];
-  const megaServers = [];
-  const mp4uploadServers = [];
-  const mediafireServers = [];
-  const otherServers = [];
+  const priority = [];
+  const other = [];
+  const mediafire = [];
 
-  // 1. Clasificación
   servidores.forEach(srv => {
-    if (srv && typeof srv.url === "string") {
-      const url = srv.url.toLowerCase();
+    if (!srv?.url) {
+      other.push(srv);
+      return;
+    }
 
-      // Detecta JKPlayer, Zilla-Networks, o cualquier type="player"
-      if (srv.type === "player" || url.includes("jkplayer") || url.includes("zilla-networks.com")) {
-        players.push(srv);
-      } 
-      else if (url.includes('yourupload.com/embed/')) {
-        youruploadServers.push(srv); // AHORA ES UN ARREGLO
-      } 
-      else if (url.includes('mega.nz/')) {
-        megaServers.push(srv); // AHORA ES UN ARREGLO
-      } 
-      else if (url.includes('mp4upload.com')) {
-        mp4uploadServers.push(srv); // AHORA ES UN ARREGLO
-      } 
-      else if (url.includes('mediafire.com')) {
-        mediafireServers.push({
-          ...srv,
-          name: "Descargar"
-        });
-      } 
-      else {
-        otherServers.push(srv);
-      }
+    const url = srv.url.toLowerCase();
 
-    } else {
-      otherServers.push(srv);
+    // Zilla-Networks a baja prioridad (other)
+    if (url.includes('zilla-networks.com')) {
+      other.push(srv);
+    }
+    else if (url.includes('yourupload.com/embed/')) {
+      priority.push(srv);
+    }
+    else if (url.includes('mega.nz/')) {
+      priority.push(srv);
+    }
+    else if (url.includes('mp4upload.com')) {
+      priority.push(srv);
+    }
+    else if (url.includes('mediafire.com')) {
+      mediafire.push({ ...srv, name: "Descargar" });
+    }
+    else {
+      other.push(srv);
     }
   });
 
-  const orderedEmbeds = [];
-
-  // --- 2. Ensamblaje en el nuevo orden ---
-
-  // 1ro: Todos los players (Zilla, JKPlayer, etc.)
-  orderedEmbeds.push(...players);
-
-  // 2do: YourUpload (Todos los que haya)
-  orderedEmbeds.push(...youruploadServers);
-
-  // 3ro: Mega (Todos los que haya)
-  orderedEmbeds.push(...megaServers);
-
-  // 4to: Mp4Upload (Todos los que haya)
-  orderedEmbeds.push(...mp4uploadServers);
-
-  // 5to: Todos los demás
-  orderedEmbeds.push(...otherServers);
-
-  // 6to y último: Mediafire
-  orderedEmbeds.push(...mediafireServers);
-
-  return orderedEmbeds;
+  return [...priority, ...other, ...mediafire];
 }
 
 async function obtenerServidoresDesdeApi(episodio) {
@@ -804,10 +780,6 @@ async function guardarServidoresEnFirestore(ep, servidores) {
 
   await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
 }
-
-// Caché en memoria para servidores
-const serverCache = new Map();
-const CACHE_TTL = 5 * 60 * 1000;
 
 function obtenerServidoresValidosDeFirestore(animeDatos, episodio) {
   const episodioGuardado = animeDatos?.episodios?.find(e => e.url === episodio.url);
@@ -1195,13 +1167,19 @@ function renderizarServidores(todosLosServidores) {
     controles.appendChild(btn);
   });
 
-  // 🔥 Primer video por defecto
+  // 🔥 Primer video por defecto (omite mediafire y zilla-networks)
   if (embeds && embeds.length > 0) {
-    const firstPlayable = embeds.find(s => !s.url?.includes("mediafire.com"));
+    const firstPlayable = embeds.find(s =>
+      !s.url?.includes("mediafire.com") &&
+      !s.url?.includes("zilla-networks.com")
+    );
     const buttons = controles.querySelectorAll("button");
 
     if (buttons.length > 0) {
-      mostrarVideo(firstPlayable || embeds[0], buttons[0]);
+      const indexInEmbeds = embeds.indexOf(firstPlayable || embeds[0]);
+      servidorActualIndex = indexInEmbeds;
+      const buttonToSelect = buttons[indexInEmbeds] || buttons[0];
+      mostrarVideo(firstPlayable || embeds[0], buttonToSelect);
     } else {
       document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
     }
@@ -1325,17 +1303,38 @@ function extraerNombreDesdeURL(url) {
 
     const partes = sinProtocolo.split('.');
     let nombre;
-    
+
     if (sinProtocolo.startsWith('www.')) {
       nombre = partes[1];
     } else {
       nombre = partes[0];
     }
-    
+
     // Convertir primera letra a mayúscula
     return nombre ? nombre.charAt(0).toUpperCase() + nombre.slice(1) : null;
   } catch (e) {
     return null;
+  }
+}
+
+async function esEnlaceValidoMega(fileId) {
+  console.log('Verificando si el enlace de Mega es válido:', fileId);
+  try {
+    const response = await fetch('https://g.api.mega.co.nz/cs', {
+      method: 'POST',
+      body: JSON.stringify([{ a: 'g', p: fileId }])
+    });
+
+    const data = await response.json();
+
+    // Si Mega responde con un entero negativo (ej. -9), el archivo no existe
+    if (Array.isArray(data) && typeof data[0] === 'number' && data[0] < 0) {
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 
@@ -1344,10 +1343,19 @@ function mostrarVideo(link, botonSeleccionado) {
 
   const botones = document.querySelectorAll("#controles button");
   botones.forEach(btn => btn.classList.remove("servidor-activo"));
-  if (botonSeleccionado) botonSeleccionado.classList.add("servidor-activo");
+
+  if (botonSeleccionado) {
+    botonSeleccionado.classList.add("servidor-activo");
+    servidorActualIndex = Array.from(botones).indexOf(botonSeleccionado);
+  }
 
   const videoDiv = document.getElementById("video");
   videoDiv.innerHTML = "";
+
+  if (loadingTimeout) {
+    clearTimeout(loadingTimeout);
+    loadingTimeout = null;
+  }
 
   if (url.endsWith(".mp4") || url.endsWith(".m3u8") || url.includes(".mp4?") || url.includes(".m3u8?")) {
     const video = document.createElement("video");
@@ -1357,6 +1365,7 @@ function mostrarVideo(link, botonSeleccionado) {
     video.width = "100%";
     video.height = "100%";
     video.style.maxHeight = "80vh";
+    video.onerror = () => intentarSiguienteServidor();
     videoDiv.appendChild(video);
   } else {
     const iframe = document.createElement("iframe");
@@ -1373,7 +1382,58 @@ function mostrarVideo(link, botonSeleccionado) {
       iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
     }
 
+    iframe.onerror = () => intentarSiguienteServidor();
+
+    // Timeout: 10 segundos para todos
+    loadingTimeout = setTimeout(() => intentarSiguienteServidor(), 10000);
+
+    iframe.onload = () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
+      }
+    };
+
+    // Verificar si el archivo de Mega existe antes de cargar
+    const isMega = url.includes('mega.nz/');
+    if (isMega) {
+      console.log('isMega:', isMega);
+      const fileIdMatch = url.match(/mega\.nz\/embed\/([a-zA-Z0-9_-]+)/);
+      if (fileIdMatch) {
+        const fileId = fileIdMatch[1];
+        esEnlaceValidoMega(fileId).then(valido => {
+          if (!valido) {
+            intentarSiguienteServidor();
+          } else {
+            videoDiv.appendChild(iframe);
+          }
+        }).catch(() => {
+          videoDiv.appendChild(iframe);
+        });
+        return;
+      }
+    }
+
     videoDiv.appendChild(iframe);
+  }
+}
+
+function intentarSiguienteServidor() {
+  const botones = document.querySelectorAll("#controles button");
+
+  if (servidorActualIndex < botones.length - 1) {
+    const siguienteBoton = botones[servidorActualIndex + 1];
+    const siguienteServidor = embeds[servidorActualIndex + 1];
+
+    if (siguienteServidor && !siguienteServidor.url?.includes("mediafire.com")) {
+      const pill = document.createElement("div");
+      pill.className = "pildora pildora-default";
+      pill.textContent = `Servidor no disponible, cambiado...`;
+      document.body.appendChild(pill);
+      pill.addEventListener('animationend', () => pill.remove(), { once: true });
+
+      mostrarVideo(siguienteServidor, siguienteBoton);
+    }
   }
 }
 function actualizarEstadoBotones() {
