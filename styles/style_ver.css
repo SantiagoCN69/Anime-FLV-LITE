@@ -58,25 +58,7 @@ body:not(.animaciones-off) header {
 .title {
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
-#btn-volver {
-  z-index: 1;
-  position: absolute;
-  top: calc(80px + 2rem);
-  font-weight: 600;
-  left: 2rem;
-  background: #000a;
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 0.6rem 1rem;
-  color: var(--t1);
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  svg {
-    width: 14px;
-    height: 14px;
-  }
-}
+
 main {
   display: flex;
   flex-direction: row;
@@ -199,6 +181,7 @@ main section:nth-child(2) {
   height: 16px;
   display: inline-block;
   margin-inline-end: 5px;
+  margin-bottom: -1.5px;
   background-color: var(--t1);
   -webkit-mask: url('/icons/house-solid.svg') no-repeat center;
   -webkit-mask-size: contain;

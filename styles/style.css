@@ -128,7 +128,7 @@ header {
   width: 100%;
   margin: 0 auto;
   height:80px;
-  background: var(--p);
+  background: var(--b);
   gap:15px;
   border-bottom: 1px solid var(--br);
   transition: backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease;
@@ -227,9 +227,8 @@ header #busqueda{
 
 #btn-login {
   background-color: transparent;
-  padding: 8.25px 16px;
+  padding: 10.5px 16px;
   color: var(--t1);
-  border: 1px solid var(--btn);
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.2s;
@@ -461,7 +460,7 @@ header.search-active .logout-modal {
   border-bottom: 1px solid var(--br);
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
-  background: var(--p);
+  background: var(--b);
   will-change: transform;
   -ms-overflow-style: none; 
   scrollbar-width: none; 
@@ -666,7 +665,7 @@ main {
   
   /* Dimensiones y rejilla */
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   grid-column: 1 / -1;
   grid-row: 1 / -1;
   place-self: center;
