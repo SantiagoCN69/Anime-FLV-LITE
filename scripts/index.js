@@ -577,7 +577,8 @@ async function cargarUltimosCapsVistos() {
 
     inicializarContinuarViendo();
   } catch (error) {
-    console.error('Error crítico en cargarUltimosCapsVistos:', error);
+    console.error('❌ [cargarUltimosCapsVistos] Error crítico:', error);
+    console.error('❌ [cargarUltimosCapsVistos] Stack trace:', error.stack);
     // Feedback opcional para el usuario en caso de que se caiga el internet o la BD
     ultimosCapsContainer.innerHTML = '<p>Error al sincronizar tu historial de continuar viendo.</p>';
   }
@@ -605,10 +606,12 @@ function renderFlipOptimizado(container, renderCallback) {
 
   // 3. INVERT & PLAY: Animamos el estado final desde el inicial
   Array.from(container.children).forEach(el => {
-    if (!el.dataset.id) return;
-    
+    if (!el.dataset.id) {
+      return;
+    }
+
     const posAnterior = posicionesAnteriores.get(el.dataset.id);
-    
+
     if (posAnterior) {
       // Elemento existente, calculamos desplazamiento
       const posActual = el.getBoundingClientRect();
@@ -649,22 +652,24 @@ function leerCache(key) {
 }
 
 function verificarYLimpiarCacheBackground(cacheKey, datos, campoPortada = 'portada', onLimpiar = null, recargarPagina = false) {
-  if (!datos || !Array.isArray(datos)) return false;
-  
-  const itemsConBackground = datos.filter(item => 
-    item[campoPortada] === 'img/background.webp' || 
+  if (!datos || !Array.isArray(datos)) {
+    return false;
+  }
+
+  const itemsConBackground = datos.filter(item =>
+    item[campoPortada] === 'img/background.webp' ||
     item[campoPortada] === 'background.webp' ||
     item.estado === 'No disponible' ||
     item.estado === 'no disponible'
   );
-  
+
   if (itemsConBackground.length > 0) {
     if (onLimpiar) {
       onLimpiar(itemsConBackground);
     } else {
       localStorage.removeItem(cacheKey);
     }
-    
+
     if (recargarPagina) {
       location.reload();
     }
@@ -1571,29 +1576,32 @@ document.addEventListener("DOMContentLoaded", () => {
 // 2. CONTINUAR VIENDO & SIDEBAR
 // =========================================
 function inicializarContinuarViendo() {
-  
+
+  console.log('🔍 [inicializarContinuarViendo] Iniciando función');
   const userID = localStorage.getItem('userID');
   const cachekey = "ultimosCapsVistosCache_" + userID;
   const container = document.getElementById('section-continuar-viendo');
   const grid = document.getElementById('section-ultimos-caps-viendo');
   const h2 = document.getElementById('continuarviendoh2');
-  
-  if (!container) return;
-  
+
+  if (!container) {
+    return;
+  }
+
   if (userID === null || localStorage.getItem(cachekey) === null) {
     container?.classList.add('hidden');
     if (grid) grid.innerHTML = '<p class="empty-state">Inicia sesión para ver tu registro de animes!</p>';
     return;
   }
-  
+
   let datos = JSON.parse(localStorage.getItem(cachekey));
-  
+
   if (verificarYLimpiarCacheBackground(cachekey, datos, 'portada', null, true)) {
     return;
   }
-  
+
   if (h2) h2.dataset.text = datos.length;
-  
+
   if (datos.length === 0) {
     container?.classList.add('hidden');
     if (grid) grid.innerHTML = '<p class="empty-state">No tienes capítulos pendientes.</p>';
@@ -1602,22 +1610,44 @@ function inicializarContinuarViendo() {
 
   if (container && grid) {
     container.classList.remove('hidden');
-    
+
+    // ----------------------------------------------------
+    // OPTIMIZACIÓN: Solo renderizar si hay cambios
+    // ----------------------------------------------------
+    const datosActuales = Array.from(grid.children).map(card => ({
+      id: card.dataset.id,
+      episode: card.dataset.episode
+    }));
+
+    const datosNuevos = datos.map(d => ({
+      id: d.id,
+      episode: String(d.siguienteCapitulo)
+    }));
+
+    const hayCambios = JSON.stringify(datosActuales) !== JSON.stringify(datosNuevos);
+
+    if (!hayCambios) {
+      // Asegurar que las tarjetas tengan la clase 'show'
+      observerAnimeCards();
+      return;
+    }
+
     // ----------------------------------------------------
     // Modificación: Integrado renderFlipOptimizado
     // ----------------------------------------------------
     renderFlipOptimizado(grid, () => {
       grid.innerHTML = '';
-      datos.forEach(data => {
+
+      datos.forEach((data, index) => {
         const total = data.totalCapitulos || 12;
         const capsVistos = Math.max((data.siguienteCapitulo || 1) - 1, 1);
-        
+
         const card = document.createElement('a');
         card.className = 'continue-card anime-card';
         card.href = `/ver?id=${data.id}&episode=${data.siguienteCapitulo}`;
         card.dataset.id = data.id;
         card.dataset.episode = data.siguienteCapitulo;
-        
+
         card.innerHTML = `
           <div class="card-thumbnail container-img">
             <img src="${data.portada}" alt="${data.titulo}" onerror="this.src='path/to/default/image.png'">
@@ -1632,21 +1662,8 @@ function inicializarContinuarViendo() {
             <strong>${data.titulo}</strong>
             <span class="card-meta">${capsVistos}/${total} eps</span>
           </div>`;
-        
+
         grid.appendChild(card);
-      });
-    });
-    
-    // Agregar view transitions a las tarjetas de continuar viendo
-    grid.querySelectorAll('.continue-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const id = card.dataset.id;
-        const episode = card.dataset.episode;
-        const title = card.querySelector('strong');
-        const img = card.querySelector('.card-thumbnail img');
-        
-        if (title) title.style.setProperty('view-transition-name', 'title-' + id);
-        if (img) img.style.setProperty('view-transition-name', id + '-' + episode);
       });
     });
 
@@ -1658,8 +1675,8 @@ function inicializarContinuarViendo() {
         btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 634 : -634, behavior: 'smooth' });
       }
     });
-    
-    // Aplicar observerAnimeCards a las tarjetas de continuar viendo
+
+    // IMPORTANTE: Observar las nuevas tarjetas para añadir la clase 'show'
     observerAnimeCards();
   }
 }
