@@ -397,6 +397,8 @@ body.cv-sidebar #section-continuar-viendo {
   
   #historial {grid-template-columns: 1fr; padding-bottom: 1px;}
   #historial .anime-card {
+      border: 1px solid var(--br);
+  background: var(--p);
     display: grid;
     height: 95px;
     grid-template-columns: 58px minmax(0, 1fr);
