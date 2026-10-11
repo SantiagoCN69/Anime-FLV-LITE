@@ -434,8 +434,8 @@ if (anime.estado) {
     infoParts.push(`<a href="/?DirectorioAV1&status=${estadoTransformado}" class="span-text-anime1 ${anime.estado.toLowerCase()}" id="statuscargado">${anime.estado}</a>`);
   }
   
-  // Join with bullet points
-  info1El.innerHTML = infoParts.join(' • ');
+  // Join with spaces
+  info1El.innerHTML = infoParts.join(' ');
 
   tituloEl.textContent = anime.titulo;
   tituloEl.onclick = () => (navigator.clipboard.writeText(anime.titulo), mostrarPildora("alerta texto"));
