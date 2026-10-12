@@ -421,7 +421,7 @@ header #busqueda{
   display: flex;
   flex-direction: column;
   grid-area: container2;
-  gap: 20px;
+  gap: 16px;
   height: fit-content;
   span {
     margin-top: 10px;
@@ -433,6 +433,8 @@ header #busqueda{
 
 #titulo {
   font-size: 1.8rem;
+  margin-inline: auto;
+  text-align: center;
   overflow: hidden;
   width: fit-content;
   color:var(--t1);
@@ -555,7 +557,7 @@ header #busqueda{
   100% { filter: brightness(1.2); }
 }
 
-#titulocargando, #ratingcargando, #scorecargando, .genre-link-cargando, #covercarga, #statuscargando, #anocargando, #categoriacargando {
+#titulocargando, #ratingcargando, #scorecargando, .genre-link-cargando, #covercarga, #statuscargando, #anocargando, #categoriacargando, #descripcion-cargando {
   display: inline-block;
   width: 230px;
   height: 1lh;
@@ -641,6 +643,7 @@ header #busqueda{
 }
   
 .genero a {
+  height: 24.5px;
   color: var(--t2);
   padding: 4px 12px;
   border-radius: 999px;
@@ -656,7 +659,6 @@ header #busqueda{
   background: var(--br);
 }
 .anime-description {
-  min-height: 2lh;
   position: relative;
   color: var(--t1);
   opacity: .7;
@@ -676,7 +678,7 @@ header #busqueda{
   align-items: flex-start;
   z-index: 1;
   h3 {
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     margin-top: 10px;
   }
 }
@@ -750,39 +752,34 @@ header #busqueda{
   grid-area: container3;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
   min-height: 156px;
   position: relative;
 }
 
-.header-caps, .header-caps div {
+.header-caps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header-caps-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  min-height: fit-content;
   gap: 10px;
-  width: 100%;
-}
-.header-caps div {
-  width: fit-content;
-  margin-inline: 4px;
-  transition: width .3s ease;
-  justify-content: end;
+  justify-content: space-between;
+  position: relative;
 }
 
-.header-caps-right {
+#filtro-caps2 {
   display: flex;
-  align-items: center;
-  gap: 15px;
+  gap: 1rem;
 }
-
-.filtro-caps {
+#filtro-caps {
   display: flex;
   gap: 5px;
   justify-content: space-between;
   width: 226.5px;
-  margin-left: auto;
-  margin-right: 12px;
   background: var(--p);
   padding: 4px;
   border-radius: 12px;
@@ -810,12 +807,6 @@ header #busqueda{
   background: var(--btn);
 }
 
-.header-caps-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 @media (max-width: 600px) {
   .header-caps-right {
     flex-direction: column;
@@ -836,8 +827,7 @@ header #busqueda{
     justify-content: space-between;
   }
 }
-#titulo-lista-caps {
-  flex: 1;
+#titulo-lista-caps, h3 {
   color: var(--t1);
   font-size: 1.5rem;
   overflow: hidden;
@@ -871,6 +861,7 @@ header #busqueda{
 }
 
 #btn-invertir-caps {
+  border: 1px solid var(--br);
   background: var(--p);
   border-radius: 8px;
   padding: 11px;
@@ -893,9 +884,6 @@ header #busqueda{
   background: var(--br);
 }
 
-.search-caps {
-  width: 30%;
-}
 
 #filtro-capitulo {
   width: 100%;
@@ -910,7 +898,6 @@ header #busqueda{
 
 #filtro-capitulo:focus {
   outline: none;
-  border-color: var(--btn);
 }
 #init-loading-cap {
   position: absolute;
@@ -925,7 +912,6 @@ header #busqueda{
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap:15px;
   width: 100%;
-  padding-right: 5px;
   overflow-y: auto;
   scroll-behavior: smooth;
   transition: height .5s;
@@ -1019,7 +1005,6 @@ header #busqueda{
   font-size: 0.9rem;
   position: absolute;
   background: var(--p);
-  backdrop-filter: blur(10px);
   bottom: 0;
   left: 0;
   z-index: 2;
@@ -1481,9 +1466,8 @@ width: 100%;
 height: auto;
 }
 #botones-estado, .genero, #info1 {
-justify-content: center;
 margin-top: unset;
-
+margin-inline: auto;
 }
 #btn-estado {
  padding-inline: 0;
@@ -1507,8 +1491,6 @@ padding-bottom: 1px;
 }
 #titulo {
 display: flex;
-text-align: center;
-margin-inline: auto;
 align-items: end;
 min-height: 73px;
 max-height: 73px;
@@ -1549,7 +1531,8 @@ grid-template-columns: 1fr;
   content: none
 }
   .episode-thumb {
-    width: 100px;
+    width: 30%;
+    max-width: 100px;
     height: 100%;
     border-radius: 10px;
   }
@@ -1631,8 +1614,8 @@ z-index: 0;
     to bottom, 
     color-mix(in srgb, var(--b) 80%, transparent) 5%,  /* Reemplaza rgba(0,0,0, 0.8) */
     color-mix(in srgb, var(--b) 8%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
-    color-mix(in srgb, var(--b) 75%, transparent) 73%,  /* Reemplaza rgba(0,0,0, 0.9) */
-    var(--b) 100%                                       /* Color sólido al final */
+    color-mix(in srgb, var(--b) 75%, transparent) 60%,  /* Reemplaza rgba(0,0,0, 0.9) */
+    var(--b) 90%                                       /* Color sólido al final */
   );
   z-index: 2;
 }
@@ -1642,15 +1625,15 @@ z-index: 0;
   content: "";
   position: absolute;
   aspect-ratio: 1 / 1.4; /* Mantiene la proporción que necesitas */
-  width: 98vw;
+  width: 100vw;
   /* Desenfoque de la imagen de fondo en toda la capa */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   
   /* El truco: La máscara decide DÓNDE se ve el blur. 
      Empieza con opacidad total abajo (black 0%) y se vuelve transparente rápido al subir (ej. transparent 30% o 40%) */
-  mask-image: linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.5) 15%, transparent 40%);
-  -webkit-mask-image: linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.5) 15%, transparent 40%);
+  mask-image: linear-gradient(to top, black 10%, rgba(0, 0, 0, 0.5) 33%, transparent 40%);
+  -webkit-mask-image: linear-gradient(to top, black 10%, rgba(0, 0, 0, 0.5) 33%, transparent 40%);
   
   z-index: 2; /* Por encima del ::before */
   pointer-events: none;
@@ -1678,54 +1661,42 @@ z-index: 0;
 #btn-invertir-caps {
   padding: 7px;
 }
-.header-caps div, .header-caps {
-  position: relative;
-  overflow: hidden;
-  height: 45px;
-  width: 100%;
-}
-.header-caps {
-  width: calc(100% - 12px);
-}
-.header-caps div {
-  width: 80px;
-  margin-inline: unset;
-  margin-left: auto;
-}
+
   /* Elementos normales */
   .header-caps span,
-  #btn-search-capitulo {
+  #btn-search-capitulo,
+  #filtro-caps {
     transition: transform 0.2s;
     transform: translateY(0);
     position: static;
   }
 
   /* Cuando se activa búsqueda */
-  .header-caps.search-active span,
   .header-caps.search-active #btn-search-capitulo {
-    transform: translateY(-42px);
+    transform: translateX(42px);
   }
   .header-caps.search-active #btn-invertir-caps {
-        transform: translateX(-1000%);
+    transform: translateX(-1000%);
   }
-    .header-caps.search-active span{
-      position: absolute;
-    }
+  .header-caps.search-active  #filtro-caps {
+    transform: translateX(-1000%);
+  }
+
   /* Caja de búsqueda */
   .header-caps .search-caps {
     position: absolute;
+    top: 0;
     width: 100%;
-    height: 94%;
+    height: 100%;
+    gap: 1rem;
     display: flex;
     opacity: 0;
-    transform: translateY(-10px);
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
     will-change: transform;
   }
   .header-caps.search-active div {
     justify-content: end;
-    width: 100%;
   }
   .header-caps.search-active .search-caps {
     opacity: 1;
@@ -1743,10 +1714,14 @@ z-index: 0;
   }
 
   #btn-close-search-capitulo::before {
-    content: '✕';
-    color: var(--btn);
-    font-size: 1.8rem;
-    font-weight: bold;
+        content: "";
+        width: 30px;
+        height: 30px;
+        background-color: var(--t1);
+        -webkit-mask-size: contain;
+        -webkit-mask: url(../icons/xmark-solid.svg) no-repeat center;
+        mask-size: contain;
+        mask: url(../icons/xmark-solid.svg) no-repeat center;
   }
 
   /* Input */
