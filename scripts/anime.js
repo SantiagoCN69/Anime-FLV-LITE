@@ -754,9 +754,10 @@ function scrollAlPrimerNoVisto(vistosParam) {
     const primerNoVistoGlobal = episodiosFiltrados.find(ep => !vistos.includes(ep.number.toString()));
 
     if (!primerNoVistoGlobal) {
-        // Mostrar overlay solo si todos los episodios FILTRADOS están vistos
+        // Mostrar overlay solo si: no hay filtro + todos los episodios FILTRADOS están vistos
         const todosVistos = episodiosFiltrados.every(ep => vistos.includes(ep.number.toString()));
-        if (episodiosFiltrados.length >= 1 && todosVistos && typeof mostrarOverlayCapitulosCompletados === 'function') {
+        const sinFiltro = filtroActual === 'todos';
+        if (episodiosFiltrados.length >= 1 && todosVistos && sinFiltro && typeof mostrarOverlayCapitulosCompletados === 'function') {
             mostrarOverlayCapitulosCompletados();
         }
         return;
