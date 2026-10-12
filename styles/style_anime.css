@@ -915,10 +915,10 @@ header #busqueda{
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap:15px;
   width: 100%;
-  overflow-y: auto;
   scroll-behavior: smooth;
   transition: height .5s;
   scrollbar-gutter: stable;
+
 }
 
 /* Para navegadores WebKit (Chrome, Safari) */
