@@ -10,65 +10,70 @@ body {
   overflow-y: auto;
 }
 
-body::before {
+body {
+  position: relative;
+  margin: 0;
+  overflow-x: hidden; /* Evita scroll horizontal por el ancho del 105vw */
+}
+
+/* 1. Geometría idéntica para que la imagen y la sombra calcquen perfectamente */
+body::before,
+body::after {
   content: '';
   position: absolute;
   top: 80px;
   left: -2.5vw;
   width: 105vw;
-  height: calc(110vh - 80px);
+  min-height: 400px;
+  height: calc(68vh - 80px);
+  max-height: 600px;
+  pointer-events: none;
+}
 
+/* 2. Imagen de fondo y animación (Capa inferior: z-index -2) */
+body::before {
   background-image: var(--background-image);
   background-size: cover;
   background-position: center;
   z-index: -2;
-  pointer-events: none;
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1) translateX(120px);
   filter: blur(0px) brightness(0.7) saturate(1.2);
 }
 
-/* body.fondo-animado::before {
+body.fondo-animado::before {
   animation: zoom .6s ease-out forwards;
-} */
+}
+
 @keyframes zoom {
   0% {
     opacity: 0;
-    transform: scale(1);
-    filter: blur(0px) brightness(0.7) saturate(1.2);
+    filter: blur(5px) saturate(1.2);
   }
   100% {
     opacity: 1;
-    transform: scale(1.1);
-    filter: blur(5px) brightness(0.5) saturate(1.1);
+    filter: blur(0px) saturate(1.2);
   }
 }
-body::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  min-width: 100%;
-  height: 100%;
 
+/* 3. Sombra y degradados dobles (Capa intermedia: z-index -1) */
+body::after {
+  transform: scale(1.05);
   background: 
-    /* Capa 1 (superior): Gradiente de izquierda a derecha */
+    /* Capa 1: Gradiente horizontal */
     linear-gradient(
       80deg,
-      var(--b) 35%,
-      transparent),
-    
-    /* Capa 2 (inferior): Tu gradiente actual de arriba a abajo */
+      var(--b) 25%,
+      transparent
+    ),
+    /* Capa 2: Gradiente vertical ajustado al 100% de este contenedor */
     linear-gradient(
       to bottom,
-      transparent 0%,
-      var(--b) 94vh,
-      var(--b) 100%
+      color-mix(in srgb, var(--b) 30%, transparent) 0%,
+      var(--b) 96%
     );
 
   z-index: -1;
-  pointer-events: none;
 }
 @media (max-width: 700px) {
 .scrolled:not(.floating) {

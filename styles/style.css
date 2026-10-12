@@ -299,6 +299,7 @@ header div {
 }
 
 .search {
+  view-transition-name: search-input;
   position: relative;
   width: 313px;
 }
@@ -1136,7 +1137,7 @@ section.content-section h2:first-of-type::after {
   top: calc(100% + 28px);
   left: 0;
   width: 100%;
-  background-color: var(--p);
+  background-color: var(--b);
   border: 1px solid var(--br);
   border-radius: 12px;
   padding: 10px;
