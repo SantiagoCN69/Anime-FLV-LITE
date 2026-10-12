@@ -422,7 +422,7 @@ if (anime.estado) {
 }
   //Add rating
   if (anime.score && anime.score !== 0) {
-    infoParts.push(`<a href="/?DirectorioAV1&order=score" class="span-text-anime1" id="scorecargado">${anime.score}</a>`);
+    infoParts.push(`<a href="/?Populares" class="span-text-anime1" id="scorecargado">${anime.score}</a>`);
   }
   // Add category
   if (categoriaTransformada && !categoriaTransformada.includes('Desconocido')) {
