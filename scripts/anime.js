@@ -302,6 +302,8 @@ async function aplicarFondoAnime(anime) {
   document.body.classList.add('fondo-animado');
 }
 function setAnimeDescripcion(descripcionEl, texto) {
+  const descripcionCargando = document.getElementById('descripcion-cargando');
+  if (descripcionCargando) descripcionCargando.style.display = 'none';
   if (!descripcionEl) return;
 
   const contenedor = descripcionEl.parentElement;

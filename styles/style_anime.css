@@ -585,12 +585,16 @@ header #busqueda{
 #statuscargando::before {
   width: 98px;
 }
+#descripcion-cargando {
+  width: 100%;
+  height: 57px;
+}
 .genre-link-cargando {
   width: unset;
   height: calc(1lh + 10px);
 }
 /* Shimmer diagonal */
-#titulocargando::before, #ratingcargando::before, #scorecargando::before, .genre-link-cargando::before, #covercarga::before, #statuscargando::before, #anocargando::before, #categoriacargando::before {
+#titulocargando::before, #ratingcargando::before, #scorecargando::before, .genre-link-cargando::before, #covercarga::before, #statuscargando::before, #anocargando::before, #categoriacargando::before, #descripcion-cargando::before {
   content: "";
   position: absolute;
   top: 0;
