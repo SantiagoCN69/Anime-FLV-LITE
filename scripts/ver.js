@@ -679,8 +679,7 @@ function servidoresSonIguales(servidoresA, servidoresB) {
 }
 
 function mapearServidoresApi(servidoresApi) {
-  return servidoresApi.map((servidor, index) => ({
-    nombre: `Servidor ${index + 1}`,
+  return servidoresApi.map((servidor) => ({
     name: servidor.name || "", // 🔥 NUEVO: Conservamos el nombre original para saber si tiene (Lat)
     type: servidor.type || "", // 🔥 NUEVO: Conservamos el tipo (player, download)
     url: typeof servidor === "string" ? servidor : servidor.url
@@ -690,6 +689,7 @@ function mapearServidoresApi(servidoresApi) {
 function reordenarServidores(servidores) {
   if (!servidores || servidores.length === 0) return servidores;
 
+  const jkanimePriority = [];
   const priority = [];
   const other = [];
   const mediafire = [];
@@ -705,6 +705,11 @@ function reordenarServidores(servidores) {
     // Zilla-Networks filtrado completamente (no funciona por hotlinking)
     if (url.includes('zilla-networks.com')) {
       return; // Omitir este servidor
+    }
+    // Solo jkanime con /umv?e= y /um?e= tienen prioridad máxima
+    else if ((url.includes('jkanime.net') || url.includes('jkplayer')) &&
+             (url.includes('/umv?e=') || url.includes('/um?e='))) {
+      jkanimePriority.push(srv);
     }
     else if (url.includes('yourupload.com/embed/')) {
       priority.push(srv);
@@ -723,7 +728,7 @@ function reordenarServidores(servidores) {
     }
   });
 
-  return [...priority, ...other, ...mediafire];
+  return [...jkanimePriority, ...priority, ...other, ...mediafire];
 }
 
 async function obtenerServidoresDesdeApi(episodio) {
@@ -763,7 +768,7 @@ async function guardarServidoresEnFirestore(ep, servidores) {
 
   // Combinar servidores nuevos con los de jkanime y mediafire existentes
   const servidoresFinales = [...servidores];
-  
+
   // Agregar servidores de jkanime y mediafire que no estén duplicados
   const urlsNuevas = new Set(servidores.map(s => s.url));
   servidoresExistentes.forEach(srvExistente => {
@@ -989,7 +994,7 @@ async function cargarVideoDesdeEpisodio(index) {
   const cacheKey = "servers_" + animeId + "_" + ep.number;
 
   const cached = serverCache.get(cacheKey);
-  
+
   if (cached && Date.now() - cached.time < CACHE_TTL) {
     renderizarServidores(cached.data);
     precargarSiguienteEpisodio(index).catch(() => {});
@@ -1037,8 +1042,8 @@ try {
 
   if (servidoresApi.length) {
     // 1. Filtrar únicamente los servidores de la API que NO están en Firestore
-    const servidoresNuevos = servidoresApi.filter(nuevo => 
-      !servidoresFirestore.some(existente => 
+    const servidoresNuevos = servidoresApi.filter(nuevo =>
+      !servidoresFirestore.some(existente =>
         (existente.url && existente.url === nuevo.url) ||
         (existente.code && existente.code === nuevo.code) ||
         (existente.name === nuevo.name && existente.url === nuevo.url)
