@@ -1560,3 +1560,16 @@ function mostrarPildora(estado = true, cap = null, actualizando = false) {
     pill.remove();
   }, { once: true });
 }
+
+
+//cine
+document.addEventListener('DOMContentLoaded', () => {
+  const cineBtn = document.getElementById('cine');
+  const Overlay = document.getElementById('cine-overlay');
+    cineBtn.addEventListener('click', () => {
+      document.body.classList.toggle('cine');
+    });
+    Overlay.addEventListener('click', () => {
+      document.body.classList.remove('cine');
+    });
+});
