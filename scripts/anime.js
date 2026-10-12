@@ -21,6 +21,7 @@ let paginaActual = 0; // Página actual (0-indexed)
 let episodiosFiltrados = []; // Episodios después de aplicar filtro y orden
 let vistosCache = []; // Cache de episodios vistos para evitar llamadas repetidas
 let primeraCarga = true; // Bandera para mostrar overlay solo en la primera carga
+let skipScrollAlPrimerNoVisto = false; // Para evitar scroll cuando viene de búsqueda/paginación manual
 
 const titulo = id.replaceAll("-", " ").toLowerCase();
 const tituloFormateado = titulo.charAt(0).toUpperCase() + titulo.slice(1);
@@ -625,7 +626,6 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
     const vistosFiltrados = vistos.filter(num => numerosValidos.has(num));
 
     if (vistos.length !== vistosFiltrados.length) {
-        console.log("Se detectaron episodios antiguos o inválidos, limpiando...");
         await actualizarCapitulosVistos(id, vistosFiltrados);
         vistos = vistosFiltrados;
         vistosCache = vistos; // Actualizar cache
@@ -711,10 +711,7 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
         btnInvertirCaps.disabled = false;
     }
 
-    // Quitar altura fija y scroll
-    capContenedor.style.height = 'auto';
-    capContenedor.style.overflowY = 'visible';
-    capContenedor.style.maxHeight = 'none';
+    // El contenedor usa CSS para limitar la altura (max-height en CSS)
 
     // Crear paginación si hay más de una página
     if (totalPaginas > 1) {
@@ -726,6 +723,9 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
         }
     }
 
+    // Scroll automático al primer no visto
+    scrollAlPrimerNoVisto(vistos);
+
     // Verificar si TODOS los episodios del anime están vistos para mostrar el overlay
     // Solo en la primera carga y si no hay filtro aplicado
     const totalVistos = vistos.length;
@@ -736,6 +736,41 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
     if (todosCompletados && sinFiltro && primeraCarga && typeof mostrarOverlayCapitulosCompletados === 'function') {
         mostrarOverlayCapitulosCompletados();
         primeraCarga = false;
+    }
+}
+
+// Función para cambiar a la página del primer episodio no visto
+function scrollAlPrimerNoVisto(vistosParam) {
+    // Si se debe saltar el scroll, no hacer nada
+    if (skipScrollAlPrimerNoVisto) {
+        skipScrollAlPrimerNoVisto = false; // Resetear bandera
+        return;
+    }
+
+    // Usar el parámetro o el cache si no se proporciona
+    const vistos = vistosParam || vistosCache;
+
+    // Buscar el primer episodio no visto en la lista global filtrada
+    const primerNoVistoGlobal = episodiosFiltrados.find(ep => !vistos.includes(ep.number.toString()));
+
+    if (!primerNoVistoGlobal) {
+        // Mostrar overlay solo si todos los episodios FILTRADOS están vistos
+        const todosVistos = episodiosFiltrados.every(ep => vistos.includes(ep.number.toString()));
+        if (episodiosFiltrados.length >= 1 && todosVistos && typeof mostrarOverlayCapitulosCompletados === 'function') {
+            mostrarOverlayCapitulosCompletados();
+        }
+        return;
+    }
+
+    // Calcular en qué página está el primer no visto
+    const itemsPerPage = 10;
+    const indicePrimerNoVisto = episodiosFiltrados.indexOf(primerNoVistoGlobal);
+    const paginaPrimerNoVisto = Math.floor(indicePrimerNoVisto / itemsPerPage);
+
+    // Si el primer no visto no está en la página actual, cambiar a esa página
+    if (paginaPrimerNoVisto !== paginaActual) {
+        paginaActual = paginaPrimerNoVisto;
+        crearBotonesEpisodios(animeActual, false);
     }
 }
 
@@ -793,6 +828,9 @@ function crearPaginacion(totalEpisodios, itemsPerPage) {
         option.addEventListener('click', () => {
             // Actualizar la página actual
             paginaActual = i;
+
+            // Evitar scroll al primer no visto cuando se cambia de página manualmente
+            skipScrollAlPrimerNoVisto = true;
 
             // Cerrar el dropdown
             btnPagination.classList.remove('open');
@@ -898,13 +936,31 @@ async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
   }
 }
 
-// 2. Filtro de búsqueda (Excelente uso de debounce y scrollIntoView)
+// 2. Filtro de búsqueda con paginación (debounce de 500ms para evitar spam mientras escribe)
 filtroCapitulo.addEventListener('input', debounce(() => {
   const filtro = filtroCapitulo.value.toLowerCase();
-  const botones = capContenedor.querySelectorAll('.episode-btn');
-  const idx = Array.from(botones).findIndex(btn => btn.textContent.toLowerCase().includes(filtro));
-  if (idx >= 0) botones[idx].parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}));
+
+  if (!filtro || !animeActual) return;
+
+  // Buscar el capítulo en la lista global de episodios filtrados
+  const epIndex = episodiosFiltrados.findIndex(ep =>
+    ep.number.toString().includes(filtro) ||
+    (ep.title && ep.title.toLowerCase().includes(filtro))
+  );
+
+  if (epIndex >= 0) {
+    // Calcular en qué página está el episodio
+    const itemsPerPage = 10;
+    const paginaObjetivo = Math.floor(epIndex / itemsPerPage);
+
+    // Si estamos en una página diferente, cambiar a la página objetivo
+    if (paginaObjetivo !== paginaActual) {
+      paginaActual = paginaObjetivo;
+      skipScrollAlPrimerNoVisto = true; // Evitar scroll al primer no visto después de búsqueda
+      crearBotonesEpisodios(animeActual, false);
+    }
+  }
+}, 500));
 
 // 3. Manejador de clicks (Optimistic UI - Impecable)
 async function manejarEstadoEpisodio(btn, icon, ep) {
@@ -957,18 +1013,18 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
     const estadoTexto = statusElement ? statusElement.textContent : '';
     const esFinalizadoPorEstado = estadoTexto === 'Finalizado' || estadoTexto === 'Concluido';
 
+    // LEER UNA SOLA VEZ al inicio (optimización - antes eran 2 lecturas)
+    const snap = await getDoc(ref);
+    let nuevosVistos = [];
+
+    if (snap.exists()) {
+      const data = snap.data();
+      nuevosVistos = data.episodiosVistos || [];
+    }
+
     if (esVisto) {
       // Marcar como visto
-      const snap = await getDoc(ref);
-      let nuevosVistos = [];
-
-      if (snap.exists()) {
-        const data = snap.data();
-        const arrayActual = data.episodiosVistos || [];
-        nuevosVistos = [...new Set([...arrayActual, episodio.toString()])];
-      } else {
-        nuevosVistos = [episodio.toString()];
-      }
+      nuevosVistos = [...new Set([...nuevosVistos, episodio.toString()])];
 
       // Verificar si se vieron todos los capítulos FILTRADOS
       const totalFiltrados = episodiosFiltrados.length;
@@ -987,10 +1043,8 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
       vistosCache = nuevosVistos;
     } else {
       // Desmarcar como visto
-      const snap = await getDoc(ref);
       if (snap.exists()) {
-        const data = snap.data();
-        const nuevosVistos = (data.episodiosVistos || []).filter(ep => ep !== episodio.toString());
+        nuevosVistos = nuevosVistos.filter(ep => ep !== episodio.toString());
 
         if (nuevosVistos.length === 0) {
           await deleteDoc(ref);
@@ -1164,15 +1218,17 @@ async function cargarAnime(idauxiliar) {
   if (cached) {
     renderAnime(cached);
   }
-  // 2. Cargar desde Firestore siempre
+
+  // 2. Cargar desde Firestore siempre (optimización: guardar resultado para reutilizar)
+  let firestoreData = null;
   try {
     const docSnap = await getDoc(doc(db, 'datos-animes', id));
     if (docSnap.exists()) {
-      const data = docSnap.data();
-      if (!compararDatos(cached, data)) {
-        actualizarCache(id, data);
-        cached = data;
-        renderAnime(data);
+      firestoreData = docSnap.data();
+      if (!compararDatos(cached, firestoreData)) {
+        actualizarCache(id, firestoreData);
+        cached = firestoreData;
+        renderAnime(firestoreData);
       }
     }
   } catch (err) {
@@ -1194,25 +1250,21 @@ async function cargarAnime(idauxiliar) {
       return
     }
     if (!compararDatos(cached, anime)) {
-      // Preservar servidores existentes en Firestore
-      const docSnap = await getDoc(doc(db, 'datos-animes', id));
-      if (docSnap.exists()) {
-        const dataFirestore = docSnap.data();
-        if (dataFirestore.episodios) {
-          anime.episodios = anime.episodios.map(ep => {
-            const epFirestore = dataFirestore.episodios.find(e => e.url === ep.url);
-            if (epFirestore?.servidores) {
-              return { ...ep, servidores: epFirestore.servidores };
-            }
-            return ep;
-          });
-        }
+      // Preservar servidores existentes en Firestore (reutilizar lectura anterior)
+      if (firestoreData && firestoreData.episodios) {
+        anime.episodios = anime.episodios.map(ep => {
+          const epFirestore = firestoreData.episodios.find(e => e.url === ep.url);
+          if (epFirestore?.servidores) {
+            return { ...ep, servidores: epFirestore.servidores };
+          }
+          return ep;
+        });
       }
       await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
       actualizarCache(id, anime);
       renderAnime(anime);
     }
-    
+
     if (data.message === 'Anime no encontrado en ninguna fuente') {
       mostrarResultadosBusqueda(id);
     }
