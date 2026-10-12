@@ -16,6 +16,11 @@ let id = new URLSearchParams(location.search).get("id");
 let animeActual = null; // Guardar referencia al anime actual para invertir orden
 let ordenInvertido = false; // Estado del orden de capítulos
 let overlayCompletadosActivo = false; // Evitar overlay duplicado al invertir
+let filtroActual = 'todos'; // Estado del filtro: 'todos', 'vistos', 'no-vistos'
+let paginaActual = 0; // Página actual (0-indexed)
+let episodiosFiltrados = []; // Episodios después de aplicar filtro y orden
+let vistosCache = []; // Cache de episodios vistos para evitar llamadas repetidas
+let primeraCarga = true; // Bandera para mostrar overlay solo en la primera carga
 
 const titulo = id.replaceAll("-", " ").toLowerCase();
 const tituloFormateado = titulo.charAt(0).toUpperCase() + titulo.slice(1);
@@ -457,20 +462,25 @@ if (anime.estado) {
   setAnimeDescripcion(descripcionEl, anime.descripcion);
   renderGeneros(generoContainer, anime.generos);
 
-  if (anime.estado === "Por estrenar") {
-const container = document.querySelector(".anime-container3");
+  const container = document.querySelector(".anime-container3");
 
-if (container) {
-  container.style.minHeight = "unset";
-  container.innerHTML = "<span id='anime-proximo-estrenar'>Próximamente en estreno. Los capítulos aún no están disponibles.</span>";
-}
-    return;
-  } else {
-    const mensajeProximoEstrenar = document.getElementById('anime-proximo-estrenar');
-    if (mensajeProximoEstrenar) {
-      mensajeProximoEstrenar.remove();
+  if (anime.estado === "Por estrenar") {
+    if (container) {
+      container.style.minHeight = "unset";
+      container.innerHTML = "<span id='anime-proximo-estrenar'>Próximamente en estreno. Los capítulos aún no están disponibles.</span>";
+    }
+    // Si no hay episodios, retornar. Si hay episodios (caso de actualización), continuar
+    if (!anime.episodios || anime.episodios.length === 0) {
+      return;
     }
   }
+
+  // Si el anime ya no está en "Por estrenar" o tiene episodios, limpiar el mensaje
+  const mensajeProximoEstrenar = document.getElementById('anime-proximo-estrenar');
+  if (mensajeProximoEstrenar) {
+    mensajeProximoEstrenar.remove();
+  }
+
   animeActual = anime; // Guardar referencia al anime actual
   crearBotonesEpisodios(anime);
   renderRelacionados(anime);
@@ -586,40 +596,18 @@ function mostrarOverlayCapitulosCompletados() {
 // 1. FUNCIONES AUXILIARES GLOBALES
 // ==========================================
 
-// Variable global para controlar si el resize ya tiene un listener
-let resizeListenerAñadido = false;
-
-// Sacamos el cálculo de altura fuera para que el evento resize no acumule listeners
-const calcularAlturaContenedor = (episodiosLength, capContenedor) => {
-    if (!capContenedor || episodiosLength === 0) return;
-
-    const isMobile = window.innerWidth < 700;
-    const itemHeight = isMobile ? 80 : 150; 
-    const gap = 15; 
-    const paddingTop = 15; 
-    const offsetPantalla = isMobile ? 550 : 440; 
-
-    // CORRECCIÓN CLAVE: Si es móvil, va 1 botón por fila. Si es PC, calculamos cuántos caben.
-    let itemsPerRow = isMobile ? 1 : Math.max(1, Math.floor(capContenedor.offsetWidth / 160));
-    
-    const totalRows = Math.ceil(episodiosLength / itemsPerRow);
-    const availableHeight = window.innerHeight - offsetPantalla;
-
-    let rowsThatFit = Math.floor((availableHeight + gap - paddingTop) / (itemHeight + gap));
-    
-    // Con esto aseguramos que targetRows sea como mínimo 3 (siempre que totalRows sea al menos 3)
-    const targetRows = Math.min(totalRows, Math.max(3, rowsThatFit));
-
-    let calculatedHeight = (targetRows * itemHeight) + ((targetRows - 1) * gap) + paddingTop;
-    capContenedor.style.height = `${calculatedHeight}px`;
-};
-
 // ==========================================
 // 2. FUNCIÓN PRINCIPAL OPTIMIZADA
 // ==========================================
-async function crearBotonesEpisodios(anime, invertirOrden = false, esInversion = false) {
-    capContenedor.innerHTML = '';
+async function crearBotonesEpisodios(anime, resetPagina = true) {
     overlayCompletadosActivo = false; // Reset flag al limpiar contenedor
+
+    // Limpiar paginación al inicio para evitar saltos visuales
+    const paginationContainer = document.getElementById('pagination-container');
+    if (paginationContainer) {
+        paginationContainer.style.display = 'none';
+    }
+
     let episodios = Array.isArray(anime.episodios) ? anime.episodios : [];
 
     if (episodios.length === 0) {
@@ -628,26 +616,85 @@ async function crearBotonesEpisodios(anime, invertirOrden = false, esInversion =
         capContenedor.classList.add("cargado");
         return;
     }
-    
-    if (invertirOrden) {
-        episodios = [...episodios].reverse();
-    }
-    
-    // NOTA: 'id' parece ser una variable global. Asegúrate de que exista.
-    let vistosOriginales = await obtenerCapitulosVistos(id) || [];
-    
-    // Validación rápida con Set (Excelente práctica)
-    const numerosValidos = new Set(episodios.map(ep => ep.number));
-    const vistos = vistosOriginales.filter(num => numerosValidos.has(num));
 
-    if (vistos.length !== vistosOriginales.length) {
+    // Obtener episodios vistos (usar cache si está disponible)
+    let vistos = vistosCache.length > 0 ? vistosCache : await obtenerCapitulosVistos(id) || [];
+
+    // Validar y limpiar episodios si es necesario
+    const numerosValidos = new Set(episodios.map(ep => ep.number));
+    const vistosFiltrados = vistos.filter(num => numerosValidos.has(num));
+
+    if (vistos.length !== vistosFiltrados.length) {
         console.log("Se detectaron episodios antiguos o inválidos, limpiando...");
-        await actualizarCapitulosVistos(id, vistos); 
+        await actualizarCapitulosVistos(id, vistosFiltrados);
+        vistos = vistosFiltrados;
+        vistosCache = vistos; // Actualizar cache
+    } else if (vistosCache.length === 0) {
+        // Si es la primera carga, guardar en cache
+        vistosCache = vistos;
     }
+
+    // Aplicar filtro
+    let episodiosFiltradosTemp = [...episodios];
+    if (filtroActual === 'vistos') {
+        episodiosFiltradosTemp = episodiosFiltradosTemp.filter(ep => vistos.includes(ep.number.toString()));
+    } else if (filtroActual === 'no-vistos') {
+        episodiosFiltradosTemp = episodiosFiltradosTemp.filter(ep => !vistos.includes(ep.number.toString()));
+    }
+
+    // Aplicar orden (crear copia invertida para no modificar el array original)
+    if (ordenInvertido) {
+        episodiosFiltradosTemp = [...episodiosFiltradosTemp].reverse();
+    }
+
+    // Guardar episodios filtrados globalmente
+    episodiosFiltrados = episodiosFiltradosTemp;
+
+    // Mostrar mensaje si no hay resultados después del filtro
+    if (episodiosFiltrados.length === 0 && episodios.length > 0) {
+        capContenedor.innerHTML = ''; // Limpiar primero para parar cualquier animación
+
+        let mensaje = '';
+        if (filtroActual === 'vistos') {
+            mensaje = 'No hay episodios vistos aún';
+        } else if (filtroActual === 'no-vistos') {
+            mensaje = '¡Ya has visto todos los episodios!';
+        } else {
+            mensaje = 'No hay episodios disponibles';
+        }
+
+        // Usar requestAnimationFrame para asegurar que el renderizado sea inmediato
+        requestAnimationFrame(() => {
+            capContenedor.innerHTML = `<span class="span-carga">${mensaje}</span>`;
+            if (initLoadingCap) initLoadingCap.style.display = 'none';
+            capContenedor.classList.add("cargado");
+
+            // Ocultar paginación
+            const paginationContainer = document.getElementById('pagination-container');
+            if (paginationContainer) {
+                paginationContainer.style.display = 'none';
+            }
+        });
+        return;
+    }
+
+    // Resetear página si se solicita
+    if (resetPagina) {
+        paginaActual = 0;
+    }
+    capContenedor.innerHTML = '';
+    // Paginación: 10 episodios por página
+    const itemsPerPage = 10;
+    const totalPaginas = Math.ceil(episodiosFiltrados.length / itemsPerPage);
+
+    // Obtener episodios de la página actual
+    const startIndex = paginaActual * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, episodiosFiltrados.length);
+    const episodiosAMostrar = episodiosFiltrados.slice(startIndex, endIndex);
 
     // Renderizado en bloque con DocumentFragment
     const fragment = document.createDocumentFragment();
-    episodios.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos, anime.internalId)));
+    episodiosAMostrar.forEach(ep => fragment.appendChild(createEpisodeButton(ep, vistos, anime.internalId)));
     capContenedor.appendChild(fragment);
 
     if (initLoadingCap) initLoadingCap.style.display = 'none';
@@ -664,60 +711,120 @@ async function crearBotonesEpisodios(anime, invertirOrden = false, esInversion =
         btnInvertirCaps.disabled = false;
     }
 
-    // Ejecutar cálculo de altura
-    requestAnimationFrame(() => calcularAlturaContenedor(episodios.length, capContenedor));
+    // Quitar altura fija y scroll
+    capContenedor.style.height = 'auto';
+    capContenedor.style.overflowY = 'visible';
+    capContenedor.style.maxHeight = 'none';
 
-    // Añadir el listener de resize SOLO UNA VEZ
-    if (!resizeListenerAñadido) {
-        window.addEventListener('resize', () => {
-            requestAnimationFrame(() => calcularAlturaContenedor(episodios.length, capContenedor));
-        });
-        resizeListenerAñadido = true;
+    // Crear paginación si hay más de una página
+    if (totalPaginas > 1) {
+        crearPaginacion(episodiosFiltrados.length, itemsPerPage);
+    } else {
+        const paginationContainer = document.getElementById('pagination-container');
+        if (paginationContainer) {
+            paginationContainer.style.display = 'none';
+        }
     }
 
-    // Lógica de Scroll
-    let scrollEjecutado = false;
-    const hacerScroll = () => {
-        const primerNoVisto = capContenedor.querySelector(".episode-btn.ep-no-visto");
+    // Verificar si TODOS los episodios del anime están vistos para mostrar el overlay
+    // Solo en la primera carga y si no hay filtro aplicado
+    const totalVistos = vistos.length;
+    const totalEpisodiosAnime = episodios.length;
+    const todosCompletados = totalVistos === totalEpisodiosAnime && totalEpisodiosAnime > 0;
+    const sinFiltro = filtroActual === 'todos';
 
-        if (!primerNoVisto) {
-            // Solo mostrar overlay si NO es una inversión
-            if (!esInversion && episodios.length >= 1 && typeof mostrarOverlayCapitulosCompletados === 'function') {
-                mostrarOverlayCapitulosCompletados();
-            }
-            return;
-        }
-
-        const target = primerNoVisto.closest("li");
-        if (!target) return;
-
-        const targetRect = target.getBoundingClientRect();
-        const containerRect = capContenedor.getBoundingClientRect();
-        const posicionTopReal = (targetRect.top - containerRect.top) + capContenedor.scrollTop;
-        const posicionDestino = Math.max(0, posicionTopReal - 15);
-
-        if (Math.abs(capContenedor.scrollTop - posicionDestino) < 10) return; 
-
-        capContenedor.scrollTo({ top: posicionDestino, left: 0, behavior: "smooth" });
-    };
-
-    const ejecutarScrollSeguro = () => {
-        if (scrollEjecutado) return;
-        scrollEjecutado = true;
-        requestAnimationFrame(hacerScroll);
-    };
-
-    capContenedor.addEventListener("transitionend", function handler(e) {
-        if (e.propertyName !== "height") return;
-        capContenedor.removeEventListener("transitionend", handler);
-        ejecutarScrollSeguro();
-    }, { once: true }); // 'once: true' evita que el listener se quede pegado
-
-    setTimeout(ejecutarScrollSeguro, 300);
+    if (todosCompletados && sinFiltro && primeraCarga && typeof mostrarOverlayCapitulosCompletados === 'function') {
+        mostrarOverlayCapitulosCompletados();
+        primeraCarga = false;
+    }
 }
 
 // ==========================================
-// 3. CONFIGURACIÓN DE BOTONES FUERA DE LA FUNCIÓN
+// 3. FUNCIÓN DE PAGINACIÓN
+// ==========================================
+function crearPaginacion(totalEpisodios, itemsPerPage) {
+    const paginationContainer = document.getElementById('pagination-container');
+    const paginationInfo = document.getElementById('pagination-info');
+    const paginationText = document.getElementById('pagination-text');
+    const paginationOptions = document.getElementById('pagination-options');
+    const btnPagination = document.getElementById('btn-pagination');
+
+    if (!paginationContainer) return;
+
+    // Mostrar el contenedor de paginación
+    paginationContainer.style.display = 'flex';
+
+    // Calcular el rango actual basado en la página
+    const startIndex = paginaActual * itemsPerPage;
+    const endIndex = Math.min((paginaActual + 1) * itemsPerPage, totalEpisodios);
+
+    // Obtener los episodios de la página actual para mostrar sus números reales
+    const episodiosEnPagina = episodiosFiltrados.slice(startIndex, endIndex);
+    const capInicio = episodiosEnPagina.length > 0 ? episodiosEnPagina[0].number : 0;
+    const capFin = episodiosEnPagina.length > 0 ? episodiosEnPagina[episodiosEnPagina.length - 1].number : 0;
+
+    // Actualizar el texto de información con números de capítulo reales
+    paginationInfo.textContent = `Mostrando episodios ${capInicio}-${capFin} de ${totalEpisodios}`;
+
+    // Actualizar el texto del botón con números de capítulo reales
+    paginationText.textContent = `caps ${capInicio}-${capFin}`;
+
+    // Generar opciones de paginación
+    paginationOptions.innerHTML = '';
+    const totalPaginas = Math.ceil(totalEpisodios / itemsPerPage);
+
+    for (let i = 0; i < totalPaginas; i++) {
+        const pagStartIndex = i * itemsPerPage;
+        const pagEndIndex = Math.min((i + 1) * itemsPerPage, totalEpisodios);
+        const episodiosPagina = episodiosFiltrados.slice(pagStartIndex, pagEndIndex);
+
+        const pagCapInicio = episodiosPagina.length > 0 ? episodiosPagina[0].number : 0;
+        const pagCapFin = episodiosPagina.length > 0 ? episodiosPagina[episodiosPagina.length - 1].number : 0;
+
+        const option = document.createElement('button');
+        option.className = 'pagination-option';
+        option.textContent = `caps ${pagCapInicio}-${pagCapFin}`;
+        option.dataset.pagina = i;
+
+        if (i === paginaActual) {
+            option.classList.add('active');
+        }
+
+        option.addEventListener('click', () => {
+            // Actualizar la página actual
+            paginaActual = i;
+
+            // Cerrar el dropdown
+            btnPagination.classList.remove('open');
+            paginationOptions.classList.remove('open');
+
+            // Regenerar los episodios con la nueva página (sin resetear)
+            if (animeActual) {
+                crearBotonesEpisodios(animeActual, false);
+            }
+        });
+
+        paginationOptions.appendChild(option);
+    }
+
+    // Manejar el toggle del dropdown
+    btnPagination.onclick = (e) => {
+        e.stopPropagation();
+        btnPagination.classList.toggle('open');
+        paginationOptions.classList.toggle('open');
+    };
+
+    // Cerrar el dropdown al hacer clic fuera
+    document.addEventListener('click', (e) => {
+        if (!btnPagination.contains(e.target) && !paginationOptions.contains(e.target)) {
+            btnPagination.classList.remove('open');
+            paginationOptions.classList.remove('open');
+        }
+    });
+}
+
+// ==========================================
+// 4. CONFIGURACIÓN DE BOTONES FUERA DE LA FUNCIÓN
 // ==========================================
 let invertirDebounceTimer = null;
 
@@ -733,7 +840,7 @@ function setupInvertirButton() {
 
             if (animeActual) {
                 ordenInvertido = !ordenInvertido;
-                crearBotonesEpisodios(animeActual, ordenInvertido, true); // true = es inversión
+                crearBotonesEpisodios(animeActual, true); // true = resetear página
 
                 // Debounce de 300ms para evitar spam
                 invertirDebounceTimer = setTimeout(() => {
@@ -745,7 +852,30 @@ function setupInvertirButton() {
 }
 
 // Inicializar cuando el DOM cargue
-document.addEventListener('DOMContentLoaded', setupInvertirButton);
+document.addEventListener('DOMContentLoaded', () => {
+    setupInvertirButton();
+    setupFiltroBotones();
+});
+
+function setupFiltroBotones() {
+    const botonesFiltro = document.querySelectorAll('.btn-filtro-cap');
+    botonesFiltro.forEach(boton => {
+        boton.addEventListener('click', () => {
+            // Remover clase active de todos
+            botonesFiltro.forEach(b => b.classList.remove('active'));
+            // Agregar clase active al clickeado
+            boton.classList.add('active');
+
+            // Actualizar filtro
+            filtroActual = boton.dataset.filtro;
+
+            // Regenerar episodios con el nuevo filtro
+            if (animeActual) {
+                crearBotonesEpisodios(animeActual, true);
+            }
+        });
+    });
+}
 // 1. Limpieza de capítulos (Corregido con setDoc + merge para evitar caídas si no existe el doc)
 async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
   try {
@@ -821,61 +951,57 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
     if (!userId) throw new Error("Usuario no autenticado");
 
     const ref = doc(db, 'usuarios', userId, 'caps-vistos', animeId);
-    
+
     // Obtener estado del anime desde el DOM (elemento #statuscargado)
     const statusElement = document.getElementById('statuscargado');
     const estadoTexto = statusElement ? statusElement.textContent : '';
     const esFinalizadoPorEstado = estadoTexto === 'Finalizado' || estadoTexto === 'Concluido';
-    
+
     if (esVisto) {
       // Marcar como visto
       const snap = await getDoc(ref);
       let nuevosVistos = [];
-      
+
       if (snap.exists()) {
         const data = snap.data();
-        // Usa esto:
         const arrayActual = data.episodiosVistos || [];
-        // Usamos Set para garantizar que no se duplique localmente el ID
         nuevosVistos = [...new Set([...arrayActual, episodio.toString()])];
       } else {
         nuevosVistos = [episodio.toString()];
       }
-      
-      // Verificar si se vieron todos los capítulos
-      const total = document.querySelectorAll(".episode-btn").length;
-      const vistosTodosLosCaps = nuevosVistos.length >= total && total > 0;
-      const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
-      
-      console.log('🔍 toggleCapituloVisto - MARCAR COMO VISTO');
-      console.log('  Estado texto:', estadoTexto, '| esFinalizadoPorEstado:', esFinalizadoPorEstado);
-      console.log('  Episodios vistos:', nuevosVistos.length, '| Total episodios:', total);
-      console.log('  vistosTodosLosCaps:', vistosTodosLosCaps, '| esFinalizadoPorVistos:', esFinalizadoPorVistos);
-      
+
+      // Verificar si se vieron todos los capítulos FILTRADOS
+      const totalFiltrados = episodiosFiltrados.length;
+      const vistosFiltrados = nuevosVistos.filter(ep => episodiosFiltrados.some(ef => ef.number.toString() === ep)).length;
+      const vistosTodosLosCapsFiltrados = vistosFiltrados >= totalFiltrados && totalFiltrados > 0;
+      const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCapsFiltrados;
+
       await setDoc(ref, {
         titulo,
         fechaAgregado: serverTimestamp(),
         episodiosVistos: arrayUnion(episodio.toString()),
         esFinalizadoPorVistos: esFinalizadoPorVistos
       }, { merge: true });
+
+      // Actualizar cache local
+      vistosCache = nuevosVistos;
     } else {
       // Desmarcar como visto
       const snap = await getDoc(ref);
       if (snap.exists()) {
         const data = snap.data();
         const nuevosVistos = (data.episodiosVistos || []).filter(ep => ep !== episodio.toString());
-        
+
         if (nuevosVistos.length === 0) {
-          // Si no quedan episodios vistos, eliminar el documento completo
           await deleteDoc(ref);
           console.log('🗑️ Documento eliminado:', animeId, '(no quedan episodios vistos)');
         } else {
-          // Verificar si aún se vieron todos los capítulos
-          const total = document.querySelectorAll(".episode-btn").length;
-          const vistosTodosLosCaps = nuevosVistos.length >= total && total > 0;
-          const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
-          
-          // Actualizar con los episodios restantes
+          // Verificar si aún se vieron todos los capítulos FILTRADOS
+          const totalFiltrados = episodiosFiltrados.length;
+          const vistosFiltrados = nuevosVistos.filter(ep => episodiosFiltrados.some(ef => ef.number.toString() === ep)).length;
+          const vistosTodosLosCapsFiltrados = vistosFiltrados >= totalFiltrados && totalFiltrados > 0;
+          const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCapsFiltrados;
+
           await setDoc(ref, {
             titulo,
             fechaAgregado: serverTimestamp(),
@@ -883,6 +1009,9 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
             esFinalizadoPorVistos: esFinalizadoPorVistos
           }, { merge: true });
         }
+
+        // Actualizar cache local
+        vistosCache = nuevosVistos;
       }
     }
 
@@ -892,14 +1021,19 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
 
     actualizarProgresoCapitulos(total, vistosEnUI);
 
+    // Mostrar overlay SOLO si se marcó el último capítulo como visto
+    // (verificar que el capítulo marcado es el último de los episodios FILTRADOS)
     if (esVisto && vistosEnUI === total && total > 0) {
-        mostrarOverlayCapitulosCompletados();
+        const ultimoEpisodioFiltrado = episodiosFiltrados[episodiosFiltrados.length - 1];
+        if (ultimoEpisodioFiltrado && parseInt(episodio) === parseInt(ultimoEpisodioFiltrado.number)) {
+            mostrarOverlayCapitulosCompletados();
+        }
     }
     mostrarPildora("capvisto", esVisto, null, episodio);
 
   } catch (error) {
     console.error("Error guardando en Firestore:", error);
-    throw error; // Re-lanzamos para que manejarEstadoEpisodio ejecute el catch de reversión
+    throw error;
   } finally {
     capituloToggleInProgress = false;
   }
@@ -1053,6 +1187,9 @@ async function cargarAnime(idauxiliar) {
     console.log(anime)
     if (!anime.id || !anime.titulo) {
       console.log("anime no contiene ni titulo ni id")
+      if (id === "avatar-the-seven-refuges") {
+        return
+      }
       mostrarResultadosBusqueda(id);
       return
     }
@@ -1668,13 +1805,7 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
     pill.remove();
   }, { once: true });
 }
-document.getElementById("btn-volver").addEventListener("click", () => {
-  if (history.length > 1) {
-    history.back();
-  } else {
-    window.location.href = "https://ani.zenlite.workers.dev/";
-  }
-});
+
 
 // Función para actualizar campo esFinalizadoPorVistos por lotes desde Firestore
 async function actualizarFinalizadoPorLotes() {

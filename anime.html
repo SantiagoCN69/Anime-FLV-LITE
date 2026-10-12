@@ -210,29 +210,29 @@
   </section>
 
   <section class="anime-container3">
-                <div class="filtro-caps">
-              <button type="button" class="btn-filtro-cap active" data-filtro="todos">Todos</button>
-              <button type="button" class="btn-filtro-cap" data-filtro="no-vistos">No vistos</button>
-              <button type="button" class="btn-filtro-cap" data-filtro="vistos">Vistos</button>
-            </div>
-        <div class="header-caps">
-          <span id="titulo-lista-caps"> Lista de episodios</span>
-          <div class="header-caps-right">
-
-            <div class="header-caps-actions">
-              <button type="button" id="btn-invertir-caps" title="Invertir orden" disabled aria-label="Invertir orden">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7.55228 5 8 5.44772 8 6V15.5858L10.2929 13.2929C10.6834 12.9024 11.3166 12.9024 11.7071 13.2929C12.0976 13.6834 12.0976 14.3166 11.7071 14.7071L7.70711 18.7071C7.31658 19.0976 6.68342 19.0976 6.29289 18.7071L2.29289 14.7071C1.90237 14.3166 1.90237 13.6834 2.29289 13.2929C2.68342 12.9024 3.31658 12.9024 3.70711 13.2929L6 15.5858V6C6 5.44772 6.44772 5 7 5ZM16.2929 5.29289C16.6834 4.90237 17.3166 4.90237 17.7071 5.29289L21.7071 9.29289C22.0976 9.68342 22.0976 10.3166 21.7071 10.7071C21.3166 11.0976 20.6834 11.0976 20.2929 10.7071L18 8.41421V18C18 18.5523 17.5523 19 17 19C16.4477 19 16 18.5523 16 18V8.41421L13.7071 10.7071C13.3166 11.0976 12.6834 11.0976 12.2929 10.7071C11.9024 10.3166 11.9024 9.68342 12.2929 9.29289L16.2929 5.29289Z" fill="currentColor"></path> </g></svg>
-              </button>
-              <button type="button" id="btn-search-capitulo" title="Buscar capítulo" aria-label="Buscar capítulo"></button>
-              <div class="search-caps">
-                <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo...">
-                <button type="button" id="btn-close-search-capitulo" title="Cerrar búsqueda" aria-label="Cerrar búsqueda"></button>
-              </div>
-            </div>
+    <div class="header-caps">
+      <span id="titulo-lista-caps"> Lista de episodios</span>
+      <p class="anime-description">Todos tus capítulos en un solo lugar. Elige uno y sigue disfrutando.</p>
+      <div class="header-caps-actions">
+        <div id="filtro-caps">
+          <button type="button" class="btn-filtro-cap active" data-filtro="todos">Todos</button>
+          <button type="button" class="btn-filtro-cap" data-filtro="no-vistos">No vistos</button>
+          <button type="button" class="btn-filtro-cap" data-filtro="vistos">Vistos</button>
+        </div>
+        <div id="filtro-caps2">
+          <button type="button" id="btn-invertir-caps" title="Invertir orden" disabled aria-label="Invertir orden">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7.55228 5 8 5.44772 8 6V15.5858L10.2929 13.2929C10.6834 12.9024 11.3166 12.9024 11.7071 13.2929C12.0976 13.6834 12.0976 14.3166 11.7071 14.7071L7.70711 18.7071C7.31658 19.0976 6.68342 19.0976 6.29289 18.7071L2.29289 14.7071C1.90237 14.3166 1.90237 13.6834 2.29289 13.2929C2.68342 12.9024 3.31658 12.9024 3.70711 13.2929L6 15.5858V6C6 5.44772 6.44772 5 7 5ZM16.2929 5.29289C16.6834 4.90237 17.3166 4.90237 17.7071 5.29289L21.7071 9.29289C22.0976 9.68342 22.0976 10.3166 21.7071 10.7071C21.3166 11.0976 20.6834 11.0976 20.2929 10.7071L18 8.41421V18C18 18.5523 17.5523 19 17 19C16.4477 19 16 18.5523 16 18V8.41421L13.7071 10.7071C13.3166 11.0976 12.6834 11.0976 12.2929 10.7071C11.9024 10.3166 11.9024 9.68342 12.2929 9.29289L16.2929 5.29289Z" fill="currentColor"></path> </g></svg>
+          </button>
+          <button type="button" id="btn-search-capitulo" title="Buscar capítulo" aria-label="Buscar capítulo"></button>
+          <div class="search-caps">
+            <input type="text" id="filtro-capitulo" placeholder="Buscar capítulo...">
+            <button type="button" id="btn-close-search-capitulo" title="Cerrar búsqueda" aria-label="Cerrar búsqueda"></button>
           </div>
         </div>
-        <ul id="capitulos" class="episodes-list">
-          <li><span id="init-loading-cap" class="span-carga">Cargando episodios...</span></li>
+      </div>
+    </div>
+    <ul id="capitulos" class="episodes-list">
+      <li><span id="init-loading-cap" class="span-carga">Cargando episodios...</span></li>
         </ul>
 
         <div class="pagination-container" id="pagination-container" style="display: none;">
