@@ -60,6 +60,7 @@
     <link rel="stylesheet" href="styles/fonts.css">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/style_index.css">
+    <meta name="view-transition" content="same-origin">
 </head>
 <body>
 <!-- <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
@@ -120,7 +121,7 @@ if (indexpagination) {
   </script>
 
   <header>
-    <h1 class="title"><a href="/">Anime<span> Zen</span></a></h1>
+    <h1 class="title" style="view-transition-name: title;"><a href="/">Anime<span> Zen</span></a></h1>
     <div class="search">
       <input autocomplete="off" type="text" id="busqueda" placeholder="Buscar anime...">
       <button type="button" id="btn-close-search" title="Cerrar búsqueda" aria-label="Cerrar búsqueda"></button>
