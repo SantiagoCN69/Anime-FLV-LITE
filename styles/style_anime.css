@@ -1095,7 +1095,7 @@ header #busqueda{
   pointer-events: none;
   transform: translateY(-10px);
   transition: all 0.3s ease;
-  z-index: 10;
+  z-index: 2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
