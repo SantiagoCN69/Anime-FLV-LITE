@@ -969,6 +969,8 @@ function aplicarFondoAnime(anime) {
 
 async function cargarVideoDesdeEpisodio(index) {
   const controles = document.getElementById("controles");
+  // Si no hay en Firestore, mostrar indicador de carga
+  document.getElementById("controles").innerHTML = "<span id='cargando-servidores'></span>";
   controles.classList.remove("con-mediafire");
   btnCap.textContent = `Episodio ${index}`;
   const ep = episodios.find(ep => String(ep.number) === String(index));
@@ -1015,8 +1017,7 @@ async function cargarVideoDesdeEpisodio(index) {
     ep.servidores = guardarServidoresEnCache(ep, servidoresFirestore);
     renderizarServidores(ep.servidores);
   } else {
-    // Si no hay en Firestore, mostrar indicador de carga
-    document.getElementById("controles").innerHTML = "<span class='span-carga'>Cargando servidores...</span>";
+
   }
 
   // 3. Sincronizar con la API en segundo plano
