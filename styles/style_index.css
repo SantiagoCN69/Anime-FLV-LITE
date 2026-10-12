@@ -991,12 +991,7 @@ nav.filtros {
   background-size: cover;
   background-position: center center;
   z-index: 0;
-  transform: scale(1.02);
-  transition: transform 10s ease;
-}
-
-.hero-slide.active .hero-slide__bg {
-  transform: scale(1.12);
+  height: calc(100% + 30px);
 }
 
 .hero-background {
@@ -1028,7 +1023,7 @@ nav.filtros {
 /* Gradient horizontal (izquierda a derecha): Pura a progresivamente transparente */
     linear-gradient(
       90deg, 
-      var(--b) 2%, 
+      var(--b) 5%, 
       color-mix(in srgb, var(--b) 72%, transparent) 32%, 
       color-mix(in srgb, var(--b) 25%, transparent) 100%
     ),
@@ -1127,7 +1122,6 @@ nav.filtros {
 .hero-slide__actions {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.85rem;
   position: absolute;
@@ -1194,7 +1188,14 @@ nav.filtros {
   background: var(--btn);
   border-radius: 12px;
 }
-
+@media (max-width: 400px) {
+  .hero-btn--primary {
+    display: none;
+  }
+  .hero-btn--secondary {
+    margin-left: auto;
+  }
+}
 @media (hover: hover) {
   .hero-btn:hover {
     transform: translateY(-4px) !important;
@@ -1310,7 +1311,7 @@ nav.filtros {
   pointer-events: none;
   background: linear-gradient(
     to top,
-    var(--b) 2%,
+    var(--b) 15%,
     rgba(0, 0, 0, 0.25) 85%
   );
 }

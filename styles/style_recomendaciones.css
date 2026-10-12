@@ -92,6 +92,7 @@ z-index: -1;
 }
 .grid-animes.Recomendaciones .container-img{
   aspect-ratio: 1/2;
+  width: 180px;
 }
 
 .search-container {

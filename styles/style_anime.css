@@ -16,7 +16,7 @@ body::before {
   top: 80px;
   left: -2.5vw;
   width: 105vw;
-  height: calc(100vh - 80px);
+  height: calc(110vh - 80px);
 
   background-image: var(--background-image);
   background-size: cover;
@@ -63,7 +63,7 @@ body::after {
     linear-gradient(
       to bottom,
       transparent 0%,
-      var(--b) 100vh,
+      var(--b) 94vh,
       var(--b) 100%
     );
 
@@ -433,8 +433,6 @@ header #busqueda{
 
 #titulo {
   font-size: 1.8rem;
-  margin-inline: auto;
-  text-align: center;
   overflow: hidden;
   width: fit-content;
   color:var(--t1);
@@ -1447,7 +1445,7 @@ margin-bottom: 1.5rem;
     "container4";
 
   max-height: fit-content ;
-  gap: 20px;
+  gap: 1.5rem;
 }
 .btn-volver {
   display: none;
@@ -1490,10 +1488,12 @@ padding-bottom: 1px;
   min-height: 128px;
 }
 #titulo {
-display: flex;
-align-items: end;
-min-height: 73px;
-max-height: 73px;
+  margin-inline: auto;
+  text-align: center;
+  display: flex;
+  align-items: end;
+  min-height: 73px;
+  max-height: 73px;
 }
 .anime-rating {
 font-size: .8rem;
@@ -1614,7 +1614,7 @@ z-index: 0;
     to bottom, 
     color-mix(in srgb, var(--b) 80%, transparent) 5%,  /* Reemplaza rgba(0,0,0, 0.8) */
     color-mix(in srgb, var(--b) 8%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
-    color-mix(in srgb, var(--b) 75%, transparent) 60%,  /* Reemplaza rgba(0,0,0, 0.9) */
+    color-mix(in srgb, var(--b) 75%, transparent) 71%,  /* Reemplaza rgba(0,0,0, 0.9) */
     var(--b) 90%                                       /* Color sólido al final */
   );
   z-index: 2;
