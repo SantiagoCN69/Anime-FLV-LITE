@@ -48,11 +48,11 @@ body.fondo-animado::before {
 @keyframes zoom {
   0% {
     opacity: 0;
-    filter: blur(5px) saturate(1.2);
+    filter: blur(5px) saturate(1.2) brightness(1.3);
   }
   100% {
     opacity: 1;
-    filter: blur(0px) saturate(1.2);
+    filter: blur(0px) saturate(1.2) brightness(1);
   }
 }
 
@@ -69,7 +69,7 @@ body::after {
     /* Capa 2: Gradiente vertical ajustado al 100% de este contenedor */
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--b) 30%, transparent) 0%,
+      color-mix(in srgb, var(--b) 10%, transparent) 0%,
       var(--b) 96%
     );
 
