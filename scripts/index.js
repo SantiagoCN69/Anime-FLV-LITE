@@ -1576,8 +1576,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // 2. CONTINUAR VIENDO & SIDEBAR
 // =========================================
 function inicializarContinuarViendo() {
-
-  console.log('🔍 [inicializarContinuarViendo] Iniciando función');
   const userID = localStorage.getItem('userID');
   const cachekey = "ultimosCapsVistosCache_" + userID;
   const container = document.getElementById('section-continuar-viendo');
