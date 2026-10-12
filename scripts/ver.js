@@ -391,7 +391,7 @@ async function toggleYGuardarEstadoCapitulo() {
     const nuevoEstadoVisto = !estaVistoActualmente;
 
     const episodiosActuales = new Set(episodiosVistos);
-    
+
     // Mantenemos la estructura condicional if/else
     if (nuevoEstadoVisto) {
       episodiosActuales.add(episodioId);
@@ -410,7 +410,7 @@ async function toggleYGuardarEstadoCapitulo() {
         const statusElement = document.getElementById('statuscargado');
         const estadoTexto = statusElement ? statusElement.textContent : '';
         const esFinalizadoPorEstado = (estadoTexto === 'Finalizado' || estadoTexto === 'Concluido');
-        
+
         // Verificar si completó todos los capítulos con el array local "episodios"
         const totalEpisodios = episodios.length;
         const vistosTodosLosCaps = arrayNuevosVistos.length >= totalEpisodios && totalEpisodios > 0;
@@ -423,10 +423,10 @@ async function toggleYGuardarEstadoCapitulo() {
           episodiosVistos: arrayNuevosVistos,
           esFinalizadoPorVistos: esFinalizadoPorVistos
         }, { merge: true });
-      
+
       // Actualizar la variable global para que el dropdown tenga los datos actualizados
       capitulosVistosGlobales = arrayNuevosVistos;
-      
+
       // Regenerar dropdown para mostrar el nuevo estado
       dropdownGenerado = false;
       generarDropdownCapitulos();
