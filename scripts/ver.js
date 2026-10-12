@@ -702,9 +702,9 @@ function reordenarServidores(servidores) {
 
     const url = srv.url.toLowerCase();
 
-    // Zilla-Networks a baja prioridad (other)
+    // Zilla-Networks filtrado completamente (no funciona por hotlinking)
     if (url.includes('zilla-networks.com')) {
-      other.push(srv);
+      return; // Omitir este servidor
     }
     else if (url.includes('yourupload.com/embed/')) {
       priority.push(srv);
@@ -1168,11 +1168,10 @@ function renderizarServidores(todosLosServidores) {
     controles.appendChild(btn);
   });
 
-  // 🔥 Primer video por defecto (omite mediafire y zilla-networks)
+  // 🔥 Primer video por defecto (omite mediafire)
   if (embeds && embeds.length > 0) {
     const firstPlayable = embeds.find(s =>
-      !s.url?.includes("mediafire.com") &&
-      !s.url?.includes("zilla-networks.com")
+      !s.url?.includes("mediafire.com")
     );
     const buttons = controles.querySelectorAll("button");
 
