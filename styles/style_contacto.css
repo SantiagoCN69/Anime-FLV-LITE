@@ -1,5 +1,7 @@
 /* Estilos específicos para la página de contacto */
-
+#content-section-svg-dynamic:has(~ #Contacto:not(.hidden)) svg {
+    padding-right: 11px !important;
+}
 .contacto-main {
     min-height: 100dvh;
     padding: 2rem;
