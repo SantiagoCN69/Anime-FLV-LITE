@@ -445,7 +445,7 @@ if (anime.estado) {
   // Join with spaces
   info1El.innerHTML = infoParts.join(' ');
 
-  tituloEl.textContent = anime.titulo;
+  tituloEl.textContent = formatTitleFromSlug(anime.titulo);
   tituloEl.onclick = () => (navigator.clipboard.writeText(anime.titulo), mostrarPildora("alerta texto"));
   
   const r = document.createRange();

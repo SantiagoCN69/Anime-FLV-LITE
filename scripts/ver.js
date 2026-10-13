@@ -991,7 +991,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `/ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `/ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;
