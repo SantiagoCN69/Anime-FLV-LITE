@@ -123,7 +123,7 @@ const renderGeneros = (container, generos) => {
       a.classList.add('cargado');
     });
   } else {
-    container.textContent = 'Géneros no disponibles.';
+    container.textContent = '';
   }
 };
 
