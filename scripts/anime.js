@@ -754,11 +754,12 @@ function scrollAlPrimerNoVisto(vistosParam) {
     const primerNoVistoGlobal = episodiosFiltrados.find(ep => !vistos.includes(ep.number.toString()));
 
     if (!primerNoVistoGlobal) {
-        // Mostrar overlay solo si: no hay filtro + todos los episodios FILTRADOS están vistos
+        // Mostrar overlay solo si: no hay filtro + todos los episodios FILTRADOS están vistos + primera carga
         const todosVistos = episodiosFiltrados.every(ep => vistos.includes(ep.number.toString()));
         const sinFiltro = filtroActual === 'todos';
-        if (episodiosFiltrados.length >= 1 && todosVistos && sinFiltro && typeof mostrarOverlayCapitulosCompletados === 'function') {
+        if (episodiosFiltrados.length >= 1 && todosVistos && sinFiltro && primeraCarga && typeof mostrarOverlayCapitulosCompletados === 'function') {
             mostrarOverlayCapitulosCompletados();
+            primeraCarga = false;
         }
         return;
     }
@@ -1249,6 +1250,12 @@ async function cargarAnime(idauxiliar) {
       }
       mostrarResultadosBusqueda(id);
       return
+    }
+
+    // Verificar si el anime tiene el campo "manual" en true para avatar-the-seven-refuges
+    if (id === "avatar-the-seven-refuges" && firestoreData && firestoreData.manual === true) {
+      mostrarResultadosBusqueda(id);
+      return;
     }
     if (!compararDatos(cached, anime)) {
       // Preservar servidores existentes en Firestore (reutilizar lectura anterior)

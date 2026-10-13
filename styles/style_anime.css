@@ -1246,12 +1246,12 @@ header #busqueda{
   text-align: left;
   
   /* Estilos Visuales (Glassmorphism) */
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.25));
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 
-    0 20px 50px rgba(0, 0, 0, 0.45),
+    0 20px 50px rgba(0, 0, 0, 0.35),
     inset 0 1px rgba(255, 255, 255, 0.08);
 
   /* Estado Inicial Oculto */
