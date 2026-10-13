@@ -1252,11 +1252,6 @@ async function cargarAnime(idauxiliar) {
       return
     }
 
-    // Verificar si el anime tiene el campo "manual" en true para avatar-the-seven-refuges
-    if (id === "avatar-the-seven-refuges" && firestoreData && firestoreData.manual === true) {
-      mostrarResultadosBusqueda(id);
-      return;
-    }
     if (!compararDatos(cached, anime)) {
       // Preservar servidores existentes en Firestore (reutilizar lectura anterior)
       if (firestoreData && firestoreData.episodios) {
