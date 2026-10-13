@@ -118,10 +118,20 @@ const idsDeListasCargados = new Map();
 
 // Cache de promesas para desduplicar peticiones a Firestore y evitar lecturas repetidas
 const cacheAnimesFirestore = new Map();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutos de TTL para datos de animes
 
 function obtenerDatosAnimeFirestore(animeId) {
-  if (cacheAnimesFirestore.has(animeId)) {
-    return cacheAnimesFirestore.get(animeId);
+  const cachedEntry = cacheAnimesFirestore.get(animeId);
+  
+  // OPTIMIZACIÓN: Verificar si el cache aún es válido (TTL)
+  if (cachedEntry) {
+    const edad = Date.now() - cachedEntry.timestamp;
+    if (edad < CACHE_TTL_MS) {
+      return cachedEntry.promise;
+    } else {
+      // Cache expirado, eliminar
+      cacheAnimesFirestore.delete(animeId);
+    }
   }
 
   const promesaLectura = getDoc(doc(db, 'datos-animes', animeId))
@@ -133,9 +143,24 @@ function obtenerDatosAnimeFirestore(animeId) {
       return null;
     });
 
-  cacheAnimesFirestore.set(animeId, promesaLectura);
+  // Guardar con timestamp para TTL
+  cacheAnimesFirestore.set(animeId, {
+    promise: promesaLectura,
+    timestamp: Date.now()
+  });
+  
   return promesaLectura;
 }
+
+// OPTIMIZACIÓN: Limpieza periódica del cache para evitar crecimiento indefinido
+setInterval(() => {
+  const ahora = Date.now();
+  for (const [animeId, entry] of cacheAnimesFirestore.entries()) {
+    if (ahora - entry.timestamp > CACHE_TTL_MS) {
+      cacheAnimesFirestore.delete(animeId);
+    }
+  }
+}, CACHE_TTL_MS);
 
 function conTiempoMaximo(promesa, milisegundos, mensaje) {
   let temporizador;
@@ -531,16 +556,16 @@ async function cargarUltimosCapsVistos() {
       }
 
       indicesFetch.push(index);
-      promesasFetch.push(getDoc(doc(db, "datos-animes", cap.id)));
+      // OPTIMIZACIÓN: Usar obtenerDatosAnimeFirestore con TTL en lugar de getDoc directo
+      promesasFetch.push(obtenerDatosAnimeFirestore(cap.id));
     });
     
     // 3. Ejecutamos las llamadas a Firebase SOLAMENTE para los que faltan
     if (promesasFetch.length > 0) {
-      const animeDocsSnap = await Promise.all(promesasFetch);
+      const animeDocsData = await Promise.all(promesasFetch);
 
-      animeDocsSnap.forEach((docSnap, i) => {
-        if (docSnap.exists()) {
-          const animeDetails = docSnap.data();
+      animeDocsData.forEach((animeDetails, i) => {
+        if (animeDetails) {
           const originalIndex = indicesFetch[i];
           const cap = currentState[originalIndex];
 
@@ -1067,22 +1092,38 @@ async function cargarUltimosCapitulos() {
         throw new Error('Formato de respuesta inválido');
       }
   
-      if (JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(cached))) {
+      // OPTIMIZACIÓN: Solo escribir en Firestore si los datos cambiaron
+      const datosCambiaron = JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(cached));
+      
+      if (datosCambiaron) {
         if(apiData.length > 0) {
           render(apiData);
           guardarCache(cacheKey, apiData);
           cached = apiData;
-        }
-        try {
-          if (apiData && apiData.length > 0) {
+          
+          // Solo escribir si Firestore también tiene datos diferentes
+          try {
             const docRef = doc(db, 'ultimos-capitulos', docId);
-            await setDoc(docRef, { 
-              items: apiData,
-              lastUpdated: new Date().toISOString()
-            }, { merge: true });
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+              const firestoreData = docSnap.data().items || [];
+              if (JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(firestoreData))) {
+                await setDoc(docRef, { 
+                  items: apiData,
+                  lastUpdated: new Date().toISOString()
+                }, { merge: true });
+              }
+            } else {
+              // Solo escribir si el documento no existe
+              await setDoc(docRef, { 
+                items: apiData,
+                lastUpdated: new Date().toISOString()
+              }, { merge: true });
+            }
+          } catch (firestoreError) {
+            console.error('Error al actualizar Firestore:', firestoreError);
           }
-        } catch (firestoreError) {
-          console.error('Error al actualizar Firestore:', firestoreError);
         }
       }
     } catch (err) {
