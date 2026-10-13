@@ -1244,8 +1244,9 @@ async function cargarAnime(idauxiliar) {
     const anime = normalizarDatosAPI(data);
     console.log(anime)
     if (!anime.id || !anime.titulo) {
-      console.log("anime no contiene ni titulo ni id")
-      if (id === "avatar-the-seven-refuges") {
+      console.log("anime no contiene ni titulo ni id de api")
+      if (firestoreData && firestoreData.manual === true) {
+        console.log("firestoreData", firestoreData)
         return
       }
       mostrarResultadosBusqueda(id);
