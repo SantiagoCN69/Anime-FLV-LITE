@@ -296,15 +296,24 @@ async function cargarRecomendacionesIA(searchTerm, searchId) {
 
 // === SUGERENCIAS ===
 async function cargarSugerenciasSinResultados(id, container) {
+  console.log('🔍 Cargando sugerencias con término:', id);
   try {
     const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(id)}`);
     if (!response.ok) throw new Error('Error al cargar sugerencias');
     const animeData = await response.json();
-    const resultados = animeData || [];
+    const resultados = animeData || []; 
+    console.log('📊 Resultados de sugerencias:', resultados.length);
     if (resultados.length === 0) {
       const porcentajeARecortar = Math.ceil(id.length * 0.4);
       const recortado = id.slice(0, -porcentajeARecortar);
-      if (recortado.length >= 3) return cargarSugerenciasSinResultados(recortado, container);
+      console.log('🔄 Recortando término:', id, '→', recortado, '(longitud:', recortado.length, ')');
+      if (recortado.length >= 1) {
+        console.log('🔄 Intentando con término recortado');
+        return cargarSugerenciasSinResultados(recortado, container);
+      }
+      console.log('❌ Término demasiado corto, ocultando sección de sugerencias');
+      const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
+      if (sugerenciasSection) sugerenciasSection.remove();
       return;
     }
     container.innerHTML = '';
@@ -312,6 +321,8 @@ async function cargarSugerenciasSinResultados(id, container) {
     observerAnimeCards();
   } catch (error) {
     console.error('Error al cargar sugerencias:', error);
+    const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
+    if (sugerenciasSection) sugerenciasSection.remove();
   }
 }
 
