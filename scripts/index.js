@@ -1012,7 +1012,7 @@ async function cargarUltimosCapitulos() {
         datos.forEach(anime => {
           const card = crearAnimeCard({
             id: anime.id,
-            portada: anime.image || anime.cover || '',
+            portada: anime.image || anime.cover || anime['cover-lasted'] || '',
             titulo: anime.title || 'Sin título',
             Capitulo: anime.chapter?.toString() || anime.episode?.toString() || ''
           });
