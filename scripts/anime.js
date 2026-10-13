@@ -1180,6 +1180,10 @@ function compararDatos(a, b) {
 
 // Función simplificada para normalizar datos de la API (sin sources[0].data)
 function normalizarDatosAPI(data) {
+  if (!data) {
+    return null;
+  }
+
   // Ya no tenemos el formato con sources[0].data - formato directo simplificado
   return {
     id: data.id || '', // Nuevo campo obligatorio
@@ -1242,9 +1246,17 @@ async function cargarAnime(idauxiliar) {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     const anime = normalizarDatosAPI(data);
-    console.log(anime)
+    if (anime) { console.log(anime) }
+
+    if (!anime) {
+      if (firestoreData && firestoreData.manual === true) {
+        return
+      }
+      mostrarResultadosBusqueda(id);
+      return
+    }
+
     if (!anime.id || !anime.titulo) {
-      console.log("anime no contiene ni titulo ni id de api")
       if (firestoreData && firestoreData.manual === true) {
         return
       }
@@ -1988,7 +2000,7 @@ async function ejecutarMantenimientoUnaVez() {
 
   if (yaEjecutado === "true") {
     // Si ya está en true, no hacemos nada
-    console.log("✅ El mantenimiento de la base de datos ya se realizó anteriormente.");
+    // console.log("✅ El mantenimiento de la base de datos ya se realizó anteriormente.");
   } else {
     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
     if (!userId) {
