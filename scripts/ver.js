@@ -755,7 +755,8 @@ async function guardarServidoresEnFirestore(ep, servidores) {
   const animeDatos = animeDatosSnap.data() || {};
 
   if (!animeDatos.episodios) animeDatos.episodios = [];
-  const episodioIndex = animeDatos.episodios.findIndex(e => e.url === ep.url);
+  // 🔥 CAMBIO: Buscar por number en lugar de url
+  const episodioIndex = animeDatos.episodios.findIndex(e => String(e.number) === String(ep.number));
 
   // Preservar servidores de jkanime y mediafire existentes
   let servidoresExistentes = [];
@@ -780,14 +781,16 @@ async function guardarServidoresEnFirestore(ep, servidores) {
   if (episodioIndex !== -1) {
     animeDatos.episodios[episodioIndex].servidores = servidoresFinales;
   } else {
-    animeDatos.episodios.push({ ...ep, servidores: servidoresFinales });
+    // 🔥 No guardar el campo url, solo number y servidores
+    animeDatos.episodios.push({ number: ep.number, servidores: servidoresFinales });
   }
 
   await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
 }
 
 function obtenerServidoresValidosDeFirestore(animeDatos, episodio) {
-  const episodioGuardado = animeDatos?.episodios?.find(e => e.url === episodio.url);
+  // 🔥 CAMBIO: Buscar por number en lugar de url (ya que url puede estar vacío)
+  const episodioGuardado = animeDatos?.episodios?.find(e => String(e.number) === String(episodio.number));
   const servidores = episodioGuardado?.servidores;
 
   if (!servidores?.length) return [];
@@ -898,7 +901,7 @@ async function cargarEpisodios() {
 
     const data = await res.json();
 
-    episodios = (data.episodes || []).map(ep => ({ number: ep.number, url: ep.url }));
+    episodios = (data.episodes || []).map(ep => ({ number: ep.number }));
 
     if (!episodios.length) {
       throw new Error("La API no devolvió episodios");

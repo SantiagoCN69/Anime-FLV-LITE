@@ -1173,7 +1173,7 @@ function compararDatos(a, b) {
 
   // Comparar episodios y relacionados
   return (
-    compararArrays(a.episodios || [], b.episodios || [], ['number', 'url']) &&
+    compararArrays(a.episodios || [], b.episodios || [], ['number']) &&
     compararArrays(a.relacionados || [], b.relacionados || [], ['slug', 'type', 'startDate', 'id'])
   );
 }
@@ -1192,7 +1192,7 @@ function normalizarDatosAPI(data) {
     estado: data.status || null,
     category: data.category || null,
     startDate: data.startDate || null,
-    episodios: (data.episodes || []).map(ep => ({ number: ep.number, url: ep.url })),
+    episodios: (data.episodes || []).map(ep => ({ number: ep.number })),
     relacionados: (data.relations || [])
       .filter(ep => ep && ep.slug)
       .map(ep => ({ slug: ep.slug, type: ep.type, startDate: ep.startDate, id: ep.id })) || [],
@@ -1246,7 +1246,6 @@ async function cargarAnime(idauxiliar) {
     if (!anime.id || !anime.titulo) {
       console.log("anime no contiene ni titulo ni id de api")
       if (firestoreData && firestoreData.manual === true) {
-        console.log("firestoreData", firestoreData)
         return
       }
       mostrarResultadosBusqueda(id);
@@ -1257,7 +1256,7 @@ async function cargarAnime(idauxiliar) {
       // Preservar servidores existentes en Firestore (reutilizar lectura anterior)
       if (firestoreData && firestoreData.episodios) {
         anime.episodios = anime.episodios.map(ep => {
-          const epFirestore = firestoreData.episodios.find(e => e.url === ep.url);
+          const epFirestore = firestoreData.episodios.find(e => String(e.number) === String(ep.number));
           if (epFirestore?.servidores) {
             return { ...ep, servidores: epFirestore.servidores };
           }
