@@ -1745,7 +1745,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   pointer-events: all;
   cursor: pointer;
 }
-.pildora-no-user::after {
+/* .pildora-no-user::after {
   content:"";
   position: absolute;
   left: 24px;
@@ -1754,7 +1754,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   width: 82px;
   height: 2px;
   background: var(--t1);
-}
+} */
 @media (min-width: 600px) {
 /* Estilos del sidebar colapsado */
 .sidebar-collapsed .sidebar {

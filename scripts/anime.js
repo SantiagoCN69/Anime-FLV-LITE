@@ -502,6 +502,7 @@ const debounce = (fn, delay = 200) => {
     timer = setTimeout(() => fn(...args), delay);
   };
 };
+const userId = auth.currentUser?.uid || localStorage.getItem("userID");
 
 const createEpisodeButton = (ep, vistos = [], internalId) => {
   const li = document.createElement('li');
@@ -555,6 +556,10 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   icon.addEventListener('click', e => {
     e.stopPropagation();
     e.preventDefault();
+    if (!userId) {
+      mostrarPildora('no-user');
+      return
+    }
     manejarEstadoEpisodio(btn, icon, ep);
   });
 
@@ -966,12 +971,12 @@ filtroCapitulo.addEventListener('input', debounce(() => {
 
 // 3. Manejador de clicks (Optimistic UI - Impecable)
 async function manejarEstadoEpisodio(btn, icon, ep) {
-  const userId = auth.currentUser?.uid || localStorage.getItem("userID");
-  // Evitar doble clic rápido en ESTE mismo botón
+  
   if (!userId) {
     mostrarPildora('no-user');
     return
   }
+
   if (btn.dataset.loading === "true") return; 
 
   const animeId = id; 
