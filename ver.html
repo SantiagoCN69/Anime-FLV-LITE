@@ -135,6 +135,9 @@ window.addEventListener('resize', setRealVh);
 </header>
 
 <div id="cine-overlay"></div>
+<script>
+  if (localStorage.getItem('cineActivo') === 'true') document.body.classList.add('cine');
+</script>
 <main id="main-ver">
   <section>
     <div id="links">

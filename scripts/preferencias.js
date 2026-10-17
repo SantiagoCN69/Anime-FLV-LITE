@@ -385,6 +385,14 @@ function initPreferencias() {
     });
   }
 
+  const toggleCine = document.getElementById('toggle-cine');
+  if (toggleCine) {
+    toggleCine.checked = localStorage.getItem('cineActivo') === 'true';
+    toggleCine.addEventListener('change', () => {
+      localStorage.setItem('cineActivo', String(toggleCine.checked));
+    });
+  }
+
   const selectServers = document.getElementById('select-servers');
   if (selectServers) {
     const currentServer = localStorage.getItem('serverPreference') || 'sub';

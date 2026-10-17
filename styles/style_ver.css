@@ -300,7 +300,7 @@ main section:nth-child(2) {
   left: 0;
   background: rgba(0, 0, 0, 0.8);
   z-index: 9998;
-  cursor: pointer;
+  pointer-events: none;
 }
 .cine #video {
   z-index: 9999;

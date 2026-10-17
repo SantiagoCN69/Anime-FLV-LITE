@@ -1569,14 +1569,14 @@ function mostrarPildora(estado = true, cap = null, actualizando = false) {
 }
 
 
-//cine
 document.addEventListener('DOMContentLoaded', () => {
   const cineBtn = document.getElementById('cine');
-  const Overlay = document.getElementById('cine-overlay');
-    cineBtn.addEventListener('click', () => {
-      document.body.classList.toggle('cine');
-    });
-    Overlay.addEventListener('click', () => {
-      document.body.classList.remove('cine');
-    });
+  const overlay = document.getElementById('cine-overlay');
+  const activarCine = (activo) => {
+    document.body.classList.toggle('cine', activo);
+    localStorage.setItem('cineActivo', String(activo));
+  };
+
+  cineBtn?.addEventListener('click', () => activarCine(!document.body.classList.contains('cine')));
+  overlay?.addEventListener('click', () => activarCine(false));
 });
