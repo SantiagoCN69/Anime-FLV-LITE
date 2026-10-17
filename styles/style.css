@@ -1878,6 +1878,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
 
 
 footer {
+  margin-top: auto;
   background: var(--b);
   color: #a1a1aa;
   padding: 19px 2rem;
