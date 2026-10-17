@@ -290,6 +290,17 @@ function initPreferencias() {
     });
   }
 
+  const toggleAhorroBateria = document.getElementById('toggle-ahorro-bateria');
+  if (toggleAhorroBateria) {
+    const ahorroBateriaOn = localStorage.getItem('ahorroBateriaAuto') !== 'false';
+    toggleAhorroBateria.checked = ahorroBateriaOn;
+    localStorage.setItem('ahorroBateriaAuto', String(ahorroBateriaOn));
+    toggleAhorroBateria.addEventListener('change', () => {
+      localStorage.setItem('ahorroBateriaAuto', String(toggleAhorroBateria.checked));
+      console.log('[Preferencias] ahorroBateriaAuto =', toggleAhorroBateria.checked);
+    });
+  }
+
   const selectCV = document.getElementById('select-cv');
   if (selectCV) {
     const currentCV = localStorage.getItem('continuar_viendo_pos') || 'cv-ambas';
