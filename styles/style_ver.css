@@ -66,7 +66,8 @@ main {
   margin-top: calc(80px + 2rem);
   margin-bottom: 1.5rem;
   margin-inline: 2rem;
-  width: calc(100% - 4rem);
+  margin-inline-end: 1rem;
+  width: calc(100% - 3rem);
   min-height: unset !important;
 }
 
