@@ -72,7 +72,7 @@ main {
 }
 
 main section:nth-child(1) {
-  width: calc(100% - 263px - 20px);
+  width: calc(100% - 263px - 2rem);
   display: flex;
   flex-direction: column;
   gap:15px;

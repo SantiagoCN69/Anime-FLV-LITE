@@ -847,15 +847,20 @@ main {
 
 section.content-section h2:first-of-type::after {
   color: var(--t1);
-  content: "Disponibles: " attr(data-text);
   display: block;
   border-radius: 12px;
   width: fit-content;
   height: fit-content;
    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+   font-size: 1rem;
+   z-index: 1;
+  opacity: 1;
+  content: attr(data-text);
+  transition: opacity 0.3s ease, padding 0.3s ease;
+}
+section.content-section h2:first-of-type.cargado::after {
+  opacity: 1;
   padding: 8px 14px;
-  font-size: 1rem;
-  z-index: 1;
 }
 @media screen and (max-width: 470px) {
   section.content-section h2:first-of-type::after {
@@ -1886,7 +1891,7 @@ footer ul {
 }
 
 footer ul li {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #d4d4d8;
     cursor: pointer;
     transition: color 0.2s ease;

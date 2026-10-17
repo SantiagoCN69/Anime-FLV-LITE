@@ -1325,7 +1325,6 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
       });
       container.appendChild(fragment);
       observerAnimeCards(cards);
-      h2.dataset.text = cachedData.length;
     }
   }
 
@@ -1342,7 +1341,8 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
           : [];
         idsDeListasCargados.set(container.id, titulos);
       }
-      h2.dataset.text = titulos.length;
+      h2.dataset.text = "Disponibles: " + titulos.length;
+      h2.classList.add('cargado');
 
       if (titulos.length === 0) {
           container.innerHTML = '<p class="span-carga">No tienes animes en ' + container.id + '</p>';
