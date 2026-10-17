@@ -280,11 +280,52 @@ function initPreferencias() {
   };
 
   const toggleAnimaciones = document.getElementById('toggle-animaciones');
+  const avisoAhorroBateria = document.getElementById('ahorro-bateria-aviso');
   if (toggleAnimaciones) {
     const animacionesOn = localStorage.getItem('animaciones') !== 'false';
-    toggleAnimaciones.checked = animacionesOn;
-    aplicarAnimaciones(animacionesOn);
+    const ahorroBateriaActivo = localStorage.getItem('ahorroBateriaActivo') === 'true';
+
+    const actualizarEstadoAhorroBateria = (activo) => {
+      // El interruptor refleja el estado efectivo: aunque la preferencia manual
+      // esté activa, el ahorro temporalmente mantiene las animaciones apagadas.
+      toggleAnimaciones.checked = activo
+        ? false
+        : localStorage.getItem('animaciones') !== 'false';
+
+      document.body.classList.toggle(
+        'animaciones-off',
+        activo || localStorage.getItem('animaciones') === 'false'
+      );
+      if (avisoAhorroBateria) avisoAhorroBateria.style.display = activo ? 'block' : 'none';
+    };
+
+    actualizarEstadoAhorroBateria(ahorroBateriaActivo);
+
+    // El aviso informa del estado, pero el control manual siempre debe poder usarse.
+    if (ahorroBateriaActivo) {
+      // No llamamos a aplicarAnimaciones aquí: esa función actualizaría la
+      // preferencia manual y volvería a encender los efectos por accidente.
+      document.body.classList.add('animaciones-off');
+      if (avisoAhorroBateria) avisoAhorroBateria.style.display = 'block';
+      console.log('[Preferencias] Ahorro de batería activo; se puede anular desde el control de animaciones');
+    } else {
+      aplicarAnimaciones(animacionesOn);
+    }
+
+    window.addEventListener('estadoAhorroBateria', (event) => {
+      actualizarEstadoAhorroBateria(event.detail.activo);
+    });
+
     toggleAnimaciones.addEventListener('change', () => {
+      // Activarlas manualmente tiene prioridad: desactiva el ahorro automático
+      // para que el detector no vuelva a apagarlas al recargar la página.
+      if (toggleAnimaciones.checked) {
+        localStorage.setItem('ahorroBateriaAuto', 'false');
+        localStorage.setItem('ahorroBateriaActivo', 'false');
+        if (toggleAhorroBateria) toggleAhorroBateria.checked = false;
+        if (avisoAhorroBateria) avisoAhorroBateria.style.display = 'none';
+        console.log('[Preferencias] Animaciones activadas manualmente; ahorro automático desactivado');
+      }
       aplicarAnimaciones(toggleAnimaciones.checked);
       location.reload();
     });
@@ -298,6 +339,7 @@ function initPreferencias() {
     toggleAhorroBateria.addEventListener('change', () => {
       localStorage.setItem('ahorroBateriaAuto', String(toggleAhorroBateria.checked));
       console.log('[Preferencias] ahorroBateriaAuto =', toggleAhorroBateria.checked);
+      location.reload();
     });
   }
 

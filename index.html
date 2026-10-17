@@ -50,7 +50,7 @@
     <link rel="shortcut icon" href="/icons/icon3.png" type="image/x-icon">
     <!-- scripts -->
     <script src="scripts/tema.js"></script>
-    <script src="scripts/ahorro-energia.js"></script>
+    <script src="scripts/animaciones.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.0/dist/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.0/dist/MorphSVGPlugin.min.js" defer></script>
     <script type="module" src="scripts/utils.js" defer></script>
@@ -244,18 +244,6 @@ if (indexpagination) {
       if (sidebarState === 'true') {
         document.body.classList.add('sidebar-collapsed');
       }
-      if (localStorage.getItem('animaciones') === 'false') {
-        document.body.classList.add('animaciones-off');
-      }
-      else {
-      const style = document.createElement('style');
-      style.id = 'dynamic-view-transition';
-      style.textContent = `
-        @view-transition {
-          navigation: auto;
-      }`;
-    document.head.appendChild(style);
-  }
     </script>
   <main>
     <!-- Permanece fuera de las secciones ocultables: MorphSVG solo transforma este path. -->

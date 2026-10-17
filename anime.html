@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="icons/icon3.png">
   <!-- scripts -->
   <script src="scripts/tema.js"></script>
-  <script src="scripts/ahorro-energia.js"></script>
+  <script src="scripts/animaciones.js"></script>
   <script type="module" src="scripts/header.js" defer></script>
   <script type="module" src="scripts/utils.js" defer></script>
   <script type="module" src="scripts/firebase-login.js" defer></script>
@@ -20,21 +20,6 @@
   <meta name="view-transition" content="same-origin">
 </head>
 <body>
-  <script>
-    if (localStorage.getItem('animaciones') === 'false') {
-      document.body.classList.add('animaciones-off');
-    }
-    else {
-    const style = document.createElement('style');
-    style.id = 'dynamic-view-transition';
-    style.textContent = `
-      @view-transition {
-        navigation: auto;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-  </script>
   <nav class="sidebar">
     <ul>
       <li><a href="/?Ultimos-Episodios">
