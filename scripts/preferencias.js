@@ -131,7 +131,7 @@ const updateUIForUser = (user) => {
 const exportarDatos = async (btnElement) => {
   console.log('[Preferencias] exportar datos. user=', auth.currentUser?.uid || null);
   if (!auth.currentUser) {
-    alert('Debes iniciar sesión para exportar tus datos.');
+    document.getElementById('btn-auth').click();
     return;
   }
 
