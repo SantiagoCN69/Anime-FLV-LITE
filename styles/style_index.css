@@ -390,6 +390,7 @@ footer {
 }
 .sidebar-collapsed #historial .anime-card:hover {
   border-color: var(--btn);
+  transform: scale(1) translateX(8px);
 }
 }
 
@@ -469,6 +470,7 @@ footer {
   }
   #historial .anime-card:hover {
     border-color: var(--btn);
+    transform: scale(1) translateX(8px);
   }
 }
 
@@ -1378,7 +1380,7 @@ nav.filtros {
   visibility: visible !important; */
 }
 
-.continue-card:hover .container-img > img:first-of-type {
+.continue-card:hover .container-img > img:first-of-type, #Recomendaciones .anime-card:hover .cover {
   transform: scale(1.25);
 }
 

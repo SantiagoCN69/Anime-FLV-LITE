@@ -679,6 +679,38 @@ main {
   opacity: 0.7;
 }
 
+.animacion-carga {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* Grosor y colores basados en tus variables */
+    border: 3px solid var(--btn, rgba(255, 255, 255, 0.15));
+    border-top-color: var(--btn);
+    
+    display: inline-block;
+    box-sizing: border-box;
+    
+    /* Difuminado suavizado utilizando tu variable de color secundaria */
+    -webkit-mask-image: linear-gradient(to bottom, #000 15%, transparent 80%);
+    mask-image: linear-gradient(to bottom, #000 15%, transparent 80%);
+
+    animation: carga-animacion 0.8s infinite linear;
+}
+
+@keyframes carga-animacion {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
 
 /* Títulos */
 .content-section h2, .header-title {
@@ -954,7 +986,7 @@ section.content-section h2:first-of-type.cargado::after {
     min-height: 267px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 17px;
+    gap: 1rem;
 }
 #busquedas {
   width: calc(100% - 4rem);
@@ -1060,7 +1092,7 @@ section.content-section h2:first-of-type.cargado::after {
   aspect-ratio: 26/37;
   width: 100%;
   object-fit: cover;
-  transition: transform .6s ease, filter .4s ease;
+  transition: transform .4s ease, filter .4s ease;
 }
 .container-img::after {
   content: '';
@@ -1076,13 +1108,18 @@ section.content-section h2:first-of-type.cargado::after {
   transition: bottom 0.3s ease;
 }
 @media (hover: hover) {
-  .anime-card:hover .cover {transform: scale(1.25);}
+  .anime-card:hover {transform: scale(1.23); z-index: 2; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); background: var(--b); border-radius: 8px;}
+
+  .continue-card:hover, #Recomendaciones .anime-card:hover {
+    transform: scale(1);
+    background: none;
+    box-shadow: none;
+  }
   .anime-card:hover .chapter, .anime-card:hover .estado, .anime-card:hover .rating {opacity: 0;}
   .anime-card:hover .chapter, .anime-card:hover .estado {transform: translate(-25px, 25px) scale(1.8);}
   .anime-card:hover .rating {transform: translate(25px, -25px) scale(1.8);}
 
-  .anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px;
-    border: 1px solid #fff2;}
+  .anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px}
     .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
     /* .anime-card:hover {
       transform: translate(0, -6px);
