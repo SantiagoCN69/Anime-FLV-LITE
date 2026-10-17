@@ -317,17 +317,18 @@ function initPreferencias() {
     });
 
     toggleAnimaciones.addEventListener('change', () => {
-      // Activarlas manualmente tiene prioridad: desactiva el ahorro automático
-      // para que el detector no vuelva a apagarlas al recargar la página.
-      if (toggleAnimaciones.checked) {
+      // Solo anulamos el ahorro automático si está actuando en este momento
+      // por batería baja. Si solo está configurado, se conserva habilitado.
+      const ahorroBateriaEstaActuando = localStorage.getItem('ahorroBateriaActivo') === 'true';
+      if (toggleAnimaciones.checked && ahorroBateriaEstaActuando) {
         localStorage.setItem('ahorroBateriaAuto', 'false');
         localStorage.setItem('ahorroBateriaActivo', 'false');
         if (toggleAhorroBateria) toggleAhorroBateria.checked = false;
         if (avisoAhorroBateria) avisoAhorroBateria.style.display = 'none';
-        console.log('[Preferencias] Animaciones activadas manualmente; ahorro automático desactivado');
+        console.log('[Preferencias] Animaciones activadas manualmente durante ahorro activo; ahorro automático desactivado');
       }
       aplicarAnimaciones(toggleAnimaciones.checked);
-      location.reload();
+      // location.reload();
     });
   }
 
@@ -339,7 +340,7 @@ function initPreferencias() {
     toggleAhorroBateria.addEventListener('change', () => {
       localStorage.setItem('ahorroBateriaAuto', String(toggleAhorroBateria.checked));
       console.log('[Preferencias] ahorroBateriaAuto =', toggleAhorroBateria.checked);
-      location.reload();
+      // location.reload();
     });
   }
 
