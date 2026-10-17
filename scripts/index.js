@@ -1341,7 +1341,7 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
           : [];
         idsDeListasCargados.set(container.id, titulos);
       }
-      h2.dataset.text = "Disponibles: " + titulos.length;
+      h2.dataset.text = titulos.length;
       h2.classList.add('cargado');
 
       if (titulos.length === 0) {
