@@ -72,28 +72,54 @@ window.addEventListener('scroll', () => {
     });
 }, { passive: true });
 
- // Único observador global reutilizable
-const animeCardObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-      if (entry.isIntersecting) {
-          entry.target.classList.add("show");
-          animeCardObserver.unobserve(entry.target);
-      }
-  });
+// Instancia única global del IntersectionObserver
+const animeCardObserver = new IntersectionObserver((entries, observer) => {
+    for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+            observer.unobserve(entry.target);
+        }
+    }
 }, {
-  threshold: 0.01,
-  rootMargin: "0px 0px 100px 0px"
+    threshold: 0,
+    rootMargin: "0px 0px 150px 0px" // Margen ligeramente mayor para evitar tirones en scroll rápido
 });
 
-export function observerAnimeCards() {
-  if (document.body.classList.contains('animaciones-off')) return;
+/**
+ * Observa una tarjeta individual o un grupo de tarjetas.
+ * Pásale el elemento recién creado para evitar buscar en todo el DOM.
+ * @param {Element | NodeList | Array} [target] - Opcional: elementos específicos a observar.
+ */
+export function observerAnimeCards(target) {
+    if (document.body.classList.contains('animaciones-off')) return;
 
-  const pendingCards = document.querySelectorAll(".anime-card:not(.show):not([data-observed])");
+    // CASO 1: Si le pasas elementos directos (ej. al renderizar dinámicamente),
+    // evitas por completo el costoso document.querySelectorAll global.
+    if (target) {
+        if (target instanceof Element) {
+            if (!target.classList.contains('show') && !target.dataset.observed) {
+                target.dataset.observed = "true";
+                animeCardObserver.observe(target);
+            }
+        } else {
+            target.forEach(card => {
+                if (!card.classList.contains('show') && !card.dataset.observed) {
+                    card.dataset.observed = "true";
+                    animeCardObserver.observe(card);
+                }
+            });
+        }
+        return;
+    }
 
-  pendingCards.forEach((card) => {
-      card.dataset.observed = "true";
-      animeCardObserver.observe(card);
-  });
+    // CASO 2: Fallback global por si se llama sin parámetros (ej. carga inicial)
+    const pendingCards = document.querySelectorAll(".anime-card:not(.show):not([data-observed])");
+    for (let i = 0; i < pendingCards.length; i++) {
+        const card = pendingCards[i];
+        card.dataset.observed = "true";
+        animeCardObserver.observe(card);
+    }
 }
 
 //INDICADOR funcion cambiar tema

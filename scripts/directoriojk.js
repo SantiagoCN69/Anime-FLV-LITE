@@ -302,12 +302,14 @@ const renderAnime = (animes) => {
     return;
   }
 
+  const cards = [];
   animes.forEach(a => {
     const card = crearAnimeCard(a, { variant: 'jk' });
     c.appendChild(card);
+    cards.push(card);
   });
-  
-  observerAnimeCards(c);
+
+  observerAnimeCards(cards);
 };
 
 const actualizarFiltrosSeleccionados = () => {

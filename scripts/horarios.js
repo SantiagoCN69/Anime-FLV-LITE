@@ -149,23 +149,24 @@ const renderButtons = () => {
 const renderInitialGrid = () => {
   if (!DOM.grid) return;
   DOM.grid.innerHTML = '';
-  
+
   const fragment = document.createDocumentFragment();
   const query = DOM.search ? DOM.search.value.trim().toLowerCase() : '';
+  const cards = [];
 
   scheduleData.forEach(d => {
     d.animes.forEach(a => {
       const card = crearHorarioCard(a);
       card.dataset.day = d.day;
 
-      const isVisible = query === '' 
-        ? d.day === currentDay 
+      const isVisible = query === ''
+        ? d.day === currentDay
         : (card.dataset.title || '').includes(query);
 
       if (!isVisible) {
         card.style.display = 'none';
       } else {
-        card.classList.add('show');
+        cards.push(card);
       }
 
       fragment.appendChild(card);
@@ -179,9 +180,9 @@ const renderInitialGrid = () => {
   fragment.appendChild(noResults);
 
   DOM.grid.appendChild(fragment);
-  
+
   if (typeof observerAnimeCards === 'function') {
-    observerAnimeCards();
+    observerAnimeCards(cards);
   }
 };
 
@@ -190,6 +191,7 @@ const applyFilter = (filterText = '') => {
   const cards = DOM.grid.querySelectorAll('.anime-card');
   const noResultsMessage = document.getElementById('no-results-message');
   let visibleCount = 0;
+  const visibleCards = [];
 
   cards.forEach(card => {
     const visible = query === ''
@@ -197,9 +199,16 @@ const applyFilter = (filterText = '') => {
       : (card.dataset.title || '').includes(query);
 
     card.style.display = visible ? '' : 'none';
-    if (visible) card.classList.add('show');
-    if (visible) visibleCount++;
+    if (visible) {
+      visibleCount++;
+      visibleCards.push(card);
+    }
   });
+
+  // Observar solo las tarjetas visibles
+  if (typeof observerAnimeCards === 'function') {
+    observerAnimeCards(visibleCards);
+  }
 
   document.querySelectorAll('.btn-day').forEach(b => {
     b.classList.toggle('active', query === '' && b.dataset.day === currentDay);

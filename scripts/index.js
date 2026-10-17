@@ -1027,13 +1027,14 @@ async function cargarUltimosCapitulos() {
       
       renderFlipOptimizado(container, () => {
         container.innerHTML = '';
-    
+
         if (!datos?.length) {
           container.innerHTML = '<p>No se encontraron últimos episodios.</p>';
           return;
         }
-      
+
         const fragment = document.createDocumentFragment();
+        const cards = [];
         datos.forEach(anime => {
           const card = crearAnimeCard({
             id: anime.id,
@@ -1041,12 +1042,15 @@ async function cargarUltimosCapitulos() {
             titulo: anime.title || 'Sin título',
             Capitulo: anime.chapter?.toString() || anime.episode?.toString() || ''
           });
-          if (card) fragment.appendChild(card);
+          if (card) {
+            fragment.appendChild(card);
+            cards.push(card);
+          }
         });
         container.appendChild(fragment);
+
+        observerAnimeCards(cards);
       });
-      
-      observerAnimeCards();
     };
   
     let cached = leerCache(cacheKey);
@@ -1192,6 +1196,7 @@ async function cargarhistorial() {
       historialContainer.innerHTML = '';
 
       const fragment = document.createDocumentFragment();
+      const cards = [];
 
       animesAMostrar.forEach(anime => {
 
@@ -1199,6 +1204,7 @@ async function cargarhistorial() {
 
         if (card) {
           fragment.appendChild(card);
+          cards.push(card);
         }
 
       });
@@ -1207,7 +1213,7 @@ async function cargarhistorial() {
     });
 
     if (sectionHistorial) sectionHistorial.classList.remove('hidden');
-    observerAnimeCards();
+    observerAnimeCards(historialContainer.querySelectorAll('.anime-card:not(.show)'));
 
   } else {
 
@@ -1241,13 +1247,17 @@ function agregarAnimesAlContenedor(animes, contenedor) {
   // ----------------------------------------------------
   renderFlipOptimizado(contenedor, () => {
     const fragment = document.createDocumentFragment();
+    const cards = [];
     animes.forEach(anime => {
         const card = crearTarjetaDeLista(anime);
-        if (card) fragment.appendChild(card);
+        if (card) {
+          fragment.appendChild(card);
+          cards.push(card);
+        }
     });
     contenedor.appendChild(fragment);
+    observerAnimeCards(cards);
   });
-  observerAnimeCards();
 }
 
 function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes, idsCargados = null) {
@@ -1305,12 +1315,16 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
       // con las tarjetas de la caché.
       container.innerHTML = '';
       const fragment = document.createDocumentFragment();
+      const cards = [];
       cachedData.forEach(anime => {
         const card = crearTarjetaDeLista(anime);
-        if (card) fragment.appendChild(card);
+        if (card) {
+          fragment.appendChild(card);
+          cards.push(card);
+        }
       });
       container.appendChild(fragment);
-      observerAnimeCards();
+      observerAnimeCards(cards);
       h2.dataset.text = cachedData.length;
     }
   }
@@ -1368,11 +1382,16 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
         const renderizarContenido = () => {
           container.innerHTML = '';
           const fragment = document.createDocumentFragment();
+          const cards = [];
           animesOrdenados.forEach(anime => {
               const card = crearTarjetaDeLista(anime);
-              if (card) fragment.appendChild(card);
+              if (card) {
+                fragment.appendChild(card);
+                cards.push(card);
+              }
           });
           container.appendChild(fragment);
+          observerAnimeCards(cards);
         };
 
         // 2. Verificamos si las animaciones están apagadas
@@ -1382,9 +1401,8 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
           // Renderizado con animación FLIP
           renderFlipOptimizado(container, renderizarContenido);
         }
-        
-        manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length, titulos);
-        observerAnimeCards(); 
+
+        manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length, titulos); 
         return;
       }
       
@@ -1667,7 +1685,7 @@ function inicializarContinuarViendo() {
 
     if (!hayCambios) {
       // Asegurar que las tarjetas tengan la clase 'show'
-      observerAnimeCards();
+      observerAnimeCards(grid.querySelectorAll('.anime-card:not(.show)'));
       return;
     }
 
@@ -1676,6 +1694,7 @@ function inicializarContinuarViendo() {
     // ----------------------------------------------------
     renderFlipOptimizado(grid, () => {
       grid.innerHTML = '';
+      const cards = [];
 
       datos.forEach((data, index) => {
         const total = data.totalCapitulos || 12;
@@ -1703,7 +1722,10 @@ function inicializarContinuarViendo() {
           </div>`;
 
         grid.appendChild(card);
+        cards.push(card);
       });
+
+      observerAnimeCards(cards);
     });
 
     // Inicializar botones scroll
@@ -1714,9 +1736,6 @@ function inicializarContinuarViendo() {
         btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 634 : -634, behavior: 'smooth' });
       }
     });
-
-    // IMPORTANTE: Observar las nuevas tarjetas para añadir la clase 'show'
-    observerAnimeCards();
   }
 }
 

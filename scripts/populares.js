@@ -267,12 +267,16 @@ function renderizarResultados(animes) {
 
   container.innerHTML = '';
 
+  const cards = [];
   animes.forEach(anime => {
     const card = crearAnimeCard(anime);
-    if (card) container.appendChild(card);
+    if (card) {
+      container.appendChild(card);
+      cards.push(card);
+    }
   });
 
-  observerAnimeCards();
+  observerAnimeCards(cards);
 }
 
 cargarPopulares();

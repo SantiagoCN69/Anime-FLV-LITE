@@ -317,8 +317,13 @@ async function cargarSugerenciasSinResultados(id, container) {
       return;
     }
     container.innerHTML = '';
-    resultados.forEach(anime => container.appendChild(crearAnimeCard(anime)));
-    observerAnimeCards();
+    const cards = [];
+    resultados.forEach(anime => {
+      const card = crearAnimeCard(anime);
+      container.appendChild(card);
+      cards.push(card);
+    });
+    observerAnimeCards(cards);
   } catch (error) {
     console.error('Error al cargar sugerencias:', error);
     const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
@@ -344,13 +349,15 @@ function mostrarResultados(data, searchTerm, searchId) {
     if (resultados.length > 0) {
       resultadosContainer.classList.remove('sin-resultados');
       seccionResultados?.classList.remove('hidden');
+      const cards = [];
       resultados.forEach(anime => {
         const card = crearAnimeCard(anime);
         agregarEventListenersBusqueda(card, anime);
         resultadosContainer.appendChild(card);
+        cards.push(card);
       });
       if (busquedaH2) busquedaH2.textContent = 'Resultados de busqueda: ' + resultados.length;
-      observerAnimeCards();
+      observerAnimeCards(cards);
     } else {
       seccionResultados?.classList.remove('hidden');
       renderSinResultados(resultadosContainer, searchTerm, searchId);
@@ -387,12 +394,14 @@ function mostrarResultados(data, searchTerm, searchId) {
     }
 
     busquedasContainer.classList.remove('sin-resultados');
+    const cards = [];
     resultados.forEach(anime => {
       const card = crearAnimeCard(anime);
       agregarEventListenersBusqueda(card, anime);
       busquedasContainer.appendChild(card);
+      cards.push(card);
     });
-    observerAnimeCards();
+    observerAnimeCards(cards);
   }
 }
 

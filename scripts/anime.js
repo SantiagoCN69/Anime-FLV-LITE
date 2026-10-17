@@ -243,10 +243,10 @@ function renderRelacionados(anime) {
 
         timelineContainer.appendChild(node);
       });
-      
+
       fragment.appendChild(timelineContainer);
       relacionadosContainer.appendChild(fragment);
-      
+
 // CÓDIGO CORREGIDO
       timelineContainer.addEventListener('wheel', (evento) => {
         if (evento.deltaY !== 0) {
@@ -254,9 +254,9 @@ function renderRelacionados(anime) {
           timelineContainer.scrollLeft += evento.deltaY;
         }
       });
-      
+
       if (typeof observerAnimeCards === 'function') {
-        observerAnimeCards();
+        observerAnimeCards(relacionadosContainer.querySelectorAll('.anime-card:not(.show)'));
       }
     } else {
       if (relacionadosSection) relacionadosSection.style.display = 'none';

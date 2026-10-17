@@ -19,12 +19,15 @@ let userid = null;
         const contenedor = document.getElementById('recomendaciones-favoritos');
         if (contenedor) {
             const fragment = document.createDocumentFragment();
+            const cards = [];
             cache.animes.forEach(anime => {
                 const card = crearAnimeCard(anime);
                 fragment.appendChild(card);
+                cards.push(card);
             });
             contenedor.innerHTML = '';
             contenedor.appendChild(fragment);
+            observerAnimeCards(cards);
         }
     }
 
@@ -50,7 +53,10 @@ let userid = null;
         }
     });
 
-    observerAnimeCards();
+    const contenedorFavoritos = document.getElementById('recomendaciones-favoritos');
+    if (contenedorFavoritos) {
+      observerAnimeCards(contenedorFavoritos.querySelectorAll('.anime-card:not(.show)'));
+    }
 
     // Hacer click automático al botón de generar personalizadas al cargar la página
     setTimeout(() => {
@@ -74,12 +80,15 @@ function guardarCacheAnimes(animes) {
     const contenedor = document.getElementById('recomendaciones-favoritos');
     if (contenedor) {
         const fragment = document.createDocumentFragment();
+        const cards = [];
         animes.slice(0, 5).forEach(anime => {
             const card = crearAnimeCard(anime);
             fragment.appendChild(card);
+            cards.push(card);
         });
         contenedor.innerHTML = '';
         contenedor.appendChild(fragment);
+        observerAnimeCards(cards);
     }
 }
 
@@ -364,26 +373,27 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     }
 
     if (section) section.style.display = 'flex';
-    
+
     const fragment = document.createDocumentFragment();
     const animesEncontrados = [];
+    const cards = [];
 
     for (const nombre of nombres) {
         const anime = await resolveAnimeByName(nombre);
         if (!anime) continue;
-        
+
         if (guardarEnCache) {
             const animeData = {
                 titulo: anime.title || '',
                 portada: anime.cover || anime.portada || anime.banner || anime.image,
                 descripcion: anime.synopsis || '',
                 score: anime.score || null,
-                episodios: anime.episodes?.map(ep => ({ 
-                    number: ep.number, 
-                    url: ep.url 
+                episodios: anime.episodes?.map(ep => ({
+                    number: ep.number,
+                    url: ep.url
                 })) || [],
             };
-            
+
             await setDoc(doc(db, 'datos-animes', anime.id), animeData, { merge: true });
             animesEncontrados.push({
                 id: anime.id,
@@ -397,6 +407,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
         // Ya no le pasamos el boolean de "isLink" porque ahora siempre son links
         const card = crearAnimeCard(anime);
         fragment.appendChild(card);
+        cards.push(card);
     }
     
     if (guardarEnCache && animesEncontrados.length > 0) {
@@ -405,7 +416,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
 
     contenedor.innerHTML = '';
     contenedor.appendChild(fragment);
-    observerAnimeCards();
+    observerAnimeCards(cards);
     const textoBtn = document.getElementById(textoBtnId);
     if (textoBtn) textoBtn.textContent = "Regenerar";
 }

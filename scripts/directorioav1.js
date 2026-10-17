@@ -90,8 +90,13 @@ function renderizarResultados(animes) {
         DOM.resultados.innerHTML = '<span class="span-carga">No se encontraron resultados</span>';
         return;
     }
-    animes.forEach(anime => DOM.resultados.appendChild(crearAnimeCard(anime)));
-    observerAnimeCards();
+    const cards = [];
+    animes.forEach(anime => {
+        const card = crearAnimeCard(anime);
+        DOM.resultados.appendChild(card);
+        cards.push(card);
+    });
+    observerAnimeCards(cards);
 }
 
 // --- PAGINACIÓN ---
