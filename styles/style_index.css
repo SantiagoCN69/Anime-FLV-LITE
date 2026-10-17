@@ -206,8 +206,8 @@
 /* ================= LAYOUT ================= */
 
 @media (max-width: 600px) {
-  #indexpagination.floating ~ main { margin-bottom: 6rem; }
-  #indexpagination.bottom ~ main { margin-bottom: 70px; }
+  #indexpagination.floating ~ footer { margin-bottom: 6rem; }
+  #indexpagination.bottom ~ footer { margin-bottom: 70px; }
   #indexpagination.top ~ main {padding-top: calc(90px - 2rem);}
   #indexpagination.bottom ~ .sidebar {height: calc(100vh - 80px - 68px);}
   #indexpagination.floating ~ .sidebar {padding-bottom: 6rem;}
@@ -289,7 +289,12 @@ body.cv-sidebar #section-continuar-viendo {
 
 .content-section {
   margin-left: calc(230px + 2rem);
-}}
+}
+
+footer {
+  margin-left: 230px;
+}
+}
 
 .sidebar {
   transform: translateX(0);
