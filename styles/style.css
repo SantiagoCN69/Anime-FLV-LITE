@@ -1980,6 +1980,9 @@ footer button::after {
   }
   footer ul {
     flex-direction: column;
+    border-top: 1px solid var(--br);
+    width: 100%;
+    padding-block: 2rem;
   }
   footer button {
     align-self: flex-end;
