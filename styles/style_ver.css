@@ -292,8 +292,8 @@ main section:nth-child(2) {
   padding: 5px;
   padding-left: 7px;
 }
-.cine #cine {
-  z-index: 9999;
+.cine {
+  cursor:alias
 }
 .cine #cine-overlay {
   width: 100%;
