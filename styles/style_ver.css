@@ -774,7 +774,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     flex-direction: column;
     height: clamp(670px, calc(100dvh - 80px - 3.5rem), 1000px);
     height: clamp(670px, calc(calc(var(--vh, 1vh) * 100) - 80px - 3.5rem), 1000px) !important;
-    transition: height .3s;
     margin-inline: 1rem;
     width: calc(100% - 2rem);
   }

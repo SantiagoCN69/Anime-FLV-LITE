@@ -21,14 +21,15 @@
   <link rel="stylesheet" href="styles/style_ver.css">
   <!-- vlaiaicon pro is el dvh no funciona en weba pp -->
   <script>
-  function setRealVh() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
+    function setRealVh() {
+      const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty('--vh', `${viewportHeight * 0.01}px`);
+    }
 
-// Ejecutar inmediatamente al cargar y al redimensionar
-window.addEventListener('DOMContentLoaded', setRealVh);
-window.addEventListener('resize', setRealVh);
+    // Se ejecuta durante el parseo para que el primer render ya tenga la altura correcta.
+    setRealVh();
+    window.addEventListener('resize', setRealVh);
+    window.visualViewport?.addEventListener('resize', setRealVh);
 </script>
 <meta name="view-transition" content="same-origin">
 </head>
