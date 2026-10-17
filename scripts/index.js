@@ -320,8 +320,8 @@ function actualizarIndicadorActivo() {
   const esDeListaPrincipal = activeItem && activeItem.parentElement === sidebarUl;
 
   if (!activeItem || !esDeListaPrincipal) {
-    console.log('No hay elemento activo principal: aplicando translateX(-4px)');
-    indicator.style.transform = 'translateX(-4px)';
+    console.log('No hay elemento activo principal: aplicando left(-4px)');
+    indicator.style.left = '-4px';
     return;
   }
 
@@ -331,7 +331,7 @@ function actualizarIndicadorActivo() {
 
   indicator.style.top = (itemRect.top - ulRect.top) + 'px';
   indicator.style.height = itemRect.height + 'px';
-  indicator.style.transform = 'none'; // Restablece la posición normal
+  indicator.style.left = '0px'; // Restablece la posición normal
   indicator.classList.add('visible');
 }
 
