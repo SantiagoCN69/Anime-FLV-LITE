@@ -179,6 +179,10 @@
 }
 
 .pref-credits {
+  display: block;
+  margin: 0;
+  border: none;
+  padding: 0;
   text-align: center;
   color: var(--t2);
 }

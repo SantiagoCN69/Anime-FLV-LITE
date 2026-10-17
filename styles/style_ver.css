@@ -62,7 +62,7 @@ body:not(.animaciones-off) header {
 main {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 2rem;
   margin-top: calc(80px + 2rem);
   margin-bottom: 1.5rem;
   margin-inline: 2rem;
