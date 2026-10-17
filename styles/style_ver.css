@@ -51,7 +51,7 @@ body:not(.animaciones-off) header {
   border-color: transparent;
 }
 .sidebar.active ~ header {
-  background: var(--p);
+  background: var(--b);
   border-color: var(--br);
 }
 }
@@ -291,6 +291,7 @@ main section:nth-child(2) {
 #cine {
   padding: 5px;
   padding-left: 7px;
+  z-index: 9999;
 }
 .cine #cine-overlay {
   width: 100%;
