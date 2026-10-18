@@ -93,7 +93,7 @@ main section:nth-child(2) {
   overflow-y: auto;
   gap: 15px;
   position: relative;
-  height: clamp(365px, calc(100dvh - 225px), 1000px);
+  height: clamp(400px, calc(100dvh - 219px), 1000px);
 }
 #noticias_container::-webkit-scrollbar {
   height: 8px;
@@ -344,7 +344,6 @@ main section:nth-child(2) {
   position: relative;
   min-height: 0;
   max-height: 100%;
-  height: clamp(300px, calc(100vh - 290px), 900px);
 }
 #reproductor-container-carga {
 position: absolute;
@@ -772,8 +771,8 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 @media screen and (max-width:1100px) {
   main {
     flex-direction: column;
-    height: clamp(670px, calc(100dvh - 80px - 3.5rem), 1000px);
-    height: clamp(670px, calc(calc(var(--vh, 1vh) * 100) - 80px - 3.5rem), 1000px) !important;
+    height: clamp(700px, calc(100dvh - 80px - 3.5rem), 1000px);
+    height: clamp(700px, calc(calc(var(--vh, 1vh) * 100) - 80px - 3.5rem), 1000px) !important;
     margin-inline: 1rem;
     width: calc(100% - 2rem);
   }
@@ -805,8 +804,8 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 }
 @media screen and (max-width:600px){
    main {
-        height: clamp(670px, calc(100dvh - 80px - 2.5rem), 1000px);
-    height: clamp(670px, calc(calc(var(--vh, 1vh) * 100) - 80px - 2.5rem), 1000px) !important;
+    height: clamp(700px, calc(100dvh - 80px - 2.5rem), 1000px);
+    height: clamp(700px, calc(calc(var(--vh, 1vh) * 100) - 80px - 2.5rem), 1000px) !important;
     margin-top: calc(80px + 1rem);
    }
   .botones-reproductor,  .botones-reproductor > div{
