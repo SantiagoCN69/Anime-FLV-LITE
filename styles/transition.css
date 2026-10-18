@@ -1,0 +1,8 @@
+@view-transition {
+  navigation: auto;
+}
+::view-transition-group(*) {
+  animation-duration: .4s;
+  z-index: 1;
+  border-radius: 10px;
+}

@@ -5,7 +5,11 @@
   <title>AniZen - Reproductor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="icons/icon3.png">
-
+  <script>
+    if (localStorage.animaciones === 'true') {
+      document.write('<link rel="stylesheet" href="styles/transition.css">');
+    }
+  </script>
   <!-- scripts -->
   <script src="scripts/tema.js"></script>
   <script src="scripts/animaciones.js"></script>

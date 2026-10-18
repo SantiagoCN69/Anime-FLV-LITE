@@ -6,11 +6,7 @@
 } */
 
 /* Aplicamos la animación solo a los elementos que NO tengan la clase .no-animation */
-::view-transition-group(*) {
-  animation-duration: .4s;
-  z-index: 1;
-  border-radius: 10px;
-}
+
 .animaciones-off *, .animaciones-off *::before, .animaciones-off *::after {
   animation: none !important;
   transition: none !important;
