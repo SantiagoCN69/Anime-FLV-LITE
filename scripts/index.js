@@ -329,8 +329,8 @@ function actualizarIndicadorActivo() {
   const ulRect = sidebarUl.getBoundingClientRect();
   const itemRect = activeItem.getBoundingClientRect();
 
-  indicator.style.top = (itemRect.top - ulRect.top) + 'px';
-  indicator.style.height = itemRect.height + 'px';
+  indicator.style.top = (itemRect.top - ulRect.top + 8) + 'px';
+  indicator.style.height = (itemRect.height - 16) + 'px';
   indicator.style.left = '0px'; // Restablece la posición normal
   indicator.classList.add('visible');
 }
