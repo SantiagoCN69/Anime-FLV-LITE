@@ -155,57 +155,30 @@ document.addEventListener('authStateReady', function() {
   }
 });
 
-//crear animecards
-/**
- * Crea una tarjeta de anime universal compatible con todas las vistas.
- * @param {Object} anime - El objeto con los datos del anime.
- * @param {Object} opciones - Opciones de renderizado (isLink, episodioUrl, variant, etc).
- */
 export function crearAnimeCard(anime, opciones = {}) {
-    // Valores por defecto de las opciones
-    const config = {
-        episodioUrl: null,        // Para redirigir a un episodio específico (ej: /ver?id=...)
-        variant: 'default',       // 'default', 'schedule' (horarios), 'jk' (con sinopsis)
-        onClick: null,            // Función extra a ejecutar al hacer click
-        ...opciones
-    };
+    const { episodioUrl = null, variant = 'default', onClick = null } = opciones;
 
-    // 1. NORMALIZACIÓN DE DATOS (Maneja las diferencias entre tus APIs)
     const titleText = anime.title || anime.titulo || anime.name || 'Título desconocido';
     let title = `<strong>${titleText}</strong>`;
-    
-    // Extraer ID (de tu API, de la URL o creando un slug)
-    let id = anime.id;
-    if (!id && anime.url) {
-        id = anime.url.replace(/\/$/, '').split('/').pop();
-    }
-    if (!id && anime.cover) {
-        // Extraer nombre del archivo del cover como fallback
-        id = anime.cover.replace(/\/$/, '').split('/').pop().replace(/\.[^/.]+$/, '');
-    }
-    if (!id) {
-        id = titleText.toLowerCase().trim().replace(/[\s\W-]+/g, '-'); // Fallback Slug
-    }
 
-    // Imagen (Soporta tu API, Jikan API y fallback)
+    let id = anime.id;
+    if (!id && anime.url) id = anime.url.replace(/\/$/, '').split('/').pop();
+    if (!id && anime.cover) id = anime.cover.replace(/\/$/, '').split('/').pop().replace(/\.[^/.]+$/, '');
+    if (!id) id = titleText.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
+
     const coverImage = anime.cover || anime.image || anime.portada || anime.images?.webp?.image_url || 'img/loading.png';
     const rating = (anime.score || anime.rating)?.toString().split(/\s+/)[0];
     const type = anime.type;
     const capitulo = anime.Capitulo || anime.last_episode;
     const estado = anime.estado || anime.status;
 
-    // 2. CONSTRUCCIÓN DE ELEMENTOS HTML
-    let chapterHtml = capitulo ? `<span class="chapter">EP ${capitulo}</span>` : '';
-    let typeHtml = (type && type.toLowerCase() !== 'desconocido') 
-    ? `<span class="type">${type}</span>` 
-    : '';
-    
-    // Lógica inteligente para el estado y los colores de los círculos
+    const chapterHtml = capitulo ? `<span class="chapter">EP ${capitulo}</span>` : '';
+    const typeHtml = (type && type.toLowerCase() !== 'desconocido') ? `<span class="type">${type}</span>` : '';
+
     let estadoHtml = '';
     if (estado) {
-      const estNormalizado = estado.toLowerCase().split(/\s+/)[0];
-
-        let icon = 'circle-solid.svg'; // Finalizado o default
+        const estNormalizado = estado.toLowerCase().split(/\s+/)[0];
+        let icon = 'circle-solid.svg';
         let textoEstado = "Finalizado";
 
         if (estNormalizado.includes('emisión') || estNormalizado.includes('emision') || estNormalizado.includes('currently') || estNormalizado === 'en') {
@@ -215,55 +188,36 @@ export function crearAnimeCard(anime, opciones = {}) {
             icon = 'circle-solid-yellow.svg';
             textoEstado = 'Próximamente';
         }
-
         estadoHtml = `<span class="estado"><img src="../icons/${icon}" alt="${textoEstado}">${textoEstado}</span>`;
-    } else if (config.episodioUrl && !estado) {
-        estadoHtml = `<span class="estado">Capítulo ${config.episodioUrl}</span>`;
+    } else if (episodioUrl && !estado) {
+        estadoHtml = `<span class="estado">Capítulo ${episodioUrl}</span>`;
     }
 
-    // Lógica para la calificación
     let ratingHtml = '';
     if (rating) {
-        // Redondea a 1 decimal (ej: 8.55 -> 8.6)
         const formattedRating = Math.round(rating * 10) / 10;
-        
         const displayRating = anime.score ? `${formattedRating}/10` : formattedRating;
         ratingHtml = `<span class="rating"><img src="../icons/star-solid.svg" alt="${formattedRating}">${displayRating}</span>`;
     }
 
-    // Lógica especial para horarios (Schedule) y JK
     let extraTopHtml = '';
     let extraBottomHtml = '';
-    if (config.variant === 'schedule') {
+    if (variant === 'schedule') {
         const timeText = anime.time_ago || 'Sin última hora de emisión';
         extraTopHtml = `<div class="content" data-time_ago="${timeText}">`;
         extraBottomHtml = `</div>`;
-    } else if (config.variant === 'jk') {
-      extraBottomHtml = `<div class="content">
-      ${title}
-      <p id="card-synopsis">${anime.synopsis || ""}</p>
-      </div>`;
-      title = "";
+    } else if (variant === 'jk') {
+        extraBottomHtml = `<div class="content">${title}<p id="card-synopsis">${anime.synopsis || ""}</p></div>`;
+        title = "";
     }
 
-    // 3. CREACIÓN DEL NODO DOM
     const card = document.createElement('a');
-
-    // Asignar clases dinámicas
-    card.className = `anime-card ${config.variant === 'schedule' ? 'anime-card-schedule' : ''} ${config.variant === 'jk' ? 'anime-card-jk' : ''}`.trim();
-    
+    card.className = `anime-card ${variant === 'schedule' ? 'anime-card-schedule' : ''} ${variant === 'jk' ? 'anime-card-jk' : ''}`.trim();
     if (anime.day) card.dataset.day = anime.day;
 
-    // Enlace de destino
-    card.href = config.episodioUrl ? `/ver?id=${id}&episode=${config.episodioUrl}` : `/anime?id=${id}`;
+    card.href = episodioUrl ? `/ver?id=${id}&episode=${episodioUrl}` : `/anime.html?id=${id}`;
+    card.setAttribute('aria-label', episodioUrl ? `Ver ${titleText} episodio ${episodioUrl}` : `Ver ${titleText}`);
 
-    // Atributo aria-label para accesibilidad
-    const linkText = config.episodioUrl
-      ? `Ver ${titleText} episodio ${config.episodioUrl}`
-      : `Ver ${titleText}`;
-    card.setAttribute('aria-label', linkText);
-
-    // Estructura interna
     card.innerHTML = `
         <div class="container-img">
             <img src="${coverImage}" class="cover" alt="${titleText}" loading="lazy">
@@ -278,11 +232,9 @@ export function crearAnimeCard(anime, opciones = {}) {
         ${extraBottomHtml}
     `;
 
-    // 4. EVENTOS Y VIEW TRANSITIONS
     card.addEventListener('click', () => {
-        // Ejecutar funciones globales si existen en tu proyecto
         if (typeof aplicarViewTransition === 'function') aplicarViewTransition(id, ratingHtml, card);
-        if (config.onClick) config.onClick(anime);
+        if (onClick) onClick(anime);
     });
 
     return card;
