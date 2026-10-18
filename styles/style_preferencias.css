@@ -32,6 +32,12 @@
   border-bottom: 1px solid var(--br);
 }
 
+/* La fila de una opción binaria también es su etiqueta: toda el área activa el control. */
+.setting-row-toggle {
+  cursor: pointer;
+}
+
+
 .setting-row:last-child {
   border-bottom: none;
 }
