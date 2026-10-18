@@ -36,6 +36,23 @@ let loadingTimeout = null;
 
 const CACHE_TTL = 5 * 60 * 1000;
 const serverCache = new Map();
+let firestoreEnPausaPorCuota = false;
+let avisoCuotaMostrado = false;
+
+function esErrorDeCuotaFirestore(error) {
+  return error?.code === "resource-exhausted" || error?.code === "quota-exceeded";
+}
+
+function activarModoApiDirecta(error) {
+  if (!esErrorDeCuotaFirestore(error)) return false;
+
+  firestoreEnPausaPorCuota = true;
+  if (!avisoCuotaMostrado) {
+    console.warn("[Firestore] Cuota temporal agotada; se usará la API directamente durante esta sesión.");
+    avisoCuotaMostrado = true;
+  }
+  return true;
+}
 
 const btnBloquear = document.getElementById("btn-bloquear-anuncios");
 
@@ -309,7 +326,7 @@ function actualizarEstadoBotonDoblado(servidores) {
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, orderBy, deleteDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 // Inicialización de Firebase optimizada
@@ -734,7 +751,7 @@ function reordenarServidores(servidores) {
 async function obtenerServidoresDesdeApi(episodio) {
   const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/episode?animeid=${animeId}&cap=${episodio.number}`);
   if (!res.ok) {
-    console.warn(`[API episode] API respondió ${res.status} para: ${episodio.url}`);
+    console.warn(`[API episode] API respondió ${res.status} para el capítulo: ${episodio.number}`);
     return null; // Retornar null en lugar de lanzar error
   }
 
@@ -750,42 +767,44 @@ async function obtenerServidoresDesdeApi(episodio) {
 }
 
 async function guardarServidoresEnFirestore(ep, servidores) {
+  if (firestoreEnPausaPorCuota) return false;
+
   const animeDatosRef = doc(db, "datos-animes", animeId);
-  const animeDatosSnap = await getDoc(animeDatosRef);
-  const animeDatos = animeDatosSnap.data() || {};
+  try {
+    await runTransaction(db, async (transaction) => {
+      const animeDatosSnap = await transaction.get(animeDatosRef);
+      const animeDatos = animeDatosSnap.data() || {};
+      const episodios = Array.isArray(animeDatos.episodios) ? [...animeDatos.episodios] : [];
+      const episodioIndex = episodios.findIndex(e => String(e.number) === String(ep.number));
+      const servidoresExistentes = episodioIndex === -1
+        ? []
+        : Array.isArray(episodios[episodioIndex].servidores) ? episodios[episodioIndex].servidores : [];
 
-  if (!animeDatos.episodios) animeDatos.episodios = [];
-  // 🔥 CAMBIO: Buscar por number en lugar de url
-  const episodioIndex = animeDatos.episodios.findIndex(e => String(e.number) === String(ep.number));
+      // Conservar todos los servidores ya guardados (incluidos los manuales),
+      // y sumar solamente URLs nuevas de la API.
+      const clavesExistentes = new Set(servidoresExistentes.map(s => s?.url || s?.code).filter(Boolean));
+      const servidoresFinales = [...servidoresExistentes];
+      servidores.forEach(servidor => {
+        const clave = servidor?.url || servidor?.code;
+        if (!clave || !clavesExistentes.has(clave)) {
+          servidoresFinales.push(servidor);
+          if (clave) clavesExistentes.add(clave);
+        }
+      });
 
-  // Preservar servidores de jkanime y mediafire existentes
-  let servidoresExistentes = [];
-  if (episodioIndex !== -1 && animeDatos.episodios[episodioIndex].servidores) {
-    servidoresExistentes = animeDatos.episodios[episodioIndex].servidores.filter(s => {
-      const url = (s.url || "").toLowerCase();
-      return url.includes("jkanime.net") || url.includes("jkplayer") || url.includes("mediafire.com");
+      if (episodioIndex !== -1) {
+        episodios[episodioIndex] = { ...episodios[episodioIndex], servidores: servidoresFinales };
+      } else {
+        episodios.push({ number: ep.number, servidores: servidoresFinales });
+      }
+
+      transaction.set(animeDatosRef, { episodios }, { merge: true });
     });
+    return true;
+  } catch (error) {
+    if (activarModoApiDirecta(error)) return false;
+    throw error;
   }
-
-  // Combinar servidores nuevos con los de jkanime y mediafire existentes
-  const servidoresFinales = [...servidores];
-
-  // Agregar servidores de jkanime y mediafire que no estén duplicados
-  const urlsNuevas = new Set(servidores.map(s => s.url));
-  servidoresExistentes.forEach(srvExistente => {
-    if (!urlsNuevas.has(srvExistente.url)) {
-      servidoresFinales.push(srvExistente);
-    }
-  });
-
-  if (episodioIndex !== -1) {
-    animeDatos.episodios[episodioIndex].servidores = servidoresFinales;
-  } else {
-    // 🔥 No guardar el campo url, solo number y servidores
-    animeDatos.episodios.push({ number: ep.number, servidores: servidoresFinales });
-  }
-
-  await setDoc(animeDatosRef, { episodios: animeDatos.episodios }, { merge: true });
 }
 
 function obtenerServidoresValidosDeFirestore(animeDatos, episodio) {
@@ -839,7 +858,7 @@ async function precargarSiguienteEpisodio(index, datosFirestore = undefined) {
 
 async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
   // Si no recibimos la lectura inicial, consultar Firestore antes de acudir a la API.
-  try {
+  if (!firestoreEnPausaPorCuota) try {
     if (datosFirestore === undefined) {
       const animeDatosRef = doc(db, "datos-animes", animeId);
       const animeDatosSnap = await getDoc(animeDatosRef);
@@ -851,7 +870,9 @@ async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
       return guardarServidoresEnCache(ep, servidoresFirestore);
     }
   } catch (error) {
-    console.error("[Servidores] ❌ Error al leer Firestore:", error);
+    if (!activarModoApiDirecta(error)) {
+      console.error("[Servidores] ❌ Error al leer Firestore:", error);
+    }
   }
 
   // Firestore no tenía servidores válidos: usar el respaldo actual de la API.
@@ -871,7 +892,7 @@ async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
 
 async function cargarEpisodios() {
 
-  try {
+  if (!firestoreEnPausaPorCuota) try {
     const episodiosRef = doc(db, "datos-animes", animeId);
     const docSnap = await getDoc(episodiosRef);
 
@@ -892,7 +913,9 @@ async function cargarEpisodios() {
     }
     throw new Error("No hay episodios en Firestore");
   } catch (err) {
-    console.warn("Error al cargar desde Firestore, intentando API:", err);
+    if (!activarModoApiDirecta(err)) {
+      console.warn("Error al cargar desde Firestore, intentando API:", err);
+    }
   }
 
   try {
@@ -914,12 +937,39 @@ async function cargarEpisodios() {
 
     aplicarFondoAnime(animeData);
 
-    await setDoc(doc(db, "datos-animes", animeId), {
-      episodios,
-      titulo: data.title || animeId,
-      cover: data.cover || '',
-      banner: data.banner || ''
-    }, { merge: true });
+    if (!firestoreEnPausaPorCuota) {
+      try {
+        const animeRef = doc(db, "datos-animes", animeId);
+        await runTransaction(db, async (transaction) => {
+          const actual = await transaction.get(animeRef);
+          const episodiosGuardados = actual.exists() ? actual.data().episodios || [] : [];
+          const guardadosPorNumero = new Map(episodiosGuardados.map(ep => [String(ep.number), ep]));
+          const episodiosFusionados = episodios.map(ep => {
+            const guardado = guardadosPorNumero.get(String(ep.number));
+            if (!guardado) return ep;
+            guardadosPorNumero.delete(String(ep.number));
+            return {
+              ...guardado,
+              ...ep,
+              ...(Array.isArray(guardado.servidores) ? { servidores: guardado.servidores } : {})
+            };
+          });
+
+          // No eliminar capítulos que la API no haya devuelto todavía.
+          episodios = [...episodiosFusionados, ...guardadosPorNumero.values()];
+          transaction.set(animeRef, {
+            episodios,
+            titulo: data.title || animeId,
+            cover: data.cover || '',
+            banner: data.banner || ''
+          }, { merge: true });
+        });
+      } catch (error) {
+        if (!activarModoApiDirecta(error)) {
+          console.warn("No se pudo actualizar Firestore; se continuará con la API:", error);
+        }
+      }
+    }
 
     // Generar dropdown después de cargar episodios
     if (typeof generarDropdownCapitulos === 'function') {
@@ -1007,13 +1057,15 @@ async function cargarVideoDesdeEpisodio(index) {
   // 1. Cargar servidores de Firestore primero (instantáneo)
   let servidoresFirestore = [];
   let datosFirestore = null;
-  try {
+  if (!firestoreEnPausaPorCuota) try {
     const animeDatosRef = doc(db, "datos-animes", animeId);
     const animeDatosSnap = await getDoc(animeDatosRef);
     datosFirestore = animeDatosSnap.data() || {};
     servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
   } catch (error) {
-    console.error("[cargarVideoDesdeEpisodio] Error al leer servidores de Firestore:", error);
+    if (!activarModoApiDirecta(error)) {
+      console.error("[cargarVideoDesdeEpisodio] Error al leer servidores de Firestore:", error);
+    }
   }
 
   // Dejar preparado el siguiente capítulo con los datos que ya devolvió Firestore.
@@ -1061,19 +1113,22 @@ try {
       // Reordenar la lista combinada
       ep.servidores = reordenarServidores(servidoresCombinados);
 
-      // Guardar en Firestore la lista completa fusionada
-      await guardarServidoresEnFirestore(ep, ep.servidores);
-
       guardarServidoresEnCache(ep, ep.servidores);
-
       // Actualizar la interfaz
       renderizarServidores(ep.servidores);
+      // Guardar no puede bloquear la reproducción: si Firestore llega a 429,
+      // la interfaz ya sigue usando los datos directos de la API.
+      guardarServidoresEnFirestore(ep, ep.servidores).catch(error => {
+        console.error("No se pudieron guardar los servidores obtenidos de la API:", error);
+      });
     } else if (!servidoresFirestore.length) {
       // Caso inicial: Firestore estaba vacío y la API devolvió resultados
       ep.servidores = reordenarServidores(servidoresApi);
-      await guardarServidoresEnFirestore(ep, ep.servidores);
       guardarServidoresEnCache(ep, ep.servidores);
       renderizarServidores(ep.servidores);
+      guardarServidoresEnFirestore(ep, ep.servidores).catch(error => {
+        console.error("No se pudieron guardar los servidores obtenidos de la API:", error);
+      });
     }
   } else if (!servidoresFirestore.length) {
     // API no devolvió servidores y no hay en Firestore
