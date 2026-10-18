@@ -1,90 +1,58 @@
-//aplicar viewanme y eliminar a otras 
 export function aplicarViewTransition(id, ratingHtml, clickedElement = null) {
-  console.log("aplicando view transition");
-  
-  // Limpiar view transitions de otras tarjetas
-  const cards = document.querySelectorAll('.anime-card.show a');
-  cards.forEach(card => {
-    const imgContainer = card.querySelector('.container-img');
-    const strong = card.querySelector('strong');
-    const rating = card.querySelector('.rating');
-    [imgContainer, strong, rating].forEach(el => {
-        if (el && el.style.viewTransitionName) {
-            el.style.removeProperty('view-transition-name');
-        }
+  document.querySelectorAll('.anime-card.show a').forEach(card => {
+    ['.container-img', 'strong', '.rating'].forEach(selector => {
+      const el = card.querySelector(selector);
+      if (el?.style.viewTransitionName) el.style.removeProperty('view-transition-name');
     });
   });
-  
-  // Si se proporciona el elemento clickeado, aplicar solo a ese
+
   if (clickedElement) {
     const strong = clickedElement.querySelector('strong');
     const containerImg = clickedElement.querySelector('.container-img');
     const rating = clickedElement.querySelector('.rating');
-    
+
     if (strong) strong.style.setProperty('view-transition-name', 'title-' + id);
     if (containerImg) containerImg.style.setProperty('view-transition-name', 'cover-' + id);
     if (rating && ratingHtml) rating.style.setProperty('view-transition-name', 'rating-' + id);
   } else {
-    // Comportamiento original: aplicar a todos con el mismo ID
-    if (ratingHtml) {
-      document.querySelectorAll("#anime-" + id +'.rating').forEach(el => el.style.setProperty('view-transition-name', 'rating-' + id));
-    }
+    if (ratingHtml) document.querySelectorAll("#anime-" + id + '.rating').forEach(el => el.style.setProperty('view-transition-name', 'rating-' + id));
     document.querySelectorAll('#anime-' + id + ' strong').forEach(el => el.style.setProperty('view-transition-name', 'title-' + id));
     document.querySelectorAll('#anime-' + id + ' .container-img').forEach(el => el.style.setProperty('view-transition-name', 'cover-' + id));
   }
 }
 
-// Manejar el scroll para el efecto del header
 const header = document.querySelector('header');
 const sidebar = document.querySelector('.sidebar');
 const indexpagination = document.querySelector('#indexpagination');
 const scrollOffset = 30;
 
 const handleScroll = () => {
-  if (window.scrollY > scrollOffset && !document.body.classList.contains('animaciones-off')) {
-    header.classList.add('scrolled');
-    sidebar.classList.add('scrolled');
-    if (indexpagination) {
-      indexpagination.classList.add('scrolled');
-    }
-  } else {
-    header.classList.remove('scrolled');
-    sidebar.classList.remove('scrolled');
-    if (indexpagination) {
-      indexpagination.classList.remove('scrolled');
-    }
-  }
+  const shouldScroll = window.scrollY > scrollOffset && !document.body.classList.contains('animaciones-off');
+  header.classList.toggle('scrolled', shouldScroll);
+  sidebar.classList.toggle('scrolled', shouldScroll);
+  indexpagination?.classList.toggle('scrolled', shouldScroll);
 };
 
-// Aplicar el efecto al cargar la página
 window.addEventListener('load', handleScroll);
 
-// Escuchar el evento de scroll con throttling para mejor rendimiento en móvil
 let ticking = false;
 window.addEventListener('scroll', () => {
-    if (ticking) return;
-
-    ticking = true;
-
-    requestAnimationFrame(() => {
-        handleScroll();
-        ticking = false;
-    });
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    handleScroll();
+    ticking = false;
+  });
 }, { passive: true });
 
-// Instancia única global del IntersectionObserver
-const animeCardObserver = new IntersectionObserver((entries, observer) => {
-    for (let i = 0; i < entries.length; i++) {
-        const entry = entries[i];
-        if (entry.isIntersecting) {
-            entry.target.classList.add("show");
-            observer.unobserve(entry.target);
-        }
+const animeCardObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('show');
+      animeCardObserver.unobserve(entry.target);
     }
-}, {
-    threshold: 0,
-    rootMargin: "0px 0px 150px 0px" // Margen ligeramente mayor para evitar tirones en scroll rápido
-});
+  });
+}, { threshold: 0, rootMargin: '0px 0px 150px 0px' });
 
 /**
  * Observa una tarjeta individual o un grupo de tarjetas.
