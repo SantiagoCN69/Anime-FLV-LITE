@@ -131,7 +131,7 @@ header {
 
 }
 .scrolled {
-  background: rgba(var(--bgti), .9) !important;
+  background: rgba(var(--bgti), .81) !important;
   -webkit-backdrop-filter: blur(30px) !important;
   backdrop-filter: blur(30px) !important;
 }
