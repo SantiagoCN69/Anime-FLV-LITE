@@ -276,6 +276,9 @@ function initPreferencias() {
   const aplicarAnimaciones = (activas) => {
     document.body.classList.toggle('animaciones-off', !activas);
     localStorage.setItem('animaciones', String(activas));
+    window.dispatchEvent(new CustomEvent('estadoAnimacionesCambiado', {
+      detail: { activas }
+    }));
     console.log('[Preferencias] animaciones =', activas, 'clase animaciones-off =', !activas);
   };
 
@@ -292,10 +295,11 @@ function initPreferencias() {
         ? false
         : localStorage.getItem('animaciones') !== 'false';
 
-      document.body.classList.toggle(
-        'animaciones-off',
-        activo || localStorage.getItem('animaciones') === 'false'
-      );
+      const animacionesEfectivas = !activo && localStorage.getItem('animaciones') !== 'false';
+      document.body.classList.toggle('animaciones-off', !animacionesEfectivas);
+      window.dispatchEvent(new CustomEvent('estadoAnimacionesCambiado', {
+        detail: { activas: animacionesEfectivas }
+      }));
       if (avisoAhorroBateria) avisoAhorroBateria.style.display = activo ? 'block' : 'none';
     };
 

@@ -10,10 +10,11 @@ const alEstarListoElBody = (callback) => {
 
 const aplicarEstadoAnimaciones = () => {
     const animacionesActivas = localStorage.getItem('animaciones') !== 'false';
-    document.body.classList.toggle(
-        'animaciones-off',
-        ahorroBateriaForzandoAnimacionesOff || !animacionesActivas
-    );
+    const animacionesDesactivadas = ahorroBateriaForzandoAnimacionesOff || !animacionesActivas;
+    document.body.classList.toggle('animaciones-off', animacionesDesactivadas);
+    window.dispatchEvent(new CustomEvent('estadoAnimacionesCambiado', {
+        detail: { activas: !animacionesDesactivadas }
+    }));
 };
 
 alEstarListoElBody(aplicarEstadoAnimaciones);

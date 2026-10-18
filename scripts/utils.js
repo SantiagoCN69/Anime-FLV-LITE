@@ -122,6 +122,21 @@ export function observerAnimeCards(target) {
     }
 }
 
+// Si la página se cargó con las animaciones desactivadas, las tarjetas no pasan
+// por el observador y se ven gracias a .animaciones-off. Al reactivarlas, deben
+// conservarse visibles en lugar de volver a opacity: 0.
+window.addEventListener('estadoAnimacionesCambiado', (event) => {
+    if (!event.detail?.activas) return;
+
+    document.querySelectorAll('.anime-card:not(.show)').forEach((card) => {
+        animeCardObserver.unobserve(card);
+        card.classList.add('show');
+        delete card.dataset.observed;
+    });
+
+    handleScroll();
+});
+
 //INDICADOR funcion cambiar tema
 document.addEventListener('authStateReady', function() {
   const btnLogin = document.getElementById('btn-login');
