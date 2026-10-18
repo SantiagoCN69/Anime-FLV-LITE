@@ -41,6 +41,10 @@ async function detectarAhorroEnergia() {
             alEstarListoElBody(aplicarEstadoAnimaciones);
         };
 
+        // Permite reevaluar inmediatamente cuando el usuario cambia el ajuste
+        // de ahorro desde la pantalla de preferencias.
+        window.addEventListener('configuracionAhorroBateriaCambiada', verificarEstado);
+
         verificarEstado();
         battery.addEventListener('chargingchange', verificarEstado);
         battery.addEventListener('levelchange', verificarEstado);

@@ -340,7 +340,22 @@ function initPreferencias() {
     toggleAhorroBateria.addEventListener('change', () => {
       localStorage.setItem('ahorroBateriaAuto', String(toggleAhorroBateria.checked));
       console.log('[Preferencias] ahorroBateriaAuto =', toggleAhorroBateria.checked);
-      // location.reload();
+
+      // Solicita al detector de batería una evaluación inmediata, en lugar de
+      // esperar un cambio de nivel/carga o una recarga de la página.
+      window.dispatchEvent(new CustomEvent('configuracionAhorroBateriaCambiada'));
+
+      // Respaldo para esta pantalla si el detector global todavía no terminó
+      // de cargarse: sincroniza los controles con el estado actual de batería.
+      if (navigator.getBattery) {
+        navigator.getBattery().then((battery) => {
+          const activo = toggleAhorroBateria.checked && battery.level <= 0.20 && !battery.charging;
+          localStorage.setItem('ahorroBateriaActivo', String(activo));
+          window.dispatchEvent(new CustomEvent('estadoAhorroBateria', {
+            detail: { activo }
+          }));
+        }).catch(() => {});
+      }
     });
   }
 
