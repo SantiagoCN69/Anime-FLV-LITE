@@ -107,6 +107,7 @@
 .anime-card-schedule:hover {
   transform: translate(0, 0) scale(1.01);
   border-color: var(--btn);
+  border-radius: 18px !important;
 }
 
 .anime-card-schedule span {

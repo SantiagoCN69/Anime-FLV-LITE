@@ -1108,8 +1108,11 @@ section.content-section h2:first-of-type.cargado::after {
   transition: bottom 0.3s ease;
 }
 @media (hover: hover) {
-  .anime-card:hover {transform: scale(1.23); z-index: 2; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); background: var(--b); border-radius: 8px;}
-
+  .anime-card:hover {transform: scale(1.23); z-index: 2; box-shadow: 0 0 20px rgba(0, 0, 0, 2.5); backdrop-filter: blur(10px); border-radius: 8px;}
+  
+  /* .anime-card:hover {
+    transform: translate(0, -16px);
+  } */
   .continue-card:hover, #Recomendaciones .anime-card:hover {
     transform: scale(1);
     background: none;
@@ -1121,9 +1124,6 @@ section.content-section h2:first-of-type.cargado::after {
 
   .anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px}
     .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
-    /* .anime-card:hover {
-      transform: translate(0, -6px);
-    } */
     .anime-card:hover .container-img::after {
       bottom: 0;
     }
