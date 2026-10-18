@@ -1268,7 +1268,12 @@ async function cargarAnime(idauxiliar) {
       }
     }
   } catch (err) {
-    console.error('Error al cargar desde Firestore:', err);
+    // Manejar error 429 (Too Many Requests) y otros errores de Firestore
+    if (err.code === 'resource-exhausted' || err.code === 429) {
+      console.warn('Firestore rate limit alcanzado, usando caché o API:', err);
+    } else {
+      console.error('Error al cargar desde Firestore:', err);
+    }
   }
 
   // 3. Cargar desde API externa y actualizar todo
@@ -1295,20 +1300,35 @@ async function cargarAnime(idauxiliar) {
     }
 
     if (!compararDatos(cached, anime)) {
-      const animeRef = doc(db, 'datos-animes', id);
-      const animeGuardado = await runTransaction(db, async (transaction) => {
-        const actual = await transaction.get(animeRef);
-        const episodiosGuardados = actual.exists() ? actual.data().episodios || [] : [];
-        const animeFusionado = {
-          ...anime,
-          episodios: fusionarEpisodiosConGuardados(anime.episodios, episodiosGuardados)
-        };
+      // Intentar guardar en Firestore con transacción, pero continuar si falla por rate limit
+      try {
+        const animeRef = doc(db, 'datos-animes', id);
+        const animeGuardado = await runTransaction(db, async (transaction) => {
+          const actual = await transaction.get(animeRef);
+          const episodiosGuardados = actual.exists() ? actual.data().episodios || [] : [];
+          const animeFusionado = {
+            ...anime,
+            episodios: fusionarEpisodiosConGuardados(anime.episodios, episodiosGuardados)
+          };
 
-        transaction.set(animeRef, { ...animeFusionado, fechaGuardado: serverTimestamp() }, { merge: true });
-        return animeFusionado;
-      });
-      actualizarCache(id, animeGuardado);
-      renderAnime(animeGuardado);
+          transaction.set(animeRef, { ...animeFusionado, fechaGuardado: serverTimestamp() }, { merge: true });
+          return animeFusionado;
+        });
+        actualizarCache(id, animeGuardado);
+        renderAnime(animeGuardado);
+      } catch (err) {
+        // Si falla por rate limit (429), usar los datos de la API directamente
+        if (err.code === 'resource-exhausted' || err.code === 429) {
+          console.warn('Firestore rate limit al guardar, usando datos de API:', err);
+          actualizarCache(id, anime);
+          renderAnime(anime);
+        } else {
+          console.error('Error en transacción Firestore:', err);
+          // Continuar con datos de la API incluso con otros errores
+          actualizarCache(id, anime);
+          renderAnime(anime);
+        }
+      }
     }
 
     if (data.message === 'Anime no encontrado en ninguna fuente') {
