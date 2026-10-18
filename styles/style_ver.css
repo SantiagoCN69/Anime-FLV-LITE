@@ -135,6 +135,8 @@ main section:nth-child(2) {
   border-radius: 10px;
 }
 #links {
+  display: flex;
+  gap: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -453,6 +455,16 @@ overflow: hidden;
   color: var(--t1);
   background-color: var(--br);
   border-bottom: 2px solid var(--btn);
+}
+#controles .servidor-activo::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(to top, color-mix(in srgb, var(--btn) 15%, transparent) 0%, transparent 100%);
+  pointer-events: none;
 }
 @media (hover: hover) {
   #controles button:hover {

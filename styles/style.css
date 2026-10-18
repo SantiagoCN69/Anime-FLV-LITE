@@ -134,7 +134,11 @@ header {
   transition: backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease;
 
 }
-
+.scrolled {
+  background: rgba(var(--bgti), .9) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  backdrop-filter: blur(30px) !important;
+}
 @media screen and (max-width: 600px) {
 .scrolled:not(.floating) {
   background: rgba(var(--bgti), .5) !important;
@@ -210,7 +214,7 @@ header #busqueda{
   padding: 12px;
   padding-left: 40px;
   border: 1px solid var(--br);
-  border-radius: 12px;
+  border-radius: 8px;
   background-color: transparent;
   color: var(--t1);
   font-family: 'DM Sans', sans-serif;
@@ -352,11 +356,9 @@ header div {
   content: "";
   width: 25px;
   height: 25px;
-  background-color: var(--t1); 
-  -webkit-mask-size: contain;
-  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
-  mask-size: contain;
-  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
+  background-color: var(--t1);
+  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
+  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
 }
   
   
@@ -397,26 +399,22 @@ header.search-active .logout-modal {
 
 /* Botón de cerrar búsqueda */
 #btn-close-search {
-  width: 25px;
-  height: 25px;
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  border: 1px solid rgba(var(--bgt), .3);
+  border-radius: 8px;
 }
 #btn-close-search::after {
   content: "";
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: var(--t1); 
-  -webkit-mask-size: contain;
-  -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center;
-  mask-size: contain;
-  mask: url('../icons/xmark-solid.svg') no-repeat center;
+  width: 25px;
+  height: 25px;
+  background-color: var(--t1);
+  -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center / contain;
+  mask: url('../icons/xmark-solid.svg') no-repeat center / contain;
 }
 }
 /* Esconde el botón de menú en PC */
@@ -430,9 +428,9 @@ header.search-active .logout-modal {
   border-radius: 5px;
   display: block;
   width: 25px;
-  height: 3px;
+  height: 2px;
   background-color: var(--t1);
-  margin: 5px 0;
+  margin: 6px 0;
   transition: transform .2s, opacity .2s;
 }
 #menu-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
@@ -1108,7 +1106,7 @@ section.content-section h2:first-of-type.cargado::after {
   transition: bottom 0.3s ease;
 }
 @media (hover: hover) {
-  .anime-card:hover {transform: scale(1.23); z-index: 2; box-shadow: 0 0 20px rgba(0, 0, 0, 2.5); backdrop-filter: blur(10px); border-radius: 8px;}
+  .anime-card:hover {transform: scale(1.23); z-index: 2; backdrop-filter: blur(10px); border-radius: 8px;}
   
   /* .anime-card:hover {
     transform: translate(0, -16px);

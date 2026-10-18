@@ -277,6 +277,9 @@ header #busqueda{
     visibility: visible;
     transform: translateX(-50%) translateY(0);
   }
+  .btn-estado:not(#contenedor-barra-progreso):hover {
+    transform: translateY(-5px);
+  }
   /* .btn-estado:not(#contenedor-barra-progreso):hover {
     transform: translateY(-2px);
   } */
@@ -445,15 +448,15 @@ header #busqueda{
 }
 
 #titulo {
-  font-size: 1.8rem;
+  font-size: 2.5rem;
   overflow: hidden;
   width: fit-content;
   color:var(--t1);
   z-index: 1;
   font-family: 'Oxanium', sans-serif;
   cursor: pointer;
-  min-height: 37px;
-  max-height: 37px;
+  min-height: 50px;
+  max-height: 50px;
   text-transform: capitalize;
 }
 #info1 {
@@ -784,9 +787,10 @@ header #busqueda{
 
 #filtro-caps2 {
   display: flex;
-  gap: 1rem;
+  gap: 10px;
 }
 #filtro-caps {
+  height: 40px;
   display: flex;
   gap: 5px;
   justify-content: space-between;
@@ -798,6 +802,7 @@ header #busqueda{
 }
 
 .btn-filtro-cap {
+  overflow: hidden;
   padding: 8px 11px;
   border: none;
   border-radius: 8px;
@@ -871,7 +876,9 @@ header #busqueda{
   view-transition-name: login-button;
 }
 
-#btn-invertir-caps {
+#filtro-caps2 button {
+  height: 40px;
+  aspect-ratio: 1;
   border: 1px solid var(--br);
   background: var(--p);
   border-radius: 8px;
@@ -886,12 +893,12 @@ header #busqueda{
   }
 }
 
-#btn-invertir-caps svg {
+#filtro-caps2 button svg {
   width: 20px;
   height: 20px;
 }
 
-#btn-invertir-caps:hover {
+#filtro-caps2 button:hover {
   background: var(--br);
 }
 
@@ -900,10 +907,10 @@ header #busqueda{
   width: 100%;
   padding: 12px 15px;
   border: 1px solid var(--br);
-  border-radius: 12px;
+  border-radius: 8px;
   background-color: var(--p);
   color: var(--t1);
-  font-size: 1rem;
+  font-size: .9rem;
   transition: box-shadow 0.3s;
 }
 
@@ -1324,7 +1331,7 @@ header #busqueda{
   }
 }
 #btn-search-capitulo, #btn-close-search-capitulo {
-    display: none;
+    display: none !important;
 }
 .anime-title-relacionados {
   font-size: 1.6rem;
@@ -1671,7 +1678,7 @@ z-index: 0;
   #btn-close-search-capitulo {
     display: block;
   }
-#btn-invertir-caps {
+#filtro-caps2 button {
   padding: 7px;
 }
 
@@ -1686,7 +1693,7 @@ z-index: 0;
 
   /* Cuando se activa búsqueda */
   .header-caps.search-active #btn-search-capitulo {
-    transform: translateX(42px);
+    transform: translateX(60px);
   }
   .header-caps.search-active #btn-invertir-caps {
     transform: translateX(-1000%);
@@ -1701,7 +1708,7 @@ z-index: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    gap: 1rem;
+    gap: 10px;
     display: flex;
     opacity: 0;
     pointer-events: none;
@@ -1727,14 +1734,12 @@ z-index: 0;
   }
 
   #btn-close-search-capitulo::before {
-        content: "";
-        width: 30px;
-        height: 30px;
-        background-color: var(--t1);
-        -webkit-mask-size: contain;
-        -webkit-mask: url(../icons/xmark-solid.svg) no-repeat center;
-        mask-size: contain;
-        mask: url(../icons/xmark-solid.svg) no-repeat center;
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-color: var(--t1);
+    -webkit-mask: url('../icons/xmark-solid.svg') no-repeat center / contain;
+    mask: url('../icons/xmark-solid.svg') no-repeat center / contain;
   }
 
   /* Input */
@@ -1754,14 +1759,11 @@ z-index: 0;
 
 #btn-search-capitulo::before {
   content: '';
-  width: 24px;
-  height: 24px;
-  padding-left: 3px;
+  width: 20px;
+  height: 20px;
   background-color: var(--t1); /* Color del SVG */
-  -webkit-mask-size: contain;
-  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
-  mask-size: contain;
-  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center;
+  -webkit-mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
+  mask: url('../icons/magnifying-glass-solid.svg') no-repeat center / contain;
 }
 }
 
