@@ -1,7 +1,7 @@
 // Importaciones de Firebase y otras dependencias
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards, crearAnimeCard } from "./utils.js";
 import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName, buildCustomSearchAnimePrompt, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
@@ -11,6 +11,26 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let userid = null;
+
+function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = []) {
+    const guardadosPorNumero = new Map(
+        episodiosGuardados.map(episodio => [String(episodio.number), episodio])
+    );
+
+    const fusionados = episodiosApi.map(episodioApi => {
+        const guardado = guardadosPorNumero.get(String(episodioApi.number));
+        if (!guardado) return episodioApi;
+
+        guardadosPorNumero.delete(String(episodioApi.number));
+        return {
+            ...guardado,
+            ...episodioApi,
+            ...(Array.isArray(guardado.servidores) ? { servidores: guardado.servidores } : {})
+        };
+    });
+
+    return [...fusionados, ...guardadosPorNumero.values()];
+}
 
 (async () => {
     // Cargar caché inicial
@@ -389,12 +409,19 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
                 descripcion: anime.synopsis || '',
                 score: anime.score || null,
                 episodios: anime.episodes?.map(ep => ({
-                    number: ep.number,
-                    url: ep.url
+                    number: ep.number
                 })) || [],
             };
 
-            await setDoc(doc(db, 'datos-animes', anime.id), animeData, { merge: true });
+            const animeRef = doc(db, 'datos-animes', anime.id);
+            await runTransaction(db, async (transaction) => {
+                const actual = await transaction.get(animeRef);
+                const episodiosGuardados = actual.exists() ? actual.data().episodios || [] : [];
+                transaction.set(animeRef, {
+                    ...animeData,
+                    episodios: fusionarEpisodiosConGuardados(animeData.episodios, episodiosGuardados)
+                }, { merge: true });
+            });
             animesEncontrados.push({
                 id: anime.id,
                 title: anime.title,
