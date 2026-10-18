@@ -126,9 +126,16 @@
     </div>
 </header>
 
-<a href="/" class="btn-volver" title="Volver" style="view-transition-name: title">Inicio</a> 
-
-
+  <div id="links">
+    <a href="/" class="btn-volver" id="btn-volver-inicio">Inicio</a>
+    <span>></span>
+    <a title="Volver al anime" id="btn-volver-anime" class="btn-volver"><span id="titulo-anime"></span></a>
+  </div>
+  <script>
+    const animeId = new URLSearchParams(location.search).get("id");
+    const tituloAnime = document.getElementById('titulo-anime');
+    tituloAnime.textContent = animeId.replaceAll("-", " ");
+  </script>
   <main class="anime-details">
     <section class="anime-container1">
       <div id="covercarga"></div>

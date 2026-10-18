@@ -106,15 +106,23 @@ header #busqueda{
 .title {
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
-.btn-volver {
+#links {
+  display: flex;
+  gap: 8px;
   position: absolute;
   top: calc(80px + 2rem);
   left: 1rem;
   color: var(--t1);
   font-weight: 600;
+  opacity: .7;
+      text-transform: capitalize;
+}
+.btn-volver {
   width: fit-content;
   transition: transform .3s, color .3s, opacity .3s;
-  opacity: .7;
+}
+#btn-volver-anime {
+  color: unset;
 }
 @media (min-width: 1100px) {
   .btn-volver {
@@ -125,7 +133,7 @@ header #busqueda{
   color: var(--btn);
   opacity: 1;
 }
-.btn-volver::before {
+#btn-volver-inicio::before {
   transition: background-color .3s;
   content: "";
   width: 16px;
@@ -139,7 +147,7 @@ header #busqueda{
   mask: url('/icons/house-solid.svg') no-repeat center;
   mask-size: contain;
 }
-.btn-volver:hover::before {
+#btn-volver-inicio:hover::before {
   background-color: var(--btn);
 }
 .anime-details {
