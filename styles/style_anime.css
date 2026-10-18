@@ -1512,8 +1512,8 @@ padding-bottom: 1px;
   text-align: center;
   display: flex;
   align-items: end;
-  min-height: 73px;
-  max-height: 73px;
+  min-height: 100px;
+  max-height: 100px;
 }
 .anime-rating {
 font-size: .8rem;
@@ -1596,7 +1596,7 @@ grid-template-columns: 1fr;
   height: unset;
   max-height: 560px;
 z-index: 0;
-  margin-bottom: calc(-36px - 190px); /*190 fijo + 36 que es 1lh del titulo*/
+  margin-bottom: calc(-50px - 190px); /*190 fijo + 50 que es 1lh del titulo*/
 }
 .anime-container1 img {
   border-radius: 0;
