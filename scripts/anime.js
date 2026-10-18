@@ -2,7 +2,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
 // Agregamos arrayUnion y arrayRemove al final de esta línea
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove, deleteDoc, query, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseconfig.js";
 import { observerAnimeCards, aplicarViewTransition } from "./utils.js";
@@ -1213,6 +1213,31 @@ function normalizarDatosAPI(data) {
   };
 }
 
+// Firestore puede contener servidores agregados manualmente. Los arrays no se
+// fusionan con `setDoc(..., { merge: true })`, así que se deben unir por capítulo
+// antes de guardar una respuesta nueva de la API.
+function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = []) {
+  const guardadosPorNumero = new Map(
+    episodiosGuardados.map(episodio => [String(episodio.number), episodio])
+  );
+
+  const fusionados = episodiosApi.map(episodioApi => {
+    const guardado = guardadosPorNumero.get(String(episodioApi.number));
+    if (!guardado) return episodioApi;
+
+    guardadosPorNumero.delete(String(episodioApi.number));
+    return {
+      ...guardado,
+      ...episodioApi,
+      ...(Array.isArray(guardado.servidores) ? { servidores: guardado.servidores } : {})
+    };
+  });
+
+  // La API puede devolver una lista parcial. Nunca eliminar capítulos guardados
+  // aquí, porque podrían contener servidores añadidos manualmente.
+  return [...fusionados, ...guardadosPorNumero.values()];
+}
+
 async function cargarAnime(idauxiliar) {
   if (idauxiliar) {
     console.log(idauxiliar);
@@ -1270,19 +1295,20 @@ async function cargarAnime(idauxiliar) {
     }
 
     if (!compararDatos(cached, anime)) {
-      // Preservar servidores existentes en Firestore (reutilizar lectura anterior)
-      if (firestoreData && firestoreData.episodios) {
-        anime.episodios = anime.episodios.map(ep => {
-          const epFirestore = firestoreData.episodios.find(e => String(e.number) === String(ep.number));
-          if (epFirestore?.servidores) {
-            return { ...ep, servidores: epFirestore.servidores };
-          }
-          return ep;
-        });
-      }
-      await setDoc(doc(db, 'datos-animes', id), { ...anime, fechaGuardado: serverTimestamp() }, { merge: true });
-      actualizarCache(id, anime);
-      renderAnime(anime);
+      const animeRef = doc(db, 'datos-animes', id);
+      const animeGuardado = await runTransaction(db, async (transaction) => {
+        const actual = await transaction.get(animeRef);
+        const episodiosGuardados = actual.exists() ? actual.data().episodios || [] : [];
+        const animeFusionado = {
+          ...anime,
+          episodios: fusionarEpisodiosConGuardados(anime.episodios, episodiosGuardados)
+        };
+
+        transaction.set(animeRef, { ...animeFusionado, fechaGuardado: serverTimestamp() }, { merge: true });
+        return animeFusionado;
+      });
+      actualizarCache(id, animeGuardado);
+      renderAnime(animeGuardado);
     }
 
     if (data.message === 'Anime no encontrado en ninguna fuente') {
