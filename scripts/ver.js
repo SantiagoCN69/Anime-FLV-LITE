@@ -1025,18 +1025,58 @@ function aplicarFondoAnime(anime) {
   img.src = bannerUrl;
 }
 
+// Firestore puede tener el anime, pero no todos sus capítulos (por ejemplo,
+// después de limitar las escrituras para proteger la cuota). En ese caso no
+// debemos terminar en un 404 local: recuperamos el listado actual desde la API
+// y conservamos los servidores que ya estaban disponibles en memoria.
+async function recuperarEpisodioFaltanteDesdeApi(numeroEpisodio) {
+  try {
+    const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${encodeURIComponent(animeId)}`);
+    if (!res.ok) {
+      throw new Error(`API anime respondió ${res.status}`);
+    }
+
+    const data = await res.json();
+    const episodiosApi = (data.episodes || []).map(ep => ({ number: ep.number }));
+    const episodioSolicitado = episodiosApi.find(ep => String(ep.number) === String(numeroEpisodio));
+
+    if (!episodioSolicitado) return null;
+
+    const episodiosLocales = new Map(episodios.map(ep => [String(ep.number), ep]));
+    episodios = episodiosApi.map(ep => {
+      const episodioLocal = episodiosLocales.get(String(ep.number));
+      return episodioLocal
+        ? { ...ep, ...episodioLocal }
+        : ep;
+    });
+
+    aplicarFondoAnime({ cover: data.cover || '', banner: data.banner || '' });
+    dropdownGenerado = false;
+    generarDropdownCapitulos();
+    actualizarTextoBotonesNavegacion();
+    return episodioSolicitado;
+  } catch (error) {
+    console.error("[cargarVideoDesdeEpisodio] No se pudo recuperar el listado desde la API:", error);
+    return null;
+  }
+}
+
 async function cargarVideoDesdeEpisodio(index) {
   const controles = document.getElementById("controles");
   // Si no hay en Firestore, mostrar indicador de carga
   document.getElementById("controles").innerHTML = "<span id='cargando-servidores'></span>";
   controles.classList.remove("con-mediafire");
   btnCap.textContent = `Episodio ${index}`;
-  const ep = episodios.find(ep => String(ep.number) === String(index));
+  let ep = episodios.find(ep => String(ep.number) === String(index));
   if (!ep) {
-    console.warn("[cargarVideoDesdeEpisodio] No se encontró el episodio con number:", index);
-    btnCap.textContent = "Episodio desconocido";
-    document.getElementById("controles").innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontro el episodio.</span>";
-    return;
+    console.warn("[cargarVideoDesdeEpisodio] El episodio no está en Firestore; comprobando la API:", index);
+    ep = await recuperarEpisodioFaltanteDesdeApi(index);
+
+    if (!ep) {
+      btnCap.textContent = "Episodio desconocido";
+      document.getElementById("controles").innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontró el episodio.</span>";
+      return;
+    }
   }
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
