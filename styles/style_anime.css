@@ -1467,7 +1467,7 @@ margin-bottom: 1.5rem;
   max-height: fit-content ;
   gap: 1.5rem;
 }
-.btn-volver {
+#links {
   display: none;
 }
 .anime-container1 {
@@ -1581,8 +1581,7 @@ grid-template-columns: 1fr;
     transform: scale(1);
 }
 }
-}
-@media screen and (max-width:700px) {
+
   body::before, body::after {
     content: none;
   }
