@@ -177,6 +177,11 @@ main section:nth-child(2) {
   transition: transform .3s, color .3s, opacity .3s;
   opacity: .7;
 }
+#btn-volver-anime {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 #btn-volver-inicio::before {
   transition: background-color .3s;
   content: "";

@@ -1936,7 +1936,7 @@ footer ul li:hover {
 /* Botón de volver arriba */
 footer button {
     align-self: flex-start;
-    backdrop-filter: brightness(2);
+    background: var(--p);
     color: #f4f4f5;
     border: 1px solid var(--br);
     padding: 0.625rem 1.25rem;
@@ -1944,14 +1944,14 @@ footer button {
     font-weight: 500;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: background 0.2s ease;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 footer button:hover {
-    filter: brightness(1.2);
+    background: var(--br);
 }
 
 footer button:active {

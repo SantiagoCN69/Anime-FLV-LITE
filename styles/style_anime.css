@@ -595,6 +595,11 @@ body:not(.animaciones-off) header {
   width: 100%;
   height: calc(49.9px + 18px + 8px);
 }
+@media (min-width: 700px) {
+  #descripcion-cargando {
+    height: calc(57px + 18px + 8px);
+  }
+}
 .genre-link-cargando {
   width: unset;
   height: calc(1lh + 10px);
