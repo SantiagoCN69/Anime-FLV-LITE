@@ -1658,6 +1658,9 @@ z-index: 0;
   pointer-events: none;
 }
 }
+#btn-search-capitulo, #btn-close-search-capitulo {
+  display: flex !important;
+}
 /* Ocultar botones por defecto */
 #btn-search-capitulo,
 #btn-close-search-capitulo {
