@@ -2,9 +2,8 @@ const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
 const episodeNumber = params.get("episode");
 const serversParam = params.get("servers"); // "sub" o "dob"
-const btnVolver = document.getElementById("btn-volver-anime");
-const tituloAnime = document.getElementById("titulo-anime");
-btnVolver.href = `/anime?id=${animeId}`;
+const btnVolverAnime = document.getElementById("btn-volver-anime");
+btnVolverAnime.href = `/anime?id=${animeId}`;
 
 // Leer preferencia de servidores de localStorage
 const serversPreference = localStorage.getItem("serverPreference");
@@ -335,7 +334,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 const btnCap = document.getElementById("btn-cap");
-tituloAnime.textContent = animeId.replaceAll("-", " ");
+btnVolverAnime.textContent = animeId.replaceAll("-", " ");
 btnCap.textContent = `Episodio ${episodioActualIndex}`;
 
 // Inicializar el número del capítulo después de que btnCap esté disponible
@@ -402,7 +401,7 @@ async function toggleYGuardarEstadoCapitulo() {
     }
 
     const episodioId = String(episodioActualIndex);
-    const titulo = tituloAnime.textContent;
+    const titulo = btnVolverAnime.textContent;
 
     const estaVistoActualmente = episodiosVistos.includes(episodioId);
     const nuevoEstadoVisto = !estaVistoActualmente;

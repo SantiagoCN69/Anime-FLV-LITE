@@ -148,11 +148,11 @@
     <div id="links">
       <a href="/" class="btn-volver" id="btn-volver-inicio">Inicio</a>
       <span>></span>
-      <a title="Volver al anime" href="#" id="btn-volver-anime" class="btn-volver" aria-label="Volver al anime"><span id="titulo-anime"></span></a>
+      <a title="Volver al anime" href="#" id="btn-volver-anime" class="btn-volver" aria-label="Volver al anime"></a>
     </div>
     <script>
       const animeId = new URLSearchParams(location.search).get("id");
-      document.getElementById('titulo-anime').style.setProperty('view-transition-name', "title-" + animeId);
+      document.getElementById('btn-volver-anime').style.setProperty('view-transition-name', "title-" + animeId);
     </script>
     <div class="contenedor-btn-cap">
       <h3 id="btn-cap" class="btn-cap">Episodio</h3>
