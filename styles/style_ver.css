@@ -142,42 +142,19 @@ main section:nth-child(2) {
   text-overflow: ellipsis;
 }
 #links > span {
-  font-weight: bolder;
   opacity: .7;
   color: var(--t1);
-}
-#titulo-anime {
-  text-transform: capitalize;
-  white-space: nowrap;
-}
-.noticia-titulo {
-  display: block;
-  font-size: 1rem;
-  color: var(--t1);
-  bottom: 10px;
-  left: 10px;
-}
-
-.noticia-fecha {
-  top: 20px;
-  background-color: var(--btn);
-  color: var(--t1);
-  opacity: .8;
-  padding: 3px 8px;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
-  font-size: 0.7rem;
-  font-family: 'JetBrains Mono', monospace;
 }
 
 .btn-volver {
   color: var(--t1);
-  font-weight: 600;
   width: fit-content;
   transition: transform .3s, color .3s, opacity .3s;
   opacity: .7;
 }
 #btn-volver-anime {
+    text-transform: capitalize;
+  white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -207,6 +184,26 @@ main section:nth-child(2) {
 .btn-volver:active {
   transform: scale(.95);
 }
+.noticia-titulo {
+  display: block;
+  font-size: 1rem;
+  color: var(--t1);
+  bottom: 10px;
+  left: 10px;
+}
+
+.noticia-fecha {
+  top: 20px;
+  background-color: var(--btn);
+  color: var(--t1);
+  opacity: .8;
+  padding: 3px 8px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
 .contenedor-btn-cap {
   justify-content: space-between;
   display: flex;
