@@ -1020,7 +1020,7 @@ nav.filtros {
 /* Gradient horizontal (izquierda a derecha): Pura a progresivamente transparente */
     linear-gradient(
       90deg, 
-      var(--b) 8%, 
+      var(--b) 10%, 
       color-mix(in srgb, var(--b) 72%, transparent) 32%, 
       color-mix(in srgb, var(--b) 25%, transparent) 100%
     ),

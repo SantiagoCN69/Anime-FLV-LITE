@@ -632,7 +632,8 @@ main {
   color: var(--t1);
   margin-inline: auto;
   width: 100%;
-  min-height: 100dvh;
+  /* min-height: 100dvh; */
+  min-height: 516px;
   position: relative;
   transition: padding-top .3s;
 }
