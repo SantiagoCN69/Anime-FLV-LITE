@@ -21,17 +21,17 @@
     "type": "Anime"
   },
   {
-    "id": "slug-del-anime-4",
-    "title": "Título del Anime 4",
-    "banner": "url-del-banner-4.jpg",
-    "synopsis": "Sinopsis del anime 4...",
+    "id": "dragon-ball-super-beerus",
+    "title": "Dragon Ball Super: Beerus",
+    "banner": "https://i.ibb.co/PsZx1p0g/file-0000000072c881f89c6bcb84d015c014-1.png",
+    "synopsis": "Dragon Ball Super: Beerus es una versión mejorada, remasterizada y con animación renovada de los primeros arcos de la serie original de Dragon Ball Super.",
     "type": "TV Anime"
   },
   {
-    "id": "slug-del-anime-5",
-    "title": "Título del Anime 5",
-    "banner": "url-del-banner-5.jpg",
-    "synopsis": "Sinopsis del anime 5...",
-    "type": "Anime"
+    "id": "steel-ball-run-jojo-no-kimyou-na-bouken",
+    "title": "Steel Ball Run: Jojo no Kimyou na Bouken",
+    "banner": "https://i.ibb.co/sd3GGDhY/ef47b7da-3542-4198-a8df-6c7929d11657-1-1.png",
+    "synopsis": "En el Viejo Oeste Americano, la mayor carrera del mundo está a punto de comenzar. Miles de personas se alinean en San Diego para recorrer más de seis mil kilómetros por la oportunidad de ganar el gran premio de cincuenta millones de dólares. Con la era del caballo llegando a su fin, se permite a los concursantes usar cualquier tipo de vehículo que deseen. Los competidores tendrán que soportar condiciones agotadoras, viajando hasta cien kilómetros al día a través de desiertos inexplorados.",
+    "type": "ONA"
   }
 ]
