@@ -256,9 +256,9 @@ export function mostrarSeccionDesdesearch() {
     history.replaceState(null, '', '?Ultimos-Episodios');
   };
 
-  if (!document.getElementById(id).classList.contains("hidden")) return;
-
-  // Animar SVGs antes de cambiar de sección
+  // La sección inicial puede venir visible desde el HTML. Aun así debemos
+  // completar su inicialización (cargas, menú e icono) al arrancar.
+  // Animar SVGs antes de cambiar de sección.
   animarSVGCambio(id);
 
   document.querySelectorAll(".content-section").forEach(sec => {
@@ -1582,9 +1582,11 @@ function inicializarContinuarViendo() {
     return;
   }
 
-  if (userID === null || localStorage.getItem(cachekey) === null) {
-    container?.classList.add('hidden');
-    if (grid) grid.innerHTML = '<p class="empty-state">Inicia sesión para ver tu registro de animes!</p>';
+  // El HTML la entrega oculta para evitar saltos mientras carga el script.
+  // Solo se muestra cuando hay capítulos disponibles para continuar.
+  if (!userID || userID === 'null' || localStorage.getItem(cachekey) === null) {
+    container.classList.add('hidden');
+    if (grid) grid.innerHTML = '';
     return;
   }
 
@@ -1597,8 +1599,8 @@ function inicializarContinuarViendo() {
   if (h2) h2.dataset.text = datos.length;
 
   if (datos.length === 0) {
-    container?.classList.add('hidden');
-    if (grid) grid.innerHTML = '<p class="empty-state">No tienes capítulos pendientes.</p>';
+    container.classList.add('hidden');
+    if (grid) grid.innerHTML = '';
     return;
   }
 

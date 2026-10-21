@@ -256,6 +256,9 @@ body.cv-sidebar #section-continuar-viendo {
   min-height: 241px;
   margin-bottom: 2.5rem;
 }
+.no-user #section-continuar-viendo {
+  display: none !important;
+}
 /* 3. Para "Ambas" (cv-ambas), no ponemos "display: none" a ninguno,
       por lo que se mostrarán los dos normalmente. */
 .ver-mas-btn {
