@@ -743,212 +743,118 @@ function guardarCache(key, data) {
     localStorage.removeItem(key);
   }
 }
+async function cargarHeroSlider() {
+  const container = document.getElementById('hero-slider');
+  if (!container) return;
 
-const slugFromTitle = (str = '') =>
-  str.toLowerCase()
-     .trim()
-     .replace(/[:'".,!?/()]/g, '')
-     .replace(/[\s-]+/g, '-');
+  try {
+    const res = await fetch('/banners-slides.json');
+    const animes = res.ok ? await res.json() : null;
+    if (!animes || !animes.length) throw new Error("JSON vacío o no encontrado");
 
-const getEstadoBadge = (estado) => {
-  if (!estado) return '';
+    // Mezcla aleatoria (Algoritmo Fisher-Yates) para no repetir orden en cada recarga
+    for (let i = animes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [animes[i], animes[j]] = [animes[j], animes[i]];
+    }
 
-  const badges = {
-    'TV Anime': '<span class="hero-badge hero-badge--ongoing">TV Anime</span>',
-  };
+    // 1. Generación de slides en lote
+    const slidesHTML = animes.map((a, i) => {
+      const isPE = a.type === 'Por estrenar';
+      const syn = (a.synopsis || '').replace(/<[^>]*>/g, '').trim();
+      const badge = a.type ? (a.type === 'TV Anime' ? `<span class="hero-badge hero-badge--ongoing">TV Anime</span>` : `<span class="hero-badge hero-badge--status">${a.type}</span>`) : '';
 
-  return badges[estado] || `<span class="hero-badge hero-badge--status">${estado}</span>`;
-};
+      return `
+        <article class="hero-slide ${i === 0 ? 'active' : ''}" data-id="${a.id}" style="--bg-image: url('${a.banner}')">
+          <div class="hero-background"><div class="hero-slide__bg" style="background-image: url('${a.banner}')"></div></div>
+          <div class="hero-slide__content">
+            ${badge ? `<div class="hero-slide__badges">${badge}</div>` : ''}
+            <h2 class="hero-slide__title">${a.title || 'Sin título'}</h2>
+            ${syn ? `<p class="hero-slide__synopsis">${syn}</p>` : ''}
+            <div class="hero-slide__actions ${isPE ? 'left-align' : ''}">
+              <a href="/ver?id=${a.id}&episode=1" class="hero-btn hero-btn--primary ${isPE ? 'hidden' : ''}">
+                <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.49 9.6L5.6 16.77C4.9 17.19 4 16.69 4 15.87V7.87C4 4.38 7.77 2.2 10.8 3.94L15.39 6.58L17.48 7.78C18.17 8.19 18.18 9.19 17.49 9.6Z"/><path d="M18.09 15.46L14.04 17.8L10 20.13C8.55 20.96 6.91 20.79 5.72 19.95C5.14 19.55 5.21 18.66 5.82 18.3L18.53 10.68C19.13 10.32 19.92 10.66 20.03 11.35C20.28 12.9 19.64 14.57 18.09 15.46Z"/></svg></span> Ver Ahora
+              </a>
+              <a href="/anime?id=${a.id}" class="hero-btn hero-btn--secondary">
+                <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 17V11" stroke-linecap="round"/><circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="currentColor"/><path d="M7 3.34C8.47 2.49 10.18 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 10.18 2.49 8.47 3.34 7" stroke-linecap="round"/></svg></span> <span class="hero-btn__label">Más información</span>
+              </a>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
 
-function buildHeroSlide(anime, index) {
-  // 1. Extracción segura del ID/Slug desde anime.url o anime.id
-  let id = anime.id
+    // 2. Inyección única en el DOM
+    container.classList.remove('hidden');
+    container.innerHTML = `
+      <div class="hero-slider__track">${slidesHTML}</div>
+      <button class="hero-slider__prev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="hero-slider__next" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    `;
 
-  const url1 = `/anime?id=${id}`;
-  const url2 = `/ver?id=${id}&episode=1`;
-  const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
-  const badgeHtml = getEstadoBadge(anime.type);
-
-  const isPorEstrenar = anime.type === 'Por estrenar';
-
-  const slide = document.createElement('article');
-  slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
-  slide.dataset.index = index;
-  slide.dataset.id = id;
-
-  // Asignamos inicialmente la imagen del CDN
-  slide.style.setProperty('--bg-image', `url('${anime.banner}')`);
-
-  slide.innerHTML = `
-    <div class="hero-background">
-      <div class="hero-slide__bg" style="background-image: url('${anime.banner}')"></div>
-    </div>
-    <div class="hero-slide__content">
-      ${badgeHtml ? `<div class="hero-slide__badges">${badgeHtml}</div>` : ''}
-      <h2 class="hero-slide__title">${anime.title || 'Sin título'}</h2>
-      ${synopsisCompleta ? `<p class="hero-slide__synopsis">${synopsisCompleta}</p>` : ''}
-      <div class="hero-slide__actions ${isPorEstrenar ? 'left-align' : ''}">
-        <a href="${url2}" class="hero-btn hero-btn--primary ${isPorEstrenar ? 'hidden' : ''}">
-          <span class="hero-btn__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.49 9.59965L5.6 16.7696C4.9 17.1896 4 16.6896 4 15.8696V7.86965C4 4.37965 7.77 2.19965 10.8 3.93965L15.39 6.57965L17.48 7.77965C18.17 8.18965 18.18 9.18965 17.49 9.59965Z" fill="currentColor"></path>
-              <path d="M18.0888 15.4606L14.0388 17.8006L9.99883 20.1306C8.54883 20.9606 6.90883 20.7906 5.71883 19.9506C5.13883 19.5506 5.20883 18.6606 5.81883 18.3006L18.5288 10.6806C19.1288 10.3206 19.9188 10.6606 20.0288 11.3506C20.2788 12.9006 19.6388 14.5706 18.0888 15.4606Z" fill="currentColor"></path>
-            </svg>
-          </span>
-          Ver Ahora
-        </a>
-
-        <a href="${url1}" class="hero-btn hero-btn--secondary">
-          <span class="hero-btn__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g id="SVGRepo_iconCarrier">
-                <path d="M12 17V11" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path>
-                <circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="Currentcolor"></circle>
-                <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="Currentcolor" stroke-width="1.5" stroke-linecap="round"></path>
-              </g>
-            </svg>
-          </span>
-          <span class="hero-btn__label">Más información</span>
-        </a>
-      </div>
-    </div>
-  `;
-
-  return slide;
+    initHeroSliderControls(container, animes.length);
+  } catch (error) {
+    console.error("[Hero Slider] Error detectado:", error);
+    container.innerHTML = '<p class="span-carga">Error al cargar banners. Revisa la consola (F12).</p>';
+  }
 }
 
-function initHeroSliderControls(container, slidesLength) {
+function initHeroSliderControls(container, len) {
   const track = container.querySelector('.hero-slider__track');
-  let current = 0;
-  let autoplayId = null;
+  if (!track) return;
 
-  const goTo = (index) => {
-    if (current === index) return;
+  let curr = 0, autoId, startX = 0;
 
-    const currentSlide = track.querySelector('.hero-slide.active');
-    current = (index + slidesLength) % slidesLength;
+  const goTo = (i) => {
+    if (curr === i) return;
+    const act = track.children[curr];
+    curr = (i + len) % len;
     
-    if (currentSlide) {
-      currentSlide.classList.remove('active');
-      currentSlide.classList.add('leaving');
-      setTimeout(() => currentSlide.classList.remove('leaving'), 500);
+    if (act) {
+      act.classList.replace('active', 'leaving');
+      setTimeout(() => act.classList.remove('leaving'), 500);
+    }
+    track.children[curr]?.classList.add('active');
+  };
+
+  const play = () => autoId = autoId || setInterval(() => goTo(curr + 1), 5500);
+  const stop = () => autoId = clearInterval(autoId);
+  const reset = () => { stop(); play(); };
+
+  // 3. Delegación de eventos centralizada
+  container.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (btn) {
+      goTo(curr + (btn.classList.contains('hero-slider__next') ? 1 : -1));
+      return reset();
     }
     
-    track.children[current]?.classList.add('active');
-  };
-
-  const startAutoplay = () => {
-    stopAutoplay();
-    autoplayId = setInterval(() => goTo(current + 1), 5500);
-  };
-
-  const stopAutoplay = () => {
-    if (autoplayId) {
-      clearInterval(autoplayId);
-      autoplayId = null;
+    const link = e.target.closest('a');
+    if (link) {
+      const slide = link.closest('.hero-slide');
+      if (slide) {
+        const id = slide.dataset.id;
+        slide.querySelector('.hero-slide__title')?.style.setProperty('view-transition-name', `title-${id}`);
+        slide.querySelector('.hero-slide__bg')?.style.setProperty('view-transition-name', link.classList.contains('hero-btn--primary') ? `${id}-1` : `cover-${id}`);
+      }
     }
-  };
-
-  const resetAutoplay = () => {
-    stopAutoplay();
-    startAutoplay();
-  };
-
-  container.querySelector('.hero-slider__prev').addEventListener('click', () => {
-    goTo(current - 1);
-    resetAutoplay();
-  });
-  
-  container.querySelector('.hero-slider__next').addEventListener('click', () => {
-    goTo(current + 1);
-    resetAutoplay();
   });
 
-  container.addEventListener('mouseenter', stopAutoplay);
-  container.addEventListener('mouseleave', startAutoplay);
+  // 4. Control de hover y touch
+  container.addEventListener('mouseenter', stop);
+  container.addEventListener('mouseleave', play);
 
-  let touchStartX = 0;
   track.addEventListener('touchstart', e => { 
-    touchStartX = e.changedTouches[0].screenX; 
-    stopAutoplay();
+    startX = e.touches[0].clientX; 
+    stop(); 
   }, { passive: true });
   
   track.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].screenX - touchStartX;
-    if (Math.abs(dx) > 50) {
-      goTo(current + (dx < 0 ? 1 : -1));
-    }
-    resetAutoplay();
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) goTo(curr + (dx < 0 ? 1 : -1));
+    reset();
   }, { passive: true });
 
-  track.addEventListener('click', (e) => {
-    const link = e.target.closest('a');
-    if (!link) return;
-    const slide = link.closest('.hero-slide');
-    if (slide) {
-      const id = slide.dataset.id;
-      const isVerAhora = link.classList.contains('hero-btn--primary');
-      
-      slide.querySelector('.hero-slide__title')?.style.setProperty('view-transition-name', 'title-' + id);
-      
-      if (isVerAhora) {
-        // Botón "Ver ahora": usa id + "-1" para el bg
-        slide.querySelector('.hero-slide__bg')?.style.setProperty('view-transition-name', id + '-1');
-      } else {
-        // Botón "Más información": usa cover- + id para el bg
-        slide.querySelector('.hero-slide__bg')?.style.setProperty('view-transition-name', 'cover-' + id);
-      }
-    }
-  });
-
-  startAutoplay();
-}
-
-async function cargarHeroSlider() {
-  const container = document.getElementById('hero-slider');
-  if (!container) {
-    return;
-  }
-
-  // Cargar banners personalizados desde banners-slides.json
-  let animes = null;
-  try {
-    const response = await fetch('/banners-slides.json');
-    if (response.ok) {
-      const customBanners = await response.json();
-      if (Array.isArray(customBanners) && customBanners.length > 0) {
-        animes = customBanners;
-        console.log('[Hero Slider] Usando banners personalizados desde banners-slides.json');
-      }
-    }
-  } catch (error) {
-    console.error('[Hero Slider] Error al cargar banners-slides.json:', error);
-  }
-
-  // Si no hay banners, mostrar mensaje de error
-  if (!animes) {
-    container.innerHTML = '<p class="span-carga">Error al cargar banners. Verifica banners-slides.json</p>';
-    return;
-  }
-
-  container.classList.remove('hidden');
-
-  container.innerHTML = `
-    <div class="hero-slider__track"></div>
-    <button type="button" class="hero-slider__prev" aria-label="Anterior">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-    </button>
-    <button type="button" class="hero-slider__next" aria-label="Siguiente">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-  `;
-
-  const track = container.querySelector('.hero-slider__track');
-  const fragment = document.createDocumentFragment();
-  animes.forEach((anime, i) => fragment.appendChild(buildHeroSlide(anime, i)));
-  track.appendChild(fragment);
-
-  initHeroSliderControls(container, animes.length);
+  play();
 }
 
 async function cargarUltimosCapitulos() {
