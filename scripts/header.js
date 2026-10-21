@@ -50,7 +50,13 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
   if (contadorSpan) contadorSpan.textContent = '';
   if (seccionResultados) seccionResultados.classList.add('hidden');
   if (resultadosContainer) {
-    resultadosContainer.innerHTML = '';
+    // Limpiar todo excepto el loadingSpan
+    const children = Array.from(resultadosContainer.children);
+    children.forEach(child => {
+      if (child.id !== 'init-loading-servidores-busqueda') {
+        child.remove();
+      }
+    });
     resultadosContainer.classList.remove('sin-resultados');
   }
   limpiarSeccionIA();
@@ -344,7 +350,13 @@ function mostrarResultados(data, searchTerm, searchId) {
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
 
     if (!resultadosContainer) return;
-    resultadosContainer.innerHTML = '';
+    // Limpiar todo excepto el loadingSpan
+    const children = Array.from(resultadosContainer.children);
+    children.forEach(child => {
+      if (child.id !== 'init-loading-servidores-busqueda') {
+        child.remove();
+      }
+    });
 
     if (resultados.length > 0) {
       resultadosContainer.classList.remove('sin-resultados');
@@ -462,7 +474,13 @@ if (busquedaInput) {
       });
       seccionResultados?.classList.remove('hidden');
       if (resultadosContainer) {
-        resultadosContainer.innerHTML = '';
+        // Limpiar todo excepto el loadingSpan
+        const children = Array.from(resultadosContainer.children);
+        children.forEach(child => {
+          if (child.id !== 'init-loading-servidores-busqueda') {
+            child.remove();
+          }
+        });
         resultadosContainer.classList.remove('sin-resultados');
       }
       limpiarSeccionIA();
