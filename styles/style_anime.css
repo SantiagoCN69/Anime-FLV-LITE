@@ -1078,7 +1078,6 @@ body:not(.animaciones-off) header {
 
 .btn-pagination:hover {
   background-color: var(--br);
-  border-color: var(--btn);
 }
 
 .btn-pagination svg {
@@ -1134,8 +1133,6 @@ body:not(.animaciones-off) header {
 
 .pagination-option:hover {
   background-color: var(--br);
-  border-color: var(--btn);
-  transform: translateY(-2px);
 }
 
 .pagination-option.active {

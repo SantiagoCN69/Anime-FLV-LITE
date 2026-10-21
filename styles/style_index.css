@@ -1023,8 +1023,9 @@ nav.filtros {
 /* Gradient horizontal (izquierda a derecha): Pura a progresivamente transparente */
     linear-gradient(
       90deg, 
-      var(--b) 10%, 
-      color-mix(in srgb, var(--b) 72%, transparent) 32%, 
+      var(--b) 5%, 
+      color-mix(in srgb, var(--b) 90%, transparent) 30%, 
+      color-mix(in srgb, var(--b) 40%, transparent) 80%, 
       color-mix(in srgb, var(--b) 25%, transparent) 100%
     ),
     /* Gradient vertical (arriba a abajo): Sombra sutil para profundidad sobre la imagen */
@@ -1058,15 +1059,18 @@ nav.filtros {
 }
 
 .hero-badge {
-  backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px); */
   display: inline-flex;
   align-items: center;
   padding: 0.28rem 0.8rem;
+  text-wrap: nowrap;
   border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  border: 1px solid rgba(var(--bgt), .1);
+  background: color-mix(in srgb, var(--btn2) 15%, var(--b));
 }
 
 .hero-badge--ongoing {
@@ -1119,6 +1123,13 @@ nav.filtros {
 .hero-slide__synopsis::-webkit-scrollbar {
   display: none;
 }
+
+.hero-slide__extra-badges {
+display: flex;
+gap: 8px;
+}
+
+
 .hero-slide__actions {
   display: flex;
   align-items: center;
@@ -1138,7 +1149,8 @@ nav.filtros {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-
+  padding:0.7rem 1rem;
+  height: 40px;
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.92rem;
@@ -1167,26 +1179,19 @@ nav.filtros {
 }
 
 .hero-btn--primary {
-
-  color: #fff;
-  span {
-    border-radius: 99px;
-    width: 43px;
-    height: 43px;
-    padding: 10px;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-      background: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--t1);
   border: 1px solid rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(8px);
+  border-radius: 24px;
   }
-}
+
 
 
 .hero-btn--secondary {
-  padding: 0.7rem 1rem;
   background: var(--btn);
-  border-radius: 24px;
+  border-radius: 14px;
 }
 @media (max-width: 400px) {
   .hero-btn--primary {
@@ -1199,7 +1204,7 @@ nav.filtros {
 @media (hover: hover) {
   .hero-btn:hover {
     transform: translateY(-4px) !important;
-    transition-delay: 0 !important
+    transition-delay: 0s !important
   }
 }
 
@@ -1241,13 +1246,13 @@ nav.filtros {
 /* ===== 5. ANIMACIONES DE ENTRADA Y SALIDA ===== */
 .hero-slide__bg {
   opacity: 0;
-  transform: scale(1.1);
-  transition: opacity 0.8s ease, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.8s ease;
 }
 
 .hero-slide__content > .hero-slide__badges,
 .hero-slide__content > .hero-slide__title,
 .hero-slide__content > .hero-slide__synopsis,
+.hero-slide__content > .hero-slide__extra-badges, 
 .hero-slide__content > .hero-slide__actions a {
   opacity: 0;
   transform: translateY(40px);
@@ -1267,7 +1272,8 @@ nav.filtros {
 .hero-slide.active .hero-slide__badges { transition-delay: 0.05s !important; }
 .hero-slide.active .hero-slide__title { transition-delay: 0.1s !important; }
 .hero-slide.active .hero-slide__synopsis { transition-delay: 0.15s !important; }
-.hero-slide.active .hero-slide__actions a { transition-delay: 0.2s; }
+.hero-slide.active .hero-slide__extra-badges { transition-delay: 0.2s !important; }
+.hero-slide.active .hero-slide__actions a { transition-delay: 0.25s; }
 
 .hero-slide.leaving .hero-slide__bg {
   opacity: 0;
