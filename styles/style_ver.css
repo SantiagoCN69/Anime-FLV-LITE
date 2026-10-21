@@ -107,7 +107,7 @@ main section:nth-child(2) {
   margin-inline: auto;
   width: 250px;
   height: 137px;
-  border-radius: 10px;
+  border-radius: 14px;
   box-shadow: 0 4px 6px #0000001a;
   position: relative;
   overflow: hidden;
@@ -132,7 +132,7 @@ main section:nth-child(2) {
   height: 100%;
   object-position: center;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 14px;
 }
 #links {
   display: flex;
@@ -219,8 +219,8 @@ main section:nth-child(2) {
 }
 #btn-estado-capitulo {
   background: var(--p);
-  padding: 5px 16px;
-  border-radius: 20px;
+  padding: 6px 15px;
+  border-radius: 24px;
   transition: opacity 0.3s ease;
   display: flex;
   align-items: center;
@@ -284,17 +284,16 @@ main section:nth-child(2) {
   background: var(--p);
   border: none;
   border-radius: 99px;
-  width: 31px;
-  height: 31px;
+  width: 33px;
+  height: 33px;
   display: flex;
-  padding: 5px;
+  padding: 7px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--br);
 }
 #cine {
-  padding: 5px;
-  padding-left: 7px;
+  padding-left: 9px;
 }
 .cine {
   cursor:alias
@@ -344,7 +343,7 @@ main section:nth-child(2) {
   display: flex;
   flex: 1;
   flex-direction: column;
-  border-radius: 10px;
+  border-radius: 14px;
   position: relative;
   min-height: 0;
   max-height: 100%;
@@ -352,7 +351,7 @@ main section:nth-child(2) {
 #reproductor-container-carga {
 position: absolute;
 inset: 0;
-border-radius: 8px;
+border-radius: 14px;
 overflow: hidden;
 }
 #reproductor-container-carga::before {
@@ -377,8 +376,8 @@ overflow: hidden;
 }
 #controles {
   display: flex;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
   height: 50px;
   margin-right: 0;
   
@@ -435,12 +434,12 @@ overflow: hidden;
   top: 0;
   height: 50px;
   position: absolute;
-  border-top-right-radius: 8px;
+  border-top-right-radius: 14px;
 }
 .tooltip-global {
   position: fixed;
   padding: 5px 10px;
-  border-radius: 10px;
+  border-radius: 14px;
   background: var(--p);
   color: var(--t1);
   font-size: 12px;
@@ -482,8 +481,8 @@ overflow: hidden;
 #controles.cargado ~ #video {
   border: 1px solid var(--br);
   border-top: none;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 iframe {
   height: 100%;
@@ -539,7 +538,7 @@ iframe {
 .botones-reproductor, .botones-reproductor > div {
   position: relative;
   display: flex;
-  gap: 15px;
+  gap: 10px;
   flex-wrap: wrap;
   align-items: center;
 }
@@ -555,7 +554,7 @@ iframe {
   justify-content: center;
   max-height: 50px;
   height: 50px;
-  border-radius: 12px;
+  border-radius: 24px;
   font-weight: 600;
   color: var(--t1);
   transition: transform .3s;  
@@ -583,17 +582,13 @@ iframe {
   font-family: 'JetBrains Mono', monospace;
 }
 .btn-anterior {
-   border-radius: 40px;
-  border-top-left-radius: 99px;
-  border-bottom-left-radius: 99px;
+   border-radius: 99px;
 }
 
 .btn-siguiente {
   flex-direction: row-reverse;
   background: var(--btn);
-  border-radius: 40px;
-  border-top-right-radius: 99px;
-  border-bottom-right-radius: 99px;
+  border-radius: 99px;
 }
 .btn-anuncios, #btn-cambio-servers {
   background-color: var(--p);
@@ -648,7 +643,7 @@ iframe {
   left: 15px;
   background-color: var(--p);
   border: 1px solid var(--br);
-  border-radius: 8px;
+  border-radius: 14px;
   max-height: 350px;
   width: 485px;
   overflow-y: auto;
@@ -685,7 +680,7 @@ iframe {
   width: 100%;
   padding: 8px 5px;
   border: 1px solid var(--br);
-  border-radius: 12px;
+  border-radius: 14px;
   color: var(--t1);
   text-align: center;
   transition: all 0.2s;

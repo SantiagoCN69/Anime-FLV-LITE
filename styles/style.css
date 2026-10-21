@@ -21,7 +21,7 @@
   transform: unset !important;
 }
 .animaciones-off #indexpagination.floating {
-  background: var(--p)
+  background: var(--b)
 }
 .animaciones-off .filtro-opciones {
   background: var(--br);
@@ -210,7 +210,7 @@ header #busqueda{
   padding: 12px;
   padding-left: 40px;
   border: 1px solid var(--br);
-  border-radius: 8px;
+  border-radius: 24px;
   background-color: transparent;
   color: var(--t1);
   font-family: 'DM Sans', sans-serif;
@@ -226,7 +226,7 @@ header #busqueda{
 
 #btn-login {
   background-color: transparent;
-  padding: 8.5px 12px;
+  padding: 8.5px 11px;
   color: var(--t1);
   border-radius: 12px;
   cursor: pointer;
@@ -246,7 +246,7 @@ header #busqueda{
   height: 100%;
   opacity: 0.1;
   background-color: var(--btn);
-  border-radius: 12px;
+  border-radius: 24px;
   z-index: -1;
 }
 #btn-login img {
@@ -399,7 +399,7 @@ header.search-active .logout-modal {
   justify-content: center;
   position: relative;
   border: 1px solid rgba(var(--bgt), .3);
-  border-radius: 8px;
+  border-radius: 24px;
 }
 #btn-close-search::after {
   content: "";
@@ -509,25 +509,45 @@ header.search-active .logout-modal {
   }
 .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
   padding: 16px 25px;
+  flex: 1;
   display: flex;
   gap: 12px;
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: transform .2s, padding-inline .3s ease;
-  opacity: .8
+  opacity: .8;
+  position: relative;
 }
-
+/* .sidebar li:not(:has(> a))::after, .sidebar a:not(.btn-siguiente-capitulo)::after {
+  content: "";
+  position: absolute;
+  border-radius: 14px;
+  top: 0;
+  left: 0;
+  margin-left: 5px;
+  width: calc(100% - 5px);
+  height: 100%;
+  background: linear-gradient(to right,
+  color-mix(in srgb, var(--b) 50%, var(--btn) 25%),
+  transparent 90%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+.sidebar li:not(:has(> a)):hover::after, .sidebar a:not(.btn-siguiente-capitulo):hover::after {
+  opacity: 1;
+} */
 .sidebar li:not(:has(> a)):hover, .sidebar li a:hover {
   transform: translateX(4px);
   color: var(--t2);
+  opacity: 1;
 }
 
 
 .sidebar li:not(:has(> a)).active-menu-item {
   transform: translateX(4px);
   color: var(--t2);
-  font-weight: 500;
   opacity: 1
 }
 
@@ -602,6 +622,7 @@ header.search-active .logout-modal {
 #busqueda {
   flex: 1;
   padding-left: 40px;
+  border: 1px solid rgba(var(--bgt), .3);
 }
 }
 
@@ -795,12 +816,15 @@ main {
   left: 0;
   transition: padding 0.3s;
 }
+.animaciones-off .dynamic-header-icon {
+  display: none;
+}
 .svg-header, .dynamic-header-icon {
   width: 52px;
   min-width: 52px;
   height: 52px;
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-  border-radius: 15px;
+  border-radius: 14px;
   padding: 0.6rem;
  }
 
@@ -870,7 +894,7 @@ main {
 section.content-section h2:first-of-type::after {
   color: var(--t1);
   display: block;
-  border-radius: 12px;
+  border-radius: 24px;
   width: fit-content;
   height: fit-content;
   background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
@@ -928,17 +952,17 @@ section.content-section h2:first-of-type.cargado::after {
   padding: 8px;
   font-size: 0.9rem;
   transition: background .5s, transform .3s, padding .3s;
-  border-radius: 8px;
+  border-radius: 14px;
 }
 .btn-siguiente-capitulo:hover {
-  background-color: rgba(var(--bgt), .1);
+  background-color: var(--br);
   transform: scale(1.02) translateY(-2px);
 }
 .btn-siguiente-capitulo .portada-anime {
   min-width: 45px;
   height: 65px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 9px;
 }
 
 
@@ -1031,16 +1055,16 @@ section.content-section h2:first-of-type.cargado::after {
   overflow: hidden;
   position: relative;
   display: flex;
-  border-radius: 13px;
+  border-radius: 14px;
   transition: transform 0.3s ease;
 }
 .anime-card span {
   position: absolute;
-  bottom: 3px;
-  left: 3px;
+  bottom: 4px;
+  left: 5px;
   width: fit-content;
   height: 17px;
-  border-radius: 12px;
+  border-radius: 24px;
   padding-inline: 5px;
   display: flex;
   align-items: center;
@@ -1056,7 +1080,6 @@ section.content-section h2:first-of-type.cargado::after {
   color: var(--t1);
 }
 .anime-card .chapter {
-  border-radius: 6px;
   font-size: .8rem ;
   padding: 9px ;
 }
@@ -1118,8 +1141,8 @@ section.content-section h2:first-of-type.cargado::after {
   .anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px}
     .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
     .anime-card:hover .container-img::after {
-      bottom: 0;
-      height: 100%;
+      bottom: -15px;
+      height: 60%;
     }
   }
   .anime-card img,
@@ -1129,8 +1152,8 @@ section.content-section h2:first-of-type.cargado::after {
 }
 .anime-card .play-icon, .play-icon-anime {
   position: absolute;
-  bottom: 3px;
-  right: 3px;
+  bottom: 4px;
+  right: 5px;
   width: 20px;
   height: 20px;
   background: transparent;
@@ -1176,7 +1199,7 @@ section.content-section h2:first-of-type.cargado::after {
   width: 100%;
   background-color: var(--b);
   border: 1px solid var(--br);
-  border-radius: 12px;
+  border-radius: 24px;
   padding: 10px;
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -1395,9 +1418,9 @@ h4 {
   top: 0;
   transform: scale(0.63);
   height: calc(100% + 26px);
-  background: var(--p);
+  background: var(--b);
   border: 1px solid var(--br);
-  border-radius: 12px;
+  border-radius: 24px;
   opacity: 0;
   display: flex;
   flex-direction: column;
@@ -1408,6 +1431,7 @@ h4 {
   z-index: 30;
 }
 .logout-modal.show {
+  overflow: hidden;
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
@@ -1424,7 +1448,6 @@ h4 {
   text-align: start;
   padding: 1rem;
   font-size: 1rem;
-  border: 1px solid transparent;
   cursor: pointer;
   width: 100%;
   color: var(--t1);
@@ -1432,8 +1455,7 @@ h4 {
 }
 .logout-modal button:hover,
 .logout-modal a:hover {
-  border-color: var(--br);
-  background: rgba(255, 248, 248, 0.1);
+  background: var(--br);
 }
 
 #confirm-login {
@@ -1946,7 +1968,7 @@ footer button {
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
     font-weight: 500;
-    border-radius: 8px;
+    border-radius: 24px;
     cursor: pointer;
     transition: background 0.2s ease;
     display: flex;

@@ -172,7 +172,7 @@ body:not(.animaciones-off) header {
 
 .anime-container1 img {
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 14px;
   position: relative;
   z-index: 1;
   aspect-ratio: 5 / 7;
@@ -795,15 +795,15 @@ body:not(.animaciones-off) header {
   width: 226.5px;
   background: var(--p);
   padding: 4px;
-  border-radius: 12px;
+  border-radius: 24px;
   border: 1px solid var(--br);
 }
 
 .btn-filtro-cap {
   overflow: hidden;
-  padding: 8px 11px;
+  padding: 2px 11px;
   border: none;
-  border-radius: 8px;
+  border-radius: 24px;
   background: transparent;
   color: var(--t1);
   font-size: 0.85rem;
@@ -879,8 +879,7 @@ body:not(.animaciones-off) header {
   aspect-ratio: 1;
   border: 1px solid var(--br);
   background: var(--p);
-  border-radius: 8px;
-  padding: 11px;
+  border-radius: 24px;
   color: var(--t1);
   display: flex;
   align-items: center;
@@ -905,7 +904,7 @@ body:not(.animaciones-off) header {
   width: 100%;
   padding: 12px 15px;
   border: 1px solid var(--br);
-  border-radius: 8px;
+  border-radius: 24px;
   background-color: var(--p);
   color: var(--t1);
   font-size: .9rem;
@@ -1353,7 +1352,7 @@ margin-bottom: 2.5rem;
   display: flex;
   gap: 20px;
   overflow-x: auto;
-  padding-bottom: 5px;
+  padding-bottom: 8px;
 }
 .timeline-container::-webkit-scrollbar, .timeline-container::-webkit-scrollbar-thumb {
   height: 6px;
@@ -1379,7 +1378,7 @@ margin-bottom: 2.5rem;
   color: var(--t1);
   opacity: 0.7;
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 24px;
   font-size: 13px;
   font-weight: 500;
   font-family: 'JetBrains Mono', monospace;
@@ -1403,7 +1402,7 @@ margin-bottom: 2.5rem;
   align-items: center;
   background: var(--p);
   border: 1px solid var(--p);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 12px;
   gap: 15px;
   transition: background-color 0.2s ease, transform 0.2s ease;
@@ -1542,7 +1541,7 @@ grid-template-columns: 1fr;
   align-items: center;
   padding: 10px;
   background: var(--p);
-  border-radius: 12px;
+  border-radius: 14px;
 }
 .episode-btn::after {
   content: none

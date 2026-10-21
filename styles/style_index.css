@@ -117,7 +117,7 @@
   gap: 0;
   justify-content: center;
   border-radius: 30px;
-  background-color: rgba(var(--bgti), .8) !important;
+  background-color: rgba(var(--bgti), .8);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(10px);
   animation: aparecer2 .3s forwards;
@@ -263,7 +263,7 @@ body.cv-sidebar #section-continuar-viendo {
     background-color: var(--btn);
     color: var(--t1);
     max-height: 40px;
-    border-radius: 12px;
+    border-radius: 24px;
     font-size: 16px;
     transition: background-color 0.3s;
     padding: 10px 20px;
@@ -339,6 +339,10 @@ footer {
   .container-img::after {
     display: none;
   }
+  &:hover .container-img {
+    transform: unset;
+  }
+
   .play-icon {
     bottom: 12px;
     right: 12px;
@@ -419,6 +423,10 @@ footer {
     .container-img::after {
       display: none;
     }
+    &:hover .container-img {
+      transform: unset;
+    }
+
     .play-icon {
       bottom: 12px;
       right: 12px;
@@ -487,7 +495,7 @@ footer {
   gap: 8px;
   padding: 15px;
   background-color: var(--p);
-  border-radius: 8px;
+  border-radius: 14px;
 }
 .filtro-letras::-webkit-scrollbar {
   display: none;           /* Chrome, Safari */
@@ -496,7 +504,8 @@ footer {
   flex: auto;
   background-color: var(--br);
   color: var(--t1);
-  border-radius: 10px;
+  border-radius: 14px;
+  aspect-ratio: 1;
   padding: 6px 12px;
   font-size: 14px;
   font-family: 'DM Sans', sans-serif;
@@ -521,7 +530,7 @@ footer {
    ========================================= */
 .rango-anos-container {
     background-color: var(--p);
-    border-radius: 8px;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
 }
@@ -619,7 +628,7 @@ footer {
   justify-content: center;
   gap: 5px;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 14px;
   background-color: var(--p);
   color: var(--t1);
 }
@@ -662,6 +671,7 @@ nav.filtros {
 #btn-filtrar, #btn-filtrar-av1 {
     background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
     color: var(--t1);
+    border-radius: 24px;
 }
 .filtro-opciones {
   position: absolute;
@@ -771,7 +781,7 @@ nav.filtros {
   background-color: var(--p);
   color: var(--t1);
   padding: 10px;
-  border-radius: 12px;
+  border-radius: 24px;
   width: 100px;
   justify-content: center;
   align-items: center;
@@ -1173,7 +1183,7 @@ nav.filtros {
 .hero-btn--secondary {
   padding: 0.7rem 1rem;
   background: var(--btn);
-  border-radius: 12px;
+  border-radius: 24px;
 }
 @media (max-width: 400px) {
   .hero-btn--primary {
@@ -1198,7 +1208,7 @@ nav.filtros {
   width: 40px;
   height: 40px;
   border: 1px solid rgba(var(--bgt), .1);
-  border-radius: 12px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1468,7 +1478,7 @@ nav.filtros {
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 99px;
   background: rgba(var(--bgt), .1);
   border: 1px solid rgba(var(--bgt), .1);
   color: var(--t1);
@@ -1518,7 +1528,7 @@ nav.filtros {
   display: flex;
   gap: 12px;
   padding: 1rem 3rem;
-  border-radius: 8px;
+  border-radius: 24px;
   margin-inline: 1rem;
   flex: 1;
   margin-top: 1rem;

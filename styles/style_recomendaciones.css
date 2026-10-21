@@ -106,7 +106,7 @@ z-index: -1;
 #busqueda-personalizada, #filtro-extra {
   flex: 1;
   padding: 1rem;
-  border-radius: 20px;
+  border-radius: 24px;
   background: rgba(var(--bgt), .1);
   color: var(--t1);
   font-size: 1rem;
@@ -258,7 +258,7 @@ z-index: -1;
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
-  border-radius: 20px;
+  border-radius: 24px;
   font-size: 1rem;
   font-weight: 500;
   transition: all 0.3s ease;

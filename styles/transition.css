@@ -4,5 +4,5 @@
 ::view-transition-group(*) {
   animation-duration: .4s;
   z-index: 1;
-  border-radius: 10px;
+  border-radius: 14px;
 }
