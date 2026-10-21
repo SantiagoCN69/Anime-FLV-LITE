@@ -4,34 +4,83 @@
     "title": "Tensei Goblin dakedo Shitsumon Aru?",
     "banner": "https://i.ibb.co/kVD4gpyp/file-00000000813081f5bc5586b3224b26df-1.png",
     "synopsis": "Akira Yagami es un hombre bondadoso que muere de forma trágica al rescatar a un niño. Despierta en un mundo de fantasía medieval, pero con sorpresa descubre que ha tomado la forma de un pequeño y débil goblin.",
-    "type": "TV Anime"
+    "type": "TV Anime",
+    "badges": [
+      "Subtitulado",
+      "Isekai",
+      "Fantasía"
+    ]
   },
   {
     "id": "kusuriya-no-hitorigoto-3rd-season",
     "title": "Kusuriya no Hitorigoto 3rd",
     "banner": "https://i.ibb.co/M5WZ0bY9/file-00000000a3dc81f5be9f09ac670d417c-1-1.png",
     "synopsis": "Tercera temporada de Kusuriya no Hitorigoto",
-    "type": "Anime"
+    "type": "Anime",
+    "badges": [
+      "Subtitulado",
+      "Misterio",
+      "3rd"
+    ]
   },
   {
     "id": "black-clover-2nd-season",
     "title": "Black Clover 2nd Season",
-    "banner": "https://i.ibb.co/vxskcqL7/file-00000000b48c81f79e91db502ef102ac-1.png",
+    "banner": "https://i.ibb.co/x8hVzRpW/Picsart-26-10-21-15-56-10-279-1.jpg",
     "synopsis": "Segunda temporada de Black Clover",
-    "type": "Anime"
+    "type": "Anime",
+    "badges": [
+      "Subtitulado",
+      "Shounen",
+      "Acción"
+    ]
   },
   {
     "id": "dragon-ball-super-beerus",
     "title": "Dragon Ball Super: Beerus",
     "banner": "https://i.ibb.co/HLtyR644/file-0000000072c881f89c6bcb84d015c014-1-1.png",
     "synopsis": "Dragon Ball Super: Beerus es una versión mejorada, remasterizada y con animación renovada de los primeros arcos de la serie original de Dragon Ball Super.",
-    "type": "TV Anime"
+    "type": "TV Anime",
+    "badges": [
+      "Subtitulado",
+      "Remasterizado",
+      "Shounen"
+    ]
   },
   {
     "id": "steel-ball-run-jojo-no-kimyou-na-bouken",
     "title": "Steel Ball Run: Jojo no Kimyou na Bouken",
     "banner": "https://i.ibb.co/sd3GGDhY/ef47b7da-3542-4198-a8df-6c7929d11657-1-1.png",
     "synopsis": "En el Viejo Oeste Americano, la mayor carrera del mundo está a punto de comenzar. Miles de personas se alinean en San Diego para recorrer más de seis mil kilómetros por la oportunidad de ganar el gran premio de cincuenta millones de dólares. Con la era del caballo llegando a su fin, se permite a los concursantes usar cualquier tipo de vehículo que deseen. Los competidores tendrán que soportar condiciones agotadoras, viajando hasta cien kilómetros al día a través de desiertos inexplorados.",
-    "type": "ONA"
+    "type": "ONA",
+    "badges": [
+      "Subtitulado",
+      "Seinen",
+      "Aventura"
+    ]
+  },
+  {
+    "id": "bleach-sennen-kessen-hen-kashin-tan",
+    "title": "Bleach: Sennen Kessen Hen - Kashin Tan",
+    "banner": "https://i.ibb.co/JWXXbMY8/file-0000000088a4823094cf29baddf68f8d-1.png",
+    "synopsis": "Parte final de Bleach: Sennen Kessen-hen.",
+    "type": "TV Anime",
+    "badges": [
+      "Subtitulado",
+      "Arco Final",
+      "Acción"
+    ]
+  },
+  {
+    "id": "shiguang-dailiren-iii",
+    "title": "Shiguang Dailiren III",
+    "banner": "https://i.ibb.co/hFV0QgB5/file-000000004bf881f596c4fa4d3dfd2ebc-1.png",
+    "synopsis": "Una vez zanjado el incidente de Li Tianchen, el estudio fotográfico Time Photo volvió a una paz aparente. Sin embargo, la noticia de la desaparición de Xia Fei volvió a sumir a todos en una encrucijada del destino.",
+    "type": "ONA",
+    "badges": [
+      "Subtitulado",
+      "Suspenso",
+      "Drama"
+    ]
   }
 ]
