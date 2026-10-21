@@ -1542,6 +1542,8 @@ nav.filtros {
   svg {
     width: 20px;
     height: 20px;
+    padding-right: 1px;
+    margin-top: -1px;
   }
   color: var(--t1);
   border: none;
