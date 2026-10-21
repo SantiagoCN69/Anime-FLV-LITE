@@ -1001,7 +1001,7 @@ section.content-section h2:first-of-type.cargado::after {
 .anime-card {
   /* background-color: var(--p); */
   position: relative;
-  overflow: hidden;
+
   cursor: pointer;
   height: fit-content;
   text-align: center;
@@ -1010,12 +1010,9 @@ section.content-section h2:first-of-type.cargado::after {
   will-change: opacity, transform; 
   transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), 
               transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  contain: paint;
-  content-visibility: auto;
+
+
   contain-intrinsic-size: auto 172px; /* Ancho y alto estimado de tu card para evitar saltos de scroll */
-}
-.anime-card:hover {
-  transform: scale(1.02);
 }
 
 .animaciones-off .anime-card, .anime-card.show {
@@ -1034,7 +1031,8 @@ section.content-section h2:first-of-type.cargado::after {
   overflow: hidden;
   position: relative;
   display: flex;
-  border-radius: 8px;
+  border-radius: 13px;
+  transition: transform 0.3s ease;
 }
 .anime-card span {
   position: absolute;
@@ -1082,7 +1080,7 @@ section.content-section h2:first-of-type.cargado::after {
   aspect-ratio: 26/37;
   width: 100%;
   object-fit: cover;
-  transition: transform .4s ease, filter .4s ease;
+  transition: transform .4s ease, filter .4s ease, transform-origin .4s ease;
 }
 .container-img::after {
   content: '';
@@ -1095,11 +1093,16 @@ section.content-section h2:first-of-type.cargado::after {
   background: linear-gradient(to top, rgba(var(--bgti), 0.7), transparent);
   pointer-events: none;
   z-index: 1;
-  transition: bottom 0.3s ease;
+  transition: bottom 0.3s ease, height 0.3s ease;
 }
 @media (hover: hover) {
-  .anime-card:hover {transform: scale(1.23); z-index: 2; backdrop-filter: blur(10px); border-radius: 8px;}
-  
+  .anime-card:hover img {
+    transform: scale(1.15);
+    transform-origin: center bottom;
+  }
+  .anime-card:hover .container-img {
+    transform: translateY(-5px);
+  }
   /* .anime-card:hover {
     transform: translate(0, -16px);
   } */
@@ -1116,6 +1119,7 @@ section.content-section h2:first-of-type.cargado::after {
     .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
     .anime-card:hover .container-img::after {
       bottom: 0;
+      height: 100%;
     }
   }
   .anime-card img,

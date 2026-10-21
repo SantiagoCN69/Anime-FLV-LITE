@@ -1384,12 +1384,13 @@ nav.filtros {
 .card-thumbnail {
   aspect-ratio: 16/9;
 }
-
+.anime-card:hover .card-thumbnail.container-img {
+  transform: translate(0) !important;
+} 
 .card-thumbnail img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.2s ease;
 }
 .continue-card .container-img::after {
   bottom: 0 !important;
