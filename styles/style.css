@@ -131,28 +131,27 @@ header {
 
 }
 .scrolled {
-  background: rgba(var(--bgti), .85) !important;
+  background: rgba(var(--bgti), .7) !important;
   -webkit-backdrop-filter: blur(30px) !important;
   backdrop-filter: blur(30px) !important;
 }
-@media screen and (max-width: 600px) {
 .scrolled:not(.floating), header.search-active {
-  background: rgba(var(--bgti), .8) !important;
+  background: rgba(var(--bgti), .7) !important;
   -webkit-backdrop-filter: blur(30px) !important;
   backdrop-filter: blur(30px) !important;
-  border-color: rgba(var(--bgt), .3) !important;
+  border-color: rgba(var(--bgt), .2) !important;
 }
  .scrolled #continuar-viendo-sidebar {
-  border-color: rgba(var(--bgt), .3) !important;
+  border-color: rgba(var(--bgt), .2) !important;
  }
 .scrolled #busqueda {
-    border: 1px solid rgba(var(--bgt), .3) !important;
+    border: 1px solid rgba(var(--bgt), .2) !important;
 }
 header #busqueda{
   transition: border .3s ease;
 }
 
-}
+
 
 .title {
   font-family: 'Oxanium', sans-serif;
@@ -580,7 +579,7 @@ header.search-active .logout-modal {
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
-  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease, height 0.3s ease, padding-bottom 0.3s ease, width 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s ease, filter 0.5s ease, backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease, height 0.3s ease, padding-bottom 0.3s ease, width 0.3s ease, opacity 0.3s ease, border-color 0.3s ease;
 }
 
 @media screen and (max-width: 600px) {

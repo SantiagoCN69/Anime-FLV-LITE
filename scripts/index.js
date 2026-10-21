@@ -309,29 +309,32 @@ window.addEventListener("searchchange", () => {
   mostrarSeccionDesdesearch();
 });
 
-function actualizarIndicadorActivo() {
+function actualizarIndicadorActivo(targetItem = null) {
   const indicator = document.querySelector('.active-indicator');
   const activeItem = document.querySelector('.sidebar .menu-item.active-menu-item');
   const sidebarUl = document.querySelector('.sidebar ul');
 
   if (!indicator || !sidebarUl) return;
 
-  // Evalúa si no hay ítem activo o si no pertenece directamente a la lista principal
-  const esDeListaPrincipal = activeItem && activeItem.parentElement === sidebarUl;
+  // Si se proporciona un targetItem (hover), usar ese; si no, usar el activo
+  const itemToUse = targetItem || activeItem;
 
-  if (!activeItem || !esDeListaPrincipal) {
-    console.log('No hay elemento activo principal: aplicando left(-4px)');
+  // Evalúa si no hay ítem activo o si no pertenece directamente a la lista principal
+  const esDeListaPrincipal = itemToUse && itemToUse.parentElement === sidebarUl;
+
+  if (!itemToUse || !esDeListaPrincipal) {
+    console.log('No hay elemento válido: aplicando left(-4px)');
     indicator.style.left = '-4px';
     return;
   }
 
-  // Si el ítem activo es válido
+  // Si el ítem es válido
   const ulRect = sidebarUl.getBoundingClientRect();
-  const itemRect = activeItem.getBoundingClientRect();
+  const itemRect = itemToUse.getBoundingClientRect();
 
   indicator.style.top = (itemRect.top - ulRect.top + 8) + 'px';
   indicator.style.height = (itemRect.height - 16) + 'px';
-  indicator.style.left = '0px'; // Restablece la posición normal
+  indicator.style.left = '0px';
   indicator.classList.add('visible');
 }
 
@@ -363,6 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
     precargarCacheDirectorioAV1(),
   ])
   const sidebarItems = document.querySelectorAll('.menu-item');
+  let hoverTimeout = null;
+
   sidebarItems.forEach(item => {
     item.addEventListener('click', (e) => {
       const targetId = e.currentTarget.getAttribute('data-target');
@@ -373,6 +378,23 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof centrarElementoEnVista === 'function') {
         centrarElementoEnVista(targetId);
       }
+    });
+
+    // Evento hover - actualizar indicador al elemento en hover
+    item.addEventListener('mouseenter', () => {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+        hoverTimeout = null;
+      }
+      actualizarIndicadorActivo(item);
+    });
+
+    // Evento leave - volver al elemento activo con pequeño retraso
+    item.addEventListener('mouseleave', () => {
+      hoverTimeout = setTimeout(() => {
+        actualizarIndicadorActivo(null);
+        hoverTimeout = null;
+      }, 100);
     });
   });
 });

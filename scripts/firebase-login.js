@@ -4,7 +4,7 @@ import { getFirestore, collection, getDocs, query, doc, getDoc, setDoc, serverTi
 import { firebaseConfig } from "./firebaseconfig.js";
 
 const THEME_CONFIG = {
-  themes: ['nocturno', 'sakura', 'sunset', 'morado_medianoche'],
+  themes: ['nocturno', 'sakura', 'gris_cian', 'anime_zen'],
   defaultTheme: 'morado_medianoche',
   saveDelay: 10000
 };

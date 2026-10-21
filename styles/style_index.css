@@ -323,7 +323,7 @@ footer {
 
 .sidebar-collapsed #historial {grid-template-columns: 1fr;padding-bottom: 1px;}
 .sidebar-collapsed #historial .anime-card {
-  border: 1px solid var(--br);
+  border: 1px solid transparent;
   background: var(--p);
   display: grid;
   height: 95px;
@@ -393,7 +393,7 @@ footer {
   }
 }
 .sidebar-collapsed #historial .anime-card:hover {
-  border-color: var(--btn);
+  border-color: var(--br);
   transform: scale(1) translateX(8px);
 }
 }
@@ -407,7 +407,7 @@ footer {
   
   #historial {grid-template-columns: 1fr; padding-bottom: 1px;}
   #historial .anime-card {
-      border: 1px solid var(--br);
+      border: 1px solid transparent;
   background: var(--p);
     display: grid;
     height: 95px;
@@ -477,7 +477,7 @@ footer {
     }
   }
   #historial .anime-card:hover {
-    border-color: var(--btn);
+    border-color: var(--br);
     transform: scale(1) translateX(8px);
   }
 }
