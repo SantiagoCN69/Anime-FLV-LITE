@@ -21,7 +21,7 @@
 .settings-card {
   background-color: var(--p);
   border: 1px solid var(--br);
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
 }
 
@@ -92,7 +92,7 @@
   border: 1px solid var(--btn);
   color: var(--btn);
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 24px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -120,7 +120,7 @@
   border: 1px solid var(--br);
   color: var(--t1);
   padding: 10px 36px 10px 16px;
-  border-radius: 8px;
+  border-radius: 24px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
