@@ -35,6 +35,7 @@ body::before {
   background-image: var(--background-image);
   background-size: cover;
   background-position: center;
+  background-position-y: 48%;
   z-index: -2;
   opacity: 1;
   transform: scale(1) translateX(120px);
@@ -90,6 +91,7 @@ body:not(.animaciones-off) header {
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 #links {
+  font-weight: bold;
   display: flex;
   gap: 8px;
   position: absolute;
