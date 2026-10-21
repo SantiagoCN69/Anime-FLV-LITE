@@ -253,11 +253,19 @@ async function cargarPopulares() {
 
   } catch (error) {
     console.error('❌ Error al cargar populares desde API:', error);
-    console.log('📌 Manteniendo datos del caché local (sin reemplazar)');
 
-    // NO reemplazar el contenido del contenedor
-    // Si hay datos del caché ya renderizados, mantenerlos visibles
-    // Solo marcar el error en consola
+    // Verificar si hay caché disponible
+    const cacheKey = `${CACHE_KEY}_${rankingType}_${currentPage}`;
+    const cachedData = currentPage === 1 ? localStorage.getItem(cacheKey) : null;
+
+    // Si no hay caché, mostrar mensaje de mantenimiento
+    if (!cachedData) {
+      const container = document.getElementById('populares');
+      if (container) {
+        container.innerHTML = '<span class="span-carga">API de MyAnimeList en mantenimiento. No hay datos en caché disponibles. Intenta más tarde.</span>';
+      }
+    }
+    // Si hay caché, no hacer nada (mantener lo que ya está renderizado)
   }
 }
 
