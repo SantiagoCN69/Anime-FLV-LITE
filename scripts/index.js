@@ -322,9 +322,14 @@ function actualizarIndicadorActivo(targetItem = null) {
   // Evalúa si no hay ítem activo o si no pertenece directamente a la lista principal
   const esDeListaPrincipal = itemToUse && itemToUse.parentElement === sidebarUl;
 
+  // Solo aplicar el fallback si NO estamos en modo hover (targetItem es null)
   if (!itemToUse || !esDeListaPrincipal) {
-    console.log('No hay elemento válido: aplicando left(-4px)');
-    indicator.style.left = '-4px';
+    if (targetItem === null) {
+      // Solo en modo no-hover: aplicar fallback
+      console.log('No hay elemento válido (no hover): aplicando left(-4px)');
+      indicator.style.left = '-4px';
+    }
+    // En modo hover con elemento inválido: no hacer nada (dejar el indicador donde está)
     return;
   }
 
@@ -363,7 +368,6 @@ window.handlesearchChange = function () {
 document.addEventListener('DOMContentLoaded', () => {
   Promise.all([
     cargarUltimosCapsVistos(),
-    precargarCacheDirectorioAV1(),
   ])
   const sidebarItems = document.querySelectorAll('.menu-item');
   let hoverTimeout = null;
@@ -739,89 +743,12 @@ function guardarCache(key, data) {
     localStorage.removeItem(key);
   }
 }
-const DIRECTORIO_AV1_CACHE_KEY = 'animes_cache_directorio';
 
-let animesCacheMemoria = null;
-let precargaDirectorioAV1Promise = null;
-
-const slugFromTitle = (str = '') => 
+const slugFromTitle = (str = '') =>
   str.toLowerCase()
      .trim()
      .replace(/[:'".,!?/()]/g, '')
      .replace(/[\s-]+/g, '-');
-
-const shuffleArray = (array) => {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-};
-
-function leerCacheDirectorioAV1() {
-  if (animesCacheMemoria) {
-    return animesCacheMemoria;
-  }
-
-  try {
-    const raw = localStorage.getItem(DIRECTORIO_AV1_CACHE_KEY);
-    if (!raw) {
-      return null;
-    }
-
-    const data = JSON.parse(raw);
-
-    // El cache de directorioav1 tiene formato { data: [...], page: ..., PaginasTotales: ... }
-    const animesArray = data?.data || data?.animes;
-
-    if (Array.isArray(animesArray) && animesArray.length > 0) {
-      animesCacheMemoria = shuffleArray(animesArray.slice(0, 10));
-      return animesCacheMemoria;
-    } else {
-    }
-  } catch (e) {
-  }
-  return null;
-}
-
-async function precargarCacheDirectorioAV1() {
-  if (animesCacheMemoria || localStorage.getItem(DIRECTORIO_AV1_CACHE_KEY)) {
-    return;
-  }
-  if (precargaDirectorioAV1Promise) {
-    return precargaDirectorioAV1Promise;
-  }
-
-  precargaDirectorioAV1Promise = (async () => {
-    try {
-      const res = await fetch('https://backend-animeflv-lite.vercel.app/api/browse?source=animeav1&p=1');
-      if (!res.ok) throw new Error('Respuesta inválida');
-
-      const data = await res.json();
-      if (!Array.isArray(data?.animes) || data.animes.length === 0) return;
-
-      // Guardar en el formato que espera directorioav1.js: { data: [...], page: ..., PaginasTotales: ... }
-      const cacheData = {
-        data: data.animes,
-        page: 1,
-        PaginasTotales: data.PaginasTotales || 1
-      };
-      localStorage.setItem(DIRECTORIO_AV1_CACHE_KEY, JSON.stringify(cacheData));
-      animesCacheMemoria = shuffleArray(data.animes.slice(0, 10));
-
-      const section = document.getElementById('Ultimos-Episodios');
-      if (section && !section.classList.contains('hidden')) {
-        cargarHeroSlider();
-      }
-    } catch (e) {
-    } finally {
-      precargaDirectorioAV1Promise = null;
-    }
-  })();
-
-  return precargaDirectorioAV1Promise;
-}
 
 const getEstadoBadge = (estado) => {
   if (!estado) return '';
@@ -834,25 +761,13 @@ const getEstadoBadge = (estado) => {
 };
 
 function buildHeroSlide(anime, index) {
-  // 1. Extracción segura del ID/Slug desde anime.url
-  let id = '';
-  if (anime.url) {
-    // Elimina slashes finales si existen y extrae el último segmento
-    const cleanPath = anime.url.replace(/\/+$/, '');
-    id = cleanPath.split('/').pop();
-  } else {
-    // Fallback al título si anime.url no viene presente
-    id = slugFromTitle(anime.title);
-  }
+  // 1. Extracción segura del ID/Slug desde anime.url o anime.id
+  let id = anime.id
 
   const url1 = `/anime?id=${id}`;
   const url2 = `/ver?id=${id}&episode=1`;
   const synopsisCompleta = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
   const badgeHtml = getEstadoBadge(anime.type);
-
-  // 2. Construcción de URLs de imagen con fallback
-  const fallbackBgUrl = anime.image || anime.cover || '';
-  const cdnBgUrl = id ? `https://cdn.jkdesa.com/assets/images/animes/image/${id}.jpg` : fallbackBgUrl;
 
   const isPorEstrenar = anime.type === 'Por estrenar';
 
@@ -862,11 +777,11 @@ function buildHeroSlide(anime, index) {
   slide.dataset.id = id;
 
   // Asignamos inicialmente la imagen del CDN
-  slide.style.setProperty('--bg-image', `url('${cdnBgUrl}')`);
+  slide.style.setProperty('--bg-image', `url('${anime.banner}')`);
 
   slide.innerHTML = `
     <div class="hero-background">
-      <div class="hero-slide__bg" style="background-image: url('${cdnBgUrl}')"></div>
+      <div class="hero-slide__bg" style="background-image: url('${anime.banner}')"></div>
     </div>
     <div class="hero-slide__content">
       ${badgeHtml ? `<div class="hero-slide__badges">${badgeHtml}</div>` : ''}
@@ -882,7 +797,7 @@ function buildHeroSlide(anime, index) {
           </span>
           Ver Ahora
         </a>
-      
+
         <a href="${url1}" class="hero-btn hero-btn--secondary">
           <span class="hero-btn__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -898,19 +813,6 @@ function buildHeroSlide(anime, index) {
       </div>
     </div>
   `;
-
-  // 3. Verificación de carga en segundo plano para fallback en caso de error HTTP 404
-  if (cdnBgUrl !== fallbackBgUrl && fallbackBgUrl) {
-    const imgCheck = new Image();
-    imgCheck.src = cdnBgUrl;
-    imgCheck.onerror = () => {
-      const bgElement = slide.querySelector('.hero-slide__bg');
-      if (bgElement) {
-        bgElement.style.backgroundImage = `url('${fallbackBgUrl}')`;
-      }
-      slide.style.setProperty('--bg-image', `url('${fallbackBgUrl}')`);
-    };
-  }
 
   return slide;
 }
@@ -1002,17 +904,30 @@ function initHeroSliderControls(container, slidesLength) {
   startAutoplay();
 }
 
-function cargarHeroSlider() {
+async function cargarHeroSlider() {
   const container = document.getElementById('hero-slider');
   if (!container) {
     return;
   }
 
-  const animes = leerCacheDirectorioAV1();
+  // Cargar banners personalizados desde banners-slides.json
+  let animes = null;
+  try {
+    const response = await fetch('/banners-slides.json');
+    if (response.ok) {
+      const customBanners = await response.json();
+      if (Array.isArray(customBanners) && customBanners.length > 0) {
+        animes = customBanners;
+        console.log('[Hero Slider] Usando banners personalizados desde banners-slides.json');
+      }
+    }
+  } catch (error) {
+    console.error('[Hero Slider] Error al cargar banners-slides.json:', error);
+  }
+
+  // Si no hay banners, mostrar mensaje de error
   if (!animes) {
-    container.classList.add('hidden');
-    container.replaceChildren();
-    precargarCacheDirectorioAV1();
+    container.innerHTML = '<p class="span-carga">Error al cargar banners. Verifica banners-slides.json</p>';
     return;
   }
 
