@@ -1855,12 +1855,12 @@ z-index: 0;
 
 @media screen and (min-width: 701px) {
   #busquedas, .sin-resultados {
-    margin-top: calc(80px + 6rem);
+    margin-top: calc(80px + 7rem);
   }
   
 .titulo-busquedas {
-    top: 104px;
-    left: 100px;
+    top: 145px;
+    left: 2rem;
 }
 }
 .sin-resultados {
