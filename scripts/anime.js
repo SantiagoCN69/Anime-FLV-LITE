@@ -298,14 +298,42 @@ async function esBannerValido(url) {
   return typeof peso === 'number' && peso >= BANNER_PESO_MIN_BYTES;
 }
 
+// Función helper para obtener la URL del fondo con CDN + fallback
+function getFondoUrl(anime) {
+  let id = anime.id;
+  
+  if (!id && anime.url) {
+    id = anime.url.replace(/\/+$/, '').split('/').pop();
+  } else if (!id && anime.title) {
+    id = slugFromTitle(anime.title);
+  }
+
+  const cdnUrl = id ? `https://cdn.jkdesa.com/assets/images/animes/image/${id}.jpg` : null;
+  const fallbackUrl = anime.portada || anime.image || anime.cover || '';
+
+  return { cdnUrl, fallbackUrl };
+}
+
 async function aplicarFondoAnime(anime) {
-  const portada = anime.portada || anime.cover;
+  const { cdnUrl, fallbackUrl } = getFondoUrl(anime);
   const banner = anime.banner;
   const usarBanner = banner && await esBannerValido(banner);
-  const imagenUrl = usarBanner ? banner : portada;
+  
+  // Determinar la URL inicial: CDN o banner si es válido
+  const imagenUrl = usarBanner ? banner : (cdnUrl || fallbackUrl);
 
+  // Aplicar la imagen inicial
   document.body.style.setProperty('--background-image', imagenUrl ? `url(${imagenUrl})` : 'none');
   document.body.classList.add('fondo-animado');
+
+  // Si usamos CDN y hay fallback, configurar fallback por si falla
+  if (cdnUrl && fallbackUrl && !usarBanner) {
+    const imgCheck = new Image();
+    imgCheck.src = cdnUrl;
+    imgCheck.onerror = () => {
+      document.body.style.setProperty('--background-image', `url(${fallbackUrl})`);
+    };
+  }
 }
 function setAnimeDescripcion(descripcionEl, texto) {
   const descripcionCargando = document.getElementById('descripcion-cargando');
