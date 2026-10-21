@@ -752,7 +752,7 @@ async function cargarHeroSlider() {
     const animes = res.ok ? await res.json() : null;
     if (!animes || !animes.length) throw new Error("JSON vacío o no encontrado");
 
-    // Mezcla aleatoria (Algoritmo Fisher-Yates) para no repetir orden en cada recarga
+    // Mezcla aleatoria (Algoritmo Fisher-Yates)
     for (let i = animes.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [animes[i], animes[j]] = [animes[j], animes[i]];
@@ -762,15 +762,22 @@ async function cargarHeroSlider() {
     const slidesHTML = animes.map((a, i) => {
       const isPE = a.type === 'Por estrenar';
       const syn = (a.synopsis || '').replace(/<[^>]*>/g, '').trim();
-      const badge = a.type ? (a.type === 'TV Anime' ? `<span class="hero-badge hero-badge--ongoing">TV Anime</span>` : `<span class="hero-badge hero-badge--status">${a.type}</span>`) : '';
+      const statusBadge = a.type ? (a.type === 'TV Anime' ? `<span class="hero-badge hero-badge--ongoing">TV Anime</span>` : `<span class="hero-badge hero-badge--status">${a.type}</span>`) : '';
+      
+      // Procesamiento de los badges libres (soporta 'badges' o 'bages')
+      const customBadgesList = a.badges || a.bages || [];
+      const customBadgesHtml = customBadgesList.length 
+        ? `<div class="hero-slide__extra-badges">${customBadgesList.map(b => `<span class="hero-badge hero-badge--custom">${b}</span>`).join('')}</div>` 
+        : '';
 
       return `
         <article class="hero-slide ${i === 0 ? 'active' : ''}" data-id="${a.id}" style="--bg-image: url('${a.banner}')">
           <div class="hero-background"><div class="hero-slide__bg" style="background-image: url('${a.banner}')"></div></div>
           <div class="hero-slide__content">
-            ${badge ? `<div class="hero-slide__badges">${badge}</div>` : ''}
+            ${statusBadge ? `<div class="hero-slide__badges">${statusBadge}</div>` : ''}
             <h2 class="hero-slide__title">${a.title || 'Sin título'}</h2>
             ${syn ? `<p class="hero-slide__synopsis">${syn}</p>` : ''}
+            ${customBadgesHtml}
             <div class="hero-slide__actions ${isPE ? 'left-align' : ''}">
               <a href="/ver?id=${a.id}&episode=1" class="hero-btn hero-btn--primary ${isPE ? 'hidden' : ''}">
                 <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.49 9.6L5.6 16.77C4.9 17.19 4 16.69 4 15.87V7.87C4 4.38 7.77 2.2 10.8 3.94L15.39 6.58L17.48 7.78C18.17 8.19 18.18 9.19 17.49 9.6Z"/><path d="M18.09 15.46L14.04 17.8L10 20.13C8.55 20.96 6.91 20.79 5.72 19.95C5.14 19.55 5.21 18.66 5.82 18.3L18.53 10.68C19.13 10.32 19.92 10.66 20.03 11.35C20.28 12.9 19.64 14.57 18.09 15.46Z"/></svg></span> Ver Ahora
@@ -820,7 +827,7 @@ function initHeroSliderControls(container, len) {
   const stop = () => autoId = clearInterval(autoId);
   const reset = () => { stop(); play(); };
 
-  // 3. Delegación de eventos centralizada
+  // Delegación de eventos centralizada
   container.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if (btn) {
@@ -839,7 +846,7 @@ function initHeroSliderControls(container, len) {
     }
   });
 
-  // 4. Control de hover y touch
+  // Control de hover y touch
   container.addEventListener('mouseenter', stop);
   container.addEventListener('mouseleave', play);
 
