@@ -1191,21 +1191,29 @@ function renderizarServidores(todosLosServidores) {
   // Filtramos los servidores antes de renderizarlos
   let servidores = filtrarServidores(todosLosServidores, modoDoblado);
 
-  // Si no hay servidores del modo seleccionado, cambiar al otro modo automáticamente
-  if (!servidores?.length && modoDoblado) {
-    modoDoblado = false;
-    servidores = filtrarServidores(todosLosServidores, false);
-    
-    // Actualizar URL solo (no guardar en localStorage)
-    const newUrl = new URL(window.location);
-    newUrl.searchParams.set("servers", "sub");
-    window.history.replaceState({}, "", newUrl);
-    
-    // Actualizar botón
-    const btn = document.getElementById("btn-cambio-servers");
-    if (btn) {
-      btn.textContent = "Server Doblado";
-      btn.classList.remove("activo");
+  // Si el episodio solo está disponible en el otro idioma, usarlo en vez de
+  // mostrar un falso "No hay servidores disponibles". Antes esto solo cubría
+  // doblado -> subtitulado; por eso un episodio exclusivamente (Lat) fallaba
+  // cuando la URL abría con servers=sub.
+  if (!servidores?.length) {
+    const modoAlternativo = !modoDoblado;
+    const servidoresAlternativos = filtrarServidores(todosLosServidores, modoAlternativo);
+
+    if (servidoresAlternativos.length) {
+      modoDoblado = modoAlternativo;
+      servidores = servidoresAlternativos;
+
+      // Reflejar el modo realmente disponible, sin cambiar la preferencia
+      // guardada del usuario para otros episodios.
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
+      window.history.replaceState({}, "", newUrl);
+
+      const btn = document.getElementById("btn-cambio-servers");
+      if (btn) {
+        btn.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+        btn.classList.toggle("activo", modoDoblado);
+      }
     }
   }
 
