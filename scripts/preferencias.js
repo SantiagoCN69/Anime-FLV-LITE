@@ -3,8 +3,8 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstati
 import { auth, db } from "./firebase-login.js";
 
 const THEME_CONFIG = {
-  themes: ['nocturno', 'sakura', 'gris_cian', 'anime_zen', 'morado_medianoche'],
-  defaultTheme: 'morado_medianoche'
+  themes: ['nocturno', 'sakura', 'gris_cian', 'anime_zen'],
+  defaultTheme: 'anime_zen'
 };
 
 const THEME_LABELS = {

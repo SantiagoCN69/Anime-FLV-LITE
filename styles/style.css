@@ -967,7 +967,7 @@ section.content-section h2:first-of-type.cargado::after {
   border-radius: 14px;
 }
 .btn-siguiente-capitulo:hover {
-  background-color: var(--br);
+  background: rgba(var(--bgt), .1);
   transform: scale(1.02) translateY(-2px);
 }
 .btn-siguiente-capitulo .portada-anime {
@@ -1234,11 +1234,11 @@ h4 {
 }
 /* Scrollbar personalizado */
 .busquedas-recientes-dropdown::-webkit-scrollbar {
-  width: 6px;
+  width: 0px;
 }
 
 .busquedas-recientes-dropdown::-webkit-scrollbar-thumb {
-  background-color: var(--br);
+  background-color: transparent;
   border-radius: 3px;
 }
 
@@ -1458,13 +1458,15 @@ h4 {
   pointer-events: auto;
   transform: scale(1);
   height: unset;
+  padding: 8px;
+  gap: 5px;
 }
 
 .logout-modal button,
 .logout-modal a {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 14px;
   text-align: start;
   padding: 1rem;
   font-size: 1rem;
@@ -1475,7 +1477,7 @@ h4 {
 }
 .logout-modal button:hover,
 .logout-modal a:hover {
-  background: var(--br);
+  background: rgba(var(--bgt), .1);
 }
 
 #confirm-login {
@@ -1515,11 +1517,8 @@ h4 {
     -webkit-mask-image: url("../icons/settings.svg");
   mask-image: url("../icons/settings.svg");
 }
-.logout-modal :first-child {
-  border-radius: 11px 11px 0 0;
-}
-.logout-modal :last-child {
-    border-radius: 0 0 11px 11px;
+.logout-modal button {
+  border-radius: 11px;
 }
 #theme-toggle::before {
   -webkit-mask-image: url("../icons/theme.svg");
