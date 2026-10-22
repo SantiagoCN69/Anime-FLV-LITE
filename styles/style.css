@@ -140,9 +140,17 @@ header {
   -webkit-backdrop-filter: blur(30px) !important;
   backdrop-filter: blur(30px) !important;
 }
- .scrolled #continuar-viendo-sidebar {
+
+.scrolled ~ .busquedas-recientes-dropdown,
+.scrolled ~ .logout-modal {
+  background: rgba(var(--bgti), .7) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  backdrop-filter: blur(30px) !important;
+}
+
+.scrolled #continuar-viendo-sidebar {
   border-color: rgba(var(--bgt), .2) !important;
- }
+}
 .scrolled #busqueda {
     border: 1px solid rgba(var(--bgt), .2) !important;
 }
@@ -322,6 +330,11 @@ header div {
     top: 0;
     z-index: 10 !important;
   }
+
+  .busquedas-recientes-dropdown {
+    width: calc(100vw - 2rem) !important;
+    right: 1rem !important;
+  }
   .search-active {
     top: 0;
    z-index: 1;
@@ -383,7 +396,7 @@ header.search-active .search {
   transform: translateY(0);
   pointer-events: auto;
 }
-header.search-active .logout-modal {
+body:has(header.search-active) .logout-modal {
   opacity: 0;
   pointer-events: none;
 }
@@ -1192,10 +1205,8 @@ section.content-section h2:first-of-type.cargado::after {
   gap: 8px;
   flex-direction: column;
   align-items: flex-start;
-  position: absolute;
-  top: calc(100% + 28px);
-  left: 0;
-  width: 100%;
+  position: fixed;
+  top: 90px;
   background-color: var(--b);
   border: 1px solid var(--br);
   border-radius: 24px;
@@ -1204,7 +1215,20 @@ section.content-section h2:first-of-type.cargado::after {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   max-height: calc(100vh - 80px - 28px);
   overflow-y: auto;
+  animation: aparece 0.3s ease;
+  transition: all 0.3s ease;
 }
+@keyframes aparece {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 h4 {
   font-family: 'Oxanium', sans-serif;
 }
@@ -1231,6 +1255,7 @@ h4 {
   gap: 8px;
   justify-content: space-between;
   div {
+    display: flex;
     gap: 8px;
   }
 }
@@ -1412,11 +1437,8 @@ h4 {
 
 /* Overlay */
 .logout-modal {
-  position: absolute;
-  right: 0;
-  top: 0;
+  position: fixed;
   transform: scale(0.63);
-  height: calc(100% + 26px);
   background: var(--b);
   border: 1px solid var(--br);
   border-radius: 14px;
@@ -1434,7 +1456,6 @@ h4 {
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
-  top: calc(100% + 30px);
   transform: scale(1);
   height: unset;
 }
@@ -2025,4 +2046,4 @@ footer button::after {
     width: 100%;
     justify-content: center;
   }
-} 
+}

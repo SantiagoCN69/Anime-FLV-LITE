@@ -102,7 +102,7 @@ function crearmodal(user = false) {
   if (!loginButton) return;
 
   // Limpiar modal existente
-  const modalExistente = loginButton.querySelector('.logout-modal');
+  const modalExistente = document.querySelector('.logout-modal');
   if (modalExistente) modalExistente.remove();
 
   // Los ajustes de la aplicación viven en la sección Preferencias.
@@ -120,7 +120,16 @@ function crearmodal(user = false) {
     modal.innerHTML += `<button id='confirm-login' class="modal-btn-b">Iniciar</button>`;
   }
   
-  loginButton.appendChild(modal);
+  document.body.appendChild(modal);
+
+  const posicionarModal = () => {
+    const rect = loginButton.getBoundingClientRect();
+    modal.style.top = `${rect.bottom + 30}px`;
+    modal.style.left = 'auto';
+    modal.style.right = `${Math.max(8, window.innerWidth - rect.right)}px`;
+  };
+
+  posicionarModal();
 
   // Evitar que clics en el fondo del modal lo cierren por accidente
   modal.addEventListener('click', (e) => {
@@ -271,6 +280,12 @@ if (btnLogin) {
     const isShowing = modal.classList.toggle('show');
 
     if (isShowing) {
+      requestAnimationFrame(() => {
+        const rect = btnLogin.getBoundingClientRect();
+        modal.style.top = `${rect.bottom + 30}px`;
+        modal.style.left = 'auto';
+        modal.style.right = `${Math.max(8, window.innerWidth - rect.right)}px`;
+      });
       setTimeout(() => document.addEventListener('click', handleClickOutside), 0);
       
       window.addEventListener('scroll', () => {

@@ -147,6 +147,16 @@ function eliminarTodasBusquedas(event) {
   renderizarBusquedasRecientes();
 }
 
+function posicionarBusquedasRecientes(dropdown = document.getElementById('busquedas-recientes-dropdown')) {
+  const input = document.getElementById('busqueda');
+  if (!dropdown || !input) return;
+
+  const rect = input.getBoundingClientRect();
+  dropdown.style.left = 'auto';
+  dropdown.style.right = `${window.innerWidth - rect.right}px`;
+  dropdown.style.width = `${rect.width}px`;
+}
+
 function renderizarBusquedasRecientes() {
   const busquedas = JSON.parse(localStorage.getItem('busquedas_recientes') || '[]');
   const input = document.getElementById('busqueda');
@@ -157,8 +167,10 @@ function renderizarBusquedasRecientes() {
     dropdown = document.createElement('div');
     dropdown.id = 'busquedas-recientes-dropdown';
     dropdown.className = 'busquedas-recientes-dropdown';
-    input.parentElement.appendChild(dropdown);
+    document.body.appendChild(dropdown);
   }
+
+  posicionarBusquedasRecientes(dropdown);
   
   dropdown.innerHTML = `
     <div class="busquedas-titulo">
@@ -240,6 +252,9 @@ function ocultarBusquedasRecientes() {
   const dropdown = document.getElementById('busquedas-recientes-dropdown');
   if (dropdown) dropdown.remove();
 }
+
+window.addEventListener('resize', () => posicionarBusquedasRecientes());
+window.addEventListener('scroll', () => posicionarBusquedasRecientes(), { passive: true });
 
 // === RENDER SIN RESULTADOS ===
 function renderSinResultados(container, searchTerm, searchId) {
