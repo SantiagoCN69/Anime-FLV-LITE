@@ -1959,6 +1959,7 @@ footer ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    margin-left: auto;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -1981,7 +1982,6 @@ footer ul li:hover {
 
 /* Botón de volver arriba */
 footer button {
-    align-self: flex-start;
     background: var(--p);
     color: #f4f4f5;
     border: 1px solid var(--br);
