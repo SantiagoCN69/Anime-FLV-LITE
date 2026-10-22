@@ -106,6 +106,7 @@ body:not(.animaciones-off) header {
 @media (min-width: 1100px) {
   #links {
     left: 2rem;
+    width: calc(100vw - 4rem);
   }
 }
 .btn-volver {
