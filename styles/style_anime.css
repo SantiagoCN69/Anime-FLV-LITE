@@ -53,7 +53,7 @@ body.fondo-animado::before {
   }
   100% {
     opacity: 1;
-    filter: blur(0px) saturate(1.2) brightness(1);
+    filter: blur(0px) saturate(1.2) brightness(.7);
   }
 }
 
@@ -465,12 +465,13 @@ body:not(.animaciones-off) header {
   z-index: 1;
 }
 #info1 a {
-  font-size: .8rem;
+  font-size: 1rem;
   font-weight: 500;
   opacity: .9;
   display: inline-flex;
-  align-items: center;
+  align-self: center;
   font-family: 'JetBrains Mono', monospace;
+  font-family: 'Oxanium', sans-serif;
 }
 #info1 a:nth-child(3) {
   position: relative;
@@ -489,7 +490,7 @@ body:not(.animaciones-off) header {
   background-color: var(--t1);
   width: 16px;
   height: 16px;
-  margin-right: 5px;
+  margin-right: 8px;
   vertical-align: middle;
 }
 #scorecargado {
@@ -604,7 +605,7 @@ body:not(.animaciones-off) header {
 }
 @media (min-width: 700px) {
   #descripcion-cargando {
-    height: calc(57px + 18px + 8px);
+    height: calc(56px + 18px + 8px);
   }
 }
 .genre-link-cargando {
@@ -708,7 +709,8 @@ body:not(.animaciones-off) header {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
-  max-height: 3lh;
+  height: 56px;
+  max-height: 56px;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
