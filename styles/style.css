@@ -1441,7 +1441,7 @@ h4 {
   transform: scale(0.63);
   background: var(--b);
   border: 1px solid var(--br);
-  border-radius: 14px;
+  border-radius: 24px;
   opacity: 0;
   display: flex;
   flex-direction: column;
@@ -1518,7 +1518,7 @@ h4 {
   mask-image: url("../icons/settings.svg");
 }
 .logout-modal button {
-  border-radius: 11px;
+  border-radius: 18px;
 }
 #theme-toggle::before {
   -webkit-mask-image: url("../icons/theme.svg");
