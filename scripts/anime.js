@@ -973,15 +973,22 @@ async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
 
 // 2. Filtro de búsqueda con paginación (debounce de 500ms para evitar spam mientras escribe)
 filtroCapitulo.addEventListener('input', debounce(() => {
-  const filtro = filtroCapitulo.value.toLowerCase();
+  const filtro = filtroCapitulo.value.trim().toLowerCase();
 
   if (!filtro || !animeActual) return;
 
-  // Buscar el capítulo en la lista global de episodios filtrados
-  const epIndex = episodiosFiltrados.findIndex(ep =>
-    ep.number.toString().includes(filtro) ||
-    (ep.title && ep.title.toLowerCase().includes(filtro))
+  // Priorizar el número exacto: al invertir la lista, "1023" no debe ganar a "23".
+  let epIndex = episodiosFiltrados.findIndex(
+    ep => ep.number.toString().toLowerCase() === filtro
   );
+
+  // Si no existe un número exacto, conservar la búsqueda parcial por número o título.
+  if (epIndex === -1) {
+    epIndex = episodiosFiltrados.findIndex(ep =>
+      ep.number.toString().includes(filtro) ||
+      (ep.title && ep.title.toLowerCase().includes(filtro))
+    );
+  }
 
   if (epIndex >= 0) {
     // Calcular en qué página está el episodio
