@@ -82,5 +82,28 @@
       "Suspenso",
       "Drama"
     ]
+  },
+  {
+    "id": "tokyo-revengers-santen-sensou-hen",
+    "title": "Tokyo Revengers: Santen Sensou-hen",
+    "banner": "https://image.tmdb.org/t/p/w1280/4R9nNlt23s66GYrRRy1mcD6NIFI.jpg",
+    "synopsis": "Secuela de Tokyo Revengers: Tenjiku-hen.",
+    "type": "TV Anime",
+    "badges": [
+      "Secuela",
+      "Shounen"
+    ]
+  },
+  {
+    "id": "one-piece",
+    "title": "One Piece",
+    "banner": "https://wallpapers.com/images/featured/one-piece-c0pujiakubq5rwas.jpg",
+    "synopsis": "La historia sigue a Monkey D. Luffy, un joven con el cuerpo elástico y un sombrero de paja, quien forma una tripulación de piratas en busca del tesoro más grande de la historia, el One Piece, para convertirse en el próximo Rey de los Piratas.",
+    "type": "Anime",
+    "badges": [
+      "1999",
+      "Shounen",
+      "Aventura"
+    ]
   }
 ]
