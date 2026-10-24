@@ -125,7 +125,7 @@ header {
   margin: 0 auto;
   height:80px;
   background: var(--b);
-  gap:15px;
+  gap:1rem;
   border-bottom: 1px solid var(--br);
   transition: backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease;
 
@@ -161,6 +161,7 @@ header #busqueda{
 
 
 .title {
+  height: 43px;
   font-family: 'Oxanium', sans-serif;
   font-weight: 700;
   letter-spacing: 1px ;
