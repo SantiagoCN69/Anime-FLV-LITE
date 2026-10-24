@@ -31,6 +31,7 @@ const DOM = {
     btnFuenteDirectorio: document.getElementById('btn-fuente-directorio-av1'),
     contador: document.getElementById('contador-av1'),
     initLoading: document.getElementById('init-loading-av1'),
+    totalResultados: document.getElementById('total-resultados-av1'),
     filtrosSeleccionados: document.getElementById('filtrosseleccionados'),
     slider: {
         min: document.getElementById('ano-min'),
@@ -99,9 +100,17 @@ function renderizarResultados(animes) {
     observerAnimeCards(cards);
 }
 
+function actualizarTotalResultados(totalResults) {
+    const total = Number.parseInt(totalResults, 10);
+    DOM.totalResultados.textContent = Number.isFinite(total)
+        ? `${total.toLocaleString('es-CO')} resultados`
+        : 'Resultados: —';
+}
+
 // --- PAGINACIÓN ---
-function updatePagination({ PaginasTotales, animes }) {
+function updatePagination({ PaginasTotales, totalResults }) {
     totalPages = parseInt(PaginasTotales) || 1;
+    actualizarTotalResultados(totalResults);
     DOM.paginacion.innerHTML = '';  
     
     for (let i = 1; i <= totalPages; i++) {
@@ -328,23 +337,23 @@ if (hasFilters) {
 
     try {
         if (cachedData) {
-            const { data: cachedAnimes, page, PaginasTotales } = JSON.parse(cachedData);
+            const { data: cachedAnimes, page, PaginasTotales, totalResults } = JSON.parse(cachedData);
             if (page === currentPage) {
                 renderizarResultados(cachedAnimes);
-                updatePagination({ PaginasTotales, animes: cachedAnimes });
+                updatePagination({ PaginasTotales, totalResults });
 
                 const dataAPI = await fetchData(`${API_BASE_URL}&order=default&page=${currentPage}`);
+                updatePagination(dataAPI);
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ data: dataAPI.animes, page: currentPage, PaginasTotales: dataAPI.PaginasTotales, totalResults: dataAPI.totalResults }));
                 if (dataAPI.animes?.[0]?.title !== cachedAnimes[0]?.title) {
-                    localStorage.setItem(CACHE_KEY, JSON.stringify({ data: dataAPI.animes, page: currentPage, PaginasTotales: dataAPI.PaginasTotales }));
                     renderizarResultados(dataAPI.animes);
-                    updatePagination(dataAPI);
                 }
             }
         } else {
             const dataAPI = await fetchData(`${API_BASE_URL}&order=default`);
             renderizarResultados(dataAPI.animes);
             updatePagination(dataAPI);
-            localStorage.setItem(CACHE_KEY, JSON.stringify({ data: dataAPI.animes, page: currentPage, PaginasTotales: dataAPI.PaginasTotales }));
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ data: dataAPI.animes, page: currentPage, PaginasTotales: dataAPI.PaginasTotales, totalResults: dataAPI.totalResults }));
         }
     } catch (error) {
         console.error('Error al inicializar la app:', error);
