@@ -2,7 +2,7 @@
 // CONFIGURACIÓN GLOBAL
 // ============================================================================
 const SIDEBAR_CONFIG = {
-  THRESHOLD: 3,
+  THRESHOLD: 1,
   MIN_WIDTH: 600,
   SWIPE_THRESHOLD: 50,
   VERTICAL_THRESHOLD: 50
