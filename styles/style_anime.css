@@ -1509,11 +1509,13 @@ height: var(--altura-container-1);
 }
 
 .anime-description-container.collapsed .anime-description {
-  font-size: .8rem;
-  height: 50px;
-  max-height: 50px;
-}
 
+  height: 55px;
+  max-height: 55px;
+}
+#descripcion-cargando {
+      height: calc(55px + 18px + 8px);
+}
 #titulo {
   margin-inline: auto;
   text-align: center;
@@ -1638,7 +1640,7 @@ z-index: 0;
   pointer-events: none;
   background: linear-gradient(
     to bottom, 
-    color-mix(in srgb, var(--b) 80%, transparent) 5%,  /* Reemplaza rgba(0,0,0, 0.8) */
+    color-mix(in srgb, var(--b) 95%, transparent) 5%, 28%, /* Reemplaza rgba(0,0,0, 0.8) */
     color-mix(in srgb, var(--b) 8%, transparent) 50%,   /* Centro limpio (Mejor práctica que 'transparent') */
     color-mix(in srgb, var(--b) 75%, transparent) 71%,  /* Reemplaza rgba(0,0,0, 0.9) */
     var(--b) 90%                                       /* Color sólido al final */
