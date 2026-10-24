@@ -1452,7 +1452,7 @@ h4 {
   z-index: 30;
 }
 .logout-modal.show {
-  overflow: hidden;
+  /* overflow: hidden; */
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
