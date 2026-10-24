@@ -212,6 +212,7 @@
   #indexpagination.bottom ~ .sidebar {height: calc(100vh - 80px - 68px);}
   #indexpagination.floating ~ .sidebar {padding-bottom: 6rem;}
   #indexpagination.floating, #indexpagination.bottom {z-index: 1000;}
+  #indexpagination.floating ~ #busquedas-recientes-dropdown {height: calc(100dvh - 80px - 28px - 80px - 12px);}
 }
 
 /* ================= ANIMACIONES ================= */
