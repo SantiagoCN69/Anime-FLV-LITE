@@ -491,7 +491,7 @@ if (anime.estado) {
   setAnimeDescripcion(descripcionEl, anime.descripcion);
   renderGeneros(generoContainer, anime.generos);
 
-  const container = document.querySelector(".anime-container3");
+  const container = document.querySelector("#capitulos");
 
   if (anime.estado === "Por estrenar") {
     if (container) {
