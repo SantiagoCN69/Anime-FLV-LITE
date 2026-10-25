@@ -226,11 +226,11 @@ function crearTarjetaDeLista(anime) {
 
         this.src = portadaReal;
 
-        if (datos?.titulo) {
-          this.alt = datos.titulo;
-          const tituloEl = card.querySelector('strong');
-          if (tituloEl) tituloEl.textContent = datos.titulo;
-        }
+        // if (datos?.titulo) {
+        //   this.alt = datos.titulo;
+        //   const tituloEl = card.querySelector('strong');
+        //   if (tituloEl) tituloEl.textContent = datos.titulo;
+        // }
         return;
       }
     } catch (error) {
