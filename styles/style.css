@@ -172,6 +172,9 @@ header #busqueda{
   overflow: hidden;
   white-space: nowrap;
   margin-right: auto;
+  svg{
+    height: 100%;
+  }
 }
 @media screen and (max-width: 360px) {
   .title {
@@ -596,6 +599,9 @@ body:has(header.search-active) .logout-modal {
 }
 
 @media screen and (max-width: 600px) {
+  .title {
+    height: 37px;
+  }
   .sidebar {
     overscroll-behavior: contain;
     position: fixed;
