@@ -264,8 +264,10 @@ export function mostrarSeccionDesdesearch() {
   document.querySelectorAll(".content-section").forEach(sec => {
     sec.classList.toggle("hidden", sec.id !== id);
   });
-  
-  document.querySelectorAll('.menu-item').forEach(item => 
+
+  window.scrollTo(0, 0);
+
+  document.querySelectorAll('.menu-item').forEach(item =>
     item.classList.toggle('active-menu-item', item.getAttribute('data-target') === id)
   );
 
