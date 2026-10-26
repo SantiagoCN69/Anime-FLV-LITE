@@ -49,7 +49,7 @@ const STATIC_ASSETS = [
   '/scripts/directorioav1.js',
   '/scripts/directoriojk.js',
   '/scripts/horarios.js',
-  '/scripts/Recomendaciones.js',
+  '/scripts/recomendaciones.js',
   '/scripts/populares.js',
   '/scripts/ver.js',
   '/scripts/ai-recommendations.js',
