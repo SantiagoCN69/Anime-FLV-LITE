@@ -161,7 +161,7 @@ header #busqueda{
 
 
 .title {
-  height: 40px;
+  height: 35px;
   font-family: 'Oxanium', sans-serif;
   font-weight: 700;
   letter-spacing: 1px ;
@@ -601,7 +601,7 @@ body:has(header.search-active) .logout-modal {
 
 @media screen and (max-width: 600px) {
   .title {
-    height: 35px;
+    height: 30px;
   }
   .sidebar {
     overscroll-behavior: contain;
