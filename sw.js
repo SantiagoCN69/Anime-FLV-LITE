@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.22';
+const CACHE_VERSION = 'v8.6.23';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -35,6 +35,9 @@ const STATIC_ASSETS = [
   '/styles/style_recomendaciones.css',
   '/styles/style_directoriojk.css',
   '/styles/style_horarios.css',
+  '/styles/style_directorioav1.css',
+  '/styles/style_404.css',
+  '/styles/transition.css',
 
   '/scripts/tema.js',
   '/scripts/utils.js',
@@ -50,6 +53,10 @@ const STATIC_ASSETS = [
   '/scripts/populares.js',
   '/scripts/ver.js',
   '/scripts/ai-recommendations.js',
+  '/scripts/contacto.js',
+  '/scripts/animaciones.js',
+
+  '/banners-slides.json',
 
   '/icons/icon3.png',
   '/icons/ogimagen.png',
