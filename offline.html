@@ -3,20 +3,137 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#15161a">
+    <meta name="theme-color" content="#09090b">
     <title>AniZen — Sin conexión</title>
     <style>
-      :root { color-scheme: dark; font-family: system-ui, sans-serif; }
-      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #15161a; color: #f5f5f5; }
-      main { max-width: 32rem; padding: 2rem; text-align: center; }
-      a { color: #f9c74f; }
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, -apple-system, sans-serif;
+        --btn: #a970ff;
+        --btn2: #ed65b5;
+        --p: #111114;
+        --b: #09090b;
+        --t1: #f8f5ff;
+        --t2: #bd83f2;
+        --br: #1C1C20;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--b);
+        color: var(--t1);
+        padding: 2rem;
+      }
+      main {
+        max-width: 400px;
+        padding: 3rem 2rem;
+        text-align: center;
+        background: var(--p);
+        border-radius: 20px;
+        border: 1px solid var(--br);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+      main::before {
+        content: '';
+        position: absolute;
+        left: -15%;
+        top: -15%;
+        width: 300px;
+        height: 300px;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='%23bd83f2'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cpath d='M24 14a5 5 0 0 1-5 5h-1v-1h1a3.99 3.99 0 0 0 .623-7.934l-.79-.124-.052-.798a5.293 5.293 0 0 0-10.214-1.57L8.17 8.59l-.977-.483A2.277 2.277 0 0 0 6.19 7.87a2.18 2.18 0 0 0-1.167.339 2.205 2.205 0 0 0-.98 1.395l-.113.505-.476.2A4 4 0 0 0 5 18h6v1H5a5 5 0 0 1-1.934-9.611 3.21 3.21 0 0 1 1.422-2.024A3.17 3.17 0 0 1 6.19 6.87a3.268 3.268 0 0 1 1.446.34 6.293 6.293 0 0 1 12.143 1.867A4.988 4.988 0 0 1 24 14zm-8.793 4.5l3.146-3.146-.707-.707-3.146 3.146-3.146-3.146-.707.707 3.146 3.146-3.146 3.146.707.707 3.146-3.146 3.146 3.146.707-.707z'%3E%3C/path%3E%3Cpath fill='none' d='M0 0h24v24H0z'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        opacity: 0.08;
+        z-index: 0;
+      }
+      .logo {
+        width: 200px;
+        height: auto;
+        margin: 0 auto 2rem;
+        position: relative;
+        z-index: 1;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--t1), var(--t2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+      }
+      p {
+        color: var(--t1);
+        opacity: 0.8;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 1;
+      }
+      a {
+        display: inline-block;
+        padding: 0.875rem 2rem;
+        background: linear-gradient(135deg, var(--btn), var(--btn2));
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        z-index: 1;
+      }
+      a {
+        display: inline-block;
+        padding: 0.875rem 2rem;
+        background: linear-gradient(135deg, var(--btn), var(--btn2));
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(169, 112, 255, 0.4);
+      }
+      a:active {
+        transform: translateY(0);
+      }
     </style>
   </head>
   <body>
     <main>
+      <div class="content">
+        <svg class="logo" viewBox="0 0 200 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <title>Anizen</title>
+        <path d="M26.3779 7.77783C28.6013 11.6926 30.6572 16.0316 32.8573 19.993C33.2179 20.6425 34.7244 23.6346 35.0316 23.9536L35.0002 24.1392C34.2519 24.4928 33.466 24.8675 33.2424 25.7378C32.8757 27.1652 32.9509 30.6941 33.0584 32.1753C30.651 27.7876 28.381 23.1559 25.9604 18.8152C24.5189 20.9685 23.0146 23.5807 21.6374 25.8098C20.5429 27.5815 19.052 29.8524 18.0796 31.6347L26.9579 31.624C28.2249 31.6283 29.7449 31.5938 30.9887 31.6418C31.8245 33.1399 33.4205 36.2417 33.4205 36.2417L37.9273 44.987L33.0985 44.994L28.5378 36.7996L14.7956 36.8728L9.83529 44.9942L3.36926 44.9977C4.31306 43.4147 5.6178 41.4986 6.46091 39.9412C7.06136 38.9367 7.67772 37.9418 8.30979 36.9568C9.80978 34.6879 11.405 31.9634 12.8488 29.6267L21.333 15.8965L24.4275 10.8646C25.0391 9.8682 25.7006 8.7133 26.3779 7.77783Z" fill="#F3F2F3"/>
+        <path d="M6.46089 39.9416C6.17548 39.6567 5.69508 39.078 5.44219 38.7657C1.311 33.6773 -0.592722 27.1378 0.161922 20.6274C0.828993 14.4684 3.89801 8.8208 8.70304 4.91C13.2896 1.22543 19.1477 -0.495219 24.9985 0.123673C30.7608 0.772417 36.0237 3.70057 39.6126 8.2547C43.6365 13.271 45.5001 19.6814 44.7927 26.0729C43.8405 25.5413 42.1529 24.3363 41.3074 23.6434C41.1399 18.666 39.9434 14.5132 36.7396 10.5994C33.6054 6.72755 29.066 4.25315 24.1132 3.71679C19.2161 3.24612 14.3334 4.74609 10.5454 7.88484C6.46154 11.2812 3.8897 16.1571 3.39285 21.4452C2.82522 27.3442 4.57705 32.428 8.30977 36.9572C7.6777 37.9422 7.06134 38.9371 6.46089 39.9416Z" fill="var(--btn)"/>
+        <path d="M36.9524 26.1094C36.9947 26.1148 37.0366 26.1214 37.0785 26.1292C37.8911 26.2832 43.8876 29.8338 44.738 30.7708C44.9338 30.9865 45.0186 31.5493 44.9271 31.88C44.6831 32.7629 42.1042 34.031 41.2265 34.5796C40.0231 35.3259 38.6913 36.3435 37.3839 36.8597C37.0544 36.9898 36.7471 37.043 36.4116 36.8864C36.1462 36.7625 35.9093 36.5343 35.8163 36.2518C35.5751 35.519 35.5725 27.3793 35.8678 26.8398C36.1146 26.3889 36.4905 26.2455 36.9524 26.1094Z" fill="var(--btn)"/>
+        <path d="M40.5581 37.4321C40.6038 37.4493 40.6594 37.4701 40.7249 37.4947C41.7844 39.5125 43.6229 43.0509 44.5312 44.9944L41.0397 44.9931L39.7528 44.9994C38.8456 43.1958 37.9261 41.3984 36.9944 39.6073C37.8257 38.997 39.612 37.9973 40.5581 37.4321Z" fill="#F3F2F3"/>
+        <path d="M51 18.5H54.1982L74.6 34.2929V18.5H81.2857V45H77.2518L57.8628 29.8763V45H51V18.5Z" fill="#F3F2F3"/>
+        <path d="M102.264 18.5H130.5V19.7581L112.944 39.004H129.05V45H100.214V43.849L117.411 24.5629H102.264V18.5Z" fill="#F3F2F3"/>
+        <path d="M145.38 18.5838C150.977 18.4755 157.689 18.4623 163.294 18.6031C163.313 20.5962 163.314 22.5895 163.299 24.5828L151.342 24.5902C149.405 24.5906 147.48 24.5748 145.543 24.6268C143.138 24.6914 143.505 26.8717 143.538 28.6967L160.732 28.6922L160.733 34.6647L143.515 34.6547L143.501 35.771C143.419 39.1971 144.061 38.9224 147.277 38.9763C148.652 38.9995 150.071 38.9697 151.447 38.9663L163.287 38.9756L163.282 44.9677L149.303 44.9722C146.955 44.9732 144.166 45.1064 141.863 44.7805C140.67 44.6116 139.55 43.9267 138.686 43.0746C137.257 41.6952 136.81 39.7842 136.81 37.821C136.811 34.2753 136.851 30.7173 136.838 27.1702C136.83 24.8381 136.947 22.3946 138.641 20.627C140.567 18.615 142.87 18.617 145.38 18.5838Z" fill="#F3F2F3"/>
+        <path d="M169.619 18.5H172.817L193.219 34.2929V18.5H199.905V45H195.871L176.482 29.8763V45H169.619V18.5Z" fill="#F3F2F3"/>
+        <path d="M87.6517 23.5474H93.9048L93.9048 42.8197L91.9634 44.9997H87.5953L87.6517 23.5474Z" fill="#F3F2F3"/>
+        <path d="M92.789 18.5028L93.8727 18.5C93.8543 20.1751 93.866 21.8728 93.9048 23.5476H87.6146C87.6146 23.5476 87.5972 21.5314 87.5953 20.8219C88.1304 20.2109 89.3773 19.1126 90.0125 18.5193L92.789 18.5028Z" fill="var(--btn)"/>
+      </svg>
       <h1>Estás sin conexión</h1>
       <p>Revisa tu conexión e inténtalo de nuevo. Las páginas visitadas recientemente pueden seguir disponibles.</p>
-      <p><a href="/index.html">Volver al inicio</a></p>
+      <a href="/index.html">Volver al inicio</a>
+      </div>
     </main>
   </body>
 </html>
