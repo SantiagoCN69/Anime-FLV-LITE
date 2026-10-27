@@ -183,7 +183,7 @@ export function crearAnimeCard(anime, opciones = {}) {
     card.className = `anime-card ${variant === 'schedule' ? 'anime-card-schedule' : ''} ${variant === 'jk' ? 'anime-card-jk' : ''}`.trim();
     if (anime.day) card.dataset.day = anime.day;
 
-    card.href = episodioUrl ? `/ver?id=${id}&episode=${episodioUrl}` : `/anime.html?id=${id}`;
+    card.href = episodioUrl ? `/ver?id=${id}&episode=${episodioUrl}` : `/anime?id=${id}`;
     card.setAttribute('aria-label', episodioUrl ? `Ver ${titleText} episodio ${episodioUrl}` : `Ver ${titleText}`);
 
     card.innerHTML = `
