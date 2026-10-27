@@ -356,6 +356,7 @@ async function enviarPrompt(prompt, seccion) {
     try {
         const respuesta = await fetchIAResponse(prompt);
         window.ultimaRespuesta = respuesta;
+        console.log(respuesta);
         await mostrarRelacionadosDesdeRespuesta(respuesta, seccion);
     } catch (error) {
         console.error('Error al enviar prompt:', error);
