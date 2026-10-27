@@ -19,11 +19,8 @@ const temaValido = (tema) => THEME_CONFIG.themes.includes(tema) ? tema : THEME_C
 const provider = new GoogleAuthProvider();
 let userCached = null;
 
-console.log('[Preferencias] módulo cargado. readyState=', document.readyState);
-
 const aplicarTema = (tema) => {
   const next = temaValido(tema);
-  console.log('[Preferencias] aplicarTema ->', next);
   localStorage.setItem('theme', next);
   window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
 };
@@ -43,11 +40,9 @@ const actualizarBtnSidebar = () => {
 };
 
 const loginConGoogle = async () => {
-  console.log('[Preferencias] login: usando auth de firebase-login.js');
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
-    console.log('[Preferencias] login OK', user.uid);
 
     const refUsuario = doc(db, 'usuarios', user.uid);
     const docSnap = await getDoc(refUsuario);
@@ -70,7 +65,6 @@ const loginConGoogle = async () => {
 };
 
 const logoutConGoogle = async () => {
-  console.log('[Preferencias] logout');
   try {
     limpiarCacheUsuario();
     await signOut(auth);
@@ -129,7 +123,6 @@ const updateUIForUser = (user) => {
 };
 
 const exportarDatos = async (btnElement) => {
-  console.log('[Preferencias] exportar datos. user=', auth.currentUser?.uid || null);
   if (!auth.currentUser) {
     document.getElementById('btn-auth').click();
     return;
@@ -170,12 +163,6 @@ const exportarDatos = async (btnElement) => {
     ]);
 
     const perfil = perfilSnap.exists() ? perfilSnap.data() : {};
-    console.log('[Preferencias] export counts', {
-      pendiente: pendiente.length,
-      viendo: viendo.length,
-      visto: visto.length,
-      favoritos: favoritos.length
-    });
 
     const userData = {
       usuario: {
@@ -206,7 +193,6 @@ const exportarDatos = async (btnElement) => {
     link.remove();
     URL.revokeObjectURL(url);
 
-    console.log('[Preferencias] export OK');
     btnElement.textContent = '¡Listo!';
   } catch (error) {
     console.error('[Preferencias] Error al exportar datos:', error);
@@ -221,11 +207,9 @@ const exportarDatos = async (btnElement) => {
 
 function initPreferencias() {
   if (window.__preferenciasInit) {
-    console.log('[Preferencias] ya inicializado, skip');
     return;
   }
   window.__preferenciasInit = true;
-  console.log('[Preferencias] init controles');
 
   const cachedName = localStorage.getItem('cachedUserDisplayName');
   if (cachedName) {
@@ -243,7 +227,6 @@ function initPreferencias() {
       const current = temaValido(localStorage.getItem('theme'));
       const idx = THEME_CONFIG.themes.indexOf(current);
       const next = THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
-      console.log('[Preferencias] click tema', current, '->', next);
       aplicarTema(next);
       actualizarBtnTema();
 
@@ -267,7 +250,6 @@ function initPreferencias() {
       const newState = document.body.classList.contains('sidebar-collapsed');
       localStorage.setItem('sidebarCollapsed', newState);
       actualizarBtnSidebar();
-      console.log('[Preferencias] sidebarCollapsed =', newState);
     });
   } else {
     console.warn('[Preferencias] #btn-sidebar-toggle no encontrado');
@@ -279,7 +261,6 @@ function initPreferencias() {
     window.dispatchEvent(new CustomEvent('estadoAnimacionesCambiado', {
       detail: { activas }
     }));
-    console.log('[Preferencias] animaciones =', activas, 'clase animaciones-off =', !activas);
   };
 
   const toggleAnimaciones = document.getElementById('toggle-animaciones');
@@ -311,7 +292,6 @@ function initPreferencias() {
       // preferencia manual y volvería a encender los efectos por accidente.
       document.body.classList.add('animaciones-off');
       if (avisoAhorroBateria) avisoAhorroBateria.style.display = 'block';
-      console.log('[Preferencias] Ahorro de batería activo; se puede anular desde el control de animaciones');
     } else {
       aplicarAnimaciones(animacionesOn);
     }
@@ -329,7 +309,6 @@ function initPreferencias() {
         localStorage.setItem('ahorroBateriaActivo', 'false');
         if (toggleAhorroBateria) toggleAhorroBateria.checked = false;
         if (avisoAhorroBateria) avisoAhorroBateria.style.display = 'none';
-        console.log('[Preferencias] Animaciones activadas manualmente durante ahorro activo; ahorro automático desactivado');
       }
       aplicarAnimaciones(toggleAnimaciones.checked);
       // location.reload();
@@ -343,7 +322,6 @@ function initPreferencias() {
     localStorage.setItem('ahorroBateriaAuto', String(ahorroBateriaOn));
     toggleAhorroBateria.addEventListener('change', () => {
       localStorage.setItem('ahorroBateriaAuto', String(toggleAhorroBateria.checked));
-      console.log('[Preferencias] ahorroBateriaAuto =', toggleAhorroBateria.checked);
 
       // Solicita al detector de batería una evaluación inmediata, en lugar de
       // esperar un cambio de nivel/carga o una recarga de la página.
@@ -374,7 +352,6 @@ function initPreferencias() {
       localStorage.setItem('continuar_viendo_pos', nextCV);
       document.body.classList.remove('cv-main', 'cv-sidebar', 'cv-ambas');
       document.body.classList.add(nextCV);
-      console.log('[Preferencias] continuar_viendo_pos =', nextCV);
     });
   }
 
@@ -390,7 +367,6 @@ function initPreferencias() {
         indexpagination.classList.remove('top', 'bottom', 'floating', 'fixed');
         indexpagination.classList.add(nextNav);
       }
-      console.log('[Preferencias] indexpaginationPosition =', nextNav);
     });
   }
 
@@ -400,7 +376,6 @@ function initPreferencias() {
     toggleAdblock.checked = adblockOn;
     toggleAdblock.addEventListener('change', () => {
       localStorage.setItem('bloquearAnuncios', String(toggleAdblock.checked));
-      console.log('[Preferencias] bloquearAnuncios =', toggleAdblock.checked);
     });
   }
 
@@ -418,7 +393,6 @@ function initPreferencias() {
     selectServers.value = currentServer === 'dob' ? 'dob' : 'sub';
     selectServers.addEventListener('change', (e) => {
       localStorage.setItem('serverPreference', e.target.value);
-      console.log('[Preferencias] serverPreference =', e.target.value);
     });
   }
 
@@ -437,7 +411,6 @@ function initPreferencias() {
       const originalText = btnClearCache.textContent;
       btnClearCache.textContent = 'Limpiando...';
       btnClearCache.disabled = true;
-      console.log('[Preferencias] limpiar caché');
 
       try {
         localStorage.clear();
@@ -464,7 +437,6 @@ function initPreferencias() {
     btnAuth.addEventListener('click', (e) => {
       e.preventDefault();
       const loggedIn = !!(auth.currentUser || userCached);
-      console.log('[Preferencias] click auth. loggedIn=', loggedIn, 'auth.currentUser=', !!auth.currentUser);
       if (loggedIn) {
         logoutConGoogle();
       } else {
@@ -491,7 +463,6 @@ const cargarTemaDesdeFirestore = async () => {
 };
 
 auth.onAuthStateChanged((user) => {
-  console.log('[Preferencias] authState', user ? user.uid : null);
   userCached = user;
   if (!user) {
     updateUIForUser(null);

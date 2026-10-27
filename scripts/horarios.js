@@ -247,40 +247,31 @@ const processData = (data, isInitial = false) => {
 
 const init = async () => {
   const cachedString = localStorage.getItem(CACHE_KEY);
-  
+
   if (cachedString) {
     try {
-      console.log("💾 Cargando horarios desde caché local...");
       const parsedCache = JSON.parse(cachedString);
       processData(parsedCache, true);
     } catch (e) {
-      console.error("⚠️ Error leyendo la caché, limpiando...", e);
+      console.error("Error leyendo la caché, limpiando...", e);
       localStorage.removeItem(CACHE_KEY);
     }
-  } else {
-    console.log("🔍 No hay caché disponible. Esperando a la API...");
   }
 
   try {
     const response = await fetch(API_URL);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
+
     const rawData = await response.json();
     const cleanData = rawData.filter(d => d.day !== "Buscar anime" && d.animes && d.animes.length > 0);
     const apiString = JSON.stringify(cleanData);
-    
+
     if (apiString !== cachedString) {
-      console.log("🔄 Los datos de la API son nuevos o diferentes. Actualizando caché y renderizando...");
       localStorage.setItem(CACHE_KEY, apiString);
       processData(cleanData, !cachedString);
-    } else {
-      console.log("✅ Los datos de la caché están 100% sincronizados con la API.");
     }
   } catch (error) {
-    console.error("❌ Error de conexión al cargar la API de horarios:", error);
-    if (!cachedString && DOM.grid) {
-      console.log("Error de conexión al cargar horarios.");
-    }
+    console.error("Error de conexión al cargar la API de horarios:", error);
   }
 };
 

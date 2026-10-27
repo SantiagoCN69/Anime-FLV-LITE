@@ -964,8 +964,6 @@ async function actualizarCapitulosVistos(animeId, episodiosLimpios) {
     await setDoc(ref, {
       episodiosVistos: episodiosLimpios
     }, { merge: true });
-    
-    console.log("Base de datos limpia: episodios inválidos eliminados con éxito.");
   } catch (error) {
     console.error("Error al limpiar los capítulos en Firestore:", error);
   }
@@ -1090,7 +1088,6 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
 
         if (nuevosVistos.length === 0) {
           await deleteDoc(ref);
-          console.log('🗑️ Documento eliminado:', animeId, '(no quedan episodios vistos)');
         } else {
           // Verificar si aún se vieron todos los capítulos FILTRADOS
           const totalFiltrados = episodiosFiltrados.length;
@@ -1275,7 +1272,6 @@ function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = [
 
 async function cargarAnime(idauxiliar) {
   if (idauxiliar) {
-    console.log(idauxiliar);
     id = idauxiliar;
   }
   if (!id) {
@@ -1622,7 +1618,6 @@ async function actualizarEstadoFirebase(estado) {
     if (!animes.includes(id)) {
       animes.push(id);
       await setDoc(estadoRef, { animes }, { merge: true });
-      console.log(estadoLower);
       mostrarPildora(estadoLower, true, document.getElementById('titulo')?.textContent || '');
     }
   } catch (error) {
@@ -1684,7 +1679,6 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
         if (animesActualizados.length !== estadoDoc.data().animes.length) {
           await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
           console.log(estadoId);
-          mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');
         }
       }
     } catch (error) {
@@ -1991,7 +1985,6 @@ async function actualizarFinalizadoPorLotes() {
       for (const docSnap of batch) {
         const data = docSnap.data();
         const animeId = docSnap.id;
-        console.log(`🔍 Procesando ${animeId}...`);
         promesas.push(
           (async () => {
             try {
@@ -2000,26 +1993,21 @@ async function actualizarFinalizadoPorLotes() {
                 const animeData = animeDoc.data();
                 const estado = (animeData.estado || animeData.status || '').toLowerCase();
                 const esFinalizadoPorEstado = estado === 'finalizado' || estado === 'completed';
-                
+
                 // Verificar si se vieron todos los capítulos
                 const episodiosVistos = (data.episodiosVistos || []).length;
                 const totalEpisodios = Array.isArray(animeData.episodios) ? animeData.episodios.length : Object.keys(animeData.episodios || {}).length;
                 const vistosTodosLosCaps = totalEpisodios > 0 && episodiosVistos >= totalEpisodios;
                 const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
-                
-                console.log(`  📊 ${animeId}: estado="${estado}" esFinalizadoPorEstado=${esFinalizadoPorEstado} vistos=${episodiosVistos}/${totalEpisodios} vistosTodos=${vistosTodosLosCaps} esFinalizadoPorVistos=${esFinalizadoPorVistos}`);
-                
+
                 await setDoc(docSnap.ref, {
                   esFinalizadoPorVistos: esFinalizadoPorVistos
                 }, { merge: true });
-                
-                console.log(`✅ Actualizado: ${animeId} - esFinalizadoPorVistos: ${esFinalizadoPorVistos}`);
+
                 actualizados++;
-              } else {
-                console.warn(`⚠️ Anime no existe en datos-animes: ${animeId}`);
               }
             } catch (e) {
-              console.error(`❌ Error actualizando ${animeId}:`, e);
+              console.error(`Error actualizando ${animeId}:`, e);
             }
           })()
         );

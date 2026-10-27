@@ -170,13 +170,9 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
         renderPagination();
         actualizarPaginaUI();
         actualizarFiltrosSeleccionados();
-
-        console.log("Cache renderizado");
-      } else {
-        console.log("No existe cache");
       }
     } catch (e) {
-      console.log("Error leyendo cache", e);
+      console.error("Error leyendo cache", e);
     }
 
     try {
@@ -185,11 +181,8 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
       const data = await res.json();
 
       if (cache && JSON.stringify(cache) === JSON.stringify(data)) {
-        console.log("API igual al cache");
         return;
       }
-
-      console.log("API más reciente");
 
       totalPaginas = Number(data.PaginasTotales || 1);
 
@@ -200,7 +193,6 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
 
       localStorage.setItem(CACHE_KEY, JSON.stringify(data));
 
-      console.log("Cache actualizado");
       window.scrollTo({ top: 0, behavior: 'smooth' });
       document.querySelector('#filtrosjk').classList.remove('mobile-active');
     } catch (err) {
@@ -211,7 +203,6 @@ const aplicarFiltros = async (pagina = 1, usarCache = false) => {
   }
 
   try {
-    console.log("Consultando API... ", params);
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/browse?source=jkanime&${params}`);
     const data = await res.json();
 

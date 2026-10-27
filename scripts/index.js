@@ -13,7 +13,6 @@ if ('serviceWorker' in navigator) {
           const newWorker = registration.installing;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Nueva versión del Service Worker disponible');
               // Aquí podrías mostrar una notificación al usuario
             }
           });
@@ -26,7 +25,6 @@ if ('serviceWorker' in navigator) {
   
   // Escuchar cambios en el control del service worker
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    console.log('Service Worker controlador cambiado');
     window.location.reload();
   });
 }
@@ -328,7 +326,6 @@ function actualizarIndicadorActivo(targetItem = null) {
   if (!itemToUse || !esDeListaPrincipal) {
     if (targetItem === null) {
       // Solo en modo no-hover: aplicar fallback
-      console.log('No hay elemento válido (no hover): aplicando left(-4px)');
       indicator.style.left = '-4px';
     }
     // En modo hover con elemento inválido: no hacer nada (dejar el indicador donde está)
@@ -452,7 +449,6 @@ async function cargarUltimosCapsVistos() {
   if (!ultimosCapsContainer) return;
 
   if (!userID || userID === "null") {
-    console.log('⚠️ Usuario no autenticado');
     sectionsidebar.style.display = 'none';
     inicializarContinuarViendo();
     return;
@@ -1074,8 +1070,6 @@ async function cargarhistorial() {
     historialContainer.classList.add('hidden');
     if (sectionHistorial) sectionHistorial.classList.add('hidden');
 
-    console.log("Historial insuficiente (se requieren más de 3 elementos)");
-
   }
 }
 
@@ -1083,7 +1077,6 @@ function guardarCache2(key, data) {
   try {
     if (!data || !data.length) {
       localStorage.removeItem(key);
-      console.log('No hay datos para guardar en caché');
       return;
     }
     const dataToCache = data.slice(0, 10);

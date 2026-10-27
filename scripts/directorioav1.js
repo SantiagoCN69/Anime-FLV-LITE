@@ -134,24 +134,19 @@ function centrarPaginacion() {
 async function cambiarPagina(page) {
     currentPage = page;
     DOM.resultados.innerHTML = `<span class="span-carga">Cargando servidores...</span>`;
-    
+
     try {
-        console.log('Cambiando página a:', page);
-        
         // Construir query string limpio sin DirectorioAV1
         const params = new URLSearchParams(window.location.search);
         params.delete('DirectorioAV1');
         params.set('page', page);
-        
+
         const queryString = params.toString();
-        console.log('API_BASE_URL:', API_BASE_URL);
-        console.log('Query string limpia:', queryString);
-        console.log('URL completa:', `${API_BASE_URL}&${queryString}`);
-        
+
         const data = await fetchData(`${API_BASE_URL}&${queryString}`);
         renderizarResultados(data.animes);
         updatePagination(data);
-        
+
         // Actualizar URL en el navegador
         history.pushState({}, '', `?DirectorioAV1&${queryString}`);
         window.scrollTo({ top: 0, behavior: 'smooth' });

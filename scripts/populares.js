@@ -92,7 +92,6 @@ async function fetchMALRanking(params = {}) {
   const cacheKey = `mal_ranking_${JSON.stringify(params)}`;
   const cached = getMalCache(cacheKey);
   if (cached) {
-    console.log('✅ Usando caché de memoria');
     return cached;
   }
 
@@ -105,7 +104,6 @@ async function fetchMALRanking(params = {}) {
     });
 
     const url = `${MAL_PROXY_URL}?${queryParams.toString()}`;
-    console.log('🔗 Fetching:', params.ranking_type || 'bypopularity', 'page', (params.offset / 20) + 1);
 
     const response = await fetch(url);
 
@@ -132,12 +130,11 @@ async function fetchMALRanking(params = {}) {
       paging: data.paging || {}
     };
 
-    console.log('� Recibidos:', transformedData.animes.length, 'animes');
     setMalCache(cacheKey, transformedData);
     return transformedData;
 
   } catch (error) {
-    console.error('❌ Error en MAL:', error.message);
+    console.error('Error en MAL:', error.message);
     throw error;
   }
 }
@@ -180,26 +177,19 @@ async function cargarPopulares() {
 
     container.innerHTML = '<span class="span-carga">Cargando animes populares...</span>';
 
-    console.log('📄 Cargando página:', currentPage, '- Ranking:', rankingType);
-
     // Verificar cache SOLO en página 1
     const cacheKey = `${CACHE_KEY}_${rankingType}_${currentPage}`;
     const cachedData = currentPage === 1 ? localStorage.getItem(cacheKey) : null;
-
-    console.log('🔍 Cache key:', cacheKey);
-    console.log('💾 Cache existe:', !!cachedData);
-    console.log('📌 Caché habilitado solo para página 1:', currentPage === 1);
 
     // CARGA INSTANTÁNEA: Si hay caché y es página 1, mostrarlo primero
     if (cachedData && currentPage === 1) {
       try {
         const parsedCache = JSON.parse(cachedData);
-        console.log('⚡ Carga instantánea desde localStorage:', parsedCache.data?.length, 'animes');
         renderizarResultados(parsedCache.data || []);
         updatePagination(parsedCache.paging || {});
         centrarPaginacion();
       } catch (e) {
-        console.error('❌ Error al parsear caché:', e);
+        console.error('Error al parsear caché:', e);
       }
     }
 
@@ -212,7 +202,6 @@ async function cargarPopulares() {
     });
 
     let animes = malData.animes || [];
-    console.log('📊 Animes recibidos de API:', animes.length);
 
     // COMPARACIÓN: Verificar si los datos cambiaron (solo en página 1)
     let datosCambiaron = true;
@@ -227,32 +216,25 @@ async function cargarPopulares() {
         const nuevosIds = nuevosAnimes.map(a => a.title).join(',');
 
         datosCambiaron = cachedIds !== nuevosIds;
-        console.log('🔄 Datos cambiaron:', datosCambiaron ? 'SÍ - Actualizando' : 'NO - Mismo contenido');
       } catch (e) {
-        console.error('❌ Error al comparar caché:', e);
+        console.error('Error al comparar caché:', e);
       }
     }
 
     // Solo actualizar render si los datos cambiaron o no es página 1
     if (datosCambiaron || currentPage !== 1) {
-      console.log('🎨 Renderizando con datos actualizados');
       renderizarResultados(animes);
       updatePagination(malData.paging);
       centrarPaginacion();
-    } else {
-      console.log('✅ Manteniendo visualización del caché (sin cambios)');
     }
 
     // Guardar en localStorage SOLO si es página 1
     if (currentPage === 1) {
       localStorage.setItem(cacheKey, JSON.stringify({ data: animes, paging: malData.paging }));
-      console.log('💾 Guardado en localStorage:', cacheKey);
-    } else {
-      console.log('📌 No guardando en localStorage (página', currentPage, '- solo página 1 usa caché)');
     }
 
   } catch (error) {
-    console.error('❌ Error al cargar populares desde API:', error);
+    console.error('Error al cargar populares desde API:', error);
 
     // Verificar si hay caché disponible
     const cacheKey = `${CACHE_KEY}_${rankingType}_${currentPage}`;

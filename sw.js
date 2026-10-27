@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.28';
+const CACHE_VERSION = 'v8.6.30';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -78,13 +78,9 @@ const STATIC_ASSETS = [
 // ─────────────────────────────────────────────
 
 self.addEventListener('install', (event) => {
-  console.log('[SW] Instalando:', CACHE_VERSION);
-
   event.waitUntil(
     (async () => {
       const cache = await caches.open(STATIC_CACHE);
-
-      console.log('[SW] Precargando recursos estáticos');
 
       const failed = [];
 
@@ -105,8 +101,6 @@ self.addEventListener('install', (event) => {
           failed
         );
       }
-
-      console.log('[SW] Instalación completada');
 
       await self.skipWaiting();
     })()
@@ -136,8 +130,6 @@ async function cacheAsset(cache, url) {
 // ─────────────────────────────────────────────
 
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activando:', CACHE_VERSION);
-
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
@@ -147,8 +139,6 @@ self.addEventListener('activate', (event) => {
               cacheName !== STATIC_CACHE &&
               cacheName !== PAGE_CACHE
             ) {
-              console.log('[SW] Eliminando cache:', cacheName);
-
               return caches.delete(cacheName);
             }
 
@@ -157,8 +147,6 @@ self.addEventListener('activate', (event) => {
         );
       })
       .then(() => {
-        console.log('[SW] Activación completada');
-
         return self.clients.claim();
       })
   );
@@ -303,8 +291,6 @@ async function networkFirstPage(request) {
     return response;
 
   } catch (error) {
-    console.log('[SW] Offline:', request.url);
-
     const cachedResponse = await caches.match(request);
 
     if (cachedResponse) {
@@ -443,11 +429,6 @@ async function staleWhileRevalidate(request) {
 // ─────────────────────────────────────────────
 
 self.addEventListener('sync', (event) => {
-  console.log(
-    '[SW] Background Sync:',
-    event.tag
-  );
-
   // Aquí puedes implementar posteriormente
   // sincronización de datos pendientes.
 });
@@ -457,8 +438,6 @@ self.addEventListener('sync', (event) => {
 // ─────────────────────────────────────────────
 
 self.addEventListener('push', (event) => {
-  console.log('[SW] Push recibido');
-
   let data = {
     title: 'AniZen',
     body: 'Nueva notificación',

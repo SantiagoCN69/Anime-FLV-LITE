@@ -217,16 +217,13 @@ let isFirstLoad = true;
 
 onAuthStateChanged(auth, (user) => {
   if (userCached?.uid === user?.uid && user !== null && !isFirstLoad) {
-    console.log('[Auth] ✅ Usuario sin cambios, evitando re-render innecesario');
     return;
   }
-  
+
   if (isFirstLoad) {
     isFirstLoad = false;
-  } else {
-    console.log('[Auth] Cambio de usuario detectado');
   }
-  
+
   userCached = user;
   
   if (!user) {
