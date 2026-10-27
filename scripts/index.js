@@ -417,7 +417,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   portada.alt = itemData.titulo;
   portada.className = 'portada-anime';
   portada.onerror = () => {
-    portada.src = 'path/to/default/image.png'; 
+    portada.src = '/icons/poster.png';
   };
   
   const contenedorTexto = document.createElement('div');
