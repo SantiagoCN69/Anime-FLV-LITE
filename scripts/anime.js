@@ -1312,7 +1312,6 @@ async function cargarAnime(idauxiliar) {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
     const anime = normalizarDatosAPI(data);
-    if (anime) { console.log(anime) }
 
     if (!anime) {
       if (firestoreData && firestoreData.manual === true) {
@@ -1678,7 +1677,7 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
         const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
         if (animesActualizados.length !== estadoDoc.data().animes.length) {
           await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
-          console.log(estadoId);
+          mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');
         }
       }
     } catch (error) {
@@ -1939,7 +1938,6 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
         const confirmBtn = document.getElementById("confirm-login");
         if (confirmBtn) confirmBtn.click();
       };
-      console.log("Pildora de no-user creada con evento de clic");
     }
   } else {
     pill.textContent = estado ? "Acción realizada" : "Acción revertida";
@@ -1956,23 +1954,18 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
 
 // Función para actualizar campo esFinalizadoPorVistos por lotes desde Firestore
 async function actualizarFinalizadoPorLotes() {
-  console.log('🔄 Iniciando actualizarFinalizadoPorLotes...');
   try {
     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
     if (!userId) {
-      console.warn("No hay usuario autenticado para actualizar finalizado.");
       return;
     }
-    console.log('✅ Usuario autenticado:', userId);
 
     const ref = collection(db, "usuarios", userId, "caps-vistos");
     const snap = await getDocs(ref);
-    
+
     if (snap.empty) {
-      console.log("✅ No hay documentos para actualizar.");
       return;
     }
-    console.log(`📦 Total documentos encontrados: ${snap.docs.length}`);
 
     let actualizados = 0;
     const batchSize = 10; // Procesar en lotes de 10
@@ -2014,13 +2007,10 @@ async function actualizarFinalizadoPorLotes() {
       }
 
       await Promise.all(promesas);
-      console.log(`📊 Progreso: ${Math.min(i + batchSize, docs.length)}/${docs.length} documentos procesados`);
     }
 
-    console.log(`✅ Actualización completada: ${actualizados} documentos actualizados.`);
-
   } catch (error) {
-    console.error("❌ Error al actualizar finalizado por lotes:", error);
+    console.error("Error al actualizar finalizado por lotes:", error);
   }
 }
 
@@ -2030,41 +2020,33 @@ async function limpiarDocumentosVacios() {
   try {
     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
     if (!userId) {
-      console.warn("No hay usuario autenticado para limpiar documentos.");
       return;
     }
-    
+
     const ref = collection(db, "usuarios", userId, "caps-vistos");
     const snap = await getDocs(ref);
-    
+
     if (snap.empty) {
-      console.log("✅ No hay documentos para limpiar.");
       return;
     }
-    
-    let eliminados = 0;
+
     const promesasEliminacion = [];
-    
+
     snap.docs.forEach(docSnap => {
       const data = docSnap.data();
       const episodiosVistos = data.episodiosVistos || [];
-      
+
       if (!Array.isArray(episodiosVistos) || episodiosVistos.length === 0) {
-        console.log('🗑️ Eliminando documento vacío:', docSnap.id);
         promesasEliminacion.push(deleteDoc(docSnap.ref));
-        eliminados++;
       }
     });
-    
+
     if (promesasEliminacion.length > 0) {
       await Promise.all(promesasEliminacion);
-      console.log(`✅ Limpieza completada: ${eliminados} documentos eliminados.`);
-    } else {
-      console.log("✅ No se encontraron documentos vacíos.");
     }
-    
+
   } catch (error) {
-    console.error("❌ Error al limpiar documentos vacíos:", error);
+    console.error("Error al limpiar documentos vacíos:", error);
   }
 }
 // ejecutar 1 vez
@@ -2074,28 +2056,23 @@ async function ejecutarMantenimientoUnaVez() {
 
   if (yaEjecutado === "true") {
     // Si ya está en true, no hacemos nada
-    // console.log("✅ El mantenimiento de la base de datos ya se realizó anteriormente.");
   } else {
     const userId = auth.currentUser?.uid || localStorage.getItem("userID");
     if (!userId) {
-      console.warn("⏳ El mantenimiento se pospone hasta que haya un usuario autenticado.");
       return;
     }
 
     // Si no existe o es falso, ejecutamos el proceso
     try {
-      console.log("⏳ Iniciando limpieza y actualización de documentos...");
-      
       // Ejecutamos tus funciones esperando a que terminen
       await limpiarDocumentosVacios();
       await actualizarFinalizadoPorLotes();
-      
+
       // Guardamos en el localStorage para no volver a hacerlo
       localStorage.setItem(cacheKey, "true");
-      console.log("✅ Mantenimiento finalizado y guardado en local.");
-      
+
     } catch (error) {
-      console.error("❌ Ocurrió un error ejecutando el mantenimiento:", error);
+      console.error("Error ejecutando el mantenimiento:", error);
     }
   }
 }
