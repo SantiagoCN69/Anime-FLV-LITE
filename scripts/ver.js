@@ -35,6 +35,7 @@ function quitarSufijoTemporada(titulo) {
     .replace(/(?:\s|-)(?:season|temporada)[\s-]*\d+\b.*$/i, "")
     .replace(/(?:\s|-)(?:second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|primera|segunda|tercera|cuarta|quinta|sexta|séptima|septima|octava|novena|décima|decima)[\s-]+(?:season|temporada)\b.*$/i, "")
     .replace(/(?:\s|-)dai[\s-]+\d+[\s-]+ki\b.*$/i, "")
+    .replace(/(?:\s|-)r\d+\b.*$/i, "")
     .trim();
 }
 
@@ -76,7 +77,9 @@ function detectarTemporadaDesdeAnimeId(id) {
     /(?:^|-)(?:s|t)-(\d+)(?:-|$)/,
     /(?:^|-)(?:s|t)(\d+)(?:-|$)/,
     /(?:^|-)(?:season|temporada)(\d+)(?:-|$)/,
-    /(?:^|-)dai-(\d+)-ki(?:-|$)/
+    /(?:^|-)dai-(\d+)-ki(?:-|$)/,
+    /-r(\d+)(?:-|$)/,
+    /(?:^|-)r(\d+)(?:-|$)/
   ];
 
   for (const patron of patrones) {
@@ -113,13 +116,27 @@ async function verificarTemporadaTMDB(tmdbId, temporada) {
 }
 
 async function resolverTemporadaVidrift(tmdbId, temporadaGuardada) {
+  // Solo loggear si no es una precarga
+  if (!window._temporadaLogHecho) {
+    console.log("📋 resolverTemporadaVidrift llamado con:", { tmdbId, temporadaGuardada, animeId });
+    window._temporadaLogHecho = true;
+  }
+
+  // Detectar si el animeId tiene un sufijo de temporada explícito
+  const temporadaDetectada = detectarTemporadaDesdeAnimeId(animeId);
+  const tieneSufijoTemporada = temporadaDetectada !== 1;
+
+  if (!window._temporadaLogHecho) {
+    console.log("🔍 Tiene sufijo de temporada:", tieneSufijoTemporada, "temporadaDetectada:", temporadaDetectada);
+  }
+
+  // Solo usar la temporada guardada si NO hay un sufijo de temporada en el nombre
   const temporadaManual = Number(temporadaGuardada);
-  if (Number.isInteger(temporadaManual) && temporadaManual > 0) {
+  if (!tieneSufijoTemporada && Number.isInteger(temporadaManual) && temporadaManual > 0) {
     logVidrift("Temporada recuperada de Firestore", { animeId, tmdbId, temporada: temporadaManual });
     return temporadaManual;
   }
 
-  const temporadaDetectada = detectarTemporadaDesdeAnimeId(animeId);
   logVidrift("Temporada detectada desde el slug", { animeId, tmdbId, temporada: temporadaDetectada });
 
   const existe = await verificarTemporadaTMDB(tmdbId, temporadaDetectada);
@@ -133,6 +150,7 @@ async function resolverTemporadaVidrift(tmdbId, temporadaGuardada) {
 }
 
 async function seleccionarResultadoTMDBParaVidrift(resultados) {
+  console.log("📋 seleccionarResultadoTMDBParaVidrift llamado con:", { animeId, resultadosCount: resultados.length });
   const temporada = detectarTemporadaDesdeAnimeId(animeId);
 
   for (const resultado of resultados) {
@@ -162,9 +180,9 @@ const MODO_DIAGNOSTICO_REPRODUCTOR = false;
 // de pistas sin español; los estados genéricos x1/x2 no cuentan como prueba.
 const FALLBACK_AUTOMATICO_ACTIVO = true;
 const esDesarrollo = ["localhost", "127.0.0.1"].includes(location.hostname) || location.protocol === "file:";
-const debugLog = () => {};
-const logVidrift = () => {};
-const logVidriftClave = () => {};
+const debugLog = console.log;
+const logVidrift = console.log;
+const logVidriftClave = console.log;
 
 // Algunos proveedores pueden forzar una navegación del documento superior. El
 // navegador limpia la consola en ese caso, así que conservamos el último salto
@@ -1282,7 +1300,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `/ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `/ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;
@@ -2065,7 +2083,6 @@ async function mostrarVideo(link, botonSeleccionado) {
         // Algunos proveedores terminan de exponer las pistas unos segundos
         // después de cargar o de cambiar de servidor interno.
         intervaloEstadoVidrift = setInterval(solicitarEstadoVidrift, 1500);
-        debugLog("Iframe de Vidrift cargado.");
       });
 
       if (reproduccionId !== reproduccionActualId) return;
@@ -2381,8 +2398,6 @@ window.addEventListener('message', (event) => {
   if (event.origin !== 'https://embed.vidrift.net' && event.origin !== 'https://vidrift.net') {
     return;
   }
-
-  debugLog("Mensaje recibido de Vidrift.", event.data);
 
   // Un capítulo marcado como no emitido no podrá reproducirse en Vidrift.
   // Solo atendemos el iframe visible para no reaccionar a mensajes atrasados.
