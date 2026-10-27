@@ -137,7 +137,7 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id
   img.alt = titulo; 
   img.className = 'portada-anime';
   img.onerror = () => {
-    img.src = 'path/to/default/image.png'; // Nota: Ajusta esta ruta a tu imagen por defecto real
+    img.src = '/icons/poster.png';
   };
 
   const contenedorTexto = document.createElement('div');
