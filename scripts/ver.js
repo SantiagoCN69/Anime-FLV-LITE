@@ -155,15 +155,16 @@ const animeId = params.get("id");
 const episodeNumber = params.get("episode");
 const serversParam = params.get("servers"); // "sub" o "dob"
 
-// Los mensajes detallados solo son útiles durante desarrollo. En producción se
-// conservan los errores y advertencias operativas, sin llenar la consola.
+// Los eventos detallados solo se muestran durante desarrollo. En producción
+// se conservan los errores y cambios automáticos que requieren atención.
+const MODO_DIAGNOSTICO_REPRODUCTOR = false;
+// Se cambia solo tras confirmar que el servidor ya entregó una lista estable
+// de pistas sin español; los estados genéricos x1/x2 no cuentan como prueba.
+const FALLBACK_AUTOMATICO_ACTIVO = true;
 const esDesarrollo = ["localhost", "127.0.0.1"].includes(location.hostname) || location.protocol === "file:";
-const debugLog = (...args) => {
-  if (esDesarrollo) console.debug("[AniZen]", ...args);
-};
-const logVidrift = (...args) => {
-  if (esDesarrollo) console.info("[Vidrift]", ...args);
-};
+const debugLog = () => {};
+const logVidrift = () => {};
+const logVidriftClave = () => {};
 
 // Algunos proveedores pueden forzar una navegación del documento superior. El
 // navegador limpia la consola en ese caso, así que conservamos el último salto
@@ -173,16 +174,12 @@ try {
   const saltoPendiente = sessionStorage.getItem(CLAVE_ULTIMO_SALTO_SERVIDOR);
   if (saltoPendiente) {
     sessionStorage.removeItem(CLAVE_ULTIMO_SALTO_SERVIDOR);
-    const salto = JSON.parse(saltoPendiente);
-    console.warn("[Reproducción] La página se recargó después de un cambio automático. Registro recuperado:", salto);
   }
 } catch {
   // sessionStorage puede no estar disponible en navegadores con privacidad estricta.
 }
 
 function registrarCambioAutomaticoServidor(detalles) {
-  // Error se muestra incluso cuando DevTools está filtrando advertencias.
-  console.error("[Reproducción] Cambio automático de servidor.", detalles);
   try {
     sessionStorage.setItem(CLAVE_ULTIMO_SALTO_SERVIDOR, JSON.stringify({
       ...detalles,
@@ -190,7 +187,7 @@ function registrarCambioAutomaticoServidor(detalles) {
     }));
     setTimeout(() => sessionStorage.removeItem(CLAVE_ULTIMO_SALTO_SERVIDOR), 15000);
   } catch {
-    // El aviso de consola sigue funcionando aunque no se pueda persistir.
+    // No se puede persistir
   }
 }
 const btnVolverAnime = document.getElementById("btn-volver-anime");
@@ -248,7 +245,7 @@ function activarModoApiDirecta(error) {
 
   firestoreEnPausaPorCuota = true;
   if (!avisoCuotaMostrado) {
-    console.warn("[Firestore] Cuota temporal agotada; se usará la API directamente durante esta sesión.");
+
     avisoCuotaMostrado = true;
   }
   return true;
@@ -652,7 +649,7 @@ async function toggleYGuardarEstadoCapitulo() {
 
       mostrarPildora(nuevoEstadoVisto, episodioActualIndex);
     } catch (error) {
-      console.error("Error al guardar estado del capítulo en Firestore:", error);
+
       // Revertir UI en caso de error
       // await refrescarUIEstadoCapitulo();
     }
@@ -666,7 +663,7 @@ document.addEventListener("authStateReady", async (event) => {
     try {
       await refrescarUIEstadoCapitulo();
     } catch (error) {
-      console.error("Error en refrescarUIEstadoCapitulo tras authStateReady", error);
+
     }
   } else {
     debugLog("Usuario no autenticado según authStateReady.");
@@ -697,7 +694,7 @@ btnEstadoCapitulo.addEventListener("click", async () => {
     await toggleYGuardarEstadoCapitulo();
     await refrescarUIEstadoCapitulo();
   } catch (error) {
-    console.error("Error al cambiar y guardar estado del capítulo", error);
+
   }
 });
 
@@ -723,7 +720,7 @@ if (btnShare) {
         });
       }
     } catch (error) {
-      console.error("Error al compartir:", error);
+
     }
   });
 }
@@ -794,7 +791,7 @@ async function manejarNoticias() {
       });
     }
   } catch (error) {
-    console.error("Error al cargar noticias de Firestore:", error);
+
   }
 
   // 2. Cargar noticias desde la API
@@ -820,11 +817,11 @@ async function manejarNoticias() {
         const noticiasRef = doc(db, "noticias", "noticias");
         await setDoc(noticiasRef, { noticias: noticiasAPI });
       } catch (error) {
-        console.error("Error al guardar noticias en Firestore:", error);
+
       }
     }
   } catch (error) {
-    console.error("Error al verificar noticias:", error);
+
   } finally {
     initLoadingNoticias.style.display = 'none';
   }
@@ -1072,7 +1069,7 @@ async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
     }
   } catch (error) {
     if (!activarModoApiDirecta(error)) {
-      console.error("[Servidores] ❌ Error al leer Firestore:", error);
+
     }
   }
 
@@ -1086,7 +1083,7 @@ async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
     await guardarServidoresEnFirestore(ep, servidoresApi);
     return guardarServidoresEnCache(ep, servidoresApi);
   } catch (error) {
-    console.error("[Servidores] ❌ Error inesperado al consultar API:", error);
+
     throw error;
   }
 }
@@ -1170,7 +1167,7 @@ async function cargarEpisodios() {
         });
       } catch (error) {
         if (!activarModoApiDirecta(error)) {
-          console.warn("No se pudo actualizar Firestore; se continuará con la API:", error);
+
         }
       }
     }
@@ -1184,7 +1181,7 @@ async function cargarEpisodios() {
     await cargarVideoDesdeEpisodio(episodioActualIndex);
     return episodios;
   } catch (err) {
-    console.error("Error al cargar episodios desde API:", err);
+
     const controles = document.getElementById("controles");
     if (controles) {
       controles.innerHTML = "<span class='span-carga'>404 No hay servidores disponibles para este episodio.</span>";
@@ -1260,7 +1257,7 @@ async function recuperarEpisodioFaltanteDesdeApi(numeroEpisodio) {
     actualizarTextoBotonesNavegacion();
     return episodioSolicitado;
   } catch (error) {
-    console.error("[cargarVideoDesdeEpisodio] No se pudo recuperar el listado desde la API:", error);
+
     return null;
   }
 }
@@ -1285,7 +1282,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `/ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `/ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;
@@ -1308,7 +1305,7 @@ async function cargarVideoDesdeEpisodio(index) {
     servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
   } catch (error) {
     if (!activarModoApiDirecta(error)) {
-      console.error("[cargarVideoDesdeEpisodio] Error al leer servidores de Firestore:", error);
+
     }
   }
 
@@ -1363,7 +1360,7 @@ try {
       // Guardar no puede bloquear la reproducción: si Firestore llega a 429,
       // la interfaz ya sigue usando los datos directos de la API.
       guardarServidoresEnFirestore(ep, ep.servidores).catch(error => {
-        console.error("No se pudieron guardar los servidores obtenidos de la API:", error);
+
       });
     } else if (!servidoresFirestore.length) {
       // Caso inicial: Firestore estaba vacío y la API devolvió resultados
@@ -1371,7 +1368,7 @@ try {
       guardarServidoresEnCache(ep, ep.servidores);
       renderizarServidores(ep.servidores);
       guardarServidoresEnFirestore(ep, ep.servidores).catch(error => {
-        console.error("No se pudieron guardar los servidores obtenidos de la API:", error);
+
       });
     }
   } else if (!servidoresFirestore.length) {
@@ -1380,7 +1377,7 @@ try {
     document.getElementById("controles").innerHTML = "";
   }
 } catch (error) {
-  console.error("[cargarVideoDesdeEpisodio] Error al sincronizar con API:", error);
+
   if (!servidoresFirestore.length) {
     document.getElementById("video").innerHTML = "Error al cargar servidores.";
     document.getElementById("controles").innerHTML = "";
@@ -1712,7 +1709,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       // Construir URL con todos los parámetros de branding
       // Formato Vidrift: /tv/{tmdbId}/{temporada}/{episodio}.
       const baseUrl = `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioActualIndex}`;
-      logVidrift("Embed preparado", {
+      logVidriftClave("Embed preparado", {
         animeId,
         tmdbId,
         temporada: tmdbSeason,
@@ -1741,20 +1738,24 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.allow = "autoplay; fullscreen";
       iframe.style.border = "0";
 
-      // El botón conserva su función sobre el audio. Los subtítulos españoles
-      // se buscan siempre que Vidrift los ofrezca, incluso con audio doblado.
-      // Nunca se fuerza una pista que el episodio no ofrezca.
+      // Los subtítulos españoles se buscan siempre. El audio solo se cambia
+      // cuando existe una pista española: si no existe, se conserva el audio
+      // del servidor y jamás se activa un fallback por esa razón.
       const preferirAudioEspanol = preferenciaDoblado;
       const preferirSubtitulosEspanol = true;
       logVidrift("Preferencia de idioma aplicada", {
         preferencia: preferenciaDoblado ? "doblado" : "subtitulado",
         modoServidoresActual: modoDoblado ? "doblado" : "subtitulado",
-        subtitulosEspanol: true
+        subtitulosEspanol: preferirSubtitulosEspanol
       });
       let audioComprobado = !preferirAudioEspanol;
       let subtitulosComprobados = !preferirSubtitulosEspanol;
       const servidoresVidriftProbados = new Set();
       let estadoVidriftActual = null;
+      // Un state inicial puede contener las pistas provisionales del proveedor.
+      // No se debe descartar el servidor hasta que su lista se estabilice.
+      let servidorSinEspanol = null;
+      let inicioSinEspanol = 0;
       let servidorVidriftPendiente = null;
       let timeoutServidorVidrift = null;
       let subtituloEspanolPendiente = null;
@@ -1788,7 +1789,7 @@ async function mostrarVideo(link, botonSeleccionado) {
           { type: "vidrift:set", subtitle: subtitulo.value },
           "https://embed.vidrift.net"
         );
-        logVidrift("Solicitando subtítulo en español", {
+        logVidriftClave("Solicitando subtítulo en español", {
           servidor: estadoVidriftActual?.server,
           subtitulo: subtitulo.label || subtitulo.value,
           intento: intentosSubtituloEspanol + 1
@@ -1816,13 +1817,21 @@ async function mostrarVideo(link, botonSeleccionado) {
       };
 
       const probarSiguienteServidorVidrift = () => {
+        if (!FALLBACK_AUTOMATICO_ACTIVO) {
+          return;
+        }
+
         const servidores = estadoVidriftActual?.servers || [];
-        const siguienteServidor = servidores.find(servidor =>
+        const esServidorDisponible = servidor =>
           servidor?.value &&
           servidor.value !== estadoVidriftActual?.server &&
           servidor.state !== "failed" &&
-          !servidoresVidriftProbados.has(servidor.value)
-        );
+          !servidoresVidriftProbados.has(servidor.value);
+        // Orion expone las pistas con códigos utilizables (por ejemplo mb-es),
+        // por eso se prueba antes que proveedores que solo devuelven x1/x2.
+        const siguienteServidor = servidores.find(servidor =>
+          esServidorDisponible(servidor) && /orion/i.test(`${servidor.value} ${servidor.label || ""}`)
+        ) || servidores.find(esServidorDisponible);
 
         if (!siguienteServidor) {
           logVidrift("No hay más servidores internos con subtítulos en español", {
@@ -1839,7 +1848,7 @@ async function mostrarVideo(link, botonSeleccionado) {
 
         servidoresVidriftProbados.add(siguienteServidor.value);
         servidorVidriftPendiente = siguienteServidor.value;
-        logVidrift("Sin subtítulos en español; probando servidor interno", {
+        logVidriftClave("Sin subtítulos en español; probando servidor interno", {
           anterior: estadoVidriftActual?.server,
           siguiente: siguienteServidor.value,
           etiqueta: siguienteServidor.label
@@ -1899,12 +1908,26 @@ async function mostrarVideo(link, botonSeleccionado) {
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase();
-        const esEspanol = ({ value, label }) => {
-          const codigo = String(value || "").toLowerCase();
-          const nombre = normalizarIdioma(label);
-          // Vidrift usa valores como "mb-es" en Orion, además de "es" o
-          // "es-419" en otros proveedores.
-          return /(?:^|-)es(?:-|$)/.test(codigo) || nombre.includes("espanol");
+        const esEspanol = (pista = {}) => {
+          // El proveedor puede declarar el idioma en campos distintos. No
+          // depender solo de label/value ni de la palabra literal "Español".
+          const codigo = String(
+            pista.value || pista.code || pista.lang || pista.language || pista.locale || ""
+          ).toLowerCase();
+          const descripcion = normalizarIdioma([
+            pista.label,
+            pista.name,
+            pista.title,
+            pista.language,
+            pista.lang,
+            pista.locale,
+            pista.code
+          ].filter(Boolean).join(" "));
+
+          // Vidrift usa mb-es en Orion. Otros proveedores pueden usar es-419,
+          // spa o textos como Spanish, Latin Spanish y Castellano.
+          return /(?:^|[-_])(?:es|spa)(?:[-_]|$)/i.test(codigo)
+            || /\b(?:espanol|spanish|castellano|castilian|latam|latino(?:americano)?)\b/.test(descripcion);
         };
         const audioEspanol = event.data.audios?.find(esEspanol);
         const subtituloEspanol = event.data.subtitles?.find(esEspanol);
@@ -1927,6 +1950,8 @@ async function mostrarVideo(link, botonSeleccionado) {
           );
         }
         if (preferirSubtitulosEspanol && subtituloEspanol) {
+          servidorSinEspanol = null;
+          inicioSinEspanol = 0;
           if (event.data.subtitle === subtituloEspanol.value) {
             subtituloEspanolPendiente = null;
             clearTimeout(timeoutSubtituloEspanol);
@@ -1941,14 +1966,61 @@ async function mostrarVideo(link, botonSeleccionado) {
           }
         }
 
-        // Con pistas ya resueltas pero sin español, probar otro proveedor del
-        // mismo iframe antes de abandonar Vidrift por el siguiente servidor web.
+        // Al iniciar, algunos proveedores devuelven una lista temporal (por
+        // ejemplo x1/x2) y cargan los subtítulos reales segundos después. Solo
+        // se descarta un servidor si durante 6 s sigue declarando pistas sin
+        // español; así no se salta una pista que sí aparece en su menú.
+        const pistasGenericas = event.data.subtitles?.some(pista =>
+          /^x\d+(?:-\d+)?$/i.test(String(pista?.value || ""))
+        );
         if (
           preferirSubtitulosEspanol &&
           !subtituloEspanol &&
           Array.isArray(event.data.subtitles) &&
-          event.data.subtitles.length > 0
+          event.data.subtitles.length > 0 &&
+          !pistasGenericas
         ) {
+          const servidor = event.data.server || "desconocido";
+          if (servidorSinEspanol !== servidor) {
+            servidorSinEspanol = servidor;
+            inicioSinEspanol = Date.now();
+            logVidrift("Esperando las pistas finales antes de descartar el servidor", {
+              servidor,
+              esperaMs: 6000
+            });
+            return;
+          }
+          if (Date.now() - inicioSinEspanol < 6000) return;
+
+          probarSiguienteServidorVidrift();
+          return;
+        }
+
+        if (preferirSubtitulosEspanol && !subtituloEspanol && pistasGenericas) {
+          const orionDisponible = event.data.servers?.some(servidor =>
+            servidor?.value &&
+            servidor.value !== event.data.server &&
+            servidor.state !== "failed" &&
+            !servidoresVidriftProbados.has(servidor.value) &&
+            /orion/i.test(`${servidor.value} ${servidor.label || ""}`)
+          );
+
+          // Las pistas x1/x2 no permiten elegir idioma. Se espera el mismo
+          // tiempo de estabilización y luego se prueba Orion, sin abandonar
+          // Vidrift si Orion no existe.
+          if (!orionDisponible) return;
+          const servidor = event.data.server || "desconocido";
+          if (servidorSinEspanol !== servidor) {
+            servidorSinEspanol = servidor;
+            inicioSinEspanol = Date.now();
+            logVidrift("Pistas genéricas: esperando antes de probar Orion", {
+              servidor,
+              esperaMs: 6000
+            });
+            return;
+          }
+          if (Date.now() - inicioSinEspanol < 6000) return;
+
           probarSiguienteServidorVidrift();
           return;
         }
@@ -1977,7 +2049,7 @@ async function mostrarVideo(link, botonSeleccionado) {
             limpiarPreferenciaSubtitulos = null;
           }
         }
-      }, 20000);
+      }, 30000);
 
       iframe.addEventListener("error", () => {
         if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "El iframe de Vidrift produjo un error");
@@ -2025,7 +2097,7 @@ async function mostrarVideo(link, botonSeleccionado) {
           });
           if (Number(animeDatos.tmdbSeason) !== tmdbSeason) {
             setDoc(animeDatosRef, { tmdbSeason }, { merge: true }).catch(error => {
-              console.error("Error al guardar la temporada de TMDB en Firestore:", error);
+
             });
           }
           cargarIframeConTMDB(animeDatos.tmdbId, tmdbSeason);
@@ -2066,7 +2138,7 @@ async function mostrarVideo(link, botonSeleccionado) {
           await setDoc(animeDatosRef, { tmdbId, tmdbSeason }, { merge: true });
           debugLog("Asociación de TMDB guardada en Firestore.", { tmdbId, tmdbSeason });
         } catch (error) {
-          console.error("❌ Error al guardar ID de TMDB en Firestore:", error);
+
         }
 
         cargarIframeConTMDB(tmdbId, tmdbSeason);
@@ -2152,6 +2224,16 @@ async function mostrarVideo(link, botonSeleccionado) {
 
 function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo = "El servidor actual falló o no respondió") {
   if (reproduccionId !== reproduccionActualId) return;
+
+  if (!FALLBACK_AUTOMATICO_ACTIVO) {
+    console.info("[Reproducción] Cambio automático desactivado; se conserva el servidor actual.", {
+      animeId,
+      episodio: episodioActualIndex,
+      servidorActual: embeds[servidorActualIndex]?.nombre || embeds[servidorActualIndex]?.name || "desconocido",
+      motivo
+    });
+    return;
+  }
 
   const siguienteIndice = embeds.findIndex((servidor, indice) =>
     indice > servidorActualIndex && !servidor.url?.includes("mediafire.com")
