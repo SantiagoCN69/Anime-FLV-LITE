@@ -1562,7 +1562,7 @@ function inicializarContinuarViendo() {
 
         card.innerHTML = `
           <div class="card-thumbnail container-img">
-            <img src="${data.portada}" alt="${data.titulo}" onerror="this.src='path/to/default/image.png'">
+            <img src="${data.portada}" alt="${data.titulo}" onerror="this.src='/icons/poster.png'">
             <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
             <span class="chapter ep-badge">EP ${data.siguienteCapitulo}</span>
           </div>
