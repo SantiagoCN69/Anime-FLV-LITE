@@ -814,8 +814,8 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 }
 @media screen and (max-width:600px){
    main {
-    height: clamp(700px, calc(100dvh - 80px - 2.5rem), 1000px);
-    height: clamp(700px, calc(calc(var(--vh, 1vh) * 100) - 80px - 2.5rem), 1000px) !important;
+    height: clamp(740px, calc(100dvh - 80px - 2.5rem), 1000px);
+    height: clamp(740px, calc(calc(var(--vh, 1vh) * 100) - 80px - 2.5rem), 1000px) !important;
     margin-top: calc(80px + 1rem);
    }
   .botones-reproductor,  .botones-reproductor > div{
