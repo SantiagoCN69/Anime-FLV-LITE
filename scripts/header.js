@@ -22,6 +22,7 @@ function setDisplay(element, value) {
 }
 
 function limpiarVistaAnimePage() {
+  document.body.classList.remove('busqueda-activa');
   setDisplay(animeDetails, 'grid');
   if (busquedasContainer) {
     busquedasContainer.innerHTML = '';
@@ -393,6 +394,7 @@ function mostrarResultados(data, searchTerm, searchId) {
   busquedasContainer.style.display = 'grid';
 
   if (isAnimePage || isVerPage) {
+    document.body.classList.add('busqueda-activa');
     setDisplay(animeDetails, 'none');
     setDisplay(disqusThread, 'none');
     setDisplay(relacionados, 'none');

@@ -60,7 +60,7 @@ body.fondo-animado::before {
 /* 3. Sombra y degradados dobles (Capa intermedia: z-index -1) */
 body::after {
   transform: scale(1.05);
-  background: 
+  background:
     /* Capa 1: Gradiente horizontal */
     linear-gradient(
       80deg,
@@ -75,6 +75,12 @@ body::after {
     );
 
   z-index: -1;
+  backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.3s ease;
+}
+
+body.busqueda-activa::after {
+  backdrop-filter: blur(30px);
 }
 @media (max-width: 700px) {
 body:not(.animaciones-off) header {
