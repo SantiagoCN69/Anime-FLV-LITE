@@ -105,6 +105,7 @@ let popularesCargados = false;
 let horariosCargados = false;
 let preferenciasCargadas = false;
 let contactoCargado = false;
+let heroSliderCargado = false;
 
 // Flags para prevenir cargas simultáneas
 const cargando = new Set();
@@ -271,8 +272,9 @@ export function mostrarSeccionDesdesearch() {
 
   actualizarIndicadorActivo();
 
-if (id === 'Ultimos-Episodios') {
+if (id === 'Ultimos-Episodios' && !heroSliderCargado) {
   cargarHeroSlider();
+  heroSliderCargado = true;
 }
 
 const sectionConfig = {
