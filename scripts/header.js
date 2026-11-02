@@ -34,7 +34,6 @@ function limpiarVistaAnimePage() {
   if (tituloBusquedas) tituloBusquedas.remove();
   limpiarSeccionIA();
   setDisplay(disqusThread, 'block');
-  setDisplay(relacionados, 'flex');
   setDisplay(verAnime, 'flex');
 }
 
@@ -75,7 +74,6 @@ const verAnime = document.getElementById('main-ver');
 const sidebar = document.querySelector('.sidebar');
 const menuBtn = document.getElementById('menu-toggle');
 const disqusThread = document.getElementById('disqus_thread');
-const relacionados = document.getElementById('relacionados');
 
 // === SEARCH UI ===
 const btnSearch = document.getElementById('btn-search');
@@ -397,7 +395,6 @@ function mostrarResultados(data, searchTerm, searchId) {
     document.body.classList.add('busqueda-activa');
     setDisplay(animeDetails, 'none');
     setDisplay(disqusThread, 'none');
-    setDisplay(relacionados, 'none');
     setDisplay(verAnime, 'none');
 
     // Agregar h2 de resultados dinámicamente si no existe
