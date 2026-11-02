@@ -363,7 +363,8 @@ footer {
     left: 82px;
     transform: none;
     opacity: 1;
-    width: 106px;
+    width: 85px;
+    text-wrap: nowrap;
     border: 1px solid var(--btn);
     color: var(--btn);
     padding-block: 10px;
@@ -371,7 +372,7 @@ footer {
   .type {
     top: unset;
     bottom: 12px;
-    left: calc(106px + 82px + 9.5px);
+    left: calc(85px + 82px + 9.5px);
     transform: none;
     opacity: 1;
     padding-block: 10px;
@@ -382,7 +383,7 @@ footer {
   .rating {
     top: unset;
     bottom: 12px;
-    left: calc(106px + 82px + 9.5px + 64px + 9.5px);
+    left: calc(85px + 82px + 9.5px + 64px + 9.5px);
     padding-block: 10px;
     transform: none;
     opacity: 1;
@@ -447,7 +448,8 @@ footer {
       left: 82px;
       transform: none;
       opacity: 1;
-      width: 106px;
+      width: 85px;
+      text-wrap: nowrap;
       border: 1px solid var(--btn);
       color: var(--btn);
       padding-block: 10px;
@@ -455,7 +457,7 @@ footer {
     .type {
       top: unset;
       bottom: 12px;
-      left: calc(106px + 82px + 12px);
+      left: calc(85px + 82px + 12px);
       transform: none;
       opacity: 1;
       padding-block: 10px;
@@ -466,7 +468,7 @@ footer {
     .rating {
       top: unset;
       bottom: 12px;
-      left: calc(106px + 82px + 9.5px + 64px + 9.5px);
+      left: calc(85px + 82px + 9.5px + 64px + 9.5px);
       padding-block: 10px;
       transform: none;
       opacity: 1;
