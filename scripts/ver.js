@@ -30,7 +30,8 @@ async function buscarAnimeTMDB(titulo) {
     id: anime.id,
     titulo: anime.name,
     tituloOriginal: anime.original_name,
-    fecha: anime.first_air_date
+    fecha: anime.first_air_date,
+    popularidad: anime.popularity
   }));
 }
 
@@ -41,6 +42,15 @@ function quitarSufijoTemporada(titulo) {
     .replace(/(?:\s|-)(?:second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|primera|segunda|tercera|cuarta|quinta|sexta|séptima|septima|octava|novena|décima|decima)[\s-]+(?:season|temporada)\b.*$/i, "")
     .replace(/(?:\s|-)dai[\s-]+\d+[\s-]+ki\b.*$/i, "")
     .replace(/(?:\s|-)r\d+\b.*$/i, "")
+    .trim();
+}
+
+function normalizarNombre(nombre) {
+  return String(nombre || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Eliminar acentos
+    .replace(/[^a-z0-9]/g, "") // Solo letras y números
     .trim();
 }
 
@@ -159,6 +169,8 @@ async function seleccionarResultadoTMDBParaVidrift(resultados) {
   logVidrift("seleccionarResultadoTMDBParaVidrift", { animeId, resultadosCount: resultados.length });
   const temporada = detectarTemporadaDesdeAnimeId(animeId);
 
+  const resultadosValidos = [];
+
   for (const resultado of resultados) {
     const existe = await verificarTemporadaTMDB(resultado.id, temporada);
     logVidrift("Comprobando resultado TMDB para la temporada", {
@@ -168,10 +180,40 @@ async function seleccionarResultadoTMDBParaVidrift(resultados) {
       temporada,
       existe
     });
-    if (existe) return { tmdbId: resultado.id, tmdbSeason: temporada, resultado };
+    if (existe) {
+      resultadosValidos.push({ ...resultado, tmdbId: resultado.id, tmdbSeason: temporada });
+    }
   }
 
-  return null;
+  if (resultadosValidos.length === 0) return null;
+
+  // Agrupar por nombre normalizado
+  const gruposPorNombre = new Map();
+  for (const resultado of resultadosValidos) {
+    const nombreNormalizado = normalizarNombre(resultado.titulo);
+    if (!gruposPorNombre.has(nombreNormalizado)) {
+      gruposPorNombre.set(nombreNormalizado, []);
+    }
+    gruposPorNombre.get(nombreNormalizado).push(resultado);
+  }
+
+  // Si hay grupos con múltiples resultados del mismo nombre, elegir el más popular de cada grupo
+  const mejoresDeCadaGrupo = [];
+  for (const [nombre, grupo] of gruposPorNombre) {
+    if (grupo.length > 1) {
+      // Ordenar por popularidad descendente y tomar el primero
+      grupo.sort((a, b) => (b.popularidad || 0) - (a.popularidad || 0));
+      logVidrift("Múltiples resultados con mismo nombre, eligiendo el más popular", {
+        nombre,
+        cantidad: grupo.length,
+        seleccionado: grupo[0]
+      });
+    }
+    mejoresDeCadaGrupo.push(grupo[0]);
+  }
+
+  // Retornar el primero de los mejores (o el único si no hubo agrupación)
+  return { tmdbId: mejoresDeCadaGrupo[0].tmdbId, tmdbSeason: mejoresDeCadaGrupo[0].tmdbSeason, resultado: mejoresDeCadaGrupo[0] };
 }
 
 const params = new URLSearchParams(location.search);
