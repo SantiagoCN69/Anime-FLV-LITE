@@ -1492,14 +1492,6 @@ function inicializarContinuarViendo() {
     return;
   }
 
-  // El HTML la entrega oculta para evitar saltos mientras carga el script.
-  // Solo se muestra cuando hay capítulos disponibles para continuar.
-  if (!userID || userID === 'null' || localStorage.getItem(cachekey) === null) {
-    container.classList.add('hidden');
-    if (grid) grid.innerHTML = '';
-    return;
-  }
-
   let datos = JSON.parse(localStorage.getItem(cachekey));
 
   if (verificarYLimpiarCacheBackground(cachekey, datos, 'portada', null, true)) {

@@ -303,7 +303,14 @@ if (indexpagination) {
             </svg>
           </button>
         </div>
-          <div id="section-ultimos-caps-viendo" class="continuar-viendo-grid"></div>
+        <script>
+          const userID = localStorage.getItem('userID');
+          const cachekey = "ultimosCapsVistosCache_" + userID;
+          if (!userID || userID === 'null' || localStorage.getItem(cachekey) === null) {
+            document.getElementById('section-continuar-viendo').classList.add('hidden');
+          }
+        </script>
+        <div id="section-ultimos-caps-viendo" class="continuar-viendo-grid"></div>
       </div>
       <div id="sections-ultcaps-historial">
       <div id="section-ultcaps">
