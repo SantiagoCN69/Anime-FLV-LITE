@@ -253,8 +253,8 @@ body.cv-sidebar #section-continuar-viendo {
 }
 #section-continuar-viendo {
   transition: height 0.3s ease-in-out, min-height 0.3s ease-in-out, margin-bottom 0.3s ease-in-out, opacity 0.2s ease-in-out;
-  overflow: hidden;
-  min-height: 241px;
+  /* overflow: hidden; */
+  min-height: 318.5px;
   margin-bottom: 2.5rem;
 }
 .no-user #section-continuar-viendo {
@@ -1094,6 +1094,12 @@ nav.filtros {
   border: 1px solid rgba(246, 79, 79, 0.3);
 }
 
+.hero-badge--personalizado {
+  background: linear-gradient(135deg,
+   #f193fb7d 0%,
+    #f5576c7d 100%);
+  border: 1px solid rgba(245, 87, 108, 0.5);
+}
 .hero-slide__title {
   padding-bottom: 5px;
   margin: 0 !important;
@@ -1380,9 +1386,9 @@ gap: 8px;
 /* Contenedor del grid */
 .continuar-viendo-grid {
   display: flex;
-  gap: 17px;
+  gap: 16px;
   overflow-x: auto; /* Para hacer scroll si hay muchos */
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
 }
 .continuar-viendo-grid::-webkit-scrollbar {
   display: none;
@@ -1391,7 +1397,7 @@ gap: 8px;
 .continue-card {
   display: flex !important;
   flex-direction: column;
-  width: 200px; /* Ajusta según tu layout */
+  width: 165px; /* Ajusta según tu layout */
   transition: transform 0.2s ease;
   flex-shrink: 0;
   /* opacity: 1 !important;
@@ -1404,7 +1410,8 @@ gap: 8px;
 
 /* Contenedor de la imagen y barra */
 .card-thumbnail {
-  aspect-ratio: 16/9;
+  /* aspect-ratio: 16/9; */
+  aspect-ratio: 5/6;
 }
 .anime-card:hover .card-thumbnail.container-img {
   transform: translate(0) !important;
