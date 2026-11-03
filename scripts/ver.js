@@ -279,7 +279,8 @@ let episodios = [];
 let tituloAnime = (animeId || "").replaceAll("-", " ");
 let portadaAnime = '';
 let episodioActualIndex = Number.parseInt(episodeNumber, 10);
-if (!Number.isInteger(episodioActualIndex) || episodioActualIndex < 1) {
+// Algunas series incluyen el episodio 0 (especial, prólogo, etc.).
+if (!Number.isInteger(episodioActualIndex) || episodioActualIndex < 0) {
   episodioActualIndex = 1;
 }
 let embeds = [];
@@ -1309,7 +1310,7 @@ async function cargarVideoDesdeEpisodio(index) {
 
   // Actualizar índice y URL siempre, incluso si no hay servidores
   episodioActualIndex = index;
-  history.replaceState({}, "", `/ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
   const cacheKey = "servers_" + animeId + "_" + ep.number;
