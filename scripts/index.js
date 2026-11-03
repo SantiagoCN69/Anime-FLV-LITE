@@ -1,6 +1,7 @@
 import { db, auth } from './firebase-login.js';
 import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where, startAfter} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
+import { buildFavoritesAnimePrompt, fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName } from './ai-recommendations.js';
 
 // Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
@@ -743,6 +744,109 @@ function guardarCache(key, data) {
     localStorage.removeItem(key);
   }
 }
+
+async function obtenerHistorialParaIA() {
+  const claves = Object.keys(localStorage);
+  const clavesAnime = claves.filter(clave => clave.startsWith('anime_'));
+  const animesRecientes = [];
+
+  for (const clave of clavesAnime) {
+    try {
+      const datos = JSON.parse(localStorage.getItem(clave));
+      if (datos && datos._cachedAt && datos.titulo) {
+        animesRecientes.push(datos.titulo);
+      }
+    } catch (e) {
+      console.error('Error al procesar datos del localStorage:', e);
+    }
+  }
+
+  return animesRecientes.slice(0, 5);
+}
+
+function tituloToKebabCase(titulo) {
+  return titulo
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+function generarSlideHTML(a, i, usarBannerDinamico = false) {
+  const isPE = a.type === 'Por estrenar';
+  const syn = (a.synopsis || '').replace(/<[^>]*>/g, '').trim();
+  const statusBadge = a.type ? (a.type === 'TV Anime' ? `<span class="hero-badge hero-badge--ongoing">TV Anime</span>` : a.type === 'Personalizado' ? `<span class="hero-badge hero-badge--personalizado">Personalizado</span>` : `<span class="hero-badge hero-badge--status">${a.type}</span>`) : '';
+  
+  const customBadgesList = a.badges || a.bages || [];
+  const customBadgesHtml = customBadgesList.length 
+    ? `<div class="hero-slide__extra-badges">${customBadgesList.map(b => `<span class="hero-badge hero-badge--custom">${b}</span>`).join('')}</div>` 
+    : '';
+
+  const bannerUrl = usarBannerDinamico 
+    ? `https://cdn.jkdesa.com/assets/images/animes/image/${tituloToKebabCase(a.title)}.jpg`
+    : (a.banner || '');
+
+  return `
+    <article class="hero-slide ${i === 0 ? 'active' : ''}" data-id="${a.id}" style="--bg-image: url('${bannerUrl}')">
+      <div class="hero-background"><div class="hero-slide__bg" style="background-image: url('${bannerUrl}')"></div></div>
+      <div class="hero-slide__content">
+        ${statusBadge ? `<div class="hero-slide__badges">${statusBadge}</div>` : ''}
+        <h2 class="hero-slide__title">${a.title || 'Sin título'}</h2>
+        ${syn ? `<p class="hero-slide__synopsis">${syn}</p>` : ''}
+        ${customBadgesHtml}
+        <div class="hero-slide__actions ${isPE ? 'left-align' : ''}">
+          <a href="/ver?id=${a.id}&episode=1" class="hero-btn hero-btn--primary ${isPE ? 'hidden' : ''}">
+            <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.49 9.6L5.6 16.77C4.9 17.19 4 16.69 4 15.87V7.87C4 4.38 7.77 2.2 10.8 3.94L15.39 6.58L17.48 7.78C18.17 8.19 18.18 9.19 17.49 9.6Z"/><path d="M18.09 15.46L14.04 17.8L10 20.13C8.55 20.96 6.91 20.79 5.72 19.95C5.14 19.55 5.21 18.66 5.82 18.3L18.53 10.68C19.13 10.32 19.92 10.66 20.03 11.35C20.28 12.9 19.64 14.57 18.09 15.46Z"/></svg></span> Ver Ahora
+          </a>
+          <a href="/anime?id=${a.id}" class="hero-btn hero-btn--secondary">
+            <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 17V11" stroke-linecap="round"/><circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="currentColor"/><path d="M7 3.34C8.47 2.49 10.18 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 10.18 2.49 8.47 3.34 7" stroke-linecap="round"/></svg></span> <span class="hero-btn__label">Más información</span>
+          </a>
+        </div>
+      </div>
+    </article>`;
+}
+
+async function generarSlidesPersonalizados() {
+  const historial = await obtenerHistorialParaIA();
+  
+  if (historial.length === 0) return [];
+
+  try {
+    const prompt = buildFavoritesAnimePrompt(historial, [], 'Recomienda 2 animes similares según tu historial');
+    const respuesta = await fetchIAResponse(prompt);
+    const nombres = parseAnimeNamesFromResponse(respuesta).slice(0, 2);
+
+    if (!nombres.length) return [];
+
+    const resultados = await Promise.all(
+      nombres.map(nombre => resolveAnimeByName(nombre))
+    );
+
+    const slidesPersonalizados = [];
+    for (const anime of resultados) {
+      if (!anime) continue;
+
+      const syn = (anime.synopsis || '').replace(/<[^>]*>/g, '').trim();
+
+      slidesPersonalizados.push({
+        id: anime.id,
+        title: anime.title,
+        synopsis: syn,
+        type: 'Personalizado',
+        badges: ['Recomendado para ti', 'Según tu historial']
+      });
+    }
+
+    return slidesPersonalizados;
+  } catch (error) {
+    console.error('[Hero Slider] Error al generar slides personalizados:', error);
+    return [];
+  }
+}
+
 async function cargarHeroSlider() {
   const container = document.getElementById('hero-slider');
   if (!container) return;
@@ -759,36 +863,7 @@ async function cargarHeroSlider() {
     }
 
     // 1. Generación de slides en lote
-    const slidesHTML = animes.map((a, i) => {
-      const isPE = a.type === 'Por estrenar';
-      const syn = (a.synopsis || '').replace(/<[^>]*>/g, '').trim();
-      const statusBadge = a.type ? (a.type === 'TV Anime' ? `<span class="hero-badge hero-badge--ongoing">TV Anime</span>` : `<span class="hero-badge hero-badge--status">${a.type}</span>`) : '';
-      
-      // Procesamiento de los badges libres (soporta 'badges' o 'bages')
-      const customBadgesList = a.badges || a.bages || [];
-      const customBadgesHtml = customBadgesList.length 
-        ? `<div class="hero-slide__extra-badges">${customBadgesList.map(b => `<span class="hero-badge hero-badge--custom">${b}</span>`).join('')}</div>` 
-        : '';
-
-      return `
-        <article class="hero-slide ${i === 0 ? 'active' : ''}" data-id="${a.id}" style="--bg-image: url('${a.banner}')">
-          <div class="hero-background"><div class="hero-slide__bg" style="background-image: url('${a.banner}')"></div></div>
-          <div class="hero-slide__content">
-            ${statusBadge ? `<div class="hero-slide__badges">${statusBadge}</div>` : ''}
-            <h2 class="hero-slide__title">${a.title || 'Sin título'}</h2>
-            ${syn ? `<p class="hero-slide__synopsis">${syn}</p>` : ''}
-            ${customBadgesHtml}
-            <div class="hero-slide__actions ${isPE ? 'left-align' : ''}">
-              <a href="/ver?id=${a.id}&episode=1" class="hero-btn hero-btn--primary ${isPE ? 'hidden' : ''}">
-                <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.49 9.6L5.6 16.77C4.9 17.19 4 16.69 4 15.87V7.87C4 4.38 7.77 2.2 10.8 3.94L15.39 6.58L17.48 7.78C18.17 8.19 18.18 9.19 17.49 9.6Z"/><path d="M18.09 15.46L14.04 17.8L10 20.13C8.55 20.96 6.91 20.79 5.72 19.95C5.14 19.55 5.21 18.66 5.82 18.3L18.53 10.68C19.13 10.32 19.92 10.66 20.03 11.35C20.28 12.9 19.64 14.57 18.09 15.46Z"/></svg></span> Ver Ahora
-              </a>
-              <a href="/anime?id=${a.id}" class="hero-btn hero-btn--secondary">
-                <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 17V11" stroke-linecap="round"/><circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="currentColor"/><path d="M7 3.34C8.47 2.49 10.18 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 10.18 2.49 8.47 3.34 7" stroke-linecap="round"/></svg></span> <span class="hero-btn__label">Más información</span>
-              </a>
-            </div>
-          </div>
-        </article>`;
-    }).join('');
+    const slidesHTML = animes.map((a, i) => generarSlideHTML(a, i)).join('');
 
     // 2. Inyección única en el DOM
     container.classList.remove('hidden');
@@ -798,7 +873,35 @@ async function cargarHeroSlider() {
       <button class="hero-slider__next" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
     `;
 
-    initHeroSliderControls(container, animes.length);
+    const sliderControls = initHeroSliderControls(container, animes.length);
+
+    // 3. Cargar slides personalizados en segundo plano
+    generarSlidesPersonalizados().then(slidesPersonalizados => {
+      if (!slidesPersonalizados.length) return;
+
+      const track = container.querySelector('.hero-slider__track');
+      if (!track) return;
+
+      // Los recomendados se añaden inactivos. Si se crean con índice 0, cada
+      // uno recibe la clase `active` y quedan varias capas animándose a la vez.
+      const slidesPersonalizadosHTML = slidesPersonalizados
+        .map(a => generarSlideHTML(a, -1, true))
+        .join('');
+
+      // Insertar después del slide activo actual
+      const activeSlide = track.querySelector('.hero-slide.active');
+      if (activeSlide) {
+        activeSlide.insertAdjacentHTML('afterend', slidesPersonalizadosHTML);
+      } else {
+        track.insertAdjacentHTML('afterbegin', slidesPersonalizadosHTML);
+      }
+
+      if (sliderControls && sliderControls.updateLength) {
+        sliderControls.updateLength();
+      }
+    }).catch(error => {
+      console.error('[Hero Slider] Error al cargar slides personalizados:', error);
+    });
   } catch (error) {
     console.error("[Hero Slider] Error detectado:", error);
     container.innerHTML = '<p class="span-carga">Error al cargar banners. Revisa la consola (F12).</p>';
@@ -810,17 +913,39 @@ function initHeroSliderControls(container, len) {
   if (!track) return;
 
   let curr = 0, autoId, startX = 0;
+  const leavingTimers = new WeakMap();
+
+  const getSlides = () => Array.from(track.querySelectorAll('.hero-slide'));
+  const getCurrentIndex = (slides) => {
+    const activeIndex = slides.findIndex(slide => slide.classList.contains('active'));
+    return activeIndex === -1 ? Math.min(curr, Math.max(slides.length - 1, 0)) : activeIndex;
+  };
+
+  const clearLeavingState = (slide) => {
+    const timer = leavingTimers.get(slide);
+    if (timer) clearTimeout(timer);
+    slide.classList.remove('leaving');
+  };
+
+  const markAsLeaving = (slide) => {
+    clearLeavingState(slide);
+    slide.classList.remove('active');
+    slide.classList.add('leaving');
+    leavingTimers.set(slide, setTimeout(() => slide.classList.remove('leaving'), 500));
+  };
 
   const goTo = (i) => {
-    if (curr === i) return;
-    const act = track.children[curr];
-    curr = (i + len) % len;
-    
-    if (act) {
-      act.classList.replace('active', 'leaving');
-      setTimeout(() => act.classList.remove('leaving'), 500);
-    }
-    track.children[curr]?.classList.add('active');
+    const slides = getSlides();
+    if (slides.length < 2) return;
+
+    curr = getCurrentIndex(slides);
+    const next = ((i % slides.length) + slides.length) % slides.length;
+    if (curr === next) return;
+
+    markAsLeaving(slides[curr]);
+    curr = next;
+    clearLeavingState(slides[curr]);
+    slides[curr].classList.add('active');
   };
 
   const play = () => autoId = autoId || setInterval(() => goTo(curr + 1), 5500);
@@ -862,6 +987,14 @@ function initHeroSliderControls(container, len) {
   }, { passive: true });
 
   play();
+
+  return {
+    updateLength: () => {
+      const slides = getSlides();
+      curr = getCurrentIndex(slides);
+    },
+    goTo: (i) => goTo(i)
+  };
 }
 
 async function cargarUltimosCapitulos() {
