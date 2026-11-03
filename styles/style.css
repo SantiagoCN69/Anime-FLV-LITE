@@ -1306,7 +1306,7 @@ h4 {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: 14px;
   transition: background-color 0.2s;
 }
 
