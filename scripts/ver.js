@@ -2290,7 +2290,7 @@ function establecerModoCine(activo) {
 }
 
 // Listener para detectar cambios de episodio en el iframe de Vidrift
-window.addEventListener('message', (event) => {
+window.addEventListener('message', async (event) => {
   // Verificar que el mensaje viene de Vidrift
   if (event.origin !== 'https://embed.vidrift.net' && event.origin !== 'https://vidrift.net') {
     return;
@@ -2326,6 +2326,16 @@ window.addEventListener('message', (event) => {
   if (Number.isInteger(numeroEpisodio) && numeroEpisodio > 0 && numeroEpisodio !== episodioActualIndex) {
     debugLog("Cambio de episodio detectado.", numeroEpisodio);
 
+    // Verificar si está en pantalla completa antes del cambio
+    const estaEnPantallaCompleta = document.fullscreenElement !== null;
+
+    // Marcar el capítulo actual como visto antes de cambiar (igual que cuando se hace manualmente)
+    const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
+    const user = localStorage.getItem("userID");
+    if (user && marcarVistoBtn && !marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
+      await toggleYGuardarEstadoCapitulo();
+    }
+
     // Actualizar el episodio actual
     episodioActualIndex = numeroEpisodio;
 
@@ -2343,6 +2353,19 @@ window.addEventListener('message', (event) => {
 
     // Refrescar estado de visto
     refrescarUIEstadoCapitulo();
+
+    // Restaurar pantalla completa si estaba activa
+    if (estaEnPantallaCompleta) {
+      const videoDiv = document.getElementById("video");
+      if (videoDiv) {
+        try {
+          await videoDiv.requestFullscreen();
+          debugLog("Pantalla completa restaurada después del cambio de capítulo");
+        } catch (error) {
+          debugLog("No se pudo restaurar la pantalla completa:", error);
+        }
+      }
+    }
   }
 });
 
