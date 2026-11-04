@@ -2,8 +2,6 @@ const TMDB_API_KEY = "2e33599c8f4125cdb44029031486d35f";
 const MODO_DIAGNOSTICO_REPRODUCTOR = false;
 const esDesarrollo = ["localhost", "127.0.0.1"].includes(location.hostname) || location.protocol === "file:";
 const debugLog = (esDesarrollo || MODO_DIAGNOSTICO_REPRODUCTOR) ? console.log.bind(console) : () => {};
-const logVidrift = debugLog;
-const logVidriftClave = debugLog;
 
 // Función para buscar anime en TMDB
 async function buscarAnimeTMDB(titulo) {
@@ -60,7 +58,7 @@ async function buscarAnimeTMDBConRespaldo(titulo) {
 
   for (const consulta of consultas) {
     const resultados = await buscarAnimeTMDB(consulta);
-    logVidrift("Consulta TMDB", { consulta, resultados });
+    debugLog("[Vidrift] Consulta TMDB", { consulta, resultados });
     if (resultados.length) return resultados;
   }
 
@@ -149,31 +147,31 @@ async function resolverTemporadaVidrift(tmdbId, temporadaGuardada) {
   const tieneSufijoTemporada = temporadaDetectada !== 1;
 
   if (temporadaGuardadaValida && (!tieneSufijoTemporada || temporadaManual === temporadaDetectada)) {
-    logVidrift("Temporada recuperada de Firestore", { animeId, tmdbId, temporada: temporadaManual });
+    debugLog("[Vidrift] Temporada recuperada de Firestore", { animeId, tmdbId, temporada: temporadaManual });
     return temporadaManual;
   }
 
-  logVidrift("Temporada detectada desde el slug", { animeId, tmdbId, temporada: temporadaDetectada });
+  debugLog("[Vidrift] Temporada detectada desde el slug", { animeId, tmdbId, temporada: temporadaDetectada });
 
   const existe = await verificarTemporadaTMDB(tmdbId, temporadaDetectada);
   if (!existe) {
-    logVidrift("La temporada detectada no existe en TMDB", { animeId, tmdbId, temporada: temporadaDetectada });
+    debugLog("[Vidrift] La temporada detectada no existe en TMDB", { animeId, tmdbId, temporada: temporadaDetectada });
     return temporadaGuardadaValida ? temporadaManual : null;
   }
 
-  logVidrift("Temporada confirmada por TMDB", { animeId, tmdbId, temporada: temporadaDetectada });
+  debugLog("[Vidrift] Temporada confirmada por TMDB", { animeId, tmdbId, temporada: temporadaDetectada });
   return temporadaDetectada;
 }
 
 async function seleccionarResultadoTMDBParaVidrift(resultados) {
-  logVidrift("seleccionarResultadoTMDBParaVidrift", { animeId, resultadosCount: resultados.length });
+  debugLog("[Vidrift] Seleccionando resultado TMDB", { animeId, resultadosCount: resultados.length });
   const temporada = detectarTemporadaDesdeAnimeId(animeId);
 
   const resultadosValidos = [];
 
   for (const resultado of resultados) {
     const existe = await verificarTemporadaTMDB(resultado.id, temporada);
-    logVidrift("Comprobando resultado TMDB para la temporada", {
+    debugLog("[Vidrift] Comprobando resultado TMDB para la temporada", {
       tmdbId: resultado.id,
       titulo: resultado.titulo,
       tituloOriginal: resultado.tituloOriginal,
@@ -203,7 +201,7 @@ async function seleccionarResultadoTMDBParaVidrift(resultados) {
     if (grupo.length > 1) {
       // Ordenar por popularidad descendente y tomar el primero
       grupo.sort((a, b) => (b.popularidad || 0) - (a.popularidad || 0));
-      logVidrift("Múltiples resultados con mismo nombre, eligiendo el más popular", {
+      debugLog("[Vidrift] Múltiples resultados con mismo nombre, eligiendo el más popular", {
         nombre,
         cantidad: grupo.length,
         seleccionado: grupo[0]
@@ -220,10 +218,6 @@ const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
 const episodeNumber = params.get("episode");
 const serversParam = params.get("servers"); // "sub" o "dob"
-
-// Fallback reservado para fallos reales de reproducción, enlaces inválidos o
-// capítulos no emitidos; nunca se usa por ausencia de subtítulos españoles.
-const FALLBACK_AUTOMATICO_ACTIVO = true;
 
 // Algunos proveedores pueden forzar una navegación del documento superior. El
 // navegador limpia la consola en ese caso, así que conservamos el último salto
@@ -248,6 +242,29 @@ function registrarCambioAutomaticoServidor(detalles) {
   } catch {
     // No se puede persistir
   }
+}
+
+function cancelarFallbackDeCarga() {
+  if (loadingTimeout) clearTimeout(loadingTimeout);
+  loadingTimeout = null;
+}
+
+function programarFallbackDeCarga(reproduccionId, demora, motivo) {
+  cancelarFallbackDeCarga();
+  loadingTimeout = setTimeout(() => {
+    if (reproduccionId === reproduccionActualId) {
+      intentarSiguienteServidor(reproduccionId, motivo);
+    }
+  }, demora);
+}
+
+function mostrarEstadoDeServidores(mensaje, limpiarControles = false) {
+  document.getElementById("video").innerHTML = `<p class='span-carga'>${mensaje}</p>`;
+  if (limpiarControles) document.getElementById("controles").innerHTML = "";
+}
+
+function ejecutarEnSegundoPlano(promesa, contexto) {
+  Promise.resolve(promesa).catch(error => debugLog(`${contexto}:`, error));
 }
 const btnVolverAnime = document.getElementById("btn-volver-anime");
 if (btnVolverAnime && animeId) {
@@ -1290,134 +1307,96 @@ async function recuperarEpisodioFaltanteDesdeApi(numeroEpisodio) {
   }
 }
 
-async function cargarVideoDesdeEpisodio(index) {
-  const controles = document.getElementById("controles");
-  // Si no hay en Firestore, mostrar indicador de carga
-  document.getElementById("controles").innerHTML = "<span id='cargando-servidores'></span>";
-  controles.classList.remove("con-mediafire");
-  btnCap.textContent = `Episodio ${index}`;
-  let ep = episodios.find(ep => String(ep.number) === String(index));
-  if (!ep) {
-    debugLog("El episodio no está en Firestore; comprobando la API.", index);
-    ep = await recuperarEpisodioFaltanteDesdeApi(index);
-
-    if (!ep) {
-      btnCap.textContent = "Episodio desconocido";
-      document.getElementById("controles").innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontró el episodio.</span>";
-      return;
-    }
-  }
-
-  // Actualizar índice y URL siempre, incluso si no hay servidores
-  episodioActualIndex = index;
-  history.replaceState({}, "", `ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
-
-  //verificar si hay carga en el cche generado por la pre carga dle sigueite cap
-  const cacheKey = "servers_" + animeId + "_" + ep.number;
-
-  const cached = serverCache.get(cacheKey);
-
-  if (cached && Date.now() - cached.time < CACHE_TTL) {
-    renderizarServidores(cached.data);
-    precargarSiguienteEpisodio(index).catch(() => {});
-    return;
-  }
-
-  // 1. Cargar servidores de Firestore primero (instantáneo)
-  let servidoresFirestore = [];
-  let datosFirestore = null;
-  if (!firestoreEnPausaPorCuota) try {
-    if (documentoAnimeCache) {
-      datosFirestore = documentoAnimeCache;
-    } else {
-      const animeDatosRef = doc(db, "datos-animes", animeId);
-      const animeDatosSnap = await getDoc(animeDatosRef);
-      datosFirestore = animeDatosSnap.data() || {};
-      recordarDocumentoAnime(datosFirestore);
-    }
-    servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
+async function obtenerDatosAnimeParaServidores() {
+  if (firestoreEnPausaPorCuota) return null;
+  try {
+    if (documentoAnimeCache) return documentoAnimeCache;
+    const animeDatosSnap = await getDoc(doc(db, "datos-animes", animeId));
+    const datos = animeDatosSnap.data() || {};
+    recordarDocumentoAnime(datos);
+    return datos;
   } catch (error) {
-    if (!activarModoApiDirecta(error)) {
-
-    }
-  }
-
-  // Dejar preparado el siguiente capítulo con los datos que ya devolvió Firestore.
-  // Solo consultará la API para ese capítulo si no hay servidores guardados.
-  precargarSiguienteEpisodio(index, datosFirestore).catch(() => {});
-
-  // 2. Si hay servidores en Firestore, mostrarlos inmediatamente
-  if (servidoresFirestore.length) {
-    ep.servidores = guardarServidoresEnCache(ep, servidoresFirestore);
-    renderizarServidores(ep.servidores);
-  } else {
-
-  }
-
-  // 3. Sincronizar con la API en segundo plano
-// 3. Sincronizar con la API en segundo plano
-try {
-  const servidoresApi = await obtenerServidoresDesdeApi(ep);
-
-  if (servidoresApi === null) {
-    // API falló, mantener los de Firestore si existen
-    if (!servidoresFirestore.length) {
-      document.getElementById("video").innerHTML = "No se encontraron servidores.";
-      document.getElementById("controles").innerHTML = "";
-    }
-    actualizarEstadoBotones();
-    return ep;
-  }
-
-  if (servidoresApi.length) {
-    // 1. Filtrar únicamente los servidores de la API que NO están en Firestore
-    const servidoresNuevos = servidoresApi.filter(nuevo =>
-      !servidoresFirestore.some(existente =>
-        (existente.url && existente.url === nuevo.url) ||
-        (existente.code && existente.code === nuevo.code) ||
-        (existente.name === nuevo.name && existente.url === nuevo.url)
-      )
-    );
-
-    // 2. Si hay servidores verdaderamente nuevos
-    if (servidoresNuevos.length > 0) {
-      // Fusionar los existentes con los nuevos
-      const servidoresCombinados = [...servidoresFirestore, ...servidoresNuevos];
-
-      // Reordenar la lista combinada
-      ep.servidores = reordenarServidores(servidoresCombinados);
-
-      guardarServidoresEnCache(ep, ep.servidores);
-      // Actualizar la interfaz
-      renderizarServidores(ep.servidores, { mantenerReproduccion: servidoresFirestore.length > 0 });
-      // Guardar no puede bloquear la reproducción: si Firestore llega a 429,
-      // la interfaz ya sigue usando los datos directos de la API.
-      guardarServidoresEnFirestore(ep, ep.servidores).catch(error => {
-
-      });
-    } else if (!servidoresFirestore.length) {
-      // Caso inicial: Firestore estaba vacío y la API devolvió resultados
-      ep.servidores = reordenarServidores(servidoresApi);
-      guardarServidoresEnCache(ep, ep.servidores);
-      renderizarServidores(ep.servidores);
-      guardarServidoresEnFirestore(ep, ep.servidores).catch(error => {
-
-      });
-    }
-  } else if (!servidoresFirestore.length) {
-    // API no devolvió servidores y no hay en Firestore
-    document.getElementById("video").innerHTML = "No se encontraron servidores.";
-    document.getElementById("controles").innerHTML = "";
-  }
-} catch (error) {
-
-  if (!servidoresFirestore.length) {
-    document.getElementById("video").innerHTML = "Error al cargar servidores.";
-    document.getElementById("controles").innerHTML = "";
+    activarModoApiDirecta(error);
+    return null;
   }
 }
 
-  actualizarEstadoBotones();
+function sonElMismoServidor(a, b) {
+  return (a.url && a.url === b.url)
+    || (a.code && a.code === b.code)
+    || (a.name === b.name && a.url === b.url);
+}
+
+function combinarServidores(guardados, recibidos) {
+  return [...guardados, ...recibidos.filter(nuevo =>
+    !guardados.some(existente => sonElMismoServidor(existente, nuevo))
+  )];
+}
+
+function aplicarServidoresDeApi(ep, servidores, mantenerReproduccion) {
+  ep.servidores = guardarServidoresEnCache(ep, servidores);
+  renderizarServidores(ep.servidores, { mantenerReproduccion });
+  ejecutarEnSegundoPlano(
+    guardarServidoresEnFirestore(ep, ep.servidores),
+    "No se pudieron guardar los servidores obtenidos de la API"
+  );
+}
+
+async function cargarVideoDesdeEpisodio(index) {
+  const controles = document.getElementById("controles");
+  controles.innerHTML = "<span id='cargando-servidores'></span>";
+  controles.classList.remove("con-mediafire");
+  btnCap.textContent = `Episodio ${index}`;
+
+  let ep = episodios.find(ep => String(ep.number) === String(index))
+    || await recuperarEpisodioFaltanteDesdeApi(index);
+  if (!ep) {
+    btnCap.textContent = "Episodio desconocido";
+    controles.innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontró el episodio.</span>";
+    return;
+  }
+
+  episodioActualIndex = index;
+  history.replaceState({}, "", `ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+
+  const cacheKey = `servers_${animeId}_${ep.number}`;
+  const cached = serverCache.get(cacheKey);
+  if (cached && Date.now() - cached.time < CACHE_TTL) {
+    renderizarServidores(cached.data);
+    ejecutarEnSegundoPlano(precargarSiguienteEpisodio(index), "No se pudo precargar el siguiente episodio");
+    return;
+  }
+
+  const datosFirestore = await obtenerDatosAnimeParaServidores();
+  const servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
+  ejecutarEnSegundoPlano(
+    precargarSiguienteEpisodio(index, datosFirestore),
+    "No se pudo precargar el siguiente episodio"
+  );
+
+  if (servidoresFirestore.length) {
+    ep.servidores = guardarServidoresEnCache(ep, servidoresFirestore);
+    renderizarServidores(ep.servidores);
+  }
+
+  try {
+    const servidoresApi = await obtenerServidoresDesdeApi(ep);
+    if (servidoresApi === null) {
+      if (!servidoresFirestore.length) mostrarEstadoDeServidores("No se encontraron servidores.", true);
+      return ep;
+    }
+
+    const servidoresCombinados = combinarServidores(servidoresFirestore, servidoresApi);
+    if (servidoresCombinados.length > servidoresFirestore.length) {
+      aplicarServidoresDeApi(ep, servidoresCombinados, servidoresFirestore.length > 0);
+    } else if (!servidoresFirestore.length) {
+      mostrarEstadoDeServidores("No se encontraron servidores.", true);
+    }
+  } catch (error) {
+    if (!servidoresFirestore.length) mostrarEstadoDeServidores("Error al cargar servidores.", true);
+  } finally {
+    actualizarEstadoBotones();
+  }
 
   return ep;
 }
@@ -1761,9 +1740,12 @@ async function resolverDatosTmdbVidrift() {
           if (!tmdbSeason) return null;
           guardarCacheTmdbVidrift(animeDatos.tmdbId, tmdbSeason);
           if (Number(animeDatos.tmdbSeason) !== tmdbSeason) {
-            setDoc(animeDatosRef, { tmdbSeason }, { merge: true }).catch(() => {});
+            ejecutarEnSegundoPlano(
+              setDoc(animeDatosRef, { tmdbSeason }, { merge: true }),
+              "No se pudo actualizar la temporada TMDB en Firestore"
+            );
           }
-          logVidrift("ID recuperado de Firestore", {
+          debugLog("[Vidrift] ID recuperado de Firestore", {
             animeId,
             tmdbId: animeDatos.tmdbId,
             temporada: tmdbSeason,
@@ -1782,7 +1764,7 @@ async function resolverDatosTmdbVidrift() {
     debugLog("Buscando el anime en TMDB.", tituloAnime);
     const resultados = await buscarAnimeTMDBConRespaldo(tituloAnime);
     debugLog("Resultados obtenidos de TMDB.", resultados);
-    logVidrift("Resultados de búsqueda TMDB", { animeId, resultados });
+    debugLog("[Vidrift] Resultados de búsqueda TMDB", { animeId, resultados });
 
     if (!resultados?.length) {
       debugLog("No se encontraron resultados en TMDB.");
@@ -1791,7 +1773,7 @@ async function resolverDatosTmdbVidrift() {
 
     const seleccion = await seleccionarResultadoTMDBParaVidrift(resultados);
     if (!seleccion) {
-      logVidrift("Ningún resultado de TMDB contiene la temporada solicitada.", {
+      debugLog("[Vidrift] Ningún resultado de TMDB contiene la temporada solicitada.", {
         animeId,
         temporada: detectarTemporadaDesdeAnimeId(animeId)
       });
@@ -1799,7 +1781,7 @@ async function resolverDatosTmdbVidrift() {
     }
 
     const { tmdbId, tmdbSeason, resultado } = seleccion;
-    logVidrift("Primer resultado seleccionado", {
+    debugLog("[Vidrift] Primer resultado seleccionado", {
       animeId,
       seleccionado: resultado,
       tmdbId,
@@ -1807,9 +1789,10 @@ async function resolverDatosTmdbVidrift() {
     });
 
     guardarCacheTmdbVidrift(tmdbId, tmdbSeason);
-    setDoc(animeDatosRef, { tmdbId, tmdbSeason }, { merge: true })
-      .then(() => debugLog("Asociación de TMDB guardada en Firestore.", { tmdbId, tmdbSeason }))
-      .catch(() => {});
+    ejecutarEnSegundoPlano(
+      setDoc(animeDatosRef, { tmdbId, tmdbSeason }, { merge: true }),
+      "No se pudo guardar la asociación TMDB en Firestore"
+    );
 
     return cacheTmdbVidrift;
   })()
@@ -1822,6 +1805,61 @@ async function resolverDatosTmdbVidrift() {
     });
 
   return promesaTmdbVidrift;
+}
+
+function esFuenteVideoDirecta(url) {
+  return /\.(?:mp4|m3u8)(?:\?|$)/i.test(url);
+}
+
+function crearVideoDirecto(url, reproduccionId) {
+  const video = document.createElement("video");
+  video.src = url;
+  video.controls = true;
+  video.autoplay = true;
+  video.width = "100%";
+  video.height = "100%";
+  video.style.maxHeight = "80vh";
+  video.onerror = () => {
+    if (reproduccionId === reproduccionActualId) {
+      intentarSiguienteServidor(reproduccionId, "El archivo de vídeo no se pudo reproducir");
+    }
+  };
+  return video;
+}
+
+function crearIframeServidor(url, reproduccionId) {
+  const iframe = document.createElement("iframe");
+  iframe.src = url;
+  iframe.width = "100%";
+  iframe.height = "100%";
+  iframe.frameBorder = "0";
+  iframe.allowFullscreen = true;
+  iframe.scrolling = "no";
+  if (bloquearAnuncios) iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
+
+  iframe.onerror = () => {
+    if (reproduccionId === reproduccionActualId) {
+      intentarSiguienteServidor(reproduccionId, "El iframe del servidor produjo un error");
+    }
+  };
+  iframe.onload = () => {
+    if (reproduccionId === reproduccionActualId) cancelarFallbackDeCarga();
+  };
+  programarFallbackDeCarga(reproduccionId, 10000, "El servidor externo tardó demasiado en cargar");
+  return iframe;
+}
+
+function cargarIframeServidor(url, videoDiv, reproduccionId) {
+  const iframe = crearIframeServidor(url, reproduccionId);
+  const insertar = () => {
+    if (reproduccionId === reproduccionActualId) videoDiv.appendChild(iframe);
+  };
+  const fileId = url.match(/mega\.nz\/embed\/([a-zA-Z0-9_-]+)/)?.[1];
+  if (!fileId) return insertar();
+
+  esEnlaceValidoMega(fileId)
+    .then(valido => valido ? insertar() : intentarSiguienteServidor(reproduccionId, "El enlace de Mega no está disponible"))
+    .catch(insertar);
 }
 
 async function mostrarVideo(link, botonSeleccionado) {
@@ -1843,19 +1881,14 @@ async function mostrarVideo(link, botonSeleccionado) {
   const videoDiv = document.getElementById("video");
   videoDiv.innerHTML = "";
 
-  if (loadingTimeout) {
-    clearTimeout(loadingTimeout);
-    loadingTimeout = null;
-  }
+  cancelarFallbackDeCarga();
 
   // Caso especial para Vidrift
   if (esVidrift) {
     videoDiv.innerHTML = "<p class='span-carga'>Cargando servidor Vidrift...</p>";
     // Firestore o TMDB también pueden quedar esperando: no bloquees los demás
     // servidores si el ID no llega en un tiempo razonable.
-    loadingTimeout = setTimeout(() => {
-      if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "Tiempo de espera al obtener el ID de Vidrift");
-    }, 12000);
+    programarFallbackDeCarga(reproduccionId, 12000, "Tiempo de espera al obtener el ID de Vidrift");
 
     // Obtener brandColor dinámico desde la variable CSS --btn
     const computedStyle = getComputedStyle(document.body);
@@ -1866,13 +1899,13 @@ async function mostrarVideo(link, botonSeleccionado) {
     // Función para cargar el iframe con el ID de TMDB
     const cargarIframeConTMDB = (tmdbId, tmdbSeason) => {
       if (reproduccionId !== reproduccionActualId) return;
-      if (loadingTimeout) clearTimeout(loadingTimeout);
+      cancelarFallbackDeCarga();
       debugLog("Cargando Vidrift con el ID de TMDB.", tmdbId);
 
       // Construir URL con todos los parámetros de branding
       // Formato Vidrift: /tv/{tmdbId}/{temporada}/{episodio}.
       const baseUrl = `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioActualIndex}`;
-      logVidriftClave("Embed preparado", {
+      debugLog("[Vidrift] Embed preparado", {
         animeId,
         tmdbId,
         temporada: tmdbSeason,
@@ -1906,7 +1939,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       // del servidor y jamás se activa un fallback por esa razón.
       const preferirAudioEspanol = preferenciaDoblado;
       const preferirSubtitulosEspanol = true;
-      logVidrift("Preferencia de idioma aplicada", {
+      debugLog("[Vidrift] Preferencia de idioma aplicada", {
         preferencia: preferenciaDoblado ? "doblado" : "subtitulado",
         modoServidoresActual: modoDoblado ? "doblado" : "subtitulado",
         subtitulosEspanol: preferirSubtitulosEspanol
@@ -1944,7 +1977,7 @@ async function mostrarVideo(link, botonSeleccionado) {
           { type: "vidrift:set", subtitle: subtitulo.value },
           "https://embed.vidrift.net"
         );
-        logVidriftClave("Solicitando subtítulo en español", {
+        debugLog("[Vidrift] Solicitando subtítulo en español", {
           servidor: estadoVidriftActual?.server,
           subtitulo: subtitulo.label || subtitulo.value,
           intento: intentosSubtituloEspanol + 1
@@ -1961,7 +1994,7 @@ async function mostrarVideo(link, botonSeleccionado) {
           if (intentosSubtituloEspanol++ < 2) {
             seleccionarSubtituloEspanol(subtitulo);
           } else {
-            logVidrift("Vidrift no aplicó el subtítulo en español; se conserva el servidor actual.", {
+            debugLog("[Vidrift] Vidrift no aplicó el subtítulo en español; se conserva el servidor actual.", {
               servidor: estadoVidriftActual?.server,
               subtitulo: subtitulo.value
             });
@@ -1977,7 +2010,7 @@ async function mostrarVideo(link, botonSeleccionado) {
         ) return;
 
         if (event.data?.type === "vidrift:command-error" && event.data.field === "subtitle") {
-          logVidrift("Vidrift rechazó el subtítulo en español; se conserva el servidor actual.", event.data);
+          debugLog("[Vidrift] Vidrift rechazó el subtítulo en español; se conserva el servidor actual.", event.data);
           subtituloEspanolPendiente = null;
           clearTimeout(timeoutSubtituloEspanol);
           return;
@@ -2013,13 +2046,13 @@ async function mostrarVideo(link, botonSeleccionado) {
         };
         const audioEspanol = event.data.audios?.find(esEspanol);
         const subtituloEspanol = event.data.subtitles?.find(esEspanol);
-        logVidrift("Estado de pistas recibido", {
+        debugLog("[Vidrift] Estado de pistas recibido", {
           servidor: event.data.server,
           subtituloActivo: event.data.subtitle,
           subtitulos: event.data.subtitles?.map(({ value, label }) => ({ value, label }))
         });
         if (preferirSubtitulosEspanol) {
-          logVidrift("Pista española detectada", {
+          debugLog("[Vidrift] Pista española detectada", {
             servidor: event.data.server,
             subtitulo: subtituloEspanol || null
           });
@@ -2036,7 +2069,7 @@ async function mostrarVideo(link, botonSeleccionado) {
             subtituloEspanolPendiente = null;
             clearTimeout(timeoutSubtituloEspanol);
             subtitulosComprobados = true;
-            logVidrift("Subtítulo en español confirmado", {
+            debugLog("[Vidrift] Subtítulo en español confirmado", {
               servidor: event.data.server,
               subtitulo: subtituloEspanol.label || subtituloEspanol.value
             });
@@ -2075,13 +2108,10 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.addEventListener("error", () => {
         if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "El iframe de Vidrift produjo un error");
       });
-      loadingTimeout = setTimeout(() => {
-        if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "Vidrift tardó demasiado en cargar");
-      }, 12000);
+      programarFallbackDeCarga(reproduccionId, 12000, "Vidrift tardó demasiado en cargar");
       iframe.addEventListener("load", () => {
         if (reproduccionId !== reproduccionActualId) return;
-        clearTimeout(loadingTimeout);
-        loadingTimeout = null;
+        cancelarFallbackDeCarga();
         solicitarEstadoVidrift();
         // Algunos proveedores terminan de exponer las pistas unos segundos
         // después de cargar o de cambiar de servidor interno.
@@ -2108,86 +2138,16 @@ async function mostrarVideo(link, botonSeleccionado) {
     return;
   }
 
-  if (url.endsWith(".mp4") || url.endsWith(".m3u8") || url.includes(".mp4?") || url.includes(".m3u8?")) {
-    const video = document.createElement("video");
-    video.src = url;
-    video.controls = true;
-    video.autoplay = true;
-    video.width = "100%";
-    video.height = "100%";
-    video.style.maxHeight = "80vh";
-    video.onerror = () => {
-      if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "El archivo de vídeo no se pudo reproducir");
-    };
-    videoDiv.appendChild(video);
-  } else {
-    const iframe = document.createElement("iframe");
-    iframe.src = url;
-    iframe.width = "100%";
-    iframe.height = "100%";
-    iframe.frameBorder = "0";
-    iframe.allowFullscreen = true;
-    iframe.scrolling = "no";
-
-    if (!bloquearAnuncios) {
-      iframe.removeAttribute("sandbox");
-    } else {
-      iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
-    }
-
-    iframe.onerror = () => {
-      if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "El iframe del servidor produjo un error");
-    };
-
-    // Timeout: 10 segundos para todos
-    loadingTimeout = setTimeout(() => {
-      if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "El servidor externo tardó demasiado en cargar");
-    }, 10000);
-
-    iframe.onload = () => {
-      if (reproduccionId !== reproduccionActualId) return;
-      if (loadingTimeout) {
-        clearTimeout(loadingTimeout);
-        loadingTimeout = null;
-      }
-    };
-
-    // Verificar si el archivo de Mega existe antes de cargar
-    const isMega = url.includes('mega.nz/');
-    if (isMega) {
-      debugLog("El enlace corresponde a Mega.");
-      const fileIdMatch = url.match(/mega\.nz\/embed\/([a-zA-Z0-9_-]+)/);
-      if (fileIdMatch) {
-        const fileId = fileIdMatch[1];
-        esEnlaceValidoMega(fileId).then(valido => {
-          if (!valido) {
-            if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "El enlace de Mega no está disponible");
-          } else if (reproduccionId === reproduccionActualId) {
-            videoDiv.appendChild(iframe);
-          }
-        }).catch(() => {
-          if (reproduccionId === reproduccionActualId) videoDiv.appendChild(iframe);
-        });
-        return;
-      }
-    }
-
-    videoDiv.appendChild(iframe);
+  if (esFuenteVideoDirecta(url)) {
+    videoDiv.appendChild(crearVideoDirecto(url, reproduccionId));
+    return;
   }
+
+  cargarIframeServidor(url, videoDiv, reproduccionId);
 }
 
 function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo = "El servidor actual falló o no respondió") {
   if (reproduccionId !== reproduccionActualId) return;
-
-  if (!FALLBACK_AUTOMATICO_ACTIVO) {
-    console.info("[Reproducción] Cambio automático desactivado; se conserva el servidor actual.", {
-      animeId,
-      episodio: episodioActualIndex,
-      servidorActual: embeds[servidorActualIndex]?.nombre || embeds[servidorActualIndex]?.name || "desconocido",
-      motivo
-    });
-    return;
-  }
 
   const siguienteIndice = embeds.findIndex((servidor, indice) =>
     indice > servidorActualIndex && !servidor.url?.includes("mediafire.com")
@@ -2202,7 +2162,7 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
       servidorActual: embeds[servidorActualIndex]?.nombre || embeds[servidorActualIndex]?.name || "desconocido",
       motivo
     });
-    document.getElementById("video").innerHTML = "<p class='span-carga'>No hay más servidores disponibles para este episodio.</p>";
+    mostrarEstadoDeServidores("No hay más servidores disponibles para este episodio.");
     return;
   }
 
