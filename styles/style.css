@@ -2007,11 +2007,11 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
 
 
 footer {
-  margin-top: auto;
+  margin-top: clamp(3rem, 8vw, 6rem);
   background: var(--b);
   color: #a1a1aa;
-  padding: 19px 2rem;
-  min-height: 91px;
+  padding: 2rem;
+  min-height: 116px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -2028,6 +2028,12 @@ footer {
 }
 
 /* Sección de marca / título */
+footer > div {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+
 footer div h2, footer div h2 span {
   font-family: 'Oxanium', sans-serif;
   font-weight: 700;
@@ -2036,10 +2042,7 @@ footer div h2, footer div h2 span {
   font-size: 1.5rem;
 }
 footer div h2 span {
-  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--btn);
 }
 
 footer div span {
@@ -2048,11 +2051,15 @@ footer div span {
 }
 
 /* Lista de navegación */
+footer nav {
+    margin-left: auto;
+}
+
 footer ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    margin-left: auto;
+    margin-left: 0;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -2066,11 +2073,16 @@ footer ul li {
     transition: color 0.2s ease;
 }
 
-footer ul li:hover {
-    color: var(--btn2); /* Azul estilo streaming/anime */
-    &:after {
-      background-color: var(--btn2);
-    }
+footer ul a {
+    text-underline-offset: 5px;
+    text-decoration-thickness: 1px;
+    transition: color .2s ease, text-decoration-color .2s ease;
+}
+
+footer ul a:hover,
+footer ul a:focus-visible {
+    color: var(--btn);
+    text-decoration: underline;
 }
 
 /* Botón de volver arriba */
@@ -2107,12 +2119,62 @@ footer button::after {
   rotate:90deg;
 }
 
+/* -------------------------------------------------------------------------
+   Shared interaction and layout foundation
+   Keeps every view usable with keyboard navigation and makes the dark theme
+   feel intentional outside the individual page components.                 */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--btn) 72%, var(--b));
+  color: var(--t1);
+}
+
+:focus-visible {
+  outline: 3px solid var(--btn);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--btn);
+  outline-offset: 2px;
+  border-color: var(--btn) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--btn) 18%, transparent);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @media (max-width: 600px) {
   footer {
     flex-direction: column;
     align-items: start;
     padding-block: 2rem;
     padding-inline: 1rem;
+  }
+  footer nav {
+    margin-left: 0;
+    width: 100%;
   }
   footer ul {
     flex-direction: column;
