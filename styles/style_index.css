@@ -948,7 +948,7 @@ nav.filtros {
 .hero-slider {
   position: relative;
   width: 100%;
-  min-height: 461px;
+  min-height: clamp(340px, 34vw, 420px);
   isolation: isolate;
   margin-inline: -2rem;
   margin-top: -2rem;
@@ -970,7 +970,7 @@ nav.filtros {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 460px;
+  min-height: clamp(340px, 34vw, 420px);
 }
 
 .hero-slide {
@@ -1049,9 +1049,19 @@ nav.filtros {
   gap: 0.75rem;
   height: 100%;
   padding: 2rem;
-  max-width: 60%;
+  max-width: min(60%, 720px);
   
   padding-bottom: calc(60px + 2rem);
+}
+
+/* The feature should introduce the catalogue, not postpone it. */
+.hero-slide__actions .hero-btn--secondary {
+  opacity: .82;
+}
+
+.hero-slide__actions .hero-btn--secondary:hover,
+.hero-slide__actions .hero-btn--secondary:focus-visible {
+  opacity: 1;
 }
 
 .hero-slide__badges {
@@ -1302,7 +1312,7 @@ gap: 8px;
   .hero-slider,
   .hero-slider__track,
   .hero-slide__content {
-    min-height: 380px;
+    min-height: clamp(330px, 92vw, 380px);
   }
 
 }
