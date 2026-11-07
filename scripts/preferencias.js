@@ -3,15 +3,15 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstati
 import { auth, db } from "./firebase-login.js";
 
 const THEME_CONFIG = {
-  themes: ['nocturno', 'sakura', 'gris_cian', 'anime_zen'],
+  themes: ['nocturno', 'sakura', 'anime_zen', 'ambar'],
   defaultTheme: 'anime_zen'
 };
 
 const THEME_LABELS = {
   nocturno: 'Nocturno',
   sakura: 'Sakura',
-  gris_cian: 'Gris Cian',
   anime_zen: 'Anime Zen',
+  ambar: 'Ambar',
 };
 
 const temaValido = (tema) => THEME_CONFIG.themes.includes(tema) ? tema : THEME_CONFIG.defaultTheme;

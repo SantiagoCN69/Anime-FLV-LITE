@@ -41,17 +41,13 @@ btn2 (color secundario de acción):
 // Color complementario al principal.
 // Se usa en gradientes o variaciones visuales.
 
-f (filter):
-// Valor numérico usado para aplicar efectos visuales.
-// Ejemplo: brillo, contraste o intensidad en hover/animaciones.
-
 bgt (background transparente claro):
 // Valores RGB para generar transparencias claras.
 // Se usa con rgba() para overlays suaves sobre fondos oscuros.
 
 bgti (background transparente oscuro):
 // Valores RGB para transparencias oscuras.
-// Se usa para overlays, blur o capas encima de contenido claro.
+// Se usa con rgba() para overlays y capas translúcidas sobre el propio fondo del tema.
 
 /**
 

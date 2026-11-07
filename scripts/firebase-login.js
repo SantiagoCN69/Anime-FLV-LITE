@@ -4,7 +4,7 @@ import { getFirestore, collection, getDocs, query, doc, getDoc, setDoc, serverTi
 import { firebaseConfig } from "./firebaseconfig.js";
 
 const THEME_CONFIG = {
-  themes: ['nocturno', 'sakura', 'gris_cian', 'anime_zen'],
+  themes: ['nocturno', 'sakura', 'anime_zen', 'ambar'],
   defaultTheme: 'anime_zen',
   saveDelay: 10000
 };

@@ -2,52 +2,52 @@
 const themes = {
 
     nocturno: {
-        p: '#0f172a',
-        b: '#020617',
-        t1: '#f1f5f9',
-        t2: '#38bdf8',
-        br: '#1e293b',       // Borde más sutil (Slate 800) en lugar del slate claro
-        btn: '#3b82f6',
-        btn2: '#0ea5e9',     // Cian saturado para evitar degradados deslavados
-        bgt: '255, 255, 255',
-        bgti: '2, 6, 23'
+    p: '#121A2B',
+    b: '#0A0F1C',
+    t1: '#EEF2F8',
+    t2: '#7FC4D6',
+    br: '#243049',
+    btn: '#3F6FD8',
+    btn2: '#2D8CA6',
+    bgt: '238, 242, 248',
+    bgti: '10, 15, 28'
     },
 
     sakura: {
-        p: '#2D1B22',       
-        b: '#170B11',       
-        t1: '#fdf2f8',
-        t2: '#f472b6',
-        br: '#4A2A38',      
-        btn: '#d21e6e',
-        btn2: '#ff7a7a',
-        bgt: '255, 255, 255',
-        bgti: '23, 11, 17'  
-    },
-
-    gris_cian: {
-        p: '#27272A',       
-        b: '#18181B',       
-        t1: '#F8FAFC',
-        t2: '#2DD4BF',      
-        br: '#3F3F46',      
-        btn: '#0D9488',     
-        btn2: '#34D399',    
-        bgt: '255, 255, 255',
-        bgti: '24, 24, 27'  
+    p: '#201A1E',
+    b: '#121013',
+    t1: '#F4EEF0',
+    t2: '#E0A3B5',
+    br: '#3A2E34',
+    btn: '#B54A6F',
+    btn2: '#C2705F',
+    bgt: '244, 238, 240',
+    bgti: '18, 16, 19'
     },
 
     anime_zen: {
-        p: '#111114',       
-        b: '#09090b',       
-        t1: '#f8f5ff',      
-        t2: '#bd83f2',      
-        br: '#1C1C20',      
-        btn: '#a970ff',     
-        btn2: '#ed65b5',    
-        bgt: '255, 255, 255',
-        bgti: '9, 9, 11'    
+    p: '#1A1622',
+    b: '#0E0B14',
+    t1: '#F2EEF6',
+    t2: '#BFA3DD',
+    br: '#302838',
+    btn: '#a970ff',     
+    btn2: '#B8688F',
+    bgt: '242, 238, 246',
+    bgti: '14, 11, 20'
     },
+
+ambar: {
+    p: '#1B1613',
+    b: '#100D0B',
+    t1: '#F2EDE8',
+    t2: '#E8A25C',
+    br: '#322A24',
+    btn: '#D9692A',
+    btn2: '#B5833A',
+    bgt: '242, 237, 232',
+    bgti: '16, 13, 11'
+    }
 };
 
     // CORRECCIÓN CRÍTICA: Cambiado el default a un tema existente
