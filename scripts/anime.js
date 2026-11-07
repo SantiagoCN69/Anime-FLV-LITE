@@ -317,21 +317,21 @@ function getFondoUrl(anime) {
 async function aplicarFondoAnime(anime) {
   const { cdnUrl, fallbackUrl } = getFondoUrl(anime);
   const banner = anime.banner;
-  const usarBanner = banner && await esBannerValido(banner);
-  
-  // Determinar la URL inicial: CDN o banner si es válido
-  const imagenUrl = usarBanner ? banner : (cdnUrl || fallbackUrl);
+  const manual = anime.manual;
 
-  // Aplicar la imagen inicial
+  const imagenUrl = manual ? banner : (banner && await esBannerValido(banner) ? banner : (cdnUrl || fallbackUrl));
+
   document.body.style.setProperty('--background-image', imagenUrl ? `url(${imagenUrl})` : 'none');
   document.body.classList.add('fondo-animado');
 
-  // Si usamos CDN y hay fallback, configurar fallback por si falla
-  if (cdnUrl && fallbackUrl && !usarBanner) {
+  const urlParaVerificar = manual ? banner : (banner ? banner : cdnUrl);
+  const urlDeRespaldo = manual ? (cdnUrl || fallbackUrl) : (banner ? (cdnUrl || fallbackUrl) : fallbackUrl);
+
+  if (urlParaVerificar && urlDeRespaldo && urlParaVerificar !== urlDeRespaldo) {
     const imgCheck = new Image();
-    imgCheck.src = cdnUrl;
+    imgCheck.src = urlParaVerificar;
     imgCheck.onerror = () => {
-      document.body.style.setProperty('--background-image', `url(${fallbackUrl})`);
+      document.body.style.setProperty('--background-image', `url(${urlDeRespaldo})`);
     };
   }
 }
