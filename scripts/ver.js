@@ -1374,7 +1374,7 @@ async function cargarVideoDesdeEpisodio(index) {
   }
 
   episodioActualIndex = index;
-  history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   const cacheKey = `servers_${animeId}_${ep.number}`;
   const cached = serverCache.get(cacheKey);
