@@ -3,7 +3,9 @@
   margin-bottom: 32px;
   margin-top: 1rem;
 }
-
+#Preferencias .pref-section:last-child {
+  margin-bottom: 0;
+}
 .section-label {
   font-size: 12px !important;
   font-weight: 600 !important;
