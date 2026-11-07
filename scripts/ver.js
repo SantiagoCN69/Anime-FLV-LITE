@@ -40,6 +40,9 @@ function quitarSufijoTemporada(titulo) {
     .replace(/(?:\s|-)(?:second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|primera|segunda|tercera|cuarta|quinta|sexta|séptima|septima|octava|novena|décima|decima)[\s-]+(?:season|temporada)\b.*$/i, "")
     .replace(/(?:\s|-)dai[\s-]+\d+[\s-]+ki\b.*$/i, "")
     .replace(/(?:\s|-)r\d+\b.*$/i, "")
+    .replace(/[\s-]+(?:season|temporada)[\s-]*(?:i{1,3}|iv|vi{0,3}|ix|x)\b.*$/i, "")
+    .replace(/[\s-]+(?:i{1,3}|iv|vi{0,3}|ix|x)[\s-]*$/i, "")
+    .replace(/[\s-]+$/, "")
     .trim();
 }
 
@@ -106,7 +109,8 @@ function detectarTemporadaDesdeAnimeId(id) {
   if (marcadorOrdinal) return ordinales[marcadorOrdinal[1]];
 
   const marcadorRomano = slug.match(/(?:^|-)(?:season|temporada)-(i|ii|iii|iv|v|vi|vii|viii|ix|x)(?:-|$)/)
-    || slug.match(/(?:^|-)(i|ii|iii|iv|v|vi|vii|viii|ix|x)-(?:season|temporada)(?:-|$)/);
+    || slug.match(/(?:^|-)(i|ii|iii|iv|v|vi|vii|viii|ix|x)-(?:season|temporada)(?:-|$)/)
+    || slug.match(/(?:^|-)(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/);
   if (marcadorRomano) return romanos[marcadorRomano[1]];
 
   return 1;
@@ -302,6 +306,9 @@ if (!Number.isInteger(episodioActualIndex) || episodioActualIndex < 0) {
 }
 let embeds = [];
 let bloquearAnuncios = localStorage.getItem("bloquearAnuncios") !== "false";
+// Esta preferencia se lee al abrir el reproductor. Vidrift recibe los
+// parámetros correspondientes al crear el iframe.
+const modoMaratonActivo = localStorage.getItem("modoMaraton") === "true";
 // Prioridad: parámetro URL > preferencia localStorage > default (sub)
 let preferenciaDoblado = serversParam === "dob" || (serversParam === null && serversPreference === "dob");
 // Puede cambiar temporalmente si un episodio solo tiene enlaces en el otro
@@ -314,6 +321,8 @@ let loadingTimeout = null;
 let reproduccionActualId = 0;
 let limpiarPreferenciaSubtitulos = null;
 let ventanaVidriftActiva = null;
+let cambioEpisodioVidriftEnCurso = false;
+let saltoOutroVidriftEnCurso = false;
 let cacheTmdbVidrift = null;
 let promesaTmdbVidrift = null;
 let firestoreTmdbConsultado = false;
@@ -730,6 +739,14 @@ async function toggleYGuardarEstadoCapitulo() {
     toggleInProgress = false;
   }
 }
+// A diferencia del botón, este flujo nunca desmarca un capítulo ya visto.
+async function marcarCapituloActualComoVisto() {
+  const usuario = localStorage.getItem("userID");
+  if (!usuario || toggleInProgress || btnEstadoCapitulo?.classList.contains("visto")) return;
+
+  await toggleYGuardarEstadoCapitulo();
+}
+
 // Esperar a que el estado de autenticación esté listo
 document.addEventListener("authStateReady", async (event) => {
   if (event.detail.user) {
@@ -1357,7 +1374,7 @@ async function cargarVideoDesdeEpisodio(index) {
   }
 
   episodioActualIndex = index;
-  history.replaceState({}, "", `ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   const cacheKey = `servers_${animeId}_${ep.number}`;
   const cached = serverCache.get(cacheKey);
@@ -1921,7 +1938,13 @@ async function mostrarVideo(link, botonSeleccionado) {
         showTitle: "1",
         // hide: "episodes",
         // URLSearchParams codifica los espacios; no pasar el valor ya codificado.
-        font: "Bebas Neue"
+        font: "Bebas Neue",
+        // Vidrift gestiona estas acciones dentro del iframe. fs=parent hace
+        // que la pantalla completa pertenezca a AniZen y sobreviva a un
+        // cambio interno de capítulo.
+        autoskip: modoMaratonActivo ? "1" : "0",
+        autonext: modoMaratonActivo ? "1" : "0",
+        fs: "parent"
       });
       const vidriftUrl = `${baseUrl}?${params.toString()}`;
       debugLog("URL de Vidrift generada.", vidriftUrl);
@@ -1952,6 +1975,30 @@ async function mostrarVideo(link, botonSeleccionado) {
       let timeoutSubtituloEspanol = null;
       let intervaloEstadoVidrift = null;
       let recibirEstadoVidrift;
+      let intentosInfoSiguiente = 0;
+
+      const enviarInformacionSiguienteAVidrift = () => {
+        const siguiente = episodios.find(({ number }) => Number(number) > episodioActualIndex);
+
+        // La lista de capítulos y el iframe se cargan en paralelo. Esperar un
+        // instante evita ocultar el botón "Siguiente episodio" por error.
+        if (!siguiente && episodios.length === 0 && intentosInfoSiguiente++ < 8) {
+          setTimeout(enviarInformacionSiguienteAVidrift, 500);
+          return;
+        }
+
+        const next = siguiente
+          ? { season: tmdbSeason, episode: Number(siguiente.number) }
+          : null;
+        iframe.contentWindow?.postMessage(
+          { type: "vidrift:nextup-info", next },
+          ORIGEN_VIDRIFT
+        );
+        debugLog("[Vidrift] Información de siguiente capítulo enviada.", {
+          siguiente: next,
+          modoMaratonActivo
+        });
+      };
 
       const limpiarListenerVidrift = () => {
         clearTimeout(timeoutSubtituloEspanol);
@@ -2113,6 +2160,8 @@ async function mostrarVideo(link, botonSeleccionado) {
         if (reproduccionId !== reproduccionActualId) return;
         cancelarFallbackDeCarga();
         solicitarEstadoVidrift();
+        notificarPantallaCompletaVidrift(iframe.contentWindow);
+        enviarInformacionSiguienteAVidrift();
         // Algunos proveedores terminan de exponer las pistas unos segundos
         // después de cargar o de cambiar de servidor interno.
         intervaloEstadoVidrift = setInterval(solicitarEstadoVidrift, 1500);
@@ -2221,16 +2270,10 @@ function actualizarEstadoBotones() {
   }
 }
 
-// Configurar navegación de botones
-btnSiguiente.addEventListener("click", async (e) => {
-  e.preventDefault();
+async function irAlSiguienteCapitulo() {
   const ultimoEpisodio = episodios[episodios.length - 1];
   if (ultimoEpisodio && episodioActualIndex < ultimoEpisodio.number) {
-    const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
-    const user = localStorage.getItem("userID");
-    if (user && marcarVistoBtn && !marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
-      await toggleYGuardarEstadoCapitulo();
-    }
+    await marcarCapituloActualComoVisto();
     await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
     refrescarUIEstadoCapitulo();
     actualizarEstadoBotones();
@@ -2244,7 +2287,15 @@ btnSiguiente.addEventListener("click", async (e) => {
     }
     // Actualizar texto de botones de navegación
     actualizarTextoBotonesNavegacion();
+    return true;
   }
+  return false;
+}
+
+// Configurar navegación de botones
+btnSiguiente.addEventListener("click", async (e) => {
+  e.preventDefault();
+  await irAlSiguienteCapitulo();
 });
 
 btnAnterior.addEventListener("click", async (e) => {
@@ -2289,6 +2340,34 @@ function establecerModoCine(activo) {
   localStorage.setItem("cineActivo", String(activo));
 }
 
+const ORIGEN_VIDRIFT = "https://embed.vidrift.net";
+
+function notificarPantallaCompletaVidrift(destino = ventanaVidriftActiva) {
+  destino?.postMessage(
+    { type: "vidrift:fullscreen-state", on: Boolean(document.fullscreenElement) },
+    ORIGEN_VIDRIFT
+  );
+}
+
+async function manejarPantallaCompletaVidrift(event) {
+  // Solo el área del vídeo entra en pantalla completa: los controles de
+  // servidores permanecen fuera, como ocurría antes del modo maratón.
+  const video = document.getElementById("video");
+  try {
+    if (event.data.on && !document.fullscreenElement) {
+      await video?.requestFullscreen?.();
+    } else if (!event.data.on && document.fullscreenElement) {
+      await document.exitFullscreen?.();
+    }
+  } catch (error) {
+    debugLog("[Vidrift] No se pudo cambiar la pantalla completa solicitada.", error);
+  } finally {
+    notificarPantallaCompletaVidrift(event.source);
+  }
+}
+
+document.addEventListener("fullscreenchange", () => notificarPantallaCompletaVidrift());
+
 // Listener para detectar cambios de episodio en el iframe de Vidrift
 window.addEventListener('message', async (event) => {
   // Verificar que el mensaje viene de Vidrift
@@ -2296,9 +2375,41 @@ window.addEventListener('message', async (event) => {
     return;
   }
 
+  // Solo responder al iframe actualmente visible. Evita que un iframe que
+  // acaba de reemplazarse altere la URL, el progreso o la pantalla completa.
+  if (event.source !== ventanaVidriftActiva) return;
+
+  if (event.data?.type === "vidrift:fullscreen") {
+    await manejarPantallaCompletaVidrift(event);
+    return;
+  }
+
+  // Vidrift emite este evento al comenzar créditos o el ending. En modo
+  // maratón saltamos de inmediato, sin esperar los cinco segundos de la
+  // tarjeta "Siguiente episodio".
+  if (event.data?.type === "vidrift:nextup" && modoMaratonActivo) {
+    if (saltoOutroVidriftEnCurso) return;
+    saltoOutroVidriftEnCurso = true;
+    try {
+      const avanzo = await irAlSiguienteCapitulo();
+      debugLog("[Vidrift] Outro omitido por modo maratón.", { avanzo });
+    } finally {
+      saltoOutroVidriftEnCurso = false;
+    }
+    return;
+  }
+
+  // Algunos embeds piden al padre continuar con el siguiente capítulo en
+  // vez de navegar internamente. Usamos el mismo flujo que el botón externo
+  // para guardar el visto, mantener la URL y crear el nuevo iframe.
+  if (event.data?.type === "vidrift:nextup-play") {
+    const avanzo = await irAlSiguienteCapitulo();
+    debugLog("[Vidrift] Solicitud de siguiente capítulo atendida.", { avanzo });
+    return;
+  }
+
   // Un capítulo marcado como no emitido no podrá reproducirse en Vidrift.
-  // Solo atendemos el iframe visible para no reaccionar a mensajes atrasados.
-  if (event.data?.type === "vidrift:unreleased" && event.source === ventanaVidriftActiva) {
+  if (event.data?.type === "vidrift:unreleased") {
     console.warn("[Vidrift] El capítulo aún no está emitido; se probará el siguiente servidor.", {
       animeId,
       episodio: episodioActualIndex
@@ -2307,80 +2418,46 @@ window.addEventListener('message', async (event) => {
     return;
   }
 
-  // Detectar cambio de episodio (puede tener diferentes formatos)
-  let nuevoEpisodio = null;
-
-  if (event.data && event.data.type === "vidrift:episode") {
-    nuevoEpisodio = event.data.episode;
-  } else if (event.data && event.data.type === 'episodeChange') {
-    nuevoEpisodio = event.data.episode;
-  } else if (event.data && event.data.episode) {
-    nuevoEpisodio = event.data.episode;
-  } else if (event.data && event.data.ep) {
-    nuevoEpisodio = event.data.ep;
-  } else if (event.data && typeof event.data === 'number') {
-    nuevoEpisodio = event.data;
-  }
+  // "vidrift:episode" es el evento oficial. Se conserva episodeChange por
+  // compatibilidad con embeds anteriores.
+  const esCambioDeEpisodio = ["vidrift:episode", "episodeChange"].includes(event.data?.type);
+  const nuevoEpisodio = esCambioDeEpisodio ? event.data.episode : null;
 
   const numeroEpisodio = Number(nuevoEpisodio);
-  if (Number.isInteger(numeroEpisodio) && numeroEpisodio > 0 && numeroEpisodio !== episodioActualIndex) {
-    debugLog("Cambio de episodio detectado.", numeroEpisodio);
+  if (
+    Number.isInteger(numeroEpisodio) &&
+    numeroEpisodio > 0 &&
+    numeroEpisodio !== episodioActualIndex &&
+    !cambioEpisodioVidriftEnCurso
+  ) {
+    cambioEpisodioVidriftEnCurso = true;
+    debugLog("[Vidrift] Cambio interno de capítulo detectado.", numeroEpisodio);
 
-    // Verificar si está en pantalla completa antes del cambio
-    const estaEnPantallaCompleta = document.fullscreenElement !== null;
-    const orientacionPrev = screen.orientation ? screen.orientation.type : null;
+    try {
+      // Se hace antes de actualizar el índice, igual que al usar el botón
+      // externo de capítulo siguiente.
+      await marcarCapituloActualComoVisto();
 
-    // Marcar el capítulo actual como visto antes de cambiar (igual que cuando se hace manualmente)
-    const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
-    const user = localStorage.getItem("userID");
-    if (user && marcarVistoBtn && !marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
-      await toggleYGuardarEstadoCapitulo();
-    }
+      // Actualizar el episodio actual
+      episodioActualIndex = numeroEpisodio;
 
-    // Actualizar el episodio actual
-    episodioActualIndex = numeroEpisodio;
+      // Actualizar URL
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set("episode", numeroEpisodio);
+      newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
+      window.history.pushState({}, "", newUrl);
 
-    // Actualizar URL
-    const newUrl = new URL(window.location);
-    newUrl.searchParams.set("episode", numeroEpisodio);
-    newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
-    window.history.pushState({}, "", newUrl);
+      // Actualizar UI
+      actualizarNumeroCapitulo();
+      actualizarEstadoBotones();
+      generarDropdownCapitulos();
+      actualizarTextoBotonesNavegacion();
 
-    // Actualizar UI
-    actualizarNumeroCapitulo();
-    actualizarEstadoBotones();
-    generarDropdownCapitulos();
-    actualizarTextoBotonesNavegacion();
-
-    // Refrescar estado de visto
-    refrescarUIEstadoCapitulo();
-
-    // Restaurar pantalla completa si estaba activa
-    if (estaEnPantallaCompleta) {
-      const videoDiv = document.getElementById("video");
-      if (videoDiv) {
-        try {
-          await videoDiv.requestFullscreen();
-          debugLog("Pantalla completa restaurada después del cambio de capítulo");
-
-          // Al salir de pantalla completa el navegador libera el bloqueo de
-          // orientación; si estaba en horizontal, volver a bloquearlo.
-          if (
-            screen.orientation &&
-            screen.orientation.lock &&
-            orientacionPrev &&
-            orientacionPrev.startsWith("landscape")
-          ) {
-            try {
-              await screen.orientation.lock(orientacionPrev);
-            } catch (e) {
-              debugLog("No se pudo bloquear la orientación:", e);
-            }
-          }
-        } catch (error) {
-          debugLog("No se pudo restaurar la pantalla completa:", error);
-        }
-      }
+      // Refrescar estado de visto. Con fs=parent el iframe no se reemplaza y
+      // el contenedor conserva la pantalla completa durante el cambio.
+      await refrescarUIEstadoCapitulo();
+    } finally {
+      cambioEpisodioVidriftEnCurso = false;
     }
   }
 });

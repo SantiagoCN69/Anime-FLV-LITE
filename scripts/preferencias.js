@@ -387,6 +387,14 @@ function initPreferencias() {
     });
   }
 
+  const toggleModoMaraton = document.getElementById('toggle-modo-maraton');
+  if (toggleModoMaraton) {
+    toggleModoMaraton.checked = localStorage.getItem('modoMaraton') === 'true';
+    toggleModoMaraton.addEventListener('change', () => {
+      localStorage.setItem('modoMaraton', String(toggleModoMaraton.checked));
+    });
+  }
+
   const selectServers = document.getElementById('select-servers');
   if (selectServers) {
     const currentServer = localStorage.getItem('serverPreference') || 'sub';
