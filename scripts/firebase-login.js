@@ -112,6 +112,7 @@ function crearmodal(user = false) {
     <button id="theme-toggle">Tema</button>
     <button id="preferencias-btn">Preferencias</button>
     <button id="contacto-link">Contacto</button>
+    <a id="investigacion-link" target="_blank" href="investigacion">Investigación</a>
   `;
   
   if (user) {

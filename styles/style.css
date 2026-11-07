@@ -1602,11 +1602,16 @@ h4 {
   mask-image: url("../icons/plane.svg");
 }
 
+#investigacion-link::before {
+    -webkit-mask-image: url("../icons/book.svg");
+  mask-image: url("../icons/book.svg");
+}
+
 #preferencias-btn::before {
     -webkit-mask-image: url("../icons/settings.svg");
   mask-image: url("../icons/settings.svg");
 }
-.logout-modal button {
+.logout-modal button, .logout-modal a {
   border-radius: 18px;
 }
 #theme-toggle::before {
