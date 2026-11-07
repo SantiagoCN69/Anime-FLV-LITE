@@ -630,9 +630,9 @@ if (busquedaInput) {
           if (isIndexPage) {
             if (loadingSpan) loadingSpan.style.display = 'none';
             seccionResultados?.classList.remove('hidden');
-            mostrarMensajeError(resultadosContainer, 'Error al buscar.');
+            mostrarMensajeError(resultadosContainer, 'Error de conexión.');
           } else if (busquedasContainer) {
-            mostrarMensajeError(busquedasContainer, 'Error al buscar.');
+            mostrarMensajeError(busquedasContainer, 'Error de conexión.');
           }
         });
     }, 300);
