@@ -184,39 +184,6 @@
   padding: 0 16px 48px;
 }
 
-.pref-credits {
-  display: block;
-  margin: 0;
-  border: none;
-  padding: 0;
-  text-align: center;
-  color: var(--t2);
-}
-
-.pref-credits-mark {
-  display: block;
-  width: 48px;
-  height: 1px;
-  margin: 0 auto 16px;
-  background: var(--br);
-}
-
-.pref-credits-brand {
-  margin: 0 0 6px;
-  font-size: 13px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--t1);
-  font-weight: 600;
-}
-
-.pref-credits-author {
-  margin: 0;
-  font-size: 13px;
-  color: var(--t1);
-  opacity: 0.7;
-}
-
 @media screen and (max-width: 600px) {
   .setting-row {
     flex-wrap: wrap;
