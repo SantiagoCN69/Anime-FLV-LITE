@@ -1625,7 +1625,8 @@ function inicializarContinuarViendo() {
     return;
   }
 
-  let datos = JSON.parse(localStorage.getItem(cachekey));
+  let datos = JSON.parse(localStorage.getItem(cachekey)) || [];
+  if (!Array.isArray(datos)) datos = [];
 
   if (verificarYLimpiarCacheBackground(cachekey, datos, 'portada', null, true)) {
     return;
