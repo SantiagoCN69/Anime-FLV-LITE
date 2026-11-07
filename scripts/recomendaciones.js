@@ -543,11 +543,3 @@ contenedores.forEach((contenedor) => {
         }
     });
 });
-
-// Búsqueda automática desde la URL (?q= o ?busqueda=)
-const paramsUrl = new URLSearchParams(location.search);
-const busquedaUrl = paramsUrl.get('q') || paramsUrl.get('busqueda');
-if (busquedaUrl && inputPersonalizado) {
-    inputPersonalizado.value = busquedaUrl;
-    console.log('[recomendaciones] búsqueda recibida por URL:', busquedaUrl);
-}
