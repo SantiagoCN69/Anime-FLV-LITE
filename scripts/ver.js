@@ -2328,6 +2328,7 @@ window.addEventListener('message', async (event) => {
 
     // Verificar si está en pantalla completa antes del cambio
     const estaEnPantallaCompleta = document.fullscreenElement !== null;
+    const orientacionPrev = screen.orientation ? screen.orientation.type : null;
 
     // Marcar el capítulo actual como visto antes de cambiar (igual que cuando se hace manualmente)
     const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
@@ -2361,6 +2362,21 @@ window.addEventListener('message', async (event) => {
         try {
           await videoDiv.requestFullscreen();
           debugLog("Pantalla completa restaurada después del cambio de capítulo");
+
+          // Al salir de pantalla completa el navegador libera el bloqueo de
+          // orientación; si estaba en horizontal, volver a bloquearlo.
+          if (
+            screen.orientation &&
+            screen.orientation.lock &&
+            orientacionPrev &&
+            orientacionPrev.startsWith("landscape")
+          ) {
+            try {
+              await screen.orientation.lock(orientacionPrev);
+            } catch (e) {
+              debugLog("No se pudo bloquear la orientación:", e);
+            }
+          }
         } catch (error) {
           debugLog("No se pudo restaurar la pantalla completa:", error);
         }
