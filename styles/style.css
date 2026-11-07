@@ -459,7 +459,7 @@ body:has(header.search-active) .logout-modal {
   top: 80px;
   transform: translateX(-100%);
   color: var(--t1);
-  width: 215px;
+  width: 220px;
   height: calc(100dvh - 80px);
   left: 0;
   overflow-x: hidden;
@@ -524,7 +524,7 @@ body:has(header.search-active) .logout-modal {
   display: block;
   }
 .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
-  padding: 16px 19PX;
+  padding: 16px 22PX;
   flex: 1;
   display: flex;
   gap: 12px;
@@ -2007,7 +2007,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
 
 
 footer {
-  margin-top: clamp(3rem, 8vw, 6rem);
+  margin-top: auto;
   background: var(--b);
   color: #a1a1aa;
   padding: 2rem;

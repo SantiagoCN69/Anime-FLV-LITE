@@ -292,11 +292,11 @@ body.cv-sidebar #section-continuar-viendo {
 
 
 .content-section {
-  margin-left: calc(215px + 2rem);
+  margin-left: calc(220px + 2rem);
 }
 
 footer {
-  margin-left: 215px;
+  margin-left: 220px;
 }
 }
 
@@ -493,7 +493,7 @@ footer {
   1. ESTILOS DEL FILTRO DE LETRAS (A-Z)
    ========================================= */
 .filtro-letras {
-  height: 63px;
+  height: 72px;
   max-width: 100%;
   display: flex;
   flex-wrap: nowrap;
