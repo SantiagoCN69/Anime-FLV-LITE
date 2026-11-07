@@ -429,7 +429,7 @@ function crearElementoSiguienteCapitulo(itemData) {
 
   const spanEpisodio = document.createElement('span');
   spanEpisodio.className = 'texto-episodio';
-  spanEpisodio.textContent = `Ver episodio ${itemData.siguienteCapitulo}` + ' / ' + (itemData.totalCapitulos || 'X');
+  spanEpisodio.textContent = `Ver Ep ${itemData.siguienteCapitulo}` + ' / ' + (itemData.totalCapitulos || 'X');
 
   contenedorTexto.appendChild(spanTitulo);
   contenedorTexto.appendChild(spanEpisodio);

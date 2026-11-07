@@ -150,7 +150,7 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id
 
   const spanEpisodio = document.createElement('span');
   spanEpisodio.className = 'texto-episodio';
-  spanEpisodio.textContent = `Ver episodio ${siguienteCapitulo} / ${totalCapitulos || 'X'}`;
+  spanEpisodio.textContent = `Ver Ep ${siguienteCapitulo} / ${totalCapitulos || 'X'}`;
 
   contenedorTexto.append(spanTitulo, spanEpisodio);
   btn.append(img, contenedorTexto);

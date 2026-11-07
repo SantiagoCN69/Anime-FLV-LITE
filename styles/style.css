@@ -459,7 +459,7 @@ body:has(header.search-active) .logout-modal {
   top: 80px;
   transform: translateX(-100%);
   color: var(--t1);
-  width: 230px;
+  width: 215px;
   height: calc(100dvh - 80px);
   left: 0;
   overflow-x: hidden;
@@ -524,7 +524,7 @@ body:has(header.search-active) .logout-modal {
   display: block;
   }
 .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
-  padding: 16px 25px;
+  padding: 16px 19PX;
   flex: 1;
   display: flex;
   gap: 12px;
