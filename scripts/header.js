@@ -379,6 +379,13 @@ function mostrarResultados(data, searchTerm, searchId) {
       });
       if (busquedaH2) busquedaH2.textContent = 'Resultados de busqueda: ' + resultados.length;
       observerAnimeCards(cards);
+      const hayPocos = hayPocosCoincidencias(resultados, searchTerm);
+      if (hayPocos) {
+        agregarBotonBuscarIA(resultadosContainer, searchTerm, 'antes');
+      }
+      if (!hayPocos) {
+        agregarBotonBuscarIA(resultadosContainer, searchTerm, 'despues');
+      }
     } else {
       seccionResultados?.classList.remove('hidden');
       renderSinResultados(resultadosContainer, searchTerm, searchId);
@@ -423,7 +430,76 @@ function mostrarResultados(data, searchTerm, searchId) {
       cards.push(card);
     });
     observerAnimeCards(cards);
+    const hayPocos = hayPocosCoincidencias(resultados, searchTerm);
+    if (hayPocos) {
+      agregarBotonBuscarIA(busquedasContainer, searchTerm, 'antes');
+    }
+    if (!hayPocos) {
+      agregarBotonBuscarIA(busquedasContainer, searchTerm, 'despues');
+    }
   }
+}
+
+function palabrasBusqueda(searchTerm) {
+  return [...new Set(searchTerm.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .split(/[^a-z0-9]+/)
+    .filter(palabra => palabra.length >= 2))];
+}
+
+function hayPocosCoincidencias(resultados, searchTerm) {
+  const MINIMO_COINCIDENCIAS_RELEVANTES = 3;
+  const palabras = palabrasBusqueda(searchTerm);
+  const resumen = resultados.map(anime => {
+    const titulo = anime.title || anime.titulo || anime.name || '(sin título)';
+    const palabrasTitulo = new Set(palabrasBusqueda(anime.title || anime.titulo || anime.name || ''));
+    const coincidencias = palabras.filter(palabra => palabrasTitulo.has(palabra));
+    return { titulo, coincidencias: coincidencias.length, palabrasCoincidentes: coincidencias.join(', ') || 'ninguna' };
+  });
+  const mayorCoincidencia = Math.max(0, ...resumen.map(resultado => resultado.coincidencias));
+  const consultaTienePalabrasSuficientes = palabras.length >= MINIMO_COINCIDENCIAS_RELEVANTES;
+  const debeMostrarBoton = consultaTienePalabrasSuficientes && mayorCoincidencia < MINIMO_COINCIDENCIAS_RELEVANTES;
+
+  console.groupCollapsed('[búsqueda-ia] Comprobación de relevancia');
+  console.log('Consulta:', searchTerm);
+  console.log('Palabras detectadas:', palabras);
+  console.log('Resultados recibidos:', resultados.length);
+  console.log(`Mínimo de coincidencias para considerar relevante un título: ${MINIMO_COINCIDENCIAS_RELEVANTES}`);
+  console.table(resumen);
+  console.log('Mayor número de palabras coincidentes en un título:', mayorCoincidencia);
+  console.log('¿Mostrar botón de IA?:', debeMostrarBoton);
+  console.groupEnd();
+
+  // Si ningún título comparte al menos tres palabras del input, la coincidencia
+  // es demasiado débil para considerarla una buena búsqueda.
+  return debeMostrarBoton;
+}
+
+function agregarBotonBuscarIA(container, searchTerm, posicion) {
+  if (!container || container.querySelector(`.cta-busqueda-ia[data-posicion="${posicion}"]`)) return;
+
+  const cta = document.createElement('div');
+  cta.className = 'cta-busqueda-ia';
+  cta.dataset.posicion = posicion;
+  const boton = document.createElement('a');
+  boton.className = 'btn-buscar-ia';
+  boton.href = `/?Recomendaciones&q=${encodeURIComponent(searchTerm)}`;
+  boton.innerHTML = `<span>${posicion === 'antes' ? 'Mejorar la búsqueda con IA' : 'Buscar recomendaciones con IA'}</span>`;
+
+  const mensaje = document.createElement('p');
+  mensaje.className = 'cta-busqueda-ia-mensaje';
+  mensaje.textContent = posicion === 'antes'
+    ? 'Estos resultados no parecen coincidir del todo con tu búsqueda.'
+    : '¿No encontraste exactamente lo que buscabas? Cuéntale a la IA qué tipo de anime quieres ver.';
+  cta.append(mensaje, boton);
+
+  const primeraTarjeta = container.querySelector('.anime-card');
+  if (posicion === 'antes') {
+    container.insertBefore(cta, primeraTarjeta || null);
+  } else {
+    container.appendChild(cta);
+  }
+  console.log(`[búsqueda-ia] Botón insertado ${posicion} de los resultados:`, boton.href);
 }
 
 // === REDIRECCIÓN ===
