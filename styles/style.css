@@ -709,6 +709,48 @@ main {
   color: var(--t1);
   opacity: 0.7;
 }
+/* =========================================
+   BARRA DE CARGA DE SERVIDORES (BÚSQUEDA)
+   ========================================= */
+.carga-servidor-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.carga-servidor-barra {
+  width: 220px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.carga-servidor-progreso {
+  height: 100%;
+  width: 0%;
+  background-color: #A970FF; /* Tu morado principal de AniZen */
+  border-radius: 10px;
+  /* Mantenemos los 22s, pero dejamos que los keyframes dicten el ritmo */
+  animation: llenarBarra 22s ease-in-out forwards; 
+}
+
+@keyframes llenarBarra {
+  0% { 
+    width: 0%; 
+  }
+  15% { 
+    width: 60%; /* Avanza rápido al 60% */
+  }
+  85% { 
+    width: 80%; /* Se estanca y avanza lento hasta el 80% */
+  }
+  100% { 
+    width: 100%; /* Termina rápido al 100% */
+  }
+}
 
 .animacion-carga {
     width: 24px;
@@ -1686,6 +1728,9 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
       "container2"
       "container3"
       "container4" !important;
+  }
+  #text-sin-resultados {
+    display: none !important;
   }
 }
 

@@ -595,13 +595,24 @@ if (busquedaInput) {
         if (contadorSpan) contadorSpan.textContent = 'cargando resultados...';
       }
 
-      initialDelayTimer = setTimeout(() => {
+initialDelayTimer = setTimeout(() => {
         if (searchId === currentSearch && isIndexPage) {
-          if (contadorSpan) contadorSpan.textContent = 'Iniciando servidores...' + countdown + 's';
+          
+          // Insertamos la estructura de la barra de carga en lugar del texto con los segundos
+          if (contadorSpan) {
+            contadorSpan.innerHTML = `
+              <div class="carga-servidor-container">
+                <span class="carga-servidor-texto">Iniciando servidores...</span>
+                <div class="carga-servidor-barra">
+                  <div class="carga-servidor-progreso"></div>
+                </div>
+              </div>
+            `;
+          }
           
           busquedaCountdownInterval = setInterval(() => {
             countdown--;
-            if (contadorSpan) contadorSpan.textContent = 'Iniciando servidores...' + countdown + 's';
+            // Ya no actualizamos el contadorSpan aquí, solo esperamos a que llegue a 0
             if (countdown <= 0) {
               clearInterval(busquedaCountdownInterval);
               if (searchId === currentSearch && resultadosContainer && resultadosContainer.innerHTML.trim() === '') {
