@@ -220,7 +220,7 @@ main section:nth-child(2) {
 }
 #btn-estado-capitulo {
   background: var(--p);
-  padding: 6px 15px;
+  padding: 5px 15px;
   border-radius: 24px;
   transition: opacity 0.3s ease;
   display: flex;
@@ -285,8 +285,8 @@ main section:nth-child(2) {
   background: var(--p);
   border: none;
   border-radius: 99px;
-  width: 33px;
-  height: 33px;
+  width: 31px;
+  height: 31px;
   display: flex;
   padding: 7px;
   align-items: center;
@@ -406,16 +406,19 @@ overflow: hidden;
 }
 #controles button,
 #controles a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 100px;
   position: relative;
   flex: 1;
   border: none;
-  font-weight: 600;
-  font-size: .8rem;
+  font-weight: 500;
+  font-size: .75rem;
   text-align: center;
   cursor: pointer;
   z-index: 2;
   padding: 15px;
-  min-width: 65px;
   font-family: 'DM Sans', sans-serif;
 }
 
@@ -440,21 +443,6 @@ overflow: hidden;
   height: 50px;
   position: absolute;
   border-top-right-radius: 14px;
-}
-.tooltip-global {
-  position: fixed;
-  padding: 5px 10px;
-  border-radius: 14px;
-  background: var(--p);
-  color: var(--t1);
-  font-size: 12px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-
-  transform: translate(-50%, -120%);
-  transition: left .15s ease, top .15s ease, opacity .15s;
-  z-index: 99999;
 }
 
 #controles .servidor-activo {

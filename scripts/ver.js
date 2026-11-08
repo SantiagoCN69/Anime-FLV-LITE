@@ -1374,7 +1374,7 @@ async function cargarVideoDesdeEpisodio(index) {
   }
 
   episodioActualIndex = index;
-  history.replaceState({}, "", `ver?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
   const cacheKey = `servers_${animeId}_${ep.number}`;
   const cached = serverCache.get(cacheKey);
@@ -1454,7 +1454,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
   // Vidrift no depende de los enlaces de este episodio, pero se agrega después
   // de comprobar el idioma alternativo para no impedir ese fallback.
   const vidriftServer = {
-    name: "Default",
+    name: "Vidrift",
     type: "player",
     url: "",
     vidrift: true
@@ -1469,13 +1469,8 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     return;
   }
 
-  // Clonamos el array para no mutar los datos en caché con los nuevos nombres
+  // Clonamos el array para no mutar los datos en caché
   embeds = [...servidores];
-
-  // Reasignar nombres de servidor según el nuevo orden (solo en la UI)
-  embeds.forEach((srv, i) => {
-    srv.nombre = `Servidor ${i + 1}`;
-  });
 
   const controles = document.getElementById("controles");
   controles.innerHTML = "";
@@ -1497,7 +1492,6 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
       `;
       a.classList.add("btn-descarga");
       a.target = "_blank";
-      a.setAttribute('data-title', extraerNombreDesdeURL(srv.url));
       a.rel = "noopener noreferrer";
       controles.appendChild(a);
       controles.classList.add("con-mediafire");
@@ -1506,9 +1500,8 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
     // 🔥 RESTO -> button normal
     const btn = document.createElement("button");
-    btn.textContent = srv.nombre ? srv.nombre.replace("Servidor ", "") : `${i + 1}`;
+    btn.textContent = String(srv.name || '').split(" ")[0] || `${i + 1}`;
     btn.dataset.serverIndex = i;
-    btn.setAttribute('data-title', srv.name || extraerNombreDesdeURL(srv.url) || srv.nombre);
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.classList.add("cargado");
     
@@ -1560,132 +1553,6 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 }
 
 const controles = document.getElementById("controles");
-
-const tooltip = document.createElement("div");
-tooltip.className = "tooltip-global";
-tooltip.style.position = "fixed";
-document.body.appendChild(tooltip);
-
-let currentEl = null;
-let hideTimer = null;
-let scrollTimer = null;
-let rafPending = false;
-let lastRect = null;
-
-function updateTooltip() {
-  rafPending = false;
-  if (!currentEl) {
-    tooltip.style.opacity = "0";
-    return;
-  }
-
-  tooltip.textContent = currentEl.getAttribute("data-title") || "";
-  
-  const rect = lastRect || currentEl.getBoundingClientRect();
-  lastRect = null;
-
-  tooltip.style.left = `${rect.left + rect.width / 2}px`;
-  tooltip.style.top = `${rect.top - 10}px`;
-  tooltip.style.opacity = "1";
-}
-
-function scheduleUpdate(forceRectRefresh = false) {
-  if (forceRectRefresh && currentEl) {
-    lastRect = currentEl.getBoundingClientRect();
-  }
-  if (rafPending) return;
-  rafPending = true;
-  requestAnimationFrame(updateTooltip);
-}
-
-function setCurrent(el) {
-  if (el === currentEl) return;
-  currentEl = el;
-  scheduleUpdate(true);
-}
-
-function clearTimers() {
-  clearTimeout(hideTimer);
-  clearTimeout(scrollTimer);
-}
-
-function hideTooltip(delay = 0) {
-  clearTimers();
-  if (delay === 0) {
-    currentEl = null;
-    tooltip.style.opacity = "0";
-  } else {
-    hideTimer = setTimeout(() => {
-      currentEl = null;
-      tooltip.style.opacity = "0";
-    }, delay);
-  }
-}
-
-controles.addEventListener("touchstart", onTouch, { passive: true });
-controles.addEventListener("touchmove", onTouch, { passive: true });
-controles.addEventListener("touchend", () => hideTooltip(1200), { passive: true });
-
-function onTouch(e) {
-  const t = e.touches[0];
-  if (!t) return;
-
-  const el = document.elementFromPoint(t.clientX, t.clientY);
-  const btn = el?.closest?.("button, a");
-
-  if (!btn || !controles.contains(btn)) {
-    hideTooltip();
-    return;
-  }
-
-  clearTimers();
-  setCurrent(btn);
-}
-
-controles.addEventListener("mouseover", (e) => {
-  const el = e.target.closest("button, a");
-  if (!el) return;
-  setCurrent(el);
-});
-
-controles.addEventListener("mousemove", () => {
-  if (currentEl) scheduleUpdate(true);
-});
-
-controles.addEventListener("mouseout", (e) => {
-  const related = e.relatedTarget;
-  if (currentEl && currentEl.contains(related)) return;
-  hideTooltip();
-});
-
-controles.addEventListener("scroll", () => {
-  if (!currentEl) return;
-  scheduleUpdate(true);
-  clearTimers();
-  scrollTimer = setTimeout(() => hideTooltip(), 1500);
-}, { passive: true });
-
-//funcion extraer nombre del link
-function extraerNombreDesdeURL(url) {
-  try {
-    const sinProtocolo = url.split('//')[1];
-    if (!sinProtocolo) return null;
-
-    const partes = sinProtocolo.split('.');
-    let nombre;
-
-    if (sinProtocolo.startsWith('www.')) {
-      nombre = partes[1];
-    } else {
-      nombre = partes[0];
-    }
-
-    // Convertir primera letra a mayúscula
-    return nombre ? nombre.charAt(0).toUpperCase() + nombre.slice(1) : null;
-  } catch (e) {
-    return null;
-  }
-}
 
 async function esEnlaceValidoMega(fileId) {
   debugLog("Verificando si el enlace de Mega es válido.", fileId);
@@ -2345,8 +2212,8 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   registrarCambioAutomaticoServidor({
     animeId,
     episodio: episodioActualIndex,
-    desde: embeds[servidorActualIndex]?.nombre || embeds[servidorActualIndex]?.name || "desconocido",
-    hacia: siguienteServidor.nombre || siguienteServidor.name || `Servidor ${siguienteIndice + 1}`,
+    desde: embeds[servidorActualIndex]?.name || "desconocido",
+    hacia: siguienteServidor.name || `Servidor ${siguienteIndice + 1}`,
     motivo
   });
 
@@ -2354,7 +2221,7 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   pill.className = "pildora pildora-default";
   // El motivo también se muestra en pantalla: Live Server y algunos iframes
   // pueden limpiar la consola mientras se reemplaza el reproductor.
-  pill.textContent = `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.nombre || siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`;
+  pill.textContent = `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`;
   pill.title = motivo;
   document.body.appendChild(pill);
   pill.addEventListener("animationend", () => pill.remove(), { once: true });
