@@ -549,11 +549,12 @@ iframe {
   height: 50px;
   border-radius: 24px;
   font-weight: 600;
+  font-size: .8rem;
   color: var(--t1);
   transition: transform .3s;  
   padding: 15px;
   border: 2px solid transparent;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Oxanium', sans-serif;
 }
 
 .btn-anterior, .btn-siguiente {
@@ -569,11 +570,7 @@ iframe {
   width: 24px;
   height: 24px;
 }
-.btn-anterior span, .btn-siguiente span {
-  font-size: 0.9rem;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
-}
+
 .btn-anterior {
    border-radius: 99px;
 }
@@ -617,11 +614,6 @@ iframe {
 }
 }
 
-.btn-selector-capitulo span {
-  font-size: 0.9rem;
-  white-space: nowrap;
-  font-family: 'JetBrains Mono', monospace;
-}
 .btn-selector-capitulo svg {
   width: 16px;
   height: 16px;
@@ -836,7 +828,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 } 
 @media (max-width: 370px) {
   .botones-reproductor span {
-    display: none;
+    font-size: clamp(0.7rem, 2vw, 0.8rem); 
   }
   .btn-selector-capitulo {
     min-width: unset !important;
