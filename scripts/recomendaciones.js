@@ -405,10 +405,12 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     const fragment = document.createDocumentFragment();
     const animesEncontrados = [];
     const cards = [];
+    const idsRenderizados = new Set();
 
     for (const nombre of nombres) {
         const anime = await resolveAnimeByName(nombre);
-        if (!anime) continue;
+        if (!anime || idsRenderizados.has(anime.id)) continue;
+        idsRenderizados.add(anime.id);
 
         if (guardarEnCache) {
             const animeData = {
@@ -511,7 +513,7 @@ const textos = [
     "Fantasía oscura y madura."
 ];
 
-const contenedorSugerencias = document.getElementById('sugerencias-busquedas');
+const contenedorSugerencias = document.getElementById('lista-sugerencias');
 if (contenedorSugerencias) {
     const mezclados = textos.sort(() => Math.random() - 0.5).slice(0, 5);
     mezclados.forEach(texto => {
@@ -526,9 +528,22 @@ if (contenedorSugerencias) {
     });
 }
 
+// Toggle para mostrar/ocultar sugerencias
+const btnToggleSugerencias = document.getElementById('toggle-sugerencias');
+if (btnToggleSugerencias) {
+    btnToggleSugerencias.addEventListener('click', () => {
+        const listaSugerencias = document.getElementById('lista-sugerencias');
+        if (listaSugerencias) {
+            const isHidden = listaSugerencias.style.display === 'none';
+            listaSugerencias.style.display = isHidden ? 'flex' : 'none';
+            btnToggleSugerencias.textContent = isHidden ? 'Ocultar sugerencias' : 'Ver más sugerencias';
+        }
+    });
+}
+
 const random = Math.floor(Math.random() * textos.length);
 const inputPersonalizado = document.getElementById("busqueda-personalizada");
-if(inputPersonalizado) {
+if(inputPersonalizado && !busquedaUrl) {
     inputPersonalizado.value = textos[random];
 }
 
