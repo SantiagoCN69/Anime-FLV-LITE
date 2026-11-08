@@ -159,13 +159,17 @@ function posicionarBusquedasRecientes(dropdown = document.getElementById('busque
 function renderizarBusquedasRecientes() {
   const busquedas = JSON.parse(localStorage.getItem('busquedas_recientes') || '[]');
   const input = document.getElementById('busqueda');
-  if (!input || busquedas.length === 0) return;
+  if (!input || busquedas.length === 0) {
+    ocultarBusquedasRecientes();
+    return;
+  }
   
   let dropdown = document.getElementById('busquedas-recientes-dropdown');
   if (!dropdown) {
     dropdown = document.createElement('div');
     dropdown.id = 'busquedas-recientes-dropdown';
     dropdown.className = 'busquedas-recientes-dropdown';
+    dropdown.addEventListener('mousedown', (e) => e.preventDefault());
     document.body.appendChild(dropdown);
   }
 
