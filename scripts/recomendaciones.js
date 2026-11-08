@@ -78,13 +78,6 @@ function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = [
       observerAnimeCards(contenedorFavoritos.querySelectorAll('.anime-card:not(.show)'));
     }
 
-    // Hacer click automático al botón de generar personalizadas al cargar la página
-    setTimeout(() => {
-        const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas");
-        if (btnGenerarPersonalizadas) {
-            btnGenerarPersonalizadas.click();
-        }
-    }, 500);
 })()
 
 // Funciones para manejar el caché de animes
@@ -346,6 +339,14 @@ if (btnGenerarPersonalizadas) {
     });
 }
 
+// Si la URL trae ?q=..., usarlo como búsqueda personalizada y generar al instante
+const busquedaUrl = new URLSearchParams(window.location.search).get('q');
+if (busquedaUrl && btnGenerarPersonalizadas) {
+    const input = document.getElementById("busqueda-personalizada");
+    if (input) input.value = busquedaUrl;
+    btnGenerarPersonalizadas.click();
+}
+
 async function enviarPrompt(prompt, seccion) {
     const seccionesValidas = ["favoritos", "personalizadas"];
     if (!seccionesValidas.includes(seccion)) {
@@ -520,7 +521,7 @@ if (contenedorSugerencias) {
 
 const random = Math.floor(Math.random() * textos.length);
 const inputPersonalizado = document.getElementById("busqueda-personalizada");
-if(inputPersonalizado) {
+if(inputPersonalizado && !busquedaUrl) {
     inputPersonalizado.value = textos[random];
 }
 
