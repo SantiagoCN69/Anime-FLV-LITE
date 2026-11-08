@@ -11,6 +11,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let userid = null;
+const busquedaUrl = new URLSearchParams(window.location.search).get('q')?.trim();
 
 function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = []) {
     const guardadosPorNumero = new Map(
@@ -78,10 +79,10 @@ function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = [
       observerAnimeCards(contenedorFavoritos.querySelectorAll('.anime-card:not(.show)'));
     }
 
-    // Hacer click automático al botón de generar personalizadas al cargar la página
+    // Generar una búsqueda inicial. Si la URL trae ?q=, se prioriza esa búsqueda.
     setTimeout(() => {
         const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas");
-        if (btnGenerarPersonalizadas) {
+        if (btnGenerarPersonalizadas && !busquedaUrl) {
             btnGenerarPersonalizadas.click();
         }
     }, 500);
@@ -113,9 +114,14 @@ function guardarCacheAnimes(animes) {
 }
 
 function obtenerCacheAnimes() {
-    const cache = localStorage.getItem('cache_animes');
-    if (!cache) return null;
-    return JSON.parse(cache);
+    try {
+        const cache = localStorage.getItem('cache_animes');
+        return cache ? JSON.parse(cache) : null;
+    } catch (error) {
+        console.warn('La caché de recomendaciones no es válida y será descartada.', error);
+        limpiarCacheAnimes();
+        return null;
+    }
 }
 
 function limpiarCacheAnimes() {
@@ -213,10 +219,12 @@ function mostrarPildora(mensaje, tipo = "default") {
 }
 
 // Evento Generar Nuevas (Con el input extra añadido)
-document.getElementById("generar-nuevas").addEventListener("click", async () => {
-    const texto = document.getElementById("textbtngenerarfav");
-    const inputFiltro = document.getElementById("filtro-extra");
-    const filtroExtra = inputFiltro ? inputFiltro.value.trim() : "";
+const btnGenerarNuevas = document.getElementById("generar-nuevas");
+if (btnGenerarNuevas) {
+    btnGenerarNuevas.addEventListener("click", async () => {
+        const texto = document.getElementById("textbtngenerarfav");
+        const inputFiltro = document.getElementById("filtro-extra");
+        const filtroExtra = inputFiltro ? inputFiltro.value.trim() : "";
     
     texto.innerHTML = 'Generando... <span id="contador1">99s</span>';
 
@@ -279,7 +287,8 @@ document.getElementById("generar-nuevas").addEventListener("click", async () => 
     if (inputFiltro) {
         inputFiltro.value = "";
     }
-});
+    });
+}
 
 
 // Agregar evento para detectar Enter en el input de búsqueda personalizada
@@ -346,8 +355,8 @@ if (btnGenerarPersonalizadas) {
     });
 }
 
-// Si la URL trae ?q=..., usarlo como búsqueda personalizada y generar al instante
-const busquedaUrl = new URLSearchParams(window.location.search).get('q');
+// Si la URL trae ?q=..., usarla como búsqueda inicial. No se dispara la búsqueda
+// aleatoria del arranque, así se evita una doble carga y dos llamadas a la IA.
 if (busquedaUrl && btnGenerarPersonalizadas) {
     const input = document.getElementById("busqueda-personalizada");
     if (input) input.value = busquedaUrl;
@@ -515,7 +524,7 @@ const textos = [
 
 const contenedorSugerencias = document.getElementById('lista-sugerencias');
 if (contenedorSugerencias) {
-    const mezclados = textos.sort(() => Math.random() - 0.5).slice(0, 5);
+    const mezclados = [...textos].sort(() => Math.random() - 0.5).slice(0, 5);
     mezclados.forEach(texto => {
         const span = document.createElement('span');
         span.className = 'sugerencia-aleatoria';
