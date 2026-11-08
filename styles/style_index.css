@@ -493,7 +493,7 @@ footer {
   1. ESTILOS DEL FILTRO DE LETRAS (A-Z)
    ========================================= */
 .filtro-letras {
-  height: 72px;
+  height: 60px;
   max-width: 100%;
   display: flex;
   flex-wrap: nowrap;
