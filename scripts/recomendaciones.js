@@ -171,30 +171,13 @@ async function obtenerAnimesVistos() {
         const estadosRef = doc(db, `usuarios/${userid}/estados/visto`);
         const estadosDoc = await getDoc(estadosRef);
         
-        if (!estadosDoc.exists() || !estadosDoc.data().animes || !Array.isArray(estadosDoc.data().animes)) {
+        if (!estadosDoc.exists() || !Array.isArray(estadosDoc.data().animes)) {
             return [];
         }
-        
-        const ids = estadosDoc.data().animes;
-        
-        const animesPromises = ids.map(async (id) => {
-            try {
-                const animeDoc = await getDoc(doc(db, 'datos-animes', id));
-                if (animeDoc.exists()) {
-                    return {
-                        id: animeDoc.id,
-                        ...animeDoc.data()
-                    };
-                }
-                return null;
-            } catch (error) {
-                console.error(`Error al obtener anime ${id}:`, error);
-                return null;
-            }
-        });
-        
-        const animes = await Promise.all(animesPromises);
-        return animes.filter(anime => anime !== null);
+
+        // Los ids ya son slugs kebab-case (formato que usa el prompt de la IA),
+        // no hace falta resolver cada anime en datos-animes.
+        return estadosDoc.data().animes;
         
     } catch (error) {
         console.error('Error al obtener animes vistos:', error);
@@ -272,7 +255,7 @@ if (btnGenerarNuevas) {
     const nombresFavoritos = favoritos.map(f => f.nombre || f.titulo || f.id);
     const animesCache = cacheActual?.animes || [];
     const nombresCache = animesCache.map(a => a.title || a.id);
-    const nombresVistos = vistos.map(v => v.nombre || v.titulo || v.id);
+    const nombresVistos = vistos;
 
     const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])];
 
