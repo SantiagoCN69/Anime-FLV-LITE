@@ -78,6 +78,13 @@ function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = [
       observerAnimeCards(contenedorFavoritos.querySelectorAll('.anime-card:not(.show)'));
     }
 
+    // Hacer click automático al botón de generar personalizadas al cargar la página
+    setTimeout(() => {
+        const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas");
+        if (btnGenerarPersonalizadas) {
+            btnGenerarPersonalizadas.click();
+        }
+    }, 500);
 })()
 
 // Funciones para manejar el caché de animes
@@ -339,14 +346,6 @@ if (btnGenerarPersonalizadas) {
     });
 }
 
-// Si la URL trae ?q=..., usarlo como búsqueda personalizada y generar al instante
-const busquedaUrl = new URLSearchParams(window.location.search).get('q');
-if (busquedaUrl && btnGenerarPersonalizadas) {
-    const input = document.getElementById("busqueda-personalizada");
-    if (input) input.value = busquedaUrl;
-    btnGenerarPersonalizadas.click();
-}
-
 async function enviarPrompt(prompt, seccion) {
     const seccionesValidas = ["favoritos", "personalizadas"];
     if (!seccionesValidas.includes(seccion)) {
@@ -519,9 +518,22 @@ if (contenedorSugerencias) {
     });
 }
 
+// Toggle para mostrar/ocultar sugerencias
+const btnToggleSugerencias = document.getElementById('toggle-sugerencias');
+if (btnToggleSugerencias) {
+    btnToggleSugerencias.addEventListener('click', () => {
+        const listaSugerencias = document.getElementById('lista-sugerencias');
+        if (listaSugerencias) {
+            const isHidden = listaSugerencias.style.display === 'none';
+            listaSugerencias.style.display = isHidden ? 'flex' : 'none';
+            btnToggleSugerencias.textContent = isHidden ? 'Ocultar sugerencias' : 'Ver más sugerencias';
+        }
+    });
+}
+
 const random = Math.floor(Math.random() * textos.length);
 const inputPersonalizado = document.getElementById("busqueda-personalizada");
-if(inputPersonalizado && !busquedaUrl) {
+if(inputPersonalizado) {
     inputPersonalizado.value = textos[random];
 }
 
