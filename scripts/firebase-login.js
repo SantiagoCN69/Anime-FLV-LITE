@@ -14,15 +14,14 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-let temaFirestoreIntentado = false;
-
 const cargarTemaDesdeFirestore = async () => {
   if (!auth.currentUser) return;
 
   // localStorage tiene prioridad: solo se consulta Firestore cuando no hay
-  // tema guardado localmente, y una sola vez por sesión.
-  if (localStorage.getItem('theme') || temaFirestoreIntentado) return;
-  temaFirestoreIntentado = true;
+  // tema guardado localmente, y una sola vez por sesión. sessionStorage
+  // deduplica entre páginas; si la lectura falla se reintenta en la próxima.
+  if (localStorage.getItem('theme') || sessionStorage.getItem('temaFS')) return;
+  sessionStorage.setItem('temaFS', '1');
 
   try {
     const docRef = doc(db, 'usuarios', auth.currentUser.uid);
@@ -34,6 +33,7 @@ const cargarTemaDesdeFirestore = async () => {
       window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: tema } }));
     }
   } catch (error) {
+    sessionStorage.removeItem('temaFS');
     console.error('Error al cargar tema desde Firestore:', error);
   }
 };
@@ -240,6 +240,9 @@ onAuthStateChanged(auth, (user) => {
       localStorage.removeItem('cachedUserDisplayName');
       localStorage.removeItem('cachedUserPhotoURL');
       localStorage.removeItem('userID');
+      // Permitir reintentar la carga del tema si otro usuario inicia sesión
+      // en la misma pestaña (sessionStorage sobrevive al reload).
+      sessionStorage.removeItem('temaFS');
     } catch (e) {
       console.warn('No se pudo limpiar localStorage:', e);
     }
