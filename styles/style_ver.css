@@ -699,9 +699,7 @@ iframe {
 }
 
 .dropdown-capitulos button.visto {
-    background-color: var(--br);
-  border-color: var(--btn);
-
+  background-color: var(--br);
   opacity: 0.7;
   position: relative;
 }
@@ -718,7 +716,7 @@ right: 4px;
 top: 2px;
 width: 13px;
 height: 13px;
-background-color: var(--t1);
+background-color: var(--btn);
 -webkit-mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 }
