@@ -15,8 +15,7 @@
             <svg class="svg-header" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 21 21"><g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.206c0-1.3 2.5-2.741 6-2.706s6 1.553 6 2.853v10.294c0 1.3-2.5 2.853-6 2.853s-6-1.7-6-3V5.206z"/><path d="M4.5 5.5c0 1.38 2 3 6 3s6-1.637 6-3.018M4.5 10.5c0 1.38 2 3 6 3s6-1.637 6-3.018"/></g></svg>
         <h1 class="section-title">Directorio de AnimeAV1</h1>
         </div>
-        <button type="button" id="btn-fuente-directorio-av1" class="btn-fuente-directorios">
-        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#fff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="Currentcolor" d="M118.656 438.656a32 32 0 0 1 0-45.248L416 96l4.48-3.776A32 32 0 0 1 461.248 96l3.712 4.48a32.064 32.064 0 0 1-3.712 40.832L218.56 384H928a32 32 0 1 1 0 64H141.248a32 32 0 0 1-22.592-9.344zM64 608a32 32 0 0 1 32-32h786.752a32 32 0 0 1 22.656 54.592L608 928l-4.48 3.776a32.064 32.064 0 0 1-40.832-49.024L805.632 640H96a32 32 0 0 1-32-32z"></path></g></svg><span>Animeav1</span></button>
+
     </div>
 
     <section class="filtro-letras" id="filtro-letras-av1">
@@ -51,6 +50,7 @@
              <div class="resumen-directorio-av1" aria-live="polite">
                  <span id="total-resultados-av1">1.000 resultados</span>
                  <span id="filtrosseleccionados">Sin filtros seleccionados</span>
+                 <button type="button" id="btn-limpiar-filtros-av1" en class="btn-limpiar-filtros" style="display: none;">Limpiar filtros</button>
              </div>
          <button type="button" class="btn-filtros" id="btnfiltrosav1"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20 4L15 12V21L9 18V15.5M9 12L4 4H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
         Filtros</button>
@@ -65,58 +65,64 @@
             <input type="range" id="ano-max" min="1990" max="2026" value="2026">
         </div>
             </section>
-    
+
                         <section class="filtro-section">
             <button type="button" id="btn-filtro-genero-av1" class="btn-filtro" title="Genero">Genero: <span>Todos</span></button>
-            <nav id="filtro-genero-av1" class="filtro-opciones">
+            <nav id="filtro-genero-av1" class="filtro-opciones" aria-label="Filtro de géneros">
                 <ul>
-                    <li><button type="button" class="btn-filtro-opcion" id="accion-av1">Acción 💥</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="artes-marciales-av1">Artes Marciales 🥊</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="aventura-av1">Aventura 🏞️</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="carreras-av1">Carreras 🏎️</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="ciencia-ficcion-av1">Ciencia Ficción 🚀</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="comedia-av1">Comedia 😂</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="demencia-av1">Demencia 🤯</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="demonios-av1">Demonios 👿</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="deportes-av1">Deportes 🏀</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="drama-av1">Drama 😭</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="ecchi-av1">Ecchi 🔞</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="escolares-av1">Escolares 🏫</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="espacial-av1">Espacial 🌌</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="fantasia-av1">Fantasía 🔮</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="harem-av1">Harem 👫</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="historico-av1">Histórico 🏛️</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="infantil-av1">Infantil 👶</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="josei-av1">Josei 👩‍❤️‍👨</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="juegos-av1">Juegos 🎮</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="magia-av1">Magia ✨</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="mecha-av1">Mecha 🤖</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="militar-av1">Militar 🪖</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="misterio-av1">Misterio 🕵️</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="musica-av1">Música 🎵</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="parodia-av1">Parodia 🤪</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="policia-av1">Policía 👮</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="psicologico-av1">Psicológico 🧠</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="recuentos-de-la-vida-av1">Recuentos de la vida 🏠</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="romance-av1">Romance ❤️</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="samurai-av1">Samurai 🗡️</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="seinen-av1">Seinen 👨‍🦳</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="shoujo-av1">Shoujo 👩‍🦱</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="shounen-av1">Shounen 👦</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="sobrenatural-av1">Sobrenatural 👻</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="superpoderes-av1">Superpoderes 🦸</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="suspenso-av1">Suspenso 🤐</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="terror-av1">Terror 👹</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="vampiros-av1">Vampiros 🧛</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="yaoi-av1">Yaoi 👨‍❤️‍👨</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="yuri-av1">Yuri 👩‍❤️‍👩</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="accion-av1">⚔️ Acción</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="aventura-av1">🗺️ Aventura</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ciencia-ficcion-av1">🚀 Ciencia Ficción</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="comedia-av1">😂 Comedia</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="deportes-av1">⚽ Deportes</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="drama-av1">🎭 Drama</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="fantasia-av1">🧙 Fantasía</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="misterio-av1">🔍 Misterio</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="recuentos-de-la-vida-av1">📖 Recuentos de la Vida</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="romance-av1">💕 Romance</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="seinen-av1">👨 Seinen</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shoujo-av1">👩 Shoujo</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shounen-av1">🧑 Shounen</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="sobrenatural-av1">👻 Sobrenatural</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="suspenso-av1">😱 Suspenso</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="terror-av1">🎃 Terror</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="antropomorfico-av1">🐾 Antropomórfico</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="artes-marciales-av1">🥋 Artes Marciales</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="carreras-av1">🏎️ Carreras</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="detectives-av1">🕵️ Detectives</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="ecchi-av1">💋 Ecchi</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="elenco-adulto-av1">👔 Elenco Adulto</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="escolares-av1">🎒 Escolares</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="espacial-av1">🌌 Espacial</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="gore-av1">🩸 Gore</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="gourmet-av1">🍽️ Gourmet</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="harem-av1">💑 Harem</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="historico-av1">🏛️ Histórico</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="idols-hombre-av1">🎤 Idols (Hombre)</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="idols-mujer-av1">🎤 Idols (Mujer)</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="infantil-av1">🧸 Infantil</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="isekai-av1">🌀 Isekai</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="josei-av1">👩‍💼 Josei</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="juegos-estrategia-av1">♟️ Juegos Estrategia</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="mahou-shoujo-av1">✨ Mahou Shoujo</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="mecha-av1">🤖 Mecha</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="militar-av1">🎖️ Militar</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="mitologia-av1">⚡ Mitología</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="musica-av1">🎵 Música</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="parodia-av1">🎭 Parodia</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="psicologico-av1">🧠 Psicológico</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="samurai-av1">⚔️ Samurai</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shoujo-ai-av1">💑 Shoujo Ai</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="shounen-ai-av1">💑 Shounen Ai</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="superpoderes-av1">💪 Superpoderes</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="vampiros-av1">🧛 Vampiros</button></li>
                 </ul>
             </nav>
             </section>
 
             <section class="filtro-section">
             <button type="button" id="btn-filtro-tipo-av1" class="btn-filtro" title="Tipo">Tipo: <span>Todos</span></button>
-            <nav id="filtro-tipo-av1" class="filtro-opciones">
+            <nav id="filtro-tipo-av1" class="filtro-opciones" aria-label="Filtro de tipo">
                 <ul>
                     <li><button type="button" class="btn-filtro-opcion" id="tv-av1">TV</button></li>
                     <li><button type="button" class="btn-filtro-opcion" id="movie-av1">Película</button></li>
@@ -128,18 +134,18 @@
 
             <section class="filtro-section">
             <button type="button" id="btn-filtro-estado-av1" class="btn-filtro" title="Estado">Estado: <span>Todos</span></button>
-            <nav id="filtro-estado-av1" class="filtro-opciones">
+            <nav id="filtro-estado-av1" class="filtro-opciones" aria-label="Filtro de estado">
                 <ul>
-                    <li><button type="button" class="btn-filtro-opcion" id="1-av1">En emisión</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="2-av1">Finalizado</button></li>
-                    <li><button type="button" class="btn-filtro-opcion" id="3-av1">Próximamente</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="estado-1-av1">En emisión</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="estado-2-av1">Finalizado</button></li>
+                    <li><button type="button" class="btn-filtro-opcion" id="estado-3-av1">Próximamente</button></li>
                 </ul>
             </nav>
             </section>
 
             <section class="filtro-section">
             <button type="button" id="btn-filtro-orden-av1" class="btn-filtro" title="Orden">Orden: <span>Por defecto</span></button>
-            <nav id="filtro-orden-av1" class="filtro-opciones">
+            <nav id="filtro-orden-av1" class="filtro-opciones" aria-label="Filtro de orden">
                 <ul>
                     <li><button type="button" class="btn-filtro-opcion" id="default-av1">Por defecto</button></li>
                     <li><button type="button" class="btn-filtro-opcion" id="updated-av1">Actualizados</button></li>
@@ -162,3 +168,4 @@
         </div>
   </main>
 </body>
+</html>

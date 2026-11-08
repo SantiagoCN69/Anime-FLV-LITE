@@ -6,9 +6,10 @@ const API_BASE_URL = 'https://backend-animeflv-lite.onrender.com/api/browse?sour
 const CACHE_KEY = 'animes_cache_directorio';
 const URL_PARAMS = new URLSearchParams(window.location.search);
 
-// Mapeos de valores
+// Mapeos de valores (géneros ahora se usan directamente como texto)
 const MAPA_TIPOS = { 'tv': 'tv-anime', 'movie': 'pelicula', 'special': 'especial', 'ova': 'ova' };
 const MAPA_ESTADOS = { '1': 'emision', '2': 'finalizado', '3': 'proximamente' };
+const MAPA_ESTADOS_HTML = { 'emision': 'estado-1', 'finalizado': 'estado-2', 'proximamente': 'estado-3' };
 const MAPA_ORDEN = { 'default': '', 'updated': 'updated', 'added': 'added', 'title': 'title', 'rating': 'score' };
 
 // Invertir mapeos para la carga desde URL
@@ -20,6 +21,7 @@ const MAPA_ORDEN_INV = INVERTIR_MAPA(MAPA_ORDEN);
 // --- ESTADO GLOBAL ---
 let currentPage = URL_PARAMS.has('page') ? parseInt(URL_PARAMS.get('page')) : 1;
 let totalPages = 1;
+let filtrosAntesDeAbrirMenu = null; // Para detectar cambios en filtros móviles
 
 // --- ELEMENTOS DEL DOM ---
 const DOM = {
@@ -33,6 +35,7 @@ const DOM = {
     initLoading: document.getElementById('init-loading-av1'),
     totalResultados: document.getElementById('total-resultados-av1'),
     filtrosSeleccionados: document.getElementById('filtrosseleccionados'),
+    btnLimpiarFiltros: document.getElementById('btn-limpiar-filtros-av1'),
     slider: {
         min: document.getElementById('ano-min'),
         max: document.getElementById('ano-max'),
@@ -51,7 +54,32 @@ const FILTROS_CONFIG = [
 ];
 
 // --- UTILIDADES Y HELPERS ---
-const valorFiltroav1 = (btn) => btn.id.replace(/-av1$/, '');
+const valorFiltroav1 = (btn) => {
+    const id = btn.id.replace(/-av1$/, '');
+    // Para estado, extraer el número después de 'estado-'
+    if (id.startsWith('estado-')) {
+        return id.replace('estado-', '');
+    }
+    return id;
+};
+
+// Capturar estado actual de filtros para comparación
+function capturarEstadoFiltros() {
+    const letra = document.querySelector('.btn-letra.active')?.dataset.letra || null;
+    const minYear = DOM.slider.min?.value || '1991';
+    const maxYear = DOM.slider.max?.value || '2026';
+    
+    const generos = Array.from(document.querySelectorAll('#filtro-genero-av1 .btn-filtro-opcion.active'))
+        .map(btn => valorFiltroav1(btn)).sort();
+    const tipos = Array.from(document.querySelectorAll('#filtro-tipo-av1 .btn-filtro-opcion.active'))
+        .map(btn => valorFiltroav1(btn)).sort();
+    const estados = Array.from(document.querySelectorAll('#filtro-estado-av1 .btn-filtro-opcion.active'))
+        .map(btn => valorFiltroav1(btn)).sort();
+    const orden = Array.from(document.querySelectorAll('#filtro-orden-av1 .btn-filtro-opcion.active'))
+        .map(btn => valorFiltroav1(btn))[0] || null;
+    
+    return JSON.stringify({ letra, minYear, maxYear, generos, tipos, estados, orden });
+}
 
 // Actualizar texto de filtros activos en botón móvil
 function actualizarTextoFiltrosActivos() {
@@ -70,6 +98,11 @@ function actualizarTextoFiltrosActivos() {
     });
 
     DOM.filtrosSeleccionados.textContent = filtros.length ? `Filtros activos: ${filtros.join(', ')}` : 'Sin filtros seleccionados';
+
+    // Mostrar/ocultar botón de limpiar filtros
+    if (DOM.btnLimpiarFiltros) {
+        DOM.btnLimpiarFiltros.style.display = filtros.length ? 'inline-block' : 'none';
+    }
 }
 
 // Timer inicial
@@ -186,7 +219,8 @@ function actualizarLinkBusqueda() {
         Array.from(document.querySelectorAll(`${selector} .btn-filtro-opcion.active`))
              .map(btn => mapa ? (mapa[valorFiltroav1(btn)] || valorFiltroav1(btn)) : valorFiltroav1(btn));
 
-    obtenerActivos('#filtro-genero-av1').forEach(g => params.append('genre', g));
+    // Géneros ahora se envían como texto directamente (sin mapeo numérico)
+    obtenerActivos('#filtro-genero-av1', null).forEach(g => params.append('genre', g));
     obtenerActivos('#filtro-tipo-av1', MAPA_TIPOS).forEach(t => params.append('category', t));
     obtenerActivos('#filtro-estado-av1', MAPA_ESTADOS).forEach(e => params.append('status', e));
     
@@ -231,6 +265,34 @@ async function ejecutarBusqueda(resetPage = true) {
         console.error('Error al ejecutar búsqueda:', error);
         DOM.resultados.innerHTML = '<p>Error al cargar los animes</p>';
     }
+}
+
+// --- LIMPIAR FILTROS ---
+function limpiarFiltros() {
+    // Limpiar letras
+    document.querySelectorAll('.btn-letra').forEach(btn => btn.classList.remove('active'));
+
+    // Resetear slider de años
+    if (DOM.slider.min && DOM.slider.max) {
+        DOM.slider.min.value = 1991;
+        DOM.slider.max.value = 2026;
+        DOM.slider.valMin.textContent = '1991';
+        DOM.slider.valMax.textContent = '2026';
+    }
+
+    // Limpiar filtros genéricos
+    FILTROS_CONFIG.forEach(({ selector, isRadio }) => {
+        const opciones = document.querySelectorAll(`${selector} .btn-filtro-opcion`);
+        opciones.forEach(btn => btn.classList.remove('active'));
+
+        const btnFiltroMain = document.getElementById(`btn-filtro-${FILTROS_CONFIG.find(f => f.selector === selector).id}-av1`);
+        if (btnFiltroMain && btnFiltroMain.querySelector('span')) {
+            btnFiltroMain.querySelector('span').textContent = isRadio ? opciones[0]?.textContent || 'Todos' : 'Todos';
+        }
+    });
+
+    actualizarTextoFiltrosActivos();
+    ejecutarBusqueda();
 }
 
 // --- EVENTOS E INICIALIZACIÓN ---
@@ -292,7 +354,23 @@ function bindFilterEvents() {
     });
 
     DOM.btnFiltrar?.addEventListener('click', ejecutarBusqueda);
-    DOM.btnFiltrosMobile?.addEventListener('click', () => DOM.filtrosContainer.classList.toggle('mobile-active'));
+    DOM.btnFiltrosMobile?.addEventListener('click', () => {
+        const isMenuAbierto = DOM.filtrosContainer.classList.contains('mobile-active');
+        
+        if (isMenuAbierto) {
+            // Se está cerrando el menú - verificar si cambiaron los filtros
+            const estadoActual = capturarEstadoFiltros();
+            if (estadoActual !== filtrosAntesDeAbrirMenu) {
+                ejecutarBusqueda();
+            }
+        } else {
+            // Se está abriendo el menú - guardar estado actual
+            filtrosAntesDeAbrirMenu = capturarEstadoFiltros();
+        }
+        
+        DOM.filtrosContainer.classList.toggle('mobile-active');
+    });
+    DOM.btnLimpiarFiltros?.addEventListener('click', limpiarFiltros);
     
     DOM.btnFuenteDirectorio?.addEventListener('click', () => {
         history.replaceState(null, '', `?DirectorioJK`);
@@ -395,10 +473,16 @@ function inicializarFiltrosDesdeURL() {
         if (values.length > 0) {
             // Formatear los IDs a como están en el HTML
             values.forEach(val => {
-                // Reemplazar espacios por guiones para géneros (ej: "Slice of Life" -> "Slice-of-Life")
-                if (paramName === 'genre') val = val.replace(/\s+/g, '-');
+                let btnId;
+                if (paramName === 'genre') {
+                    // Para géneros, val ahora es el texto directamente (ej: "accion", "aventura")
+                    btnId = val;
+                } else {
+                    // Reemplazar espacios por guiones para otros filtros
+                    btnId = val.replace(/\s+/g, '-');
+                    btnId = mapaInverso ? (mapaInverso[btnId] || btnId) : btnId;
+                }
                 
-                const btnId = mapaInverso ? (mapaInverso[val] || val) : val;
                 const btn = document.getElementById(`${btnId}-av1`);
                 if (btn) btn.classList.add('active');
             });
@@ -414,7 +498,7 @@ function inicializarFiltrosDesdeURL() {
 
     activarBotonesURL('genre', '#filtro-genero-av1', null, 'btn-filtro-genero-av1');
     activarBotonesURL('category', '#filtro-tipo-av1', MAPA_TIPOS_INV, 'btn-filtro-tipo-av1');
-    activarBotonesURL('status', '#filtro-estado-av1', MAPA_ESTADOS_INV, 'btn-filtro-estado-av1');
+    activarBotonesURL('status', '#filtro-estado-av1', MAPA_ESTADOS_HTML, 'btn-filtro-estado-av1');
     activarBotonesURL('order', '#filtro-orden-av1', MAPA_ORDEN_INV, 'btn-filtro-orden-av1');
 
     // Actualizar texto de filtros activos
