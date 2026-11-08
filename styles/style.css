@@ -1224,7 +1224,7 @@ a.btn-buscar-ia:hover {
     transform: scale(1.15);
     transform-origin: center bottom;
   }
-  .anime-card:hover .container-img {
+  body:not(.animaciones-off) .anime-card:hover .container-img {
     transform: translateY(-5px);
   }
   /* .anime-card:hover {
