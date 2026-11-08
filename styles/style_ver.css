@@ -697,26 +697,28 @@ iframe {
   background-color: var(--br);
   transform: scale(1.05);
 }
+
+.dropdown-capitulos button.visto {
+    background-color: var(--br);
+  border-color: var(--btn);
+
+  opacity: 0.7;
+  position: relative;
+}
 .dropdown-capitulos button.activo {
   background-color: var(--btn);
   border-color: var(--btn);
-  font-weight: 600;
+  opacity: 1;
 }
 
-.dropdown-capitulos button.visto {
-  background-color: var(--br);
-  border-color: var(--btn);
-  color: var(--btn);
-  position: relative;
-}
 .dropdown-capitulos button.visto:after {
   content: "";
   position: absolute;
-right: 5px;
-top: 3px;
-width: 10px;
-height: 10px;
-background-color: var(--btn);
+right: 4px;
+top: 2px;
+width: 13px;
+height: 13px;
+background-color: var(--t1);
 -webkit-mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 }
@@ -726,7 +728,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 .dropdown-capitulos button.visto.activo {
   border-color: var(--btn);
   color: var(--t1);
-  background-color: var(--btn);
 }
 
 .dropdown-capitulos::-webkit-scrollbar {
