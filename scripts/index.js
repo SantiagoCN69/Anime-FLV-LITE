@@ -1055,11 +1055,14 @@ async function cargarUltimosCapitulos() {
         }), {});
       };
     
+    // undefined = todavía no se leyó; null = el documento no existe.
+    let datosFirestorePrevios = undefined;
     try {
       const docRef = doc(db, 'ultimos-capitulos', docId);
       const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const firestoreData = docSnap.data().items || [];
+      datosFirestorePrevios = docSnap.exists() ? docSnap.data() : null;
+      if (datosFirestorePrevios) {
+        const firestoreData = datosFirestorePrevios.items || [];
   
         if (JSON.stringify(normalizar(cached)) !== JSON.stringify(normalizar(firestoreData))) {
           render(firestoreData);
@@ -1088,22 +1091,24 @@ async function cargarUltimosCapitulos() {
           guardarCache(cacheKey, apiData);
           cached = apiData;
           
-          // Solo escribir si Firestore también tiene datos diferentes
+          // Solo escribir si Firestore también tiene datos diferentes.
+          // Se reutiliza la lectura anterior cuando existe para no pagar
+          // una segunda lectura del mismo documento.
           try {
             const docRef = doc(db, 'ultimos-capitulos', docId);
-            const docSnap = await getDoc(docRef);
-            
-            if (docSnap.exists()) {
-              const firestoreData = docSnap.data().items || [];
-              if (JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(firestoreData))) {
-                await setDoc(docRef, { 
-                  items: apiData,
-                  lastUpdated: new Date().toISOString()
-                }, { merge: true });
-              }
+            let firestoreData = null;
+            let firestoreExiste = false;
+            if (datosFirestorePrevios !== undefined) {
+              firestoreExiste = datosFirestorePrevios !== null;
+              firestoreData = datosFirestorePrevios?.items || [];
             } else {
-              // Solo escribir si el documento no existe
-              await setDoc(docRef, { 
+              const docSnap = await getDoc(docRef);
+              firestoreExiste = docSnap.exists();
+              firestoreData = firestoreExiste ? docSnap.data().items || [] : [];
+            }
+
+            if (!firestoreExiste || JSON.stringify(normalizar(apiData)) !== JSON.stringify(normalizar(firestoreData))) {
+              await setDoc(docRef, {
                 items: apiData,
                 lastUpdated: new Date().toISOString()
               }, { merge: true });

@@ -456,11 +456,19 @@ function initPreferencias() {
 
 initPreferencias();
 
+let temaFirestoreIntentado = false;
+
 const cargarTemaDesdeFirestore = async () => {
   if (!auth.currentUser) return;
+  // localStorage tiene prioridad: solo se consulta Firestore cuando no hay
+  // tema guardado localmente, y una sola vez por sesión.
+  if (localStorage.getItem('theme') || temaFirestoreIntentado) return;
   try {
     const docRef = doc(db, 'usuarios', auth.currentUser.uid);
     const docSnap = await getDoc(docRef);
+    // Solo marcar como intentado si la lectura completó: si falla, una
+    // llamada posterior puede reintentar en la misma sesión.
+    temaFirestoreIntentado = true;
     if (docSnap.exists() && docSnap.data().theme) {
       aplicarTema(docSnap.data().theme);
       actualizarBtnTema();
@@ -477,8 +485,6 @@ auth.onAuthStateChanged((user) => {
   } else {
     updateUIForUser(user);
     guardarCacheUsuario(user);
-    if (!localStorage.getItem('theme')) {
-      cargarTemaDesdeFirestore();
-    }
+    cargarTemaDesdeFirestore();
   }
 });

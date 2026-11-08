@@ -326,7 +326,7 @@ let saltoOutroVidriftEnCurso = false;
 let cacheTmdbVidrift = null;
 let promesaTmdbVidrift = null;
 let firestoreTmdbConsultado = false;
-let documentoAnimeCache = null;
+let documentoAnimeCache = undefined;
 
 const CACHE_TTL = 5 * 60 * 1000;
 const serverCache = new Map();
@@ -610,7 +610,7 @@ function actualizarEstadoBotonDoblado(servidores) {
 }
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, deleteDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, deleteDoc, runTransaction, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 
 // Inicialización de Firebase optimizada
@@ -720,7 +720,7 @@ async function toggleYGuardarEstadoCapitulo() {
           titulo,
           portada: portadaAnime,
           fechaAgregado: serverTimestamp(),
-          episodiosVistos: arrayNuevosVistos,
+          episodiosVistos: nuevoEstadoVisto ? arrayUnion(episodioId) : arrayRemove(episodioId),
           esFinalizadoPorVistos: esFinalizadoPorVistos
         }, { merge: true });
       }
@@ -1116,12 +1116,17 @@ async function precargarSiguienteEpisodio(index, datosFirestore = undefined) {
 }
 
 async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
-  // Si no recibimos la lectura inicial, consultar Firestore antes de acudir a la API.
+  // Si no recibimos la lectura inicial, reutilizar la caché del documento
+  // y solo consultar Firestore cuando todavía no se haya leído.
   if (!firestoreEnPausaPorCuota) try {
-    if (datosFirestore === undefined) {
+    if (!datosFirestore) {
+      datosFirestore = documentoAnimeCache;
+    }
+    if (!datosFirestore) {
       const animeDatosRef = doc(db, "datos-animes", animeId);
       const animeDatosSnap = await getDoc(animeDatosRef);
       datosFirestore = animeDatosSnap.data() || {};
+      recordarDocumentoAnime(datosFirestore);
     }
 
     const servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
@@ -1157,12 +1162,12 @@ async function cargarEpisodios() {
 
     if (docSnap.exists()) {
       const data = docSnap.data();
+      recordarDocumentoAnime(data);
       tituloAnime = data.titulo || data.title || tituloAnime;
       portadaAnime = data.portada || data.cover || '';
       episodios = data.episodios || [];
       aplicarFondoAnime(data);
       if (episodios.length) {
-        recordarDocumentoAnime(data);
         // Generar dropdown después de cargar episodios
         if (typeof generarDropdownCapitulos === 'function') {
           generarDropdownCapitulos();
@@ -1203,9 +1208,11 @@ async function cargarEpisodios() {
     if (!firestoreEnPausaPorCuota) {
       try {
         const animeRef = doc(db, "datos-animes", animeId);
+        let datosDocumentoPrevio = null;
         await runTransaction(db, async (transaction) => {
           const actual = await transaction.get(animeRef);
-          const episodiosGuardados = actual.exists() ? actual.data().episodios || [] : [];
+          datosDocumentoPrevio = actual.exists() ? actual.data() : null;
+          const episodiosGuardados = datosDocumentoPrevio?.episodios || [];
           const guardadosPorNumero = new Map(episodiosGuardados.map(ep => [String(ep.number), ep]));
           const episodiosFusionados = episodios.map(ep => {
             const guardado = guardadosPorNumero.get(String(ep.number));
@@ -1226,6 +1233,15 @@ async function cargarEpisodios() {
             cover: data.cover || '',
             banner: data.banner || ''
           }, { merge: true });
+        });
+        // Refrescar la caché con lo que quedó en Firestore para que las
+        // funciones siguientes no tengan que volver a leer el documento.
+        recordarDocumentoAnime({
+          ...(datosDocumentoPrevio || {}),
+          episodios,
+          titulo: data.title || animeId,
+          cover: data.cover || '',
+          banner: data.banner || ''
         });
       } catch (error) {
         if (!activarModoApiDirecta(error)) {
@@ -1306,12 +1322,19 @@ async function recuperarEpisodioFaltanteDesdeApi(numeroEpisodio) {
     if (!episodioSolicitado) return null;
 
     const episodiosLocales = new Map(episodios.map(ep => [String(ep.number), ep]));
+    const hayEpisodioNuevo = episodiosApi.some(ep => !episodiosLocales.has(String(ep.number)));
     episodios = episodiosApi.map(ep => {
       const episodioLocal = episodiosLocales.get(String(ep.number));
       return episodioLocal
         ? { ...ep, ...episodioLocal }
         : ep;
     });
+
+    if (hayEpisodioNuevo) {
+      // El capítulo nuevo puede haber llegado a Firestore con sus servidores;
+      // soltar la caché para que la siguiente lectura no use datos viejos.
+      documentoAnimeCache = undefined;
+    }
 
     aplicarFondoAnime({ cover: data.cover || '', banner: data.banner || '' });
     dropdownGenerado = false;
@@ -1612,34 +1635,42 @@ async function resolverDatosTmdbVidrift() {
     const animeDatosRef = doc(db, "datos-animes", animeId);
 
     if (!cacheTmdbEsValida() && !firestoreTmdbConsultado) {
-      debugLog("Buscando ID de TMDB en Firestore.", animeId);
-      const animeDatosSnap = await getDoc(animeDatosRef);
       firestoreTmdbConsultado = true;
+      let animeDatos = documentoAnimeCache;
 
-      if (animeDatosSnap.exists()) {
-        const animeDatos = animeDatosSnap.data();
-        if (animeDatos.tmdbId) {
-          debugLog("ID de TMDB encontrado en Firestore.", animeDatos.tmdbId);
-          const tmdbSeason = await resolverTemporadaVidrift(animeDatos.tmdbId, animeDatos.tmdbSeason);
-          if (!tmdbSeason) return null;
-          guardarCacheTmdbVidrift(animeDatos.tmdbId, tmdbSeason);
-          if (Number(animeDatos.tmdbSeason) !== tmdbSeason) {
-            ejecutarEnSegundoPlano(
-              setDoc(animeDatosRef, { tmdbSeason }, { merge: true }),
-              "No se pudo actualizar la temporada TMDB en Firestore"
-            );
-          }
-          debugLog("[Vidrift] ID recuperado de Firestore", {
-            animeId,
-            tmdbId: animeDatos.tmdbId,
-            temporada: tmdbSeason,
-            episodio: episodioActualIndex
-          });
-          return cacheTmdbVidrift;
+      if (!animeDatos) {
+        debugLog("Buscando ID de TMDB en Firestore.", animeId);
+        const animeDatosSnap = await getDoc(animeDatosRef);
+
+        if (animeDatosSnap.exists()) {
+          animeDatos = animeDatosSnap.data();
+          recordarDocumentoAnime(animeDatos);
+        } else {
+          debugLog("El documento no existe en Firestore.");
         }
+      }
+
+      if (animeDatos?.tmdbId) {
+        debugLog("ID de TMDB encontrado en Firestore.", animeDatos.tmdbId);
+        const tmdbSeason = await resolverTemporadaVidrift(animeDatos.tmdbId, animeDatos.tmdbSeason);
+        if (!tmdbSeason) return null;
+        guardarCacheTmdbVidrift(animeDatos.tmdbId, tmdbSeason);
+        if (Number(animeDatos.tmdbSeason) !== tmdbSeason) {
+          ejecutarEnSegundoPlano(
+            setDoc(animeDatosRef, { tmdbSeason }, { merge: true }),
+            "No se pudo actualizar la temporada TMDB en Firestore"
+          );
+        }
+        debugLog("[Vidrift] ID recuperado de Firestore", {
+          animeId,
+          tmdbId: animeDatos.tmdbId,
+          temporada: tmdbSeason,
+          episodio: episodioActualIndex
+        });
+        return cacheTmdbVidrift;
+      }
+      if (animeDatos) {
         debugLog("El documento de Firestore no tiene tmdbId.");
-      } else {
-        debugLog("El documento no existe en Firestore.");
       }
     } else if (cacheTmdbEsValida()) {
       return cacheTmdbVidrift;

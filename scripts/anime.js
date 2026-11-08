@@ -1444,7 +1444,7 @@ btnFav.addEventListener("click", async () => {
     }
 
     // --- PROCESO INTERNO EN BASE DE DATOS ---
-    const res = await toggleFavoritoAnime(titulo);
+    const res = await toggleFavoritoAnime(titulo, !eraActivo);
 
     // --- ESTADO FINAL ---
     actualizarEstadoFavorito();
@@ -1463,35 +1463,22 @@ btnFav.addEventListener("click", async () => {
   }
 });
 
-async function toggleFavoritoAnime(titulo) {
+async function toggleFavoritoAnime(titulo, agregar) {
   const user = localStorage.getItem("userID");
   if (!user) {
     throw "Usuario no autenticado";
   }
 
   const favoritosRef = doc(collection(doc(db, "usuarios", user), "favoritos"), "lista");
-  const favoritosDoc = await getDoc(favoritosRef);
+  await setDoc(favoritosRef, {
+    animes: agregar ? arrayUnion(id) : arrayRemove(id)
+  }, { merge: true });
 
-  let favoritos = [];
-  if (favoritosDoc.exists() && favoritosDoc.data().animes) {
-    favoritos = [...favoritosDoc.data().animes];
-  }
-
-  const index = favoritos.indexOf(id);
-
-  if (index !== -1) {
-    // eliminar
-    favoritos.splice(index, 1);
-    await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
-    mostrarPildora("fav", false, titulo);  
-    return { esFavorito: false, mensaje: "Anime eliminado de favoritos" };
-  } else {
-    // agregar
-    favoritos.push(id);
-    await setDoc(favoritosRef, { animes: favoritos }, { merge: true });
-    mostrarPildora("fav", true, titulo);  
-    return { esFavorito: true, mensaje: "Anime agregado a favoritos" };
-  }
+  mostrarPildora("fav", agregar, titulo);
+  return {
+    esFavorito: agregar,
+    mensaje: agregar ? "Anime agregado a favoritos" : "Anime eliminado de favoritos"
+  };
 }
 
 async function obtenerFavoritosAnime() {
@@ -1585,6 +1572,21 @@ buttons.forEach(btn => {
   btn.addEventListener("touchend", clearHover, { passive: true });
   btn.addEventListener("touchcancel", clearHover, { passive: true });
 });
+async function obtenerEstadosConAnime() {
+  const user = localStorage.getItem("userID");
+  if (!user) return [];
+
+  const estados = ['viendo', 'pendiente', 'visto'];
+  const resultados = await Promise.all(estados.map(async estado => {
+    const estadoRef = doc(db, "usuarios", user, "estados", estado);
+    const estadoDoc = await getDoc(estadoRef);
+    const animes = estadoDoc.exists() ? estadoDoc.data().animes : null;
+    return Array.isArray(animes) && animes.includes(id) ? estado : null;
+  }));
+
+  return resultados.filter(Boolean);
+}
+
 async function actualizarEstadoFirebase(estado) {
   if (estadoToggleInProgress) {
     console.warn('actualizarEstadoFirebase: Operación en progreso, ignorando.');
@@ -1597,55 +1599,29 @@ async function actualizarEstadoFirebase(estado) {
     const user = localStorage.getItem("userID");
     if (!user) return;
 
-    const estadoActual = await obtenerEstadoActual();
+    const estadosActuales = await obtenerEstadosConAnime();
+    const estadoLower = estado ? estado.toLowerCase() : null;
 
-    if (estadoActual === estado) return;
+    const yaTieneEstado = estadoLower &&
+      estadosActuales.length === 1 && estadosActuales[0] === estadoLower;
+    if (yaTieneEstado) return;
 
-    await limpiarEstadosPrevios();
+    await Promise.all(estadosActuales.map(e =>
+      setDoc(doc(db, "usuarios", user, "estados", e), {
+        animes: arrayRemove(id)
+      }, { merge: true })
+    ));
 
-    if (!estado) return;
+    if (!estadoLower) return;
 
-    const estadoLower = estado.toLowerCase();
-    const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoLower);
-    const estadoDoc = await getDoc(estadoRef);
-
-    let animes = [];
-    if (estadoDoc.exists()) {
-      animes = [...(estadoDoc.data().animes || [])];
-    }
-
-    if (!animes.includes(id)) {
-      animes.push(id);
-      await setDoc(estadoRef, { animes }, { merge: true });
-      mostrarPildora(estadoLower, true, document.getElementById('titulo')?.textContent || '');
-    }
+    const estadoRef = doc(db, "usuarios", user, "estados", estadoLower);
+    await setDoc(estadoRef, { animes: arrayUnion(id) }, { merge: true });
+    mostrarPildora(estadoLower, true, document.getElementById('titulo')?.textContent || '');
   } catch (error) {
     console.error("Error al actualizar estado en Firebase:", error);
     throw error;
   } finally {
     estadoToggleInProgress = false;
-  }
-}
-
-async function limpiarEstadosPrevios() {
-  const user = localStorage.getItem("userID");
-  if (!user) return;
-
-  const estados = ['viendo', 'pendiente', 'visto'];
-
-  for (const estado of estados) {
-    const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estado);
-    const estadoDoc = await getDoc(estadoRef);
-    
-    if (estadoDoc.exists()) {
-      let animes = [...(estadoDoc.data().animes || [])];
-      const index = animes.indexOf(id);
-       
-      if (index !== -1) {
-        animes.splice(index, 1);
-        await setDoc(estadoRef, { animes }, { merge: true });
-      }
-    }
   }
 }
 
@@ -1666,20 +1642,12 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
 
   if (btnSeleccionado.classList.contains('active')) {
     // Desactivar estado - UI INSTANTÁNEA
-    const estadoAnterior = btnSeleccionado.classList.contains('active');
     btnSeleccionado.classList.remove('active');
-    
-    try {
-      const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estadoId);
-      const estadoDoc = await getDoc(estadoRef);
 
-      if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
-        const animesActualizados = estadoDoc.data().animes.filter(animeId => animeId !== id);
-        if (animesActualizados.length !== estadoDoc.data().animes.length) {
-          await setDoc(estadoRef, { animes: animesActualizados }, { merge: true });
-          mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');
-        }
-      }
+    try {
+      const estadoRef = doc(db, "usuarios", user, "estados", estadoId);
+      await setDoc(estadoRef, { animes: arrayRemove(id) }, { merge: true });
+      mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');
     } catch (error) {
       console.error('Error al eliminar el estado:', error);
       // Revertir UI en caso de error
@@ -1722,22 +1690,8 @@ async function refrescarEstadoBotones() {
 }
 
 async function obtenerEstadoActual() {
-  const user = localStorage.getItem("userID");
-  if (!user) return null;
-
-  const estados = ['viendo', 'pendiente', 'visto'];
-  
-  for (const estado of estados) {
-    const estadoRef = doc(collection(doc(db, "usuarios", user), "estados"), estado);
-    const estadoDoc = await getDoc(estadoRef);
-    
-    if (estadoDoc.exists() && Array.isArray(estadoDoc.data().animes)) {
-      if (estadoDoc.data().animes.includes(id)) {
-        return estado.toUpperCase();
-      }
-    }
-  }
-  return null;
+  const estados = await obtenerEstadosConAnime();
+  return estados.length > 0 ? estados[0].toUpperCase() : null;
 }
 obtenerEstadoActual().then(estado => {
   if (estado) {

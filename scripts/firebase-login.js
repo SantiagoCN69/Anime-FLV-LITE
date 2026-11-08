@@ -14,8 +14,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
+let temaFirestoreIntentado = false;
+
 const cargarTemaDesdeFirestore = async () => {
   if (!auth.currentUser) return;
+
+  // localStorage tiene prioridad: solo se consulta Firestore cuando no hay
+  // tema guardado localmente, y una sola vez por sesión.
+  if (localStorage.getItem('theme') || temaFirestoreIntentado) return;
+  temaFirestoreIntentado = true;
 
   try {
     const docRef = doc(db, 'usuarios', auth.currentUser.uid);
@@ -112,7 +119,7 @@ function crearmodal(user = false) {
     <button id="theme-toggle">Tema</button>
     <button id="preferencias-btn">Preferencias</button>
     <button id="contacto-link">Contacto</button>
-    <a id="investigacion-link" target="_blank" href="investigacion">Investigación</a>
+    <!-- <a id="investigacion-link" target="_blank" href="investigacion">Investigación</a> -->
   `;
   
   if (user) {
@@ -253,9 +260,7 @@ onAuthStateChanged(auth, (user) => {
   const btnLogin = document.getElementById('btn-login');
   if (btnLogin) btnLogin.disabled = false;
   
-  if (!localStorage.getItem('theme')) {
-    cargarTemaDesdeFirestore();
-  }
+  cargarTemaDesdeFirestore();
 });
 
 const btnLogin = document.getElementById('btn-login');
