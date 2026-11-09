@@ -883,27 +883,41 @@ async function manejarNoticias() {
 
   if (!contenedorNoticias || !initLoadingNoticias) return;
 
-  // 1. Cargar primero de Firestore (caché rápido)
-  try {
-    const noticiasRef = doc(db, "noticias", "noticias");
-    const docSnap = await getDoc(noticiasRef);
+  const renderizarNoticias = (noticias) => {
+    contenedorNoticias.innerHTML = '';
+    noticias.forEach((noticia) => {
+      const tarjeta = crearNoticiaHTML(noticia);
+      contenedorNoticias.appendChild(tarjeta);
+    });
+  };
 
-    if (docSnap.exists()) {
-      const datosFirestore = docSnap.data();
-      const noticiasFirestore = extraerListaNoticias(datosFirestore?.noticias);
+  const cargarDesdeFirestore = async () => {
+    try {
+      const noticiasRef = doc(db, "noticias", "noticias");
+      const docSnap = await getDoc(noticiasRef);
 
-      initLoadingNoticias.style.display = 'none';
-      noticiasFirestore.forEach((noticia) => {
-        const tarjeta = crearNoticiaHTML(noticia);
-        contenedorNoticias.appendChild(tarjeta);
-      });
+      if (docSnap.exists()) {
+        const noticiasFirestore = extraerListaNoticias(docSnap.data()?.noticias);
+        if (noticiasFirestore.length) {
+          initLoadingNoticias.style.display = 'none';
+          renderizarNoticias(noticiasFirestore);
+        }
+      }
+    } catch (error) {
+
     }
-  } catch (error) {
+  };
 
-  }
+  const guardarEnFirestore = async (noticiasAPI) => {
+    try {
+      const noticiasRef = doc(db, "noticias", "noticias");
+      await setDoc(noticiasRef, { noticias: noticiasAPI });
+    } catch (error) {
 
-  // 2. Cargar noticias desde la API
-  try {
+    }
+  };
+
+  const fetchNoticiasAPI = async () => {
     const respuesta = await fetch("https://backend-noticias-anime.onrender.com/api/noticias");
     const payloadAPI = await respuesta.json().catch(() => null);
 
@@ -912,27 +926,43 @@ async function manejarNoticias() {
     }
 
     const noticiasAPI = extraerListaNoticias(payloadAPI);
-
-    if (noticiasAPI.length) {
-      contenedorNoticias.innerHTML = '';
-      noticiasAPI.forEach((noticia) => {
-        const tarjeta = crearNoticiaHTML(noticia);
-        contenedorNoticias.appendChild(tarjeta);
-      });
-
-      // Guardar actualización en Firestore
-      try {
-        const noticiasRef = doc(db, "noticias", "noticias");
-        await setDoc(noticiasRef, { noticias: noticiasAPI });
-      } catch (error) {
-
-      }
+    if (!noticiasAPI.length) {
+      throw new Error('API noticias vacía');
     }
-  } catch (error) {
 
-  } finally {
+    return noticiasAPI;
+  };
+
+  // La API envuelta para que nunca rechace la carrera
+  const apiPromise = fetchNoticiasAPI()
+    .then((noticias) => ({ noticias }))
+    .catch(() => ({ noticias: null }));
+
+  // 1 segundo de espera: si la API responde antes, Firestore no se toca
+  const timeoutPromise = new Promise((resolve) =>
+    setTimeout(() => resolve({ timeout: true }), 1000)
+  );
+
+  const primerResultado = await Promise.race([apiPromise, timeoutPromise]);
+
+  if (!primerResultado.timeout && primerResultado.noticias) {
+    // API rápida: render directo, sin leer ni escribir Firestore
     initLoadingNoticias.style.display = 'none';
+    renderizarNoticias(primerResultado.noticias);
+  } else {
+    // API lenta o fallida: mostrar caché de Firestore mientras tanto
+    await cargarDesdeFirestore();
+
+    // Cuando la API responda, actualizar render y Firestore
+    const resultadoFinal = await apiPromise;
+    if (resultadoFinal.noticias) {
+      initLoadingNoticias.style.display = 'none';
+      renderizarNoticias(resultadoFinal.noticias);
+      await guardarEnFirestore(resultadoFinal.noticias);
+    }
   }
+
+  initLoadingNoticias.style.display = 'none';
 
   // Scroll horizontal en pantallas pequeñas
   contenedorNoticias.addEventListener('wheel', (evento) => {
@@ -2460,6 +2490,28 @@ function mostrarPildora(estado = true, cap = null, actualizando = false) {
   // se dispara y la píldora quedaría fija en pantalla.
   setTimeout(() => pill.remove(), 3000);
 }
+
+// Swipe horizontal para descartar la píldora hacia el lado del gesto.
+// Se desactiva la animación CSS (animation pisa los estilos inline) y se
+// transiciona manualmente; funciona igual con .animaciones-off.
+let pillSwipeStart = null;
+document.addEventListener("pointerdown", (e) => {
+  pillSwipeStart = { x: e.clientX, y: e.clientY };
+});
+document.addEventListener("pointerup", (e) => {
+  if (!pillSwipeStart) return;
+  const dx = e.clientX - pillSwipeStart.x;
+  const dy = e.clientY - pillSwipeStart.y;
+  pillSwipeStart = null;
+  const pill = document.querySelector(".pildora");
+  if (!pill || Math.abs(dx) < 60 || Math.abs(dx) <= Math.abs(dy) * 1.5) return;
+  pill.style.animation = "none";
+  pill.style.transition = "top .3s ease-in, transform .3s ease-in, opacity .3s ease-in";
+  pill.style.top = "-60px";
+  pill.style.opacity = "0";
+  pill.style.transform = `translateX(-50%) translateX(${dx > 0 ? "120px" : "-120px"}) translateY(-20px)`;
+  setTimeout(() => pill.remove(), 350);
+});
 
 
 document.addEventListener('DOMContentLoaded', () => {
