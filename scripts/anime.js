@@ -617,12 +617,12 @@ function mostrarOverlayCapitulosCompletados() {
 
   setTimeout(() => {
     overlay.classList.remove("show");
-    overlay.addEventListener("transitionend", () => {
+    // transitionend tampoco se dispara con .animaciones-off (transition: none),
+    // así que la eliminación va por tiempo: 450ms = duración de la transición.
+    setTimeout(() => {
       overlay.remove();
       overlayCompletadosActivo = false;
-    }, {
-      once: true,
-    });
+    }, 500);
   }, 3000);
 }
 
@@ -1953,9 +1953,9 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
 
   document.body.appendChild(pill);
 
-  pill.addEventListener('animationend', () => {
-    pill.remove();
-  }, { once: true });
+  // setTimeout en vez de animationend: con .animaciones-off la animación CSS
+  // está desactivada y animationend nunca se dispara, dejando la píldora fija.
+  setTimeout(() => pill.remove(), 3000);
 }
 
 

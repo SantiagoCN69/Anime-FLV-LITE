@@ -2255,7 +2255,9 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   pill.textContent = `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`;
   pill.title = motivo;
   document.body.appendChild(pill);
-  pill.addEventListener("animationend", () => pill.remove(), { once: true });
+  // setTimeout en vez de animationend: con .animaciones-off animationend nunca
+  // se dispara y la píldora quedaría fija en pantalla.
+  setTimeout(() => pill.remove(), 3000);
 
   mostrarVideo(siguienteServidor, siguienteBoton);
 }
@@ -2475,9 +2477,9 @@ function mostrarPildora(estado = true, cap = null, actualizando = false) {
 
   document.body.appendChild(pill);
 
-  pill.addEventListener('animationend', () => {
-    pill.remove();
-  }, { once: true });
+  // setTimeout en vez de animationend: con .animaciones-off animationend nunca
+  // se dispara y la píldora quedaría fija en pantalla.
+  setTimeout(() => pill.remove(), 3000);
 }
 
 
