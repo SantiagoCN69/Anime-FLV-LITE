@@ -196,9 +196,9 @@ function mostrarPildora(mensaje, tipo = "default") {
 
   document.body.appendChild(pill);
 
-  pill.addEventListener('animationend', () => {
-    pill.remove();
-  }, { once: true });
+  // setTimeout en vez de animationend: con .animaciones-off animationend nunca
+  // se dispara y la píldora quedaría fija en pantalla.
+  setTimeout(() => pill.remove(), 3000);
 }
 
 // Evento Generar Nuevas (Con el input extra añadido)
