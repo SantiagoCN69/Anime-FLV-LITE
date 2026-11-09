@@ -1722,118 +1722,106 @@ async function resolverDatosTmdbVidrift() {
   return promesaTmdbVidrift;
 }
 
-// Al cambiar de capítulo se reemplaza el iframe del reproductor y el
-// navegador sale de pantalla completa y libera el bloqueo de orientación.
-// Guardamos ambos estados para restaurarlos en el nuevo reproductor.
-let estadoPantallaPendiente = null;
-let limpiarReintentoPantalla = null;
-// Se activa justo antes de vaciar #video para distinguir la salida de
-// pantalla completa provocada por el cambio de reproductor de una salida
-// manual del usuario (Esc o el botón del navegador).
-let salidaPantallaPorReproductor = false;
-
-const logPantalla = (...args) => console.log("[PantallaCompleta]", ...args);
-
-function capturarEstadoPantalla() {
-  // Si había un reintento pendiente del reproductor anterior, sus listeners
-  // apuntan a un elemento ya descartado: se eliminan antes de seguir.
-  limpiarReintentoPantalla?.();
-  limpiarReintentoPantalla = null;
-
-  // Si no hay pantalla completa activa pero ya existe un estado pendiente
-  // (por ejemplo, al saltar de servidor tras un fallo), se conserva: la
-  // restauración aún no se ha conseguido y el nuevo reproductor la intentará.
-  if (!document.fullscreenElement) return;
-
-  let orientacion = null;
-  try {
-    orientacion = screen.orientation?.type || null;
-  } catch {
-    // screen.orientation no está disponible en todos los navegadores.
-  }
-  estadoPantallaPendiente = { orientacion };
-  logPantalla("Estado capturado antes de cambiar el reproductor", {
-    elemento: document.fullscreenElement.tagName,
-    orientacion
-  });
+// Con fs=parent el fullscreen vive en #video, que no se destruye al cambiar
+// de reproductor: el navegador mantiene el estado y no hay nada que capturar
+// ni restaurar entre capítulos.
+function elementoEnPantallaCompleta() {
+  return document.fullscreenElement || document.webkitFullscreenElement || null;
 }
 
-async function intentarRestaurarPantalla(elemento) {
-  const estado = estadoPantallaPendiente;
-  if (!estado) return;
+function solicitarPantallaCompleta(elemento) {
+  const metodo = elemento?.requestFullscreen || elemento?.webkitRequestFullscreen;
+  if (!metodo) throw new Error("requestFullscreen no está disponible");
+  return metodo.call(elemento);
+}
 
-  const intentar = async () => {
-    try {
-      await elemento.requestFullscreen?.();
-    } catch (error) {
-      // Antes este catch lo ocultaba: el mensaje real ("API can only be
-      // initiated by a user gesture", Permissions Policy, etc.) es clave
-      // para saber por qué no vuelve la pantalla completa.
-      logPantalla("requestFullscreen rechazado", error?.message || error);
-      return false;
-    }
+function salirDePantallaCompleta() {
+  if (document.exitFullscreen) return document.exitFullscreen();
+  return document.webkitExitFullscreen?.();
+}
 
-    if (estado.orientacion && screen.orientation?.lock) {
+function soportaPantallaCompletaContenedor() {
+  const videoDiv = document.getElementById("video");
+  return !!(videoDiv?.requestFullscreen || videoDiv?.webkitRequestFullscreen);
+}
+
+// Navegadores sin Fullscreen API en elementos (iPhone Safari) no pueden poner
+// #video en fullscreen real: se simula con position:fixed vía la clase
+// video-fs-simulado, que además quita bordes y márgenes.
+let pantallaCompletaSimulada = false;
+
+function aplicarPantallaCompletaSimulada() {
+  pantallaCompletaSimulada = true;
+  document.documentElement.classList.add("video-fs-simulado", "video-pantalla-completa");
+}
+
+function quitarPantallaCompletaSimulada() {
+  pantallaCompletaSimulada = false;
+  document.documentElement.classList.remove("video-fs-simulado");
+  manejarCambioPantallaCompleta();
+}
+
+const manejarCambioPantallaCompleta = () => {
+  const elemento = elementoEnPantallaCompleta();
+  const videoDiv = document.getElementById("video");
+  // Marca <html> mientras #video (o su contenido) ocupa la pantalla para que
+  // el CSS quite el gutter del scrollbar y el borde del reproductor.
+  const enPantallaVideo = pantallaCompletaSimulada || (!!elemento && videoDiv && (elemento === videoDiv || videoDiv.contains(elemento)));
+  document.documentElement.classList.toggle("video-pantalla-completa", enPantallaVideo);
+  enviarEstadoFullscreenVidrift();
+};
+
+["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange", "MSFullscreenChange"]
+  .forEach(evento => document.addEventListener(evento, manejarCambioPantallaCompleta));
+
+// Con fs=parent Vidrift delega el fullscreen a la página: el objetivo es
+// #video, que no se destruye al cambiar de episodio, así el salto automático
+// de capítulo conserva la pantalla completa sin necesitar un nuevo gesto.
+function enviarEstadoFullscreenVidrift() {
+  if (!ventanaVidriftActiva) return;
+  const videoDiv = document.getElementById("video");
+  const elemento = elementoEnPantallaCompleta();
+  const on = pantallaCompletaSimulada || (!!elemento && videoDiv.contains(elemento));
+  ventanaVidriftActiva.postMessage(
+    { type: "vidrift:fullscreen-state", on },
+    ORIGEN_VIDRIFT
+  );
+}
+
+async function manejarFullscreenVidrift(solicitar) {
+  const videoDiv = document.getElementById("video");
+  if (solicitar) {
+    if (elementoEnPantallaCompleta() || pantallaCompletaSimulada) return;
+    if (soportaPantallaCompletaContenedor()) {
       try {
-        await screen.orientation.lock(estado.orientacion);
-      } catch {
-        // Algunos navegadores solo permiten bloquear la orientación en
-        // pantalla completa y solo en dispositivos móviles.
+        await solicitarPantallaCompleta(videoDiv);
+        enviarEstadoFullscreenVidrift();
+        return;
+      } catch (error) {
+        debugLog("[Vidrift] requestFullscreen rechazado", error?.message || error);
       }
     }
-    estadoPantallaPendiente = null;
-    logPantalla("Pantalla completa restaurada", elemento?.tagName || elemento);
-    return true;
-  };
-
-  if (await intentar()) return;
-
-  // requestFullscreen puede exigir un gesto del usuario: si falla al cargar,
-  // se reintenta en la primera interacción tras el cambio de capítulo. Los
-  // clics dentro del iframe no llegan a window; solo sirven las
-  // interacciones con la página (botones, teclas, áreas fuera del player).
-  let intentosRestauracion = 0;
-  const registrarReintento = () => {
-    const reintentar = async () => {
-      window.removeEventListener("pointerdown", reintentar);
-      window.removeEventListener("keydown", reintentar);
-      limpiarReintentoPantalla = null;
-      // Si el gesto no bastó (Permissions Policy, elemento aún no conectado),
-      // se reintenta con la siguiente interacción; se limita a 5 para no
-      // dejar listeners vivos para siempre si el navegador lo bloquea.
-      if (!(await intentar()) && ++intentosRestauracion < 5) registrarReintento();
-      else if (intentosRestauracion >= 5) {
-        logPantalla("Se agotaron los reintentos; la restauración queda pendiente para el próximo reproductor");
-      }
-    };
-    limpiarReintentoPantalla = () => {
-      window.removeEventListener("pointerdown", reintentar);
-      window.removeEventListener("keydown", reintentar);
-    };
-    window.addEventListener("pointerdown", reintentar);
-    window.addEventListener("keydown", reintentar);
-  };
-  registrarReintento();
-  logPantalla("Sin gesto del usuario disponible: se reintentará en la próxima interacción");
-}
-
-document.addEventListener("fullscreenchange", () => {
-  if (document.fullscreenElement) return;
-  if (salidaPantallaPorReproductor) {
-    // Salida provocada por reemplazar el iframe/video: el estado pendiente
-    // debe conservarse para restaurarlo en el nuevo reproductor.
-    salidaPantallaPorReproductor = false;
+    // Sin Fullscreen API en elementos (iPhone) o si el navegador la rechaza:
+    // fullscreen simulado con CSS fijo sobre #video.
+    aplicarPantallaCompletaSimulada();
+    enviarEstadoFullscreenVidrift();
     return;
   }
-  // Salida manual (Esc, botón del navegador, etc.): no tiene sentido
-  // restaurar la pantalla completa más tarde.
-  if (estadoPantallaPendiente || limpiarReintentoPantalla) {
-    logPantalla("Pantalla completa cerrada manualmente; se descarta la restauración pendiente");
+  if (pantallaCompletaSimulada) {
+    quitarPantallaCompletaSimulada();
+    enviarEstadoFullscreenVidrift();
+    return;
   }
-  estadoPantallaPendiente = null;
-  limpiarReintentoPantalla?.();
-  limpiarReintentoPantalla = null;
-});
+  const elemento = elementoEnPantallaCompleta();
+  if (elemento && videoDiv.contains(elemento)) {
+    try {
+      await salirDePantallaCompleta();
+    } catch {
+      // El usuario ya pudo haber salido con Esc; no hay nada que hacer.
+    }
+  }
+  enviarEstadoFullscreenVidrift();
+}
 
 function esFuenteVideoDirecta(url) {
   return /\.(?:mp4|m3u8)(?:\?|$)/i.test(url);
@@ -1852,7 +1840,7 @@ function crearVideoDirecto(url, reproduccionId) {
       intentarSiguienteServidor(reproduccionId, "El archivo de vídeo no se pudo reproducir");
     }
   };
-  video.addEventListener("loadedmetadata", () => intentarRestaurarPantalla(video));
+
   return video;
 }
 
@@ -1861,7 +1849,7 @@ function crearIframeServidor(url, reproduccionId) {
   iframe.src = url;
   iframe.width = "100%";
   iframe.height = "100%";
-  iframe.frameBorder = "0";
+  iframe.style.border = "none";
   iframe.allowFullscreen = true;
   iframe.scrolling = "no";
   if (bloquearAnuncios) iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
@@ -1874,7 +1862,6 @@ function crearIframeServidor(url, reproduccionId) {
   iframe.onload = () => {
     if (reproduccionId === reproduccionActualId) {
       cancelarFallbackDeCarga();
-      intentarRestaurarPantalla(iframe);
     }
   };
   programarFallbackDeCarga(reproduccionId, 10000, "El servidor externo tardó demasiado en cargar");
@@ -1899,7 +1886,6 @@ async function mostrarVideo(link, botonSeleccionado) {
   const esVidrift = link.vidrift === true;
   const reproduccionId = ++reproduccionActualId;
   ventanaVidriftActiva = null;
-  capturarEstadoPantalla();
   limpiarPreferenciaSubtitulos?.();
   limpiarPreferenciaSubtitulos = null;
 
@@ -1912,10 +1898,6 @@ async function mostrarVideo(link, botonSeleccionado) {
   }
 
   const videoDiv = document.getElementById("video");
-  // Si el reproductor actual está en pantalla completa, al vaciarlo el
-  // navegador disparará fullscreenchange: hay que avisar al listener para
-  // que no descarte el estado pendiente de restauración.
-  if (document.fullscreenElement) salidaPantallaPorReproductor = true;
   videoDiv.innerHTML = "";
 
   cancelarFallbackDeCarga();
@@ -1964,6 +1946,13 @@ async function mostrarVideo(link, botonSeleccionado) {
         autoskip: modoMaratonActivo ? "1" : "0",
         autonext: modoMaratonActivo ? "1" : "0"
       });
+      // Con fs=parent el botón de fullscreen del player avisa por
+      // postMessage y la página pone en fullscreen #video, que sobrevive
+      // al reemplazo del iframe: el salto automático de capítulo no sale
+      // de pantalla completa (requestFullscreen sin gesto sería rechazado).
+      // fs=parent se envía siempre: donde hay Fullscreen API el fullscreen es
+      // real sobre #video; en iPhone el padre lo simula con CSS fijo.
+      params.set("fs", "parent");
       const vidriftUrl = `${baseUrl}?${params.toString()}`;
       debugLog("URL de Vidrift generada.", vidriftUrl);
 
@@ -2178,7 +2167,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.addEventListener("load", () => {
         if (reproduccionId !== reproduccionActualId) return;
         cancelarFallbackDeCarga();
-        intentarRestaurarPantalla(iframe);
+        enviarEstadoFullscreenVidrift();
         solicitarEstadoVidrift();
         enviarInformacionSiguienteAVidrift();
         // Algunos proveedores terminan de exponer las pistas unos segundos
@@ -2373,6 +2362,14 @@ window.addEventListener('message', async (event) => {
   // Solo responder al iframe actualmente visible. Evita que un iframe que
   // acaba de reemplazarse altere la URL o el progreso.
   if (event.source !== ventanaVidriftActiva) return;
+
+  // Con fs=parent el botón de fullscreen del player llega como mensaje.
+  // Debe responderse dentro del handler para que el clic del usuario dentro
+  // del iframe siga contando como gesto de requestFullscreen.
+  if (event.data?.type === "vidrift:fullscreen") {
+    manejarFullscreenVidrift(event.data.on === true);
+    return;
+  }
 
   // Vidrift emite este evento al comenzar créditos o el ending. En modo
   // maratón saltamos de inmediato, sin esperar los cinco segundos de la
