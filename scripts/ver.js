@@ -263,7 +263,7 @@ function programarFallbackDeCarga(reproduccionId, demora, motivo) {
 }
 
 function mostrarEstadoDeServidores(mensaje, limpiarControles = false) {
-  document.getElementById("video").innerHTML = `<p class='span-carga'>${mensaje}</p>`;
+  videoContenedorGlobal.innerHTML = `<p class='span-carga'>${mensaje}</p>`;
   if (limpiarControles) document.getElementById("controles").innerHTML = "";
 }
 
@@ -289,6 +289,7 @@ const dropdownCapitulos = document.getElementById("dropdown-capitulos");
 const numeroCapituloActual = document.getElementById("numero-capitulo-actual");
 const textoAnterior = document.getElementById("texto-anterior");
 const textoSiguiente = document.getElementById("texto-siguiente");
+const videoContenedorGlobal = document.getElementById("video");
 
 // Variable global para capítulos vistos (compartida con refrescarUIEstadoCapitulo)
 let capitulosVistosGlobales = [];
@@ -450,13 +451,7 @@ function seleccionarCapitulo(numCapitulo) {
     btnSelectorCapitulo.classList.remove("open");
   }
   
-  // Usar requestAnimationFrame para optimizar actualizaciones de UI
-  requestAnimationFrame(() => {
-    actualizarNumeroCapitulo();
-    actualizarEstadoBotones();
-    generarDropdownCapitulos();
-    actualizarTextoBotonesNavegacion();
-  });
+  sincronizarUINavegacion();
   
   // Cargar el nuevo episodio (async, no bloquea UI)
   cargarVideoDesdeEpisodio(numCapitulo);
@@ -511,6 +506,17 @@ function actualizarTextoBotonesNavegacion() {
       textoSiguiente.textContent = "EP +";
     }
   }
+}
+
+// Unifica las cuatro actualizaciones de UI que se repetían tras cambiar
+// de capítulo (selector, botones y dropdown).
+function sincronizarUINavegacion() {
+  requestAnimationFrame(() => {
+    actualizarNumeroCapitulo();
+    actualizarEstadoBotones();
+    generarDropdownCapitulos();
+    actualizarTextoBotonesNavegacion();
+  });
 }
 
 // Funcionalidad del selector de capítulos
@@ -753,7 +759,7 @@ document.addEventListener("authStateReady", async (event) => {
     try {
       await refrescarUIEstadoCapitulo();
     } catch (error) {
-
+      debugLog("Error al refrescar el estado del capítulo tras authStateReady:", error);
     }
   } else {
     debugLog("Usuario no autenticado según authStateReady.");
@@ -1485,7 +1491,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
   servidores = [vidriftServer, ...servidores];
 
   if (!servidores?.length) {
-    document.getElementById("video").innerHTML = modoDoblado 
+    videoContenedorGlobal.innerHTML = modoDoblado 
       ? "<p class='span-carga'>No hay servidores doblados disponibles para este episodio.</p>" 
       : "<p class='span-carga'>No hay servidores disponibles.</p>";
     document.getElementById("controles").innerHTML = "";
@@ -1567,10 +1573,10 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
         mostrarVideo(firstPlayable || embeds[0], buttonToSelect);
       }
     } else {
-      document.getElementById("video").innerHTML = "No se encontraron botones de servidor.";
+      videoContenedorGlobal.innerHTML = "No se encontraron botones de servidor.";
     }
   } else {
-    document.getElementById("video").innerHTML = "No hay servidores disponibles para mostrar.";
+    videoContenedorGlobal.innerHTML = "No hay servidores disponibles para mostrar.";
   }
   actualizarEstadoBotonDoblado(todosLosServidores);
 }
@@ -1741,7 +1747,7 @@ function salirDePantallaCompleta() {
 }
 
 function soportaPantallaCompletaContenedor() {
-  const videoDiv = document.getElementById("video");
+  const videoDiv = videoContenedorGlobal;
   return !!(videoDiv?.requestFullscreen || videoDiv?.webkitRequestFullscreen);
 }
 
@@ -1763,7 +1769,7 @@ function quitarPantallaCompletaSimulada() {
 
 const manejarCambioPantallaCompleta = () => {
   const elemento = elementoEnPantallaCompleta();
-  const videoDiv = document.getElementById("video");
+  const videoDiv = videoContenedorGlobal;
   // Marca <html> mientras #video (o su contenido) ocupa la pantalla para que
   // el CSS quite el gutter del scrollbar y el borde del reproductor.
   const enPantallaVideo = pantallaCompletaSimulada || (!!elemento && videoDiv && (elemento === videoDiv || videoDiv.contains(elemento)));
@@ -1779,7 +1785,7 @@ const manejarCambioPantallaCompleta = () => {
 // de capítulo conserva la pantalla completa sin necesitar un nuevo gesto.
 function enviarEstadoFullscreenVidrift() {
   if (!ventanaVidriftActiva) return;
-  const videoDiv = document.getElementById("video");
+  const videoDiv = videoContenedorGlobal;
   const elemento = elementoEnPantallaCompleta();
   const on = pantallaCompletaSimulada || (!!elemento && videoDiv.contains(elemento));
   ventanaVidriftActiva.postMessage(
@@ -1789,7 +1795,7 @@ function enviarEstadoFullscreenVidrift() {
 }
 
 async function manejarFullscreenVidrift(solicitar) {
-  const videoDiv = document.getElementById("video");
+  const videoDiv = videoContenedorGlobal;
   if (solicitar) {
     if (elementoEnPantallaCompleta() || pantallaCompletaSimulada) return;
     if (soportaPantallaCompletaContenedor()) {
@@ -1897,7 +1903,7 @@ async function mostrarVideo(link, botonSeleccionado) {
     servidorActualIndex = Number(botonSeleccionado.dataset.serverIndex);
   }
 
-  const videoDiv = document.getElementById("video");
+  const videoDiv = videoContenedorGlobal;
   videoDiv.innerHTML = "";
 
   cancelarFallbackDeCarga();
@@ -2286,17 +2292,7 @@ async function irAlSiguienteCapitulo() {
     await marcarCapituloActualComoVisto();
     await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
     refrescarUIEstadoCapitulo();
-    actualizarEstadoBotones();
-    // Actualizar número del capítulo en el selector
-    if (typeof actualizarNumeroCapitulo === 'function') {
-      actualizarNumeroCapitulo();
-    }
-    // Actualizar dropdown
-    if (typeof generarDropdownCapitulos === 'function') {
-      generarDropdownCapitulos();
-    }
-    // Actualizar texto de botones de navegación
-    actualizarTextoBotonesNavegacion();
+    sincronizarUINavegacion();
     return true;
   }
   return false;
@@ -2318,17 +2314,7 @@ btnAnterior.addEventListener("click", async (e) => {
     // }
     await cargarVideoDesdeEpisodio(episodioActualIndex - 1);
     refrescarUIEstadoCapitulo();
-    actualizarEstadoBotones();
-    // Actualizar número del capítulo en el selector
-    if (typeof actualizarNumeroCapitulo === 'function') {
-      actualizarNumeroCapitulo();
-    }
-    // Actualizar dropdown
-    if (typeof generarDropdownCapitulos === 'function') {
-      generarDropdownCapitulos();
-    }
-    // Actualizar texto de botones de navegación
-    actualizarTextoBotonesNavegacion();
+    sincronizarUINavegacion();
   }
 });
 
@@ -2434,11 +2420,7 @@ window.addEventListener('message', async (event) => {
       newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
       window.history.pushState({}, "", newUrl);
 
-      // Actualizar UI
-      actualizarNumeroCapitulo();
-      actualizarEstadoBotones();
-      generarDropdownCapitulos();
-      actualizarTextoBotonesNavegacion();
+      sincronizarUINavegacion();
 
       // Refrescar estado de visto.
       await refrescarUIEstadoCapitulo();
