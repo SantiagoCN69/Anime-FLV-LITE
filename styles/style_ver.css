@@ -477,6 +477,24 @@ overflow: hidden;
   border-bottom-left-radius: 14px;
   border-bottom-right-radius: 14px;
 }
+
+/* 1. Quitar el scrollbar-gutter del HTML */
+html.video-pantalla-completa {
+  scrollbar-gutter: unset !important; /* o 'auto' si unset te da problemas visuales */
+}
+
+/* 2. Quitar el borde y redondear esquinas del contenedor #video */
+html.video-pantalla-completa #video,
+#video:fullscreen,
+#video:-webkit-full-screen {
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  /* Garantizar que llene la pantalla sin márgenes residuales */
+  margin: 0 !important;
+  padding: 0 !important;
+}
 iframe {
   height: 100%;
   width: 100%;
