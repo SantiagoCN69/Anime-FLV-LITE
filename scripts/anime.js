@@ -1463,6 +1463,8 @@ btnFav.addEventListener("click", async () => {
   }
 });
 
+let favoritosAnimesCache = null;
+
 async function toggleFavoritoAnime(titulo, agregar) {
   const user = localStorage.getItem("userID");
   if (!user) {
@@ -1470,9 +1472,20 @@ async function toggleFavoritoAnime(titulo, agregar) {
   }
 
   const favoritosRef = doc(collection(doc(db, "usuarios", user), "favoritos"), "lista");
-  await setDoc(favoritosRef, {
-    animes: agregar ? arrayUnion(id) : arrayRemove(id)
-  }, { merge: true });
+
+  // Si el cache aún no cargó (clic muy rápido tras abrir la página), lo pedimos una vez
+  const actuales = favoritosAnimesCache ?? await obtenerFavoritosAnime();
+
+  // Solo escribimos si el estado real difiere del deseado (evita writes facturables sin cambio)
+  if (actuales.includes(id) !== agregar) {
+    await setDoc(favoritosRef, {
+      animes: agregar ? arrayUnion(id) : arrayRemove(id)
+    }, { merge: true });
+
+    favoritosAnimesCache = agregar
+      ? [...actuales, id]
+      : actuales.filter(a => a !== id);
+  }
 
   mostrarPildora("fav", agregar, titulo);
   return {
@@ -1487,10 +1500,12 @@ async function obtenerFavoritosAnime() {
 
   const favoritosRef = doc(collection(doc(db, "usuarios", user), "favoritos"), "lista");
   const favoritosDoc = await getDoc(favoritosRef);
-  
-  return favoritosDoc.exists() && favoritosDoc.data().animes 
-    ? favoritosDoc.data().animes 
+
+  const animes = favoritosDoc.exists() && Array.isArray(favoritosDoc.data().animes)
+    ? favoritosDoc.data().animes
     : [];
+  favoritosAnimesCache = animes;
+  return animes;
 }
 
 async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
@@ -1572,19 +1587,31 @@ buttons.forEach(btn => {
   btn.addEventListener("touchend", clearHover, { passive: true });
   btn.addEventListener("touchcancel", clearHover, { passive: true });
 });
-async function obtenerEstadosConAnime() {
+let estadosAnimesCache = null;
+
+// Devuelve {viendo: [...], pendiente: [...], visto: [...]}
+async function obtenerEstadosAnimes() {
   const user = localStorage.getItem("userID");
-  if (!user) return [];
+  if (!user) return null;
 
   const estados = ['viendo', 'pendiente', 'visto'];
-  const resultados = await Promise.all(estados.map(async estado => {
-    const estadoRef = doc(db, "usuarios", user, "estados", estado);
-    const estadoDoc = await getDoc(estadoRef);
-    const animes = estadoDoc.exists() ? estadoDoc.data().animes : null;
-    return Array.isArray(animes) && animes.includes(id) ? estado : null;
-  }));
+  const docs = await Promise.all(estados.map(estado =>
+    getDoc(doc(db, "usuarios", user, "estados", estado))
+  ));
 
-  return resultados.filter(Boolean);
+  const mapa = {};
+  estados.forEach((estado, i) => {
+    const data = docs[i].exists() ? docs[i].data() : null;
+    mapa[estado] = data && Array.isArray(data.animes) ? data.animes : [];
+  });
+  estadosAnimesCache = mapa;
+  return mapa;
+}
+
+async function obtenerEstadosConAnime() {
+  const mapa = await obtenerEstadosAnimes();
+  if (!mapa) return [];
+  return Object.keys(mapa).filter(estado => mapa[estado].includes(id));
 }
 
 async function actualizarEstadoFirebase(estado) {
@@ -1604,7 +1631,10 @@ async function actualizarEstadoFirebase(estado) {
 
     const yaTieneEstado = estadoLower &&
       estadosActuales.length === 1 && estadosActuales[0] === estadoLower;
-    if (yaTieneEstado) return;
+    if (yaTieneEstado) {
+      mostrarPildora(`ya-${estadoLower}`, true, document.getElementById('titulo')?.textContent || '');
+      return;
+    }
 
     await Promise.all(estadosActuales.map(e =>
       setDoc(doc(db, "usuarios", user, "estados", e), {
@@ -1616,6 +1646,15 @@ async function actualizarEstadoFirebase(estado) {
 
     const estadoRef = doc(db, "usuarios", user, "estados", estadoLower);
     await setDoc(estadoRef, { animes: arrayUnion(id) }, { merge: true });
+
+    if (estadosAnimesCache) {
+      estadosActuales.forEach(e => {
+        estadosAnimesCache[e] = (estadosAnimesCache[e] ?? []).filter(a => a !== id);
+      });
+      const lista = estadosAnimesCache[estadoLower] ?? [];
+      if (!lista.includes(id)) estadosAnimesCache[estadoLower] = [...lista, id];
+    }
+
     mostrarPildora(estadoLower, true, document.getElementById('titulo')?.textContent || '');
   } catch (error) {
     console.error("Error al actualizar estado en Firebase:", error);
@@ -1645,8 +1684,19 @@ async function manejarEstadoSeleccionado(btnSeleccionado) {
     btnSeleccionado.classList.remove('active');
 
     try {
-      const estadoRef = doc(db, "usuarios", user, "estados", estadoId);
-      await setDoc(estadoRef, { animes: arrayRemove(id) }, { merge: true });
+      // Solo escribimos si el anime realmente está en ese estado (evita writes sin cambio)
+      const mapa = estadosAnimesCache ?? await obtenerEstadosAnimes();
+      const lista = mapa?.[estadoId] ?? [];
+
+      if (lista.includes(id)) {
+        const estadoRef = doc(db, "usuarios", user, "estados", estadoId);
+        await setDoc(estadoRef, { animes: arrayRemove(id) }, { merge: true });
+
+        if (estadosAnimesCache) {
+          estadosAnimesCache[estadoId] = lista.filter(a => a !== id);
+        }
+      }
+
       mostrarPildora(estadoId, false, document.getElementById('titulo')?.textContent || '');
     } catch (error) {
       console.error('Error al eliminar el estado:', error);
@@ -1875,6 +1925,9 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
     pendiente: { clase: "pildora-pendiente", texto: `${anime} ${accion} pendientes` },
     visto: { clase: "pildora-visto", texto: `${anime} ${accion} vistos` },
     viendo: { clase: "pildora-viendo", texto: `${anime} ${accion} viendo` },
+    "ya-viendo": { clase: "pildora-viendo", texto: `${anime} ya está en viendo` },
+    "ya-pendiente": { clase: "pildora-pendiente", texto: `${anime} ya está en pendientes` },
+    "ya-visto": { clase: "pildora-visto", texto: `${anime} ya está en vistos` },
     capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` },
     actualizando: { clase: "pildora-default", texto: `Actualizando ${anime}...` },
     "no-user": { clase: "pildora-no-user", texto: "Inicia sesión para guardar tu progreso" },
