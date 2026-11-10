@@ -315,10 +315,19 @@ function renderSinResultados(container, searchTerm, searchId) {
   container.insertAdjacentElement('afterend', iaBlock);
 
   const porcentajeARecortar = Math.ceil(searchTerm.length * 0.4);
-  const recortado = searchTerm.slice(0, -porcentajeARecortar);
+  let recortado = searchTerm.slice(0, -porcentajeARecortar).trim();
+  // Si el recorte dejó una palabra a medias al final, quitarla para no
+  // buscar fragmentos como "narut" que no devuelven resultados.
+  const palabrasRecortadas = recortado.split(/\s+/).filter(Boolean);
+  if (palabrasRecortadas.length > 1) {
+    recortado = palabrasRecortadas.slice(0, -1).join(' ');
+  }
   const animeGrid = document.getElementById('anime-grid-sin-resultados');
-  if (animeGrid && recortado.length >= 3) {
+  if (animeGrid && recortado.length >= 2) {
     cargarSugerenciasSinResultados(recortado, animeGrid);
+  } else {
+    const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
+    if (sugerenciasSection) sugerenciasSection.remove();
   }
   cargarRecomendacionesIA(searchTerm, searchId);
 }
@@ -344,21 +353,29 @@ async function cargarRecomendacionesIA(searchTerm, searchId) {
 
 // === SUGERENCIAS ===
 async function cargarSugerenciasSinResultados(id, container) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
   try {
-    const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(id)}`);
+    const response = await fetch(`https://backend-animeflv-lite.onrender.com/api/search?q=${encodeURIComponent(id)}`, { signal: controller.signal });
     if (!response.ok) throw new Error('Error al cargar sugerencias');
     const animeData = await response.json();
     const resultados = animeData || [];
     if (resultados.length === 0) {
       const porcentajeARecortar = Math.ceil(id.length * 0.4);
-      const recortado = id.slice(0, -porcentajeARecortar);
-      if (recortado.length >= 1) {
+      let recortado = id.slice(0, -porcentajeARecortar).trim();
+      const palabrasRecortadas = recortado.split(/\s+/).filter(Boolean);
+      if (palabrasRecortadas.length > 1) {
+        recortado = palabrasRecortadas.slice(0, -1).join(' ');
+      }
+      if (recortado.length >= 2 && container.isConnected) {
         return cargarSugerenciasSinResultados(recortado, container);
       }
+      if (!container.isConnected) return;
       const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
       if (sugerenciasSection) sugerenciasSection.remove();
       return;
     }
+    if (!container.isConnected) return;
     container.innerHTML = '';
     const cards = [];
     resultados.forEach(anime => {
@@ -368,9 +385,14 @@ async function cargarSugerenciasSinResultados(id, container) {
     });
     observerAnimeCards(cards);
   } catch (error) {
-    console.error('Error al cargar sugerencias:', error);
+    if (error.name !== 'AbortError') {
+      console.error('Error al cargar sugerencias:', error);
+    }
+    if (!container.isConnected) return;
     const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
     if (sugerenciasSection) sugerenciasSection.remove();
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
