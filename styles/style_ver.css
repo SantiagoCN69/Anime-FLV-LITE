@@ -433,6 +433,7 @@ overflow: hidden;
   border-right: none;
 }
 #controles a {
+  min-width: 65px;
   display: flex;
   align-items: center;
   justify-content: center;
