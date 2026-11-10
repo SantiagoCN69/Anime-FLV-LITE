@@ -620,11 +620,11 @@ body:not(.animaciones-off) header {
 }
 #descripcion-cargando {
   width: 100%;
-  height: calc(50px + 18px + 8px);
+  height: calc(60px + 18px + 8px);
 }
 @media (min-width: 700px) {
   #descripcion-cargando {
-    height: calc(56px + 18px + 8px);
+    height: calc(60px + 18px + 8px);
   }
 }
 .genre-link-cargando {
@@ -728,8 +728,8 @@ body:not(.animaciones-off) header {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
-  height: 56px;
-  max-height: 56px;
+  height: 60px;
+  max-height: 60px;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1514,14 +1514,14 @@ padding: 0;
 height: var(--altura-container-1);
 }
 
-.anime-description-container.collapsed .anime-description {
+/* .anime-description-container.collapsed .anime-description {
 
   height: 55px;
   max-height: 55px;
-}
-#descripcion-cargando {
-      height: calc(55px + 18px + 8px);
-}
+} */
+/* #descripcion-cargando {
+      height: calc(60px + 18px + 8px);
+} */
 #titulo {
   margin-inline: auto;
   text-align: center;
