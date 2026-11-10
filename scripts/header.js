@@ -99,6 +99,17 @@ if (btnCloseSearch) {
 }
 
 // === BÚSQUEDAS RECIENTES ===
+let busquedasCacheadas;
+try {
+  busquedasCacheadas = JSON.parse(localStorage.getItem('busquedas_recientes') || '[]');
+} catch {
+  busquedasCacheadas = [];
+}
+
+function persistirBusquedasRecientes() {
+  localStorage.setItem('busquedas_recientes', JSON.stringify(busquedasCacheadas));
+}
+
 function guardarBusquedaReciente(anime) {
   const coverImage = anime.cover || anime.image || 'img/loading.png';
   let animeId = anime.id;
@@ -110,7 +121,6 @@ function guardarBusquedaReciente(anime) {
     animeId = anime.title?.toLowerCase().replace(/\s+/g, '-');
   }
   
-  const busquedas = JSON.parse(localStorage.getItem('busquedas_recientes') || '[]');
   const nuevaBusqueda = { 
     id: animeId, 
     title: anime.title || anime.name || '', 
@@ -118,21 +128,21 @@ function guardarBusquedaReciente(anime) {
     type: anime.type || ''
   };
   
-  const filtrado = busquedas.filter(b => b.id !== animeId);
+  const filtrado = busquedasCacheadas.filter(b => b.id !== animeId);
   filtrado.unshift(nuevaBusqueda);
   
   if (filtrado.length > 5) filtrado.pop();
   
-  localStorage.setItem('busquedas_recientes', JSON.stringify(filtrado));
+  busquedasCacheadas = filtrado;
+  persistirBusquedasRecientes();
 }
 
 function eliminarBusquedaReciente(animeId, event) {
   event.preventDefault();
   event.stopPropagation();
   
-  const busquedas = JSON.parse(localStorage.getItem('busquedas_recientes') || '[]');
-  const filtrado = busquedas.filter(b => b.id !== animeId);
-  localStorage.setItem('busquedas_recientes', JSON.stringify(filtrado));
+  busquedasCacheadas = busquedasCacheadas.filter(b => b.id !== animeId);
+  persistirBusquedasRecientes();
   
   renderizarBusquedasRecientes();
 }
@@ -141,7 +151,8 @@ function eliminarTodasBusquedas(event) {
   event.preventDefault();
   event.stopPropagation();
   
-  localStorage.setItem('busquedas_recientes', '[]');
+  busquedasCacheadas = [];
+  persistirBusquedasRecientes();
   
   renderizarBusquedasRecientes();
 }
@@ -157,7 +168,7 @@ function posicionarBusquedasRecientes(dropdown = document.getElementById('busque
 }
 
 function renderizarBusquedasRecientes() {
-  const busquedas = JSON.parse(localStorage.getItem('busquedas_recientes') || '[]');
+  const busquedas = busquedasCacheadas;
   const input = document.getElementById('busqueda');
   if (!input || busquedas.length === 0) {
     ocultarBusquedasRecientes();
@@ -513,26 +524,34 @@ function ver(id) {
 
 // === BÚSQUEDA ===
 const busquedaInput = document.getElementById('busqueda');
-let busquedaTimer, busquedaCountdownInterval, initialDelayTimer, blurTimer, currentSearch = 0, currentController = null, currentIaController = null;
+let busquedaTimer, busquedaCountdownInterval, initialDelayTimer, blurTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null;
+
+function hayBusquedasRecientes() {
+  return busquedasCacheadas.length > 0;
+}
+
+// Única fuente de verdad: el dropdown solo existe si el input está enfocado,
+// vacío y hay búsquedas recientes guardadas.
+function sincronizarBusquedasRecientes() {
+  clearTimeout(ocultarRecientesTimer);
+  const debeMostrar = busquedaInput
+    && document.activeElement === busquedaInput
+    && !busquedaInput.value.trim()
+    && hayBusquedasRecientes();
+  if (debeMostrar) renderizarBusquedasRecientes();
+  else ocultarBusquedasRecientes();
+}
 
 if (busquedaInput) {
-  busquedaInput.addEventListener('focus', () => {
-    if (!busquedaInput.value.trim()) renderizarBusquedasRecientes();
-  });
-  
+  busquedaInput.addEventListener('focus', sincronizarBusquedasRecientes);
+
   busquedaInput.addEventListener('blur', () => {
-    setTimeout(ocultarBusquedasRecientes, 200);
+    ocultarRecientesTimer = setTimeout(sincronizarBusquedasRecientes, 200);
   });
-  
+
   busquedaInput.addEventListener('input', () => {
     const valor = busquedaInput.value.trim();
-    
-    // Si el input queda vacío, mostrar búsquedas recientes
-    if (!valor) {
-      renderizarBusquedasRecientes();
-    } else {
-      ocultarBusquedasRecientes();
-    }
+    sincronizarBusquedasRecientes();
     
     currentSearch++;
     const searchId = currentSearch;
