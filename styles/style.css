@@ -1807,13 +1807,38 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   margin-top: 1rem;
   color: var(--t1);
   overflow: hidden;
+  
+  /* Gradiente original mantenido */
   background: linear-gradient(135deg, rgba(206, 165, 255, 0.1) 0%, rgba(255, 215, 0, 0.05) 50%, rgba(34, 206, 233, 0.1) 100%);
+  
+  /* Se amplía el lienzo del fondo al 300% para tener área de desplazamiento */
+  background-size: 300% 300%;
+  
+  /* Se aplica la animación (8 segundos, aceleración suave, repetición infinita) */
+  animation: moverFondoGradient 8s ease infinite;
+  
   border: 1px solid rgba(206, 165, 255, 0.3);
   border-radius: 15px;
   backdrop-filter: blur(10px);
   grid-area: container4;
 }
 
+/* Keyframes para ejecutar el desplazamiento de coordenadas del fondo */
+@keyframes moverFondoGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+#anime-grid-ia-busqueda::-webkit-scrollbar-thumb,
+#anime-grid-sin-resultados::-webkit-scrollbar-thumb {
+  background-color: var(--btn) !important;
+}
 .recomendaciones-ia-busqueda h2 {
   color: var(--btn);
   font-size: 1.5rem;
