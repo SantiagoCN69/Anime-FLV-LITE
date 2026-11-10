@@ -142,6 +142,75 @@ const formatTitleFromSlug = (slug) => {
     .join(' ');
 };
 
+const SITE_URL = 'https://ani.zenlite.workers.dev';
+
+const setMetaTag = (attr, key, content) => {
+  let el = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+};
+
+const actualizarMetadatosSEO = anime => {
+  const tituloFormateado = formatTitleFromSlug(anime.titulo);
+  const descripcionBase = anime.descripcion || `Mira ${tituloFormateado} online gratis en HD, sin anuncios ni registro, en AniZen.`;
+  const descripcion = descripcionBase.length > 160 ? `${descripcionBase.slice(0, 157)}...` : descripcionBase;
+  const urlCanonica = `${SITE_URL}/anime?id=${encodeURIComponent(anime.titulo || id || '')}`;
+  const { cdnUrl, fallbackUrl } = getPortadaUrl(anime);
+  const imagen = cdnUrl || fallbackUrl || `${SITE_URL}/icons/ogimagen.png`;
+  const numEpisodios = Array.isArray(anime.episodios) ? anime.episodios.length : 0;
+
+  document.title = `AniZen - ${tituloFormateado} | Anime Online Gratis HD`;
+
+  setMetaTag('name', 'description', descripcion);
+  setMetaTag('name', 'robots', 'index, follow');
+
+  setMetaTag('property', 'og:type', 'website');
+  setMetaTag('property', 'og:url', urlCanonica);
+  setMetaTag('property', 'og:title', `${tituloFormateado} - Ver Anime Online Gratis | AniZen`);
+  setMetaTag('property', 'og:description', descripcion);
+  setMetaTag('property', 'og:image', imagen);
+  setMetaTag('property', 'og:site_name', 'AniZen');
+  setMetaTag('property', 'og:locale', 'es_ES');
+
+  setMetaTag('name', 'twitter:card', 'summary_large_image');
+  setMetaTag('name', 'twitter:url', urlCanonica);
+  setMetaTag('name', 'twitter:title', `${tituloFormateado} - Ver Anime Online Gratis | AniZen`);
+  setMetaTag('name', 'twitter:description', descripcion);
+  setMetaTag('name', 'twitter:image', imagen);
+
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    document.head.appendChild(canonical);
+  }
+  canonical.href = urlCanonica;
+
+  let ld = document.getElementById('seo-jsonld');
+  if (!ld) {
+    ld = document.createElement('script');
+    ld.type = 'application/ld+json';
+    ld.id = 'seo-jsonld';
+    document.head.appendChild(ld);
+  }
+  ld.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'TVSeries',
+    name: tituloFormateado,
+    url: urlCanonica,
+    image: imagen,
+    description: descripcion,
+    inLanguage: 'es',
+    ...(anime.generos?.length ? { genre: anime.generos.slice(0, 5) } : {}),
+    ...(numEpisodios ? { numberOfEpisodes: numEpisodios } : {}),
+    ...(anime.score ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: anime.score, bestRating: 10 } } : {})
+  });
+};
+
 function renderRelacionados(anime) {
   const relacionadosContainer = document.getElementById('animes-relacionados');
   const relacionadosSection = document.getElementById('relacionados');
@@ -511,6 +580,7 @@ if (anime.estado) {
   }
 
   animeActual = anime; // Guardar referencia al anime actual
+  actualizarMetadatosSEO(anime);
   crearBotonesEpisodios(anime);
   renderRelacionados(anime);
 };
