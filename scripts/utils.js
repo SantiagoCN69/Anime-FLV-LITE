@@ -109,15 +109,11 @@ window.addEventListener('estadoAnimacionesCambiado', (event) => {
 document.addEventListener('authStateReady', function() {
   const btnLogin = document.getElementById('btn-login');
   // Verificar si hay un tema guardado
-  if (!localStorage.getItem('theme')) {
+  if (btnLogin && !localStorage.getItem('theme')) {
     const theme = document.createElement('div');
     theme.classList.add('theme-indicator');
     btnLogin.appendChild(theme);
     btnLogin.addEventListener('click', () => {
-      theme.remove();
-      document.getElementById('theme-toggle').appendChild(theme);
-    });
-    document.getElementById('theme-toggle').addEventListener('click', () => {
       theme.remove();
     });
   }

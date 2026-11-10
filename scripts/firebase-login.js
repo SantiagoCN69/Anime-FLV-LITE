@@ -2,12 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebas
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, query, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
-
-const THEME_CONFIG = {
-  themes: ['nocturno', 'sakura', 'anime_zen', 'ambar'],
-  defaultTheme: 'anime_zen',
-  saveDelay: 10000
-};
+import { mountThemeDots } from "./theme-dots.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -116,7 +111,6 @@ function crearmodal(user = false) {
   const modal = document.createElement('div');
   modal.className = 'logout-modal';
   modal.innerHTML = `
-    <button id="theme-toggle">Tema</button>
     <button id="preferencias-btn">Preferencias</button>
     <button id="contacto-link">Contacto</button>
     <!-- <a id="investigacion-link" target="_blank" href="investigacion">Investigación</a> -->
@@ -127,8 +121,24 @@ function crearmodal(user = false) {
   } else {
     modal.innerHTML += `<button id='confirm-login' class="modal-btn-b">Iniciar</button>`;
   }
-  
+
+  modal.insertAdjacentHTML('beforeend', '<div class="theme-dots" id="theme-dots"></div>');
+
   document.body.appendChild(modal);
+
+  const themeDots = modal.querySelector('#theme-dots');
+  if (themeDots) {
+    mountThemeDots(themeDots, {
+      onSelect: (theme) => {
+        if (auth && auth.currentUser) {
+          setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
+            theme,
+            lastUpdated: serverTimestamp()
+          }, { merge: true }).catch(err => console.error("Error guardando tema:", err));
+        }
+      }
+    });
+  }
 
   const posicionarModal = () => {
     const rect = loginButton.getBoundingClientRect();
@@ -147,29 +157,6 @@ function crearmodal(user = false) {
   // ==========================================
   // EVENTOS DEL MODAL
   // ==========================================
-// --- Botón Cambiar Tema ---
-  const themeBtn = modal.querySelector('#theme-toggle');
-  if (themeBtn) {
-    themeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const current = localStorage.getItem('theme') || THEME_CONFIG.defaultTheme;
-      const idx = THEME_CONFIG.themes.indexOf(current);
-      const next = THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
-
-      localStorage.setItem('theme', next);
-      window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
-
-      if (auth && auth.currentUser) {
-        setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
-          theme: next,
-          lastUpdated: serverTimestamp()
-        }, { merge: true }).catch(err => console.error("Error guardando tema:", err));
-      }
-    });
-  }
-
   // --- Botones Login / Logout ---
   const loginButtonModal = modal.querySelector('#confirm-login');
   if (loginButtonModal) {

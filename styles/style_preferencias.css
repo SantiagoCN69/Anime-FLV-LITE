@@ -84,6 +84,10 @@
 /* Controles (Botones, Toggles, Selects) */
 .setting-action {
   margin-left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .btn-outline {
@@ -218,6 +222,7 @@
     width: 100%;
     display: flex;
     justify-content: stretch;
+    flex-wrap: wrap;
   }
 
   .setting-action .btn-outline,

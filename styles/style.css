@@ -1655,18 +1655,6 @@ h4 {
 .logout-modal button, .logout-modal a {
   border-radius: 18px;
 }
-#theme-toggle::before {
-  -webkit-mask-image: url("../icons/theme.svg");
-  mask-image: url("../icons/theme.svg");
-}
-#theme-toggle {
-  position: relative;
-}
-
-#theme-toggle::before {
-  background: var(--btn);
-}
-
 #confirm-login:hover {
   background: rgba(0, 255, 0, .1);
 }
@@ -1675,6 +1663,51 @@ h4 {
 }
 #confirm-logout:hover {
   background: rgba(255, 77, 77, 0.1);
+}
+
+/* Selector de temas (círculos de color) */
+.theme-dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-dot {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.theme-dot:hover {
+  transform: scale(1.15);
+}
+
+.theme-dot.active {
+  border-color: var(--t1);
+}
+
+/* Dentro del menú modal: fila propia al final, sin heredar estilos de botón */
+.logout-modal .theme-dots {
+  justify-content: center;
+  padding: 13px 0 7px;
+  margin-top: 4px;
+  border-top: 1px solid var(--br);
+}
+
+.logout-modal .theme-dot {
+  display: block;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+}
+
+.logout-modal .theme-dot::before {
+  display: none;
 }
 
 

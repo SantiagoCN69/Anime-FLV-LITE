@@ -1,17 +1,11 @@
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { auth, db } from "./firebase-login.js";
+import { mountThemeDots } from "./theme-dots.js";
 
 const THEME_CONFIG = {
   themes: ['nocturno', 'sakura', 'anime_zen', 'ambar'],
-  defaultTheme: 'anime_zen'
-};
-
-const THEME_LABELS = {
-  nocturno: 'Nocturno',
-  sakura: 'Sakura',
-  anime_zen: 'Anime Zen',
-  ambar: 'Ambar',
+  defaultTheme: 'sakura'
 };
 
 const temaValido = (tema) => THEME_CONFIG.themes.includes(tema) ? tema : THEME_CONFIG.defaultTheme;
@@ -23,13 +17,6 @@ const aplicarTema = (tema) => {
   const next = temaValido(tema);
   localStorage.setItem('theme', next);
   window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: next } }));
-};
-
-const actualizarBtnTema = () => {
-  const btn = document.getElementById('btn-theme-toggle');
-  if (!btn) return;
-  const current = temaValido(localStorage.getItem('theme'));
-  btn.textContent = THEME_LABELS[current] || current;
 };
 
 const actualizarBtnSidebar = () => {
@@ -219,26 +206,18 @@ function initPreferencias() {
     });
   }
 
-  const btnThemeToggle = document.getElementById('btn-theme-toggle');
-  if (btnThemeToggle) {
-    actualizarBtnTema();
-    btnThemeToggle.addEventListener('click', (e) => {
-      e.preventDefault();
-      const current = temaValido(localStorage.getItem('theme'));
-      const idx = THEME_CONFIG.themes.indexOf(current);
-      const next = THEME_CONFIG.themes[(idx + 1) % THEME_CONFIG.themes.length];
-      aplicarTema(next);
-      actualizarBtnTema();
-
-      if (auth.currentUser) {
-        setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
-          theme: next,
-          lastUpdated: serverTimestamp()
-        }, { merge: true }).catch(err => console.error('[Preferencias] Error guardando tema:', err));
+  const themeDots = document.getElementById('theme-dots');
+  if (themeDots) {
+    mountThemeDots(themeDots, {
+      onSelect: (theme) => {
+        if (auth.currentUser) {
+          setDoc(doc(db, 'usuarios', auth.currentUser.uid), {
+            theme,
+            lastUpdated: serverTimestamp()
+          }, { merge: true }).catch(err => console.error('[Preferencias] Error guardando tema:', err));
+        }
       }
     });
-  } else {
-    console.warn('[Preferencias] #btn-theme-toggle no encontrado');
   }
 
   const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
@@ -468,7 +447,6 @@ const cargarTemaDesdeFirestore = async () => {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists() && docSnap.data().theme) {
       aplicarTema(docSnap.data().theme);
-      actualizarBtnTema();
     }
   } catch (error) {
     sessionStorage.removeItem('temaFS');

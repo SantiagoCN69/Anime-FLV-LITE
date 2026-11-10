@@ -51,7 +51,7 @@ ambar: {
 };
 
     // CORRECCIÓN CRÍTICA: Cambiado el default a un tema existente
-    const DEFAULT_THEME = 'anime_zen';
+    const DEFAULT_THEME = 'sakura';
 
     const applyTheme = t => {
         const theme = themes[t] || themes[DEFAULT_THEME];
@@ -68,4 +68,6 @@ ambar: {
 
     addEventListener('storage', e => e.key === 'theme' && applyTheme(e.newValue || DEFAULT_THEME));
     addEventListener('themeChanged', e => applyTheme(e.detail?.theme || DEFAULT_THEME));
+
+    window.AniZenThemes = { themes, applyTheme, DEFAULT_THEME };
 })();

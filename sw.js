@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.43';
+const CACHE_VERSION = 'v8.6.44';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -40,6 +40,7 @@ const STATIC_ASSETS = [
   '/styles/transition.css',
 
   '/scripts/tema.js',
+  '/scripts/theme-dots.js',
   '/scripts/utils.js',
   '/scripts/firebase-login.js',
   '/scripts/index.js',
