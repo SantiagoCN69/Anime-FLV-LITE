@@ -1844,7 +1844,7 @@ h4 {
   display: flex;
   gap: 1rem;
   padding: 8px;
-  min-height: 170px;
+  min-height: 200px;
   height: fit-content;
 }
 
