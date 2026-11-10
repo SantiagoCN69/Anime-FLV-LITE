@@ -230,7 +230,6 @@ if (btnGenerarNuevas) {
     const cacheActual = obtenerCacheAnimes();
 
     if (favoritos.length === 0) {
-        console.warn("No hay favoritos.");
         texto.textContent = "No hay favoritos";
         clearInterval(interval);
         return;
@@ -303,11 +302,10 @@ if (btnGenerarPersonalizadas) {
             if (typeof initLoading !== "undefined") initLoading.remove();
           }
         }, 220);
-        const busquedaPersonalizada = document.getElementById("busqueda-personalizada").value;
+        const busquedaPersonalizada = document.getElementById("busqueda-personalizada")?.value?.trim() || "";
         const cacheActual = obtenerCacheAnimes();
 
         if (busquedaPersonalizada.length === 0) {
-            console.warn("No hay busqueda personalizada.");
             texto.textContent = "No hay busqueda personalizada";
             clearInterval(interval);
             return;
@@ -340,7 +338,6 @@ async function enviarPrompt(prompt, seccion) {
     try {
         const respuesta = await fetchIAResponse(prompt);
         window.ultimaRespuesta = respuesta;
-        console.log(respuesta);
         await mostrarRelacionadosDesdeRespuesta(respuesta, seccion);
     } catch (error) {
         console.error('Error al enviar prompt:', error);

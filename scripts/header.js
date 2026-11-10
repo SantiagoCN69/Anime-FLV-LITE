@@ -299,7 +299,7 @@ function renderSinResultados(container, searchTerm, searchId) {
       <span id="span-sin-resultados">Sin coincidencias para <span class="termino-busqueda-sin-resultados">«${terminoEscapado || 'esa búsqueda'}»</span></span>
       <span id="span-sin-resultados2">No hay títulos que coincidan con ese término. Las sugerencias de abajo son parecidas, no resultados exactos.</span>
     </div>
-    <div id="sugerencias-sin-resultados">
+    <div id="sugerencias-sin-resultados" style="display: none;">
       <h2>Títulos parecidos</h2>
       <div id="anime-grid-sin-resultados"><span class="span-carga">cargando...</span></div>
     </div>
@@ -319,20 +319,14 @@ function renderSinResultados(container, searchTerm, searchId) {
   const iaBlock = iaSection.firstElementChild;
   container.insertAdjacentElement('afterend', iaBlock);
 
-  const porcentajeARecortar = Math.ceil(searchTerm.length * 0.4);
-  let recortado = searchTerm.slice(0, -porcentajeARecortar).trim();
-  // Si el recorte dejó una palabra a medias al final, quitarla para no
-  // buscar fragmentos como "narut" que no devuelven resultados.
-  const palabrasRecortadas = recortado.split(/\s+/).filter(Boolean);
-  if (palabrasRecortadas.length > 1) {
-    recortado = palabrasRecortadas.slice(0, -1).join(' ');
-  }
+  const recortado = recortarTerminoParaSugerencias(searchTerm);
   const animeGrid = document.getElementById('anime-grid-sin-resultados');
-  if (animeGrid && recortado.length >= 2) {
+  if (animeGrid && recortado.length >= 3) {
+    // La sección nace oculta; se muestra solo si la búsqueda devuelve resultados.
+    ocultarSugerenciasSinResultados();
     cargarSugerenciasSinResultados(recortado, animeGrid);
   } else {
-    const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
-    if (sugerenciasSection) sugerenciasSection.remove();
+    ocultarSugerenciasSinResultados();
   }
   cargarRecomendacionesIA(searchTerm, searchId);
 }
@@ -356,6 +350,39 @@ async function cargarRecomendacionesIA(searchTerm, searchId) {
   });
 }
 
+function mostrarSugerenciasSinResultados() {
+  const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
+  if (sugerenciasSection) sugerenciasSection.style.display = '';
+  const texto = document.getElementById('text-sin-resultados');
+  if (texto) texto.style.removeProperty('grid-row');
+}
+
+function ocultarSugerenciasSinResultados() {
+  const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
+  if (sugerenciasSection) sugerenciasSection.style.display = 'none';
+  const texto = document.getElementById('text-sin-resultados');
+  if (texto) texto.style.setProperty('grid-row', 'span 2', 'important');
+}
+
+// Acorta el término para buscar sugerencias cuando no hay resultados exactos.
+// Devuelve '' si el recorte partiría una palabra por la mitad (p.ej. "yaoi" -> "ya"),
+// porque eso devuelve títulos sin relación.
+function recortarTerminoParaSugerencias(searchTerm) {
+  const porcentajeARecortar = Math.ceil(searchTerm.length * 0.4);
+  let recortado = searchTerm.slice(0, -porcentajeARecortar).trim();
+  // Si el recorte dejó una palabra a medias al final, quitarla para no
+  // buscar fragmentos como "narut" que no devuelven resultados.
+  const palabrasRecortadas = recortado.split(/\s+/).filter(Boolean);
+  if (palabrasRecortadas.length > 1) {
+    recortado = palabrasRecortadas.slice(0, -1).join(' ');
+  }
+  if (recortado.length < 3) return '';
+  // Si justo después del recorte sigue una letra, cortamos a mitad de palabra.
+  const siguienteChar = searchTerm[searchTerm.indexOf(recortado) + recortado.length];
+  if (siguienteChar && /[a-záéíóúñü0-9]/i.test(siguienteChar)) return '';
+  return recortado;
+}
+
 // === SUGERENCIAS ===
 async function cargarSugerenciasSinResultados(id, container) {
   const controller = new AbortController();
@@ -366,18 +393,12 @@ async function cargarSugerenciasSinResultados(id, container) {
     const animeData = await response.json();
     const resultados = animeData || [];
     if (resultados.length === 0) {
-      const porcentajeARecortar = Math.ceil(id.length * 0.4);
-      let recortado = id.slice(0, -porcentajeARecortar).trim();
-      const palabrasRecortadas = recortado.split(/\s+/).filter(Boolean);
-      if (palabrasRecortadas.length > 1) {
-        recortado = palabrasRecortadas.slice(0, -1).join(' ');
-      }
-      if (recortado.length >= 2 && container.isConnected) {
+      const recortado = recortarTerminoParaSugerencias(id);
+      if (recortado.length >= 3 && container.isConnected) {
         return cargarSugerenciasSinResultados(recortado, container);
       }
       if (!container.isConnected) return;
-      const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
-      if (sugerenciasSection) sugerenciasSection.remove();
+      ocultarSugerenciasSinResultados();
       return;
     }
     if (!container.isConnected) return;
@@ -389,13 +410,13 @@ async function cargarSugerenciasSinResultados(id, container) {
       cards.push(card);
     });
     observerAnimeCards(cards);
+    mostrarSugerenciasSinResultados();
   } catch (error) {
     if (error.name !== 'AbortError') {
       console.error('Error al cargar sugerencias:', error);
     }
     if (!container.isConnected) return;
-    const sugerenciasSection = document.getElementById('sugerencias-sin-resultados');
-    if (sugerenciasSection) sugerenciasSection.remove();
+    ocultarSugerenciasSinResultados();
   } finally {
     clearTimeout(timeout);
   }
@@ -509,25 +530,12 @@ function palabrasBusqueda(searchTerm) {
 function hayPocosCoincidencias(resultados, searchTerm) {
   const MINIMO_COINCIDENCIAS_RELEVANTES = 3;
   const palabras = palabrasBusqueda(searchTerm);
-  const resumen = resultados.map(anime => {
-    const titulo = anime.title || anime.titulo || anime.name || '(sin título)';
+  const mayorCoincidencia = Math.max(0, ...resultados.map(anime => {
     const palabrasTitulo = new Set(palabrasBusqueda(anime.title || anime.titulo || anime.name || ''));
-    const coincidencias = palabras.filter(palabra => palabrasTitulo.has(palabra));
-    return { titulo, coincidencias: coincidencias.length, palabrasCoincidentes: coincidencias.join(', ') || 'ninguna' };
-  });
-  const mayorCoincidencia = Math.max(0, ...resumen.map(resultado => resultado.coincidencias));
+    return palabras.filter(palabra => palabrasTitulo.has(palabra)).length;
+  }));
   const consultaTienePalabrasSuficientes = palabras.length >= MINIMO_COINCIDENCIAS_RELEVANTES;
   const debeMostrarBoton = consultaTienePalabrasSuficientes && mayorCoincidencia < MINIMO_COINCIDENCIAS_RELEVANTES;
-
-  console.groupCollapsed('[búsqueda-ia] Comprobación de relevancia');
-  console.log('Consulta:', searchTerm);
-  console.log('Palabras detectadas:', palabras);
-  console.log('Resultados recibidos:', resultados.length);
-  console.log(`Mínimo de coincidencias para considerar relevante un título: ${MINIMO_COINCIDENCIAS_RELEVANTES}`);
-  console.table(resumen);
-  console.log('Mayor número de palabras coincidentes en un título:', mayorCoincidencia);
-  console.log('¿Mostrar botón de IA?:', debeMostrarBoton);
-  console.groupEnd();
 
   // Si ningún título comparte al menos tres palabras del input, la coincidencia
   // es demasiado débil para considerarla una buena búsqueda.
@@ -558,7 +566,6 @@ function agregarBotonBuscarIA(container, searchTerm, posicion) {
   } else {
     container.appendChild(cta);
   }
-  console.log(`[búsqueda-ia] Botón insertado ${posicion} de los resultados:`, boton.href);
 }
 
 // === REDIRECCIÓN ===
@@ -712,7 +719,7 @@ initialDelayTimer = setTimeout(() => {
           clearInterval(busquedaCountdownInterval);
           if (isIndexPage && loadingSpan) loadingSpan.style.display = 'none';
           if (contadorSpan) contadorSpan.textContent = '';
-          
+
           const resultados = resData || [];
           mostrarResultados(resultados, valor, searchId);
         })

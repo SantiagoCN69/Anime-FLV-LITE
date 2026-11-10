@@ -10,47 +10,61 @@ export const IA_SECTION_HTML = `
 </div>`;
 
 export function buildSimilarAnimePrompt(searchTerm) {
-  return `Actúa como un normalizador de títulos de anime.
+  return `Actúa como un recomendador de anime.
 
-1. Identifica "${searchTerm}":
+1. Analiza "${searchTerm}":
 
-* Busca el título oficial en japonés (romaji).
-* Corrige errores ortográficos y nombres incompletos.
-* Interpreta traducciones o nombres alternativos y encuentra el anime correcto.
+* Si es un título de anime (o una búsqueda de título), identifica el título oficial en japonés (romaji), corrige errores ortográficos y nombres incompletos, e interpreta traducciones o nombres alternativos.
+* Si NO es un título sino un género, tema, tono o tipo de historia (por ejemplo "yaoi", "isekai", "romance escolar"), úsalo directamente como criterio de búsqueda. No intentes convertirlo en un título.
 
 2. Genera:
 
-* Convierte el título oficial a kebab-case (minúsculas y guiones).
-* Usa solo el nombre oficial en romaji.
-* Recomienda 4 animes similares en género, tono y público objetivo.
+* Exactamente 5 nombres de animes en romaji oficial.
+* Si "${searchTerm}" era un título, el primer elemento debe ser ese anime corregido y los otros 4 deben ser similares en género, tono y público objetivo.
+* Si "${searchTerm}" no era un título, devuelve solo 5 recomendaciones afines al criterio.
 
 Reglas:
 
-* El primer elemento debe ser el anime corregido de "${searchTerm}".
-* Devuelve exactamente 5 nombres.
-* Formato: kebab-case.
+* Devuelve únicamente los 5 nombres separados por comas.
+* Formato: kebab-case (minúsculas y guiones en lugar de espacios).
 * Sin espacios después de las comas.
-* Sin explicaciones, texto adicional ni saltos de línea.
-* Nunca busques animes en español, siempre en japonés.
+* Sin explicaciones, texto adicional, saludos ni saltos de línea.
+* Nunca uses títulos en español ni en inglés.
 
 Ejemplo:
 kaoru-hana-wa-rin-to-saku,horimiya,kimi-ni-todoke,blue-box,skip-to-loafer
 `;
 }
 
+// Un título válido no contiene puntuación de frase. Se admiten palabras
+// separadas por espacios o guiones (la IA a veces ignora el formato kebab).
+const PATRON_PUNTUACION_PROSA = /[.!?;:"'¿¡()]/;
+const PATRON_TITULO = /^[a-z0-9]+(?:[- ][a-z0-9]+)*$/;
+const MINIMO_TITULOS_VALIDOS = 3;
+
 export function parseAnimeNamesFromResponse(text) {
-  return text
-    .replace(/\n/g, ',')
-    .split(',')
-    .map(title =>
-      title
-        .trim()
-        .replace(/-/g, ' ')
-        .replace(/:/g, '')
-        .replace(/\s+/g, ' ')
+  const crudos = String(text || '')
+    .split(/[\n,]+/)
+    .map(t => t
+      .trim()
+      .toLowerCase()
+      .replace(/^["'`]+|["'`]+$/g, '')
+      .replace(/^\s*(?:[-*•]|\d+[.)])\s*/, '')
+      .trim()
     )
-    .filter(Boolean)
-    .slice(0, 5);
+    .filter(Boolean);
+
+  const validos = crudos.filter(t =>
+    PATRON_TITULO.test(t) && !PATRON_PUNTUACION_PROSA.test(t)
+  );
+
+  if (validos.length < MINIMO_TITULOS_VALIDOS) {
+    console.warn('[AI] La IA no devolvió una lista válida de títulos.');
+    return [];
+  }
+
+  // Se conserva el formato con espacios que espera el buscador del backend.
+  return validos.slice(0, 5).map(t => t.replace(/-/g, ' '));
 }
 
 export async function fetchIAResponse(prompt, signal) {
@@ -72,8 +86,9 @@ export async function fetchIAResponse(prompt, signal) {
 
 export async function resolveAnimeByName(nombre, signal) {
   try {
+    const query = encodeURIComponent(nombre);
     const response = await fetch(
-      `${SEARCH_URL}?q=${encodeURIComponent(nombre)}`,
+      `${SEARCH_URL}?q=${query}`,
       { signal }
     );
 
@@ -88,13 +103,14 @@ export async function resolveAnimeByName(nombre, signal) {
 
     const nombreLower = nombre.toLowerCase();
 
-    return (
-      animes.find(a => a.title.toLowerCase() === nombreLower) ||
+    const elegido =
+      animes.find(a => String(a.title || a.titulo || a.name || '').toLowerCase() === nombreLower) ||
       animes
-        .filter(a => a.title.toLowerCase().includes(nombreLower))
-        .sort((a, b) => a.title.length - b.title.length)[0] ||
-      animes[0]
-    );
+        .filter(a => String(a.title || a.titulo || a.name || '').toLowerCase().includes(nombreLower))
+        .sort((a, b) => String(a.title || '').length - String(b.title || '').length)[0] ||
+      animes[0];
+
+    return elegido;
   } catch (error) {
     if (error.name === 'AbortError') {
       throw error;
