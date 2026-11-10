@@ -514,7 +514,7 @@ footer {
   aspect-ratio: 1;
   padding: 6px 12px;
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
 }
@@ -772,7 +772,7 @@ nav.filtros {
   text-overflow: ellipsis;
   overflow: hidden;
   display: block;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 .btn-filtro-opcion:hover {
   background-color: rgba(var(--bgt), .3);
@@ -1209,7 +1209,7 @@ gap: 8px;
 
 
 .hero-btn--secondary {
-  background: var(--btn);
+  background: var(--btn2);
   border-radius: 14px;
 }
 @media (max-width: 400px) {

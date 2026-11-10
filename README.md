@@ -120,7 +120,7 @@ No es un servicio de alojamiento: es una capa de descubrimiento y reproducción 
 | **APIs** | Servicios en Render | Catálogo, búsqueda, episodios, horarios, IA y noticias |
 | **Rankings** | MyAnimeList API v2 | Datos de populares |
 | **Formularios** | Formspree | Contacto y reportes |
-| **Tipografía** | Oxanium · DM Sans · JetBrains Mono | Identidad visual |
+| **Tipografía** | Oxanium · Manrope · JetBrains Mono | Identidad visual |
 
 ## 🏗️ Arquitectura
 
@@ -360,7 +360,7 @@ El dominio de producción se sirve a través de Cloudflare. El worker incluido e
 
 - **Diseño y desarrollo:** [Santiago Cardona Nossa](https://github.com/SantiagoCN69)
 - **Fuentes de catálogo y metadatos:** [AnimeFLV](https://www3.animeflv.net/), [AnimeAV1](https://animeav1.com/), [JKAnime](https://jkanime.net/) y [MyAnimeList](https://myanimelist.net/)
-- **Librerías y recursos:** Firebase, GSAP, Google Fonts (Oxanium, DM Sans, JetBrains Mono) y SVG Repo
+- **Librerías y recursos:** Firebase, GSAP, Google Fonts (Oxanium, Manrope, JetBrains Mono) y SVG Repo
 - **Inspiración:** la experiencia de los portales de anime de siempre, con una capa de producto moderna
 
 ## ⚖️ Aviso legal

@@ -68,7 +68,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-weight: 500;
     font-size: 0.95rem;
 }
@@ -99,7 +99,7 @@
     color: var(--t1);
     font-weight: 500;
     margin-bottom: 0.5rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
 }
 
 .form-group input,
@@ -111,7 +111,7 @@
     border-radius: 12px;
     background-color: var(--b);
     color: var(--t1);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 1rem;
     transition: all 0.3s ease;
 }
@@ -171,7 +171,7 @@
     gap: 0.75rem;
     cursor: pointer;
     color: var(--t1);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -208,7 +208,7 @@
     margin-top: 1rem;
     padding: 1rem;
     border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 0.95rem;
     display: none;
 }
@@ -277,7 +277,7 @@ textarea[aria-invalid="true"]:focus {
     padding: 1rem 2rem;
     border: none;
     border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
@@ -333,7 +333,7 @@ textarea[aria-invalid="true"]:focus {
     color: var(--t1);
     text-decoration: none;
     border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-weight: 600;
     font-size: 0.95rem;
     transition: all 0.3s ease;

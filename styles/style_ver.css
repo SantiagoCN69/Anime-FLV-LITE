@@ -246,7 +246,7 @@ main section:nth-child(2) {
   color: var(--t1);
   opacity: .6;
   transition: opacity .3s, color .3s;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .visto .texto-estado-capitulo {
@@ -420,7 +420,7 @@ overflow: hidden;
   cursor: pointer;
   z-index: 2;
   padding: 15px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 #controles button {

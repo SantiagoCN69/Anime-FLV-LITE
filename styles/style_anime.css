@@ -700,7 +700,7 @@ body:not(.animaciones-off) header {
   opacity: .7;
   font-size: .9rem; 
   text-align: start;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   margin: 0;
   transition: max-height 0.3s ease;
 }
@@ -833,7 +833,7 @@ body:not(.animaciones-off) header {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .btn-filtro-cap:hover {
@@ -1075,7 +1075,7 @@ body:not(.animaciones-off) header {
   color: var(--t1);
   opacity: 0.7;
   font-size: 0.9rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .pagination-dropdown {
@@ -1872,11 +1872,11 @@ z-index: 0;
 
 @media screen and (min-width: 701px) {
   #busquedas, .sin-resultados {
-    margin-top: calc(80px + 7rem);
+    margin-top: calc(80px + 22px + 2rem + 1rem + 33px + 1.5rem);
   }
   
 .titulo-busquedas {
-    top: 145px;
+    top: calc(80px + 22px + 2rem + 1rem);
     left: 2rem;
 }
 }

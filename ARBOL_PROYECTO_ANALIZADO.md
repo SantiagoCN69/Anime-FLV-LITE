@@ -528,7 +528,7 @@ Anime-FLV-LITE/
 - **Propósito:** Importación de tipografías
 - **Fuentes:**
   - Oxanium (Google Fonts) - Títulos
-  - DM Sans (Google Fonts) - Cuerpo de texto
+  - Manrope (Google Fonts) - Cuerpo de texto
   - JetBrains Mono (Google Fonts) - Código/monoespaciado
 - **Características:**
   - Import desde Google Fonts
