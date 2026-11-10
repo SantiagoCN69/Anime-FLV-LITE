@@ -563,7 +563,7 @@ btnBloquear?.addEventListener("click", () => {
 const btnCambioServers = document.getElementById("btn-cambio-servers");
 if (btnCambioServers) {
   // Actualizar estado inicial del botón según el parámetro URL o preferencia
-  btnCambioServers.textContent = modoDoblado ? "subtitulado" : "Doblados";
+  btnCambioServers.textContent = modoDoblado ? "subtitulado" : "doblado";
   btnCambioServers.classList.toggle("activo", modoDoblado);
   
   btnCambioServers.addEventListener("click", function() {
@@ -571,7 +571,7 @@ if (btnCambioServers) {
     preferenciaDoblado = modoDoblado;
     
     // Cambiamos el texto del botón según el estado
-    this.textContent = modoDoblado ? "subtitulado" : "Doblados";
+    this.textContent = modoDoblado ? "subtitulado" : "doblado";
     this.classList.toggle("activo", modoDoblado); // Por si quieres darle estilos CSS extra
     
     // Guardar preferencia en localStorage
@@ -612,11 +612,11 @@ function actualizarEstadoBotonDoblado(servidores) {
   const btn = document.getElementById("btn-cambio-servers");
   if (!btn) return;
 
-  const tieneDoblados = servidores.some(s => 
+  const tienedoblado = servidores.some(s => 
     (s.name || "").toLowerCase().includes("(lat)")
   );
 
-  if (!tieneDoblados) {
+  if (!tienedoblado) {
     btn.disabled = true;
     if (modoDoblado) {
       modoDoblado = false;
@@ -630,7 +630,7 @@ function actualizarEstadoBotonDoblado(servidores) {
     btn.disabled = false;
     btn.style.opacity = "1";
     btn.style.cursor = "pointer";
-    btn.textContent = modoDoblado ? "subtitulado" : "Doblados";
+    btn.textContent = modoDoblado ? "subtitulado" : "doblado";
     btn.classList.toggle("activo", modoDoblado);
   }
 }
@@ -996,14 +996,14 @@ async function manejarNoticias() {
 manejarNoticias();
 
 
-function filtrarServidores(servidores, soloDoblados = false) {
+function filtrarServidores(servidores, solodoblado = false) {
   if (!servidores) return [];
   return servidores.filter(servidor => {
     // Buscamos en 'name' (el de la API original)
     const nombreOriginal = (servidor.name || "").toLowerCase();
     const tieneLat = nombreOriginal.includes('(lat)');
     
-    return soloDoblados ? tieneLat : !tieneLat;
+    return solodoblado ? tieneLat : !tieneLat;
   });
 }
 
@@ -1524,7 +1524,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
       const btn = document.getElementById("btn-cambio-servers");
       if (btn) {
-        btn.textContent = modoDoblado ? "subtitulado" : "Doblados";
+        btn.textContent = modoDoblado ? "subtitulado" : "doblado";
         btn.classList.toggle("activo", modoDoblado);
       }
     }
