@@ -79,7 +79,7 @@
 }
 
 .tab-btn.active {
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     color: var(--t1);
     font-weight: 600;
 }
@@ -126,7 +126,7 @@
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-    color: var(--t2);
+    color: var(--t1);
     opacity: 0.5;
 }
 
@@ -187,7 +187,7 @@
 }
 
 .checkbox-label input[type="checkbox"]:checked {
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     border-color: var(--btn);
 }
 
@@ -286,7 +286,7 @@ textarea[aria-invalid="true"]:focus {
 
 .btn-submit {
     flex: 2;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     color: var(--t1);
 }
 
@@ -329,7 +329,7 @@ textarea[aria-invalid="true"]:focus {
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     color: var(--t1);
     text-decoration: none;
     border-radius: 12px;
@@ -377,7 +377,7 @@ textarea[aria-invalid="true"]:focus {
     width: 50px;
     height: 50px;
     margin: 0 auto 1rem;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -416,7 +416,7 @@ textarea[aria-invalid="true"]:focus {
 .floating-element {
     position: absolute;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     opacity: 0.08;
     animation: float 8s ease-in-out infinite;
 }

@@ -786,11 +786,11 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   transition: all 0.3s ease;
 }
 
-/* Botón Modo Maratón (Tono Lavanda/Púrpura Pastel) */
+/* Botón Modo Maratón (Tono Rosa Sakura Pastel) */
 #btn-modo-maraton.activo {
-  background-color: rgba(196, 181, 253, 0.12); /* Fondo sutil */
-  color: #c4b5fd; /* Lavanda pastel brillante */
-  border: 1px solid rgba(196, 181, 253, 0.4);
+  background-color: rgba(251, 113, 133, 0.12); /* Fondo sutil */
+  color: #fda4af; /* Rosa pastel brillante */
+  border: 1px solid rgba(251, 113, 133, 0.4);
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
 }

@@ -387,7 +387,7 @@ body:not(.animaciones-off) header {
   position: absolute;
   inset: 0;
   width: calc(var(--progreso) * 1%);
-  background: linear-gradient(to right, var(--btn), var(--btn2));
+  background: linear-gradient(to right, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
   transition: width .5s;
 }
 #progreso-text {

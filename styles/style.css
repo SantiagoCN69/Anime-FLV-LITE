@@ -191,7 +191,7 @@ header #busqueda{
 }
 
 .title span {
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -573,7 +573,7 @@ body:has(header.search-active) .logout-modal {
   left: 0;
   /* height: 100%; */
   width: 4px;
-  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
   border-radius: 0 2px 2px 0;
   opacity: 0;
   transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform .3s, opacity 0.2s ease, width 0.3s ease;
@@ -731,7 +731,7 @@ main {
 .carga-servidor-progreso {
   height: 100%;
   width: 0%;
-  background-color: #A970FF; /* Tu morado principal de AniZen */
+  background-color: var(--btn); /* Rosa sakura principal de AniZen */
   border-radius: 10px;
   /* Mantenemos los 22s, pero dejamos que los keyframes dicten el ritmo */
   animation: llenarBarra 22s ease-in-out forwards; 
@@ -815,7 +815,7 @@ main {
     grid-row: 1 / span 2;
     width: 52px;
     height: 52px;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     border-radius:15px;
     padding: .6rem;
   }
@@ -884,7 +884,7 @@ main {
   width: 52px;
   min-width: 52px;
   height: 52px;
-  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
   border-radius: 14px;
   padding: 0.6rem;
  }
@@ -958,7 +958,7 @@ section.content-section h2:first-of-type::after {
   border-radius: 24px;
   width: fit-content;
   height: fit-content;
-  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
   z-index: 1;
   opacity: 0;
   font-size: 1rem;
@@ -1116,9 +1116,9 @@ a.btn-buscar-ia {
   z-index: 0;
   overflow: visible;
   min-width: min(100%, 280px);
-  border: 1px solid rgba(182, 205, 255, .38);
-  background: linear-gradient(115deg, rgba(20, 25, 61, .92), rgba(39, 30, 83, .9));
-  box-shadow: 0 8px 20px rgba(8, 12, 43, .35), 0 0 0 1px rgba(255, 255, 255, .06) inset;
+  border: 1px solid rgba(253, 164, 175, .38);
+  background: linear-gradient(115deg, rgba(35, 18, 26, .92), rgba(58, 28, 38, .9));
+  box-shadow: 0 8px 20px rgba(30, 8, 16, .35), 0 0 0 1px rgba(255, 255, 255, .06) inset;
   backdrop-filter: blur(8px);
 }
 
@@ -1130,7 +1130,7 @@ a.btn-buscar-ia::before {
   border-radius: 22px;
   background:
     radial-gradient(ellipse at 18% 40%, rgba(57, 211, 255, .78), transparent 52%),
-    radial-gradient(ellipse at 78% 27%, rgba(178, 94, 255, .72), transparent 48%),
+    radial-gradient(ellipse at 78% 27%, rgba(251, 113, 133, .72), transparent 48%),
     radial-gradient(ellipse at 58% 88%, rgba(62, 255, 198, .52), transparent 47%);
   filter: blur(16px);
   opacity: .68;
@@ -1146,8 +1146,8 @@ a.btn-buscar-ia > span {
 
 a.btn-buscar-ia:hover {
   transform: translateY(-2px);
-  border-color: rgba(207, 222, 255, .7);
-  box-shadow: 0 12px 28px rgba(8, 12, 43, .48), 0 0 0 1px rgba(255, 255, 255, .1) inset;
+  border-color: rgba(254, 205, 211, .7);
+  box-shadow: 0 12px 28px rgba(30, 8, 16, .48), 0 0 0 1px rgba(255, 255, 255, .1) inset;
 }
 
 @keyframes oleaje-boton-ia {
@@ -1664,21 +1664,7 @@ h4 {
 }
 
 #theme-toggle::before {
-background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6);
-  background-size: 300% 300%;
-  animation: gradientAnimation 6s ease infinite;
-}
-/* Animación fluida del degradado */
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  background: var(--btn);
 }
 
 #confirm-login:hover {
@@ -1808,8 +1794,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   color: var(--t1);
   overflow: hidden;
   
-  /* Gradiente original mantenido */
-  background: linear-gradient(135deg, rgba(206, 165, 255, 0.1) 0%, rgba(255, 215, 0, 0.05) 50%, rgba(34, 206, 233, 0.1) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 14%, transparent) 0%, color-mix(in srgb, var(--btn) 5%, transparent) 50%, color-mix(in srgb, var(--btn) 12%, transparent) 100%);
   
   /* Se amplía el lienzo del fondo al 300% para tener área de desplazamiento */
   background-size: 300% 300%;
@@ -1817,7 +1802,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
   /* Se aplica la animación (8 segundos, aceleración suave, repetición infinita) */
   animation: moverFondoGradient 8s ease infinite;
   
-  border: 1px solid rgba(206, 165, 255, 0.3);
+  border: 1px solid color-mix(in srgb, var(--btn) 30%, transparent);
   border-radius: 15px;
   backdrop-filter: blur(10px);
   grid-area: container4;
@@ -1912,7 +1897,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
               inset 0 1px 0 rgba(255, 255, 255, 0.3);
   top: 30px; 
   transform: translateX(-50%) translateY(0);
-  touch-action: pan-y;
+  touch-action: none;
   animation: mostrarOcultarPildora 3s forwards;
 }
 

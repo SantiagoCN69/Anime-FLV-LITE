@@ -107,7 +107,7 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     color: var(--t1);
 }
 
@@ -181,7 +181,7 @@
 .floating-element {
     position: absolute;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
     opacity: 0.1;
     animation: float 6s ease-in-out infinite;
 }

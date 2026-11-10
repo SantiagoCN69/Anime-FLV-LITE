@@ -4,9 +4,9 @@
 #fondolab {
   background: linear-gradient(
   to bottom,
-  rgba(124, 58, 237, 0.18) 0%,   /* morado */
-  rgba(236, 72, 153, 0.10) 50%,  /* rosa */
-  var(--b)         /* transparente */
+  color-mix(in srgb, var(--btn) 16%, transparent) 0%,
+  color-mix(in srgb, var(--btn) 7%, transparent) 55%,
+  transparent 100%
 );
 position: fixed;
 top: 80px;
@@ -23,7 +23,7 @@ z-index: -1;
 .Recomendaciones-section-title {
   font-size: 1.7rem;
   font-family: 'Oxanium', sans-serif;
-  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 50%, var(--btn) 100%);
+  background: linear-gradient(135deg, var(--btn), color-mix(in srgb, var(--btn) 70%, #ffffff), var(--btn));
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -297,7 +297,7 @@ z-index: -1;
 }
 
 .btn-generar {
-  background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
   color: var(--t1);
 }
 @media (hover: hover) {
