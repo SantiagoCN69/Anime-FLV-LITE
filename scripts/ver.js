@@ -309,7 +309,7 @@ let embeds = [];
 let bloquearAnuncios = localStorage.getItem("bloquearAnuncios") !== "false";
 // Esta preferencia se lee al abrir el reproductor. Vidrift recibe los
 // parámetros correspondientes al crear el iframe.
-const modoMaratonActivo = localStorage.getItem("modoMaraton") === "true";
+let modoMaratonActivo = localStorage.getItem("modoMaraton") === "true";
 // Prioridad: parámetro URL > preferencia localStorage > default (sub)
 let preferenciaDoblado = serversParam === "dob" || (serversParam === null && serversPreference === "dob");
 // Puede cambiar temporalmente si un episodio solo tiene enlaces en el otro
@@ -539,14 +539,14 @@ if (btnSelectorCapitulo && dropdownCapitulos) {
 
 
 if (btnBloquear) {
-  btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
+  btnBloquear.textContent = "AdBlock";
   btnBloquear.classList.toggle("activo", bloquearAnuncios);
 }
 
 btnBloquear?.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
   localStorage.setItem("bloquearAnuncios", String(bloquearAnuncios));
-  btnBloquear.textContent = `AdBlock: ${bloquearAnuncios ? "ON" : "OFF"}`;
+  btnBloquear.textContent = "AdBlock";
   btnBloquear.classList.toggle("activo", bloquearAnuncios);
   const servidorActivoBtn = document.querySelector("#controles .servidor-activo");
   if (embeds.length && servidorActivoBtn) {
@@ -563,7 +563,7 @@ btnBloquear?.addEventListener("click", () => {
 const btnCambioServers = document.getElementById("btn-cambio-servers");
 if (btnCambioServers) {
   // Actualizar estado inicial del botón según el parámetro URL o preferencia
-  btnCambioServers.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+  btnCambioServers.textContent = modoDoblado ? "subtitulado" : "Doblados";
   btnCambioServers.classList.toggle("activo", modoDoblado);
   
   btnCambioServers.addEventListener("click", function() {
@@ -571,7 +571,7 @@ if (btnCambioServers) {
     preferenciaDoblado = modoDoblado;
     
     // Cambiamos el texto del botón según el estado
-    this.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+    this.textContent = modoDoblado ? "subtitulado" : "Doblados";
     this.classList.toggle("activo", modoDoblado); // Por si quieres darle estilos CSS extra
     
     // Guardar preferencia en localStorage
@@ -588,6 +588,26 @@ if (btnCambioServers) {
     }
   });
 }
+
+// Botón de modo maratón: misma preferencia que el toggle de preferencias.
+// Solo recarga el episodio cuando Vidrift es el servidor activo, porque
+// autoskip/autonext se envían como parámetros al crear su iframe.
+const btnModoMaraton = document.getElementById("btn-modo-maraton");
+if (btnModoMaraton) {
+  btnModoMaraton.classList.toggle("activo", modoMaratonActivo);
+
+  btnModoMaraton.addEventListener("click", function() {
+    modoMaratonActivo = !modoMaratonActivo;
+    localStorage.setItem("modoMaraton", String(modoMaratonActivo));
+    this.classList.toggle("activo", modoMaratonActivo);
+
+    const servidorActivo = embeds[servidorActualIndex];
+    if (servidorActivo?.vidrift) {
+      cargarVideoDesdeEpisodio(episodioActualIndex);
+    }
+  });
+}
+
 function actualizarEstadoBotonDoblado(servidores) {
   const btn = document.getElementById("btn-cambio-servers");
   if (!btn) return;
@@ -600,7 +620,7 @@ function actualizarEstadoBotonDoblado(servidores) {
     btn.disabled = true;
     if (modoDoblado) {
       modoDoblado = false;
-      btn.textContent = "Server Doblado";
+      btn.textContent = "Doblado";
       const newUrl = new URL(window.location);
       newUrl.searchParams.set("servers", "sub");
       window.history.replaceState({}, "", newUrl);
@@ -610,7 +630,7 @@ function actualizarEstadoBotonDoblado(servidores) {
     btn.disabled = false;
     btn.style.opacity = "1";
     btn.style.cursor = "pointer";
-    btn.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+    btn.textContent = modoDoblado ? "subtitulado" : "Doblados";
     btn.classList.toggle("activo", modoDoblado);
   }
 }
@@ -1504,7 +1524,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
       const btn = document.getElementById("btn-cambio-servers");
       if (btn) {
-        btn.textContent = modoDoblado ? "Server Subtitulados" : "Server Doblados";
+        btn.textContent = modoDoblado ? "subtitulado" : "Doblados";
         btn.classList.toggle("activo", modoDoblado);
       }
     }

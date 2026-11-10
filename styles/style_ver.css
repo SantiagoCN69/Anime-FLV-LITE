@@ -559,7 +559,7 @@ iframe {
   flex-wrap: nowrap;
   flex: 1;
 }
-.btn-anterior, .btn-siguiente, .btn-anuncios, #btn-cambio-servers, .btn-selector-capitulo {
+.botones-reproductor button, .botones-reproductor a {
   display: flex;
   flex: 1;
   align-items: center;
@@ -570,12 +570,20 @@ iframe {
   font-weight: 600;
   font-size: .8rem;
   color: var(--t1);
-  transition: transform .3s;  
+  transition: transform .3s, filter .3s;  
   padding: 15px;
   border: 2px solid transparent;
   font-family: 'Oxanium', sans-serif;
   span {
     align-self: flex-end;
+  }
+}
+@media (max-width: 490px) {
+  #botones-reproductor2 {
+    flex-wrap: wrap;
+  }
+  #botones-reproductor2 button {
+    min-width: 139px;
   }
 }
 
@@ -602,9 +610,10 @@ iframe {
   background: var(--btn);
   border-radius: 99px;
 }
-.btn-anuncios, #btn-cambio-servers {
+.botones-reproductor button {
   background-color: var(--p);
   flex: 1;
+  gap: 8px;
 }
 .desactivado {
   opacity: 0.5 !important;
@@ -624,16 +633,9 @@ iframe {
   background-color: var(--br);
 }
 @media (hover: hover) {
-  .btn-selector-capitulo:hover {
-    background-color: var(--br);
+  .botones-reproductor button:hover, .botones-reproductor a:hover {
+    filter: brightness(1.3) !important;
   }
-  .btn-siguiente:hover {
-  border-color: var(--p);
-}
-.btn-anterior:hover {
-  color: var(--t2);
-  background-color: var(--br);
-}
 }
 
 .btn-selector-capitulo svg {
@@ -684,6 +686,7 @@ iframe {
 }
 .dropdown-capitulos button {
   width: 100%;
+  height: fit-content;
   padding: 8px 5px;
   border: 1px solid var(--br);
   border-radius: 14px;
@@ -736,50 +739,130 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   background-color: var(--br);
   border-radius: 5px;
 }
+@media (max-width: 400px) {
+  #botones-reproductor1 span, #botones-reproductor1 svg {
+    display: none;
+  }
 
+#btn-anterior-capitulo::before, 
+#btn-selector-capitulo::before, 
+#btn-siguiente-capitulo::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-color: var(--t1); 
+  
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
 
-.btn-anuncios {
-  border: 1px solid var(--br);
+#btn-anterior-capitulo::before {
+  -webkit-mask-image: url('/icons/prev.svg');
+  mask-image: url('/icons/prev.svg');
 }
-.activo {
-  background-color: #001A15;
-  color: #00D9A3;
-  border: 1px solid #006B50;
+
+#btn-selector-capitulo::before {
+  -webkit-mask-image: url('/icons/list.svg');
+  mask-image: url('/icons/list.svg');
 }
-.btn-anuncios::before {
-    content: "";
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-image: url('/icons/shield-halved-solid.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    vertical-align: middle;
-    margin-right: 8px;
+
+#btn-siguiente-capitulo::before {
+  -webkit-mask-image: url('/icons/next1.svg');
+  mask-image: url('/icons/next1.svg');
 }
-#btn-cambio-servers {
-  grid-area: btn-censura;
-  background: var(--btn2);
 }
+/* Botón Bloquear Anuncios (Tono Verde Menta Pastel) */
+#btn-bloquear-anuncios.activo {
+  background-color: rgba(167, 243, 208, 0.12); /* Fondo sutil */
+  color: #a7f3d0; /* Menta pastel brillante para legibilidad */
+  border: 1px solid rgba(167, 243, 208, 0.4);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+/* Botón Modo Maratón (Tono Lavanda/Púrpura Pastel) */
+#btn-modo-maraton.activo {
+  background-color: rgba(196, 181, 253, 0.12); /* Fondo sutil */
+  color: #c4b5fd; /* Lavanda pastel brillante */
+  border: 1px solid rgba(196, 181, 253, 0.4);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+#btn-bloquear-anuncios::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+
+  /* El color del icono (Usa currentColor para heredar el color del texto del botón) */
+  background-color: currentColor; 
+
+  /* Soporte WebKit (Safari / Chrome iOS) */
+  -webkit-mask-image: url('/icons/shield-halved-solid.svg');
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+
+  /* Estándar W3C */
+  mask-image: url('/icons/shield-halved-solid.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+#btn-modo-maraton::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 8px;
+
+  background-color: currentColor;
+  -webkit-mask-image: url('/icons/next.svg');
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+
+  mask-image: url('/icons/next.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
 #btn-cambio-servers:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-#btn-cambio-servers.activo {
-  background: var(--btn);
-}
+/* Botón Cambio de Servidores (Tono Azul Celeste Pastel) */
+
 #btn-cambio-servers::before {
   content: "";
-  width: 23px;
-  height: 23px;
-  margin-right: 5px;
   display: inline-block;
-  background-image: url(/icons/language.svg);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: invert(100%);
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 8px; /* Espaciado entre icono y texto */
+
+  /* El color se hereda automáticamente del estado del botón */
+  background-color: currentColor; 
+
+  /* Soporte WebKit (Safari / Chrome en iOS) */
+  -webkit-mask-image: url('/icons/language.svg');
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+
+  /* Estándar W3C */
+  mask-image: url('/icons/language.svg');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 
 @media screen and (max-width:1100px) {
