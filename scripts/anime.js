@@ -1958,6 +1958,39 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
   setTimeout(() => pill.remove(), 3000);
 }
 
+// Swipe para descartar la píldora: vertical u horizontal según el eje dominante.
+// Se desactiva la animación CSS (animation pisa los estilos inline) y se
+// transiciona manualmente; funciona igual con .animaciones-off.
+// Solo cuenta el gesto si empieza sobre la píldora, y .pildora usa
+// touch-action: none para que el navegador no lo cancele como scroll (pointercancel).
+let pillSwipeStart = null;
+document.addEventListener("pointerdown", (e) => {
+  pillSwipeStart = e.target.closest?.(".pildora")
+    ? { x: e.clientX, y: e.clientY }
+    : null;
+});
+document.addEventListener("pointerup", (e) => {
+  if (!pillSwipeStart) return;
+  const dx = e.clientX - pillSwipeStart.x;
+  const dy = e.clientY - pillSwipeStart.y;
+  pillSwipeStart = null;
+  const pill = document.querySelector(".pildora");
+  if (!pill) return;
+  const vertical = Math.abs(dy) > Math.abs(dx);
+  const dist = vertical ? dy : dx;
+  if (Math.abs(dist) < 60) return;
+  pill.style.animation = "none";
+  void pill.offsetHeight;
+  pill.style.transition = "transform .35s ease-in, opacity .35s ease-in, filter .35s ease-in";
+  pill.style.opacity = "0";
+  pill.style.filter = "blur(8px)";
+  pill.style.transform = vertical
+    ? `translateX(-50%) translateY(${dist > 0 ? "140px" : "-140px"})`
+    : `translateX(-50%) translateX(${dist > 0 ? "140px" : "-140px"})`;
+  setTimeout(() => pill.remove(), 400);
+});
+document.addEventListener("pointercancel", () => { pillSwipeStart = null; });
+
 
 // Función para actualizar campo esFinalizadoPorVistos por lotes desde Firestore
 async function actualizarFinalizadoPorLotes() {

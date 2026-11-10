@@ -2511,12 +2511,16 @@ function mostrarPildora(estado = true, cap = null, actualizando = false) {
   setTimeout(() => pill.remove(), 3000);
 }
 
-// Swipe horizontal para descartar la píldora hacia el lado del gesto.
+// Swipe para descartar la píldora: vertical u horizontal según el eje dominante.
 // Se desactiva la animación CSS (animation pisa los estilos inline) y se
 // transiciona manualmente; funciona igual con .animaciones-off.
+// Solo cuenta el gesto si empieza sobre la píldora, y .pildora usa
+// touch-action: none para que el navegador no lo cancele como scroll (pointercancel).
 let pillSwipeStart = null;
 document.addEventListener("pointerdown", (e) => {
-  pillSwipeStart = { x: e.clientX, y: e.clientY };
+  pillSwipeStart = e.target.closest?.(".pildora")
+    ? { x: e.clientX, y: e.clientY }
+    : null;
 });
 document.addEventListener("pointerup", (e) => {
   if (!pillSwipeStart) return;
@@ -2524,14 +2528,21 @@ document.addEventListener("pointerup", (e) => {
   const dy = e.clientY - pillSwipeStart.y;
   pillSwipeStart = null;
   const pill = document.querySelector(".pildora");
-  if (!pill || Math.abs(dx) < 60 || Math.abs(dx) <= Math.abs(dy) * 1.5) return;
+  if (!pill) return;
+  const vertical = Math.abs(dy) > Math.abs(dx);
+  const dist = vertical ? dy : dx;
+  if (Math.abs(dist) < 60) return;
   pill.style.animation = "none";
-  pill.style.transition = "top .3s ease-in, transform .3s ease-in, opacity .3s ease-in";
-  pill.style.top = "-60px";
+  void pill.offsetHeight;
+  pill.style.transition = "transform .35s ease-in, opacity .35s ease-in, filter .35s ease-in";
   pill.style.opacity = "0";
-  pill.style.transform = `translateX(-50%) translateX(${dx > 0 ? "120px" : "-120px"}) translateY(-20px)`;
-  setTimeout(() => pill.remove(), 350);
+  pill.style.filter = "blur(8px)";
+  pill.style.transform = vertical
+    ? `translateX(-50%) translateY(${dist > 0 ? "140px" : "-140px"})`
+    : `translateX(-50%) translateX(${dist > 0 ? "140px" : "-140px"})`;
+  setTimeout(() => pill.remove(), 400);
 });
+document.addEventListener("pointercancel", () => { pillSwipeStart = null; });
 
 
 document.addEventListener('DOMContentLoaded', () => {
