@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove, deleteDoc, query, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseconfig.js";
-import { observerAnimeCards, aplicarViewTransition } from "./utils.js";
+import { observerAnimeCards, aplicarViewTransition, mostrarPildora as mostrarPildoraUtil } from "./utils.js";
 import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from "./ai-recommendations.js";
 // Inicializar Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
@@ -1909,15 +1909,9 @@ window.addEventListener('scroll', () => {
   modal.classList.remove('active');
 });
 
-//pildora visual check 
-
+// Formateador local: traduce las opciones de esta página a la firma única
+// de utils.js mostrarPildora(mensaje, tipo, onClick).
 function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
-  const pillAnterior = document.querySelector('.pildora');
-  if (pillAnterior) pillAnterior.remove();
-
-  const pill = document.createElement("div");
-  pill.classList.add("pildora");
-
   const accion = estado ? "Agregado a" : "Eliminado de";
 
   const opciones = {
@@ -1935,61 +1929,22 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
   };
 
   const config = opciones[opcion];
+  let mensaje, tipo;
 
   if (config) {
-    pill.textContent = config.texto;
-    pill.classList.add(estado ? config.clase : "pildora-eliminado");
-    
-    if (opcion === "no-user") {
-      pill.onclick = () => {
-        const confirmBtn = document.getElementById("confirm-login");
-        if (confirmBtn) confirmBtn.click();
-      };
-    }
+    mensaje = config.texto;
+    tipo = (estado ? config.clase : "pildora-eliminado").replace("pildora-", "");
   } else {
-    pill.textContent = estado ? "Acción realizada" : "Acción revertida";
-    pill.classList.add(estado ? "pildora-default" : "pildora-eliminado");
+    mensaje = estado ? "Acción realizada" : "Acción revertida";
+    tipo = estado ? "default" : "eliminado";
   }
 
-  document.body.appendChild(pill);
-
-  // setTimeout en vez de animationend: con .animaciones-off la animación CSS
-  // está desactivada y animationend nunca se dispara, dejando la píldora fija.
-  setTimeout(() => pill.remove(), 3000);
-}
-
-// Swipe para descartar la píldora: vertical u horizontal según el eje dominante.
-// Se desactiva la animación CSS (animation pisa los estilos inline) y se
-// transiciona manualmente; funciona igual con .animaciones-off.
-// Solo cuenta el gesto si empieza sobre la píldora, y .pildora usa
-// touch-action: none para que el navegador no lo cancele como scroll (pointercancel).
-let pillSwipeStart = null;
-document.addEventListener("pointerdown", (e) => {
-  pillSwipeStart = e.target.closest?.(".pildora")
-    ? { x: e.clientX, y: e.clientY }
+  const onClick = opcion === "no-user"
+    ? () => document.getElementById("confirm-login")?.click()
     : null;
-});
-document.addEventListener("pointerup", (e) => {
-  if (!pillSwipeStart) return;
-  const dx = e.clientX - pillSwipeStart.x;
-  const dy = e.clientY - pillSwipeStart.y;
-  pillSwipeStart = null;
-  const pill = document.querySelector(".pildora");
-  if (!pill) return;
-  const vertical = Math.abs(dy) > Math.abs(dx);
-  const dist = vertical ? dy : dx;
-  if (Math.abs(dist) < 60) return;
-  pill.style.animation = "none";
-  void pill.offsetHeight;
-  pill.style.transition = "transform .35s ease-in, opacity .35s ease-in, filter .35s ease-in";
-  pill.style.opacity = "0";
-  pill.style.filter = "blur(8px)";
-  pill.style.transform = vertical
-    ? `translateX(-50%) translateY(${dist > 0 ? "140px" : "-140px"})`
-    : `translateX(-50%) translateX(${dist > 0 ? "140px" : "-140px"})`;
-  setTimeout(() => pill.remove(), 400);
-});
-document.addEventListener("pointercancel", () => { pillSwipeStart = null; });
+
+  mostrarPildoraUtil(mensaje, tipo, onClick);
+}
 
 
 // Función para actualizar campo esFinalizadoPorVistos por lotes desde Firestore

@@ -638,6 +638,7 @@ function actualizarEstadoBotonDoblado(servidores) {
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, deleteDoc, runTransaction, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
+import { mostrarPildora } from "./utils.js";
 
 // Inicialización de Firebase optimizada
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
@@ -693,10 +694,11 @@ async function toggleYGuardarEstadoCapitulo() {
   }
   const user = localStorage.getItem("userID");
   if (!user) {
-    mostrarPildora("no-user");
+    mostrarPildora("Inicia sesión para guardar tu progreso", "no-user",
+      () => document.getElementById("confirm-login")?.click());
     return;
   }
-  mostrarPildora(true, null, true);
+  mostrarPildora("Actualizando...", "default");
   toggleInProgress = true;
 
   try {
@@ -755,7 +757,10 @@ async function toggleYGuardarEstadoCapitulo() {
       dropdownGenerado = false;
       generarDropdownCapitulos();
 
-      mostrarPildora(nuevoEstadoVisto, episodioActualIndex);
+      mostrarPildora(
+        `Capítulo ${episodioActualIndex} ${nuevoEstadoVisto ? "marcado como visto" : "eliminado de vistos"}`,
+        nuevoEstadoVisto ? "visto" : "eliminado"
+      );
     } catch (error) {
 
       // Revertir UI en caso de error
@@ -789,7 +794,8 @@ document.addEventListener("authStateReady", async (event) => {
 btnEstadoCapitulo?.addEventListener("click", async () => {
   const user = localStorage.getItem("userID");
   if (!user) {
-    mostrarPildora("no-user");
+    mostrarPildora("Inicia sesión para guardar tu progreso", "no-user",
+      () => document.getElementById("confirm-login")?.click());
     return
   }
   if (toggleInProgress) {
@@ -2293,16 +2299,12 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
     motivo
   });
 
-  const pill = document.createElement("div");
-  pill.className = "pildora pildora-default";
   // El motivo también se muestra en pantalla: Live Server y algunos iframes
   // pueden limpiar la consola mientras se reemplaza el reproductor.
-  pill.textContent = `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`;
-  pill.title = motivo;
-  document.body.appendChild(pill);
-  // setTimeout en vez de animationend: con .animaciones-off animationend nunca
-  // se dispara y la píldora quedaría fija en pantalla.
-  setTimeout(() => pill.remove(), 3000);
+  mostrarPildora(
+    `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`,
+    "default"
+  );
 
   mostrarVideo(siguienteServidor, siguienteBoton);
 }
@@ -2479,70 +2481,6 @@ window.addEventListener('message', async (event) => {
     }
   }
 });
-
-function mostrarPildora(estado = true, cap = null, actualizando = false) {
-  const pillAnterior = document.querySelector('.pildora');
-  if (pillAnterior) pillAnterior.remove();
-  
-  const pill = document.createElement("div");
-
-  if (estado === "no-user") {
-    pill.className = "pildora pildora-no-user";
-    pill.textContent = "Inicia sesión para guardar tu progreso";
-    pill.onclick = () => {
-      const confirmBtn = document.getElementById("confirm-login");
-      if (confirmBtn) confirmBtn.click();
-    };
-  } else if (actualizando) {
-    pill.className = "pildora pildora-default";
-    pill.textContent = "Actualizando...";
-  } else {
-    const capTexto = cap ? ` ${cap}` : "";
-    pill.className = `pildora pildora-${estado ? "visto" : "eliminado"}`;
-    pill.textContent = estado
-      ? `Capítulo${capTexto} marcado como visto`
-      : `Capítulo${capTexto} eliminado de vistos`;
-  }
-
-  document.body.appendChild(pill);
-
-  // setTimeout en vez de animationend: con .animaciones-off animationend nunca
-  // se dispara y la píldora quedaría fija en pantalla.
-  setTimeout(() => pill.remove(), 3000);
-}
-
-// Swipe para descartar la píldora: vertical u horizontal según el eje dominante.
-// Se desactiva la animación CSS (animation pisa los estilos inline) y se
-// transiciona manualmente; funciona igual con .animaciones-off.
-// Solo cuenta el gesto si empieza sobre la píldora, y .pildora usa
-// touch-action: none para que el navegador no lo cancele como scroll (pointercancel).
-let pillSwipeStart = null;
-document.addEventListener("pointerdown", (e) => {
-  pillSwipeStart = e.target.closest?.(".pildora")
-    ? { x: e.clientX, y: e.clientY }
-    : null;
-});
-document.addEventListener("pointerup", (e) => {
-  if (!pillSwipeStart) return;
-  const dx = e.clientX - pillSwipeStart.x;
-  const dy = e.clientY - pillSwipeStart.y;
-  pillSwipeStart = null;
-  const pill = document.querySelector(".pildora");
-  if (!pill) return;
-  const vertical = Math.abs(dy) > Math.abs(dx);
-  const dist = vertical ? dy : dx;
-  if (Math.abs(dist) < 60) return;
-  pill.style.animation = "none";
-  void pill.offsetHeight;
-  pill.style.transition = "transform .35s ease-in, opacity .35s ease-in, filter .35s ease-in";
-  pill.style.opacity = "0";
-  pill.style.filter = "blur(8px)";
-  pill.style.transform = vertical
-    ? `translateX(-50%) translateY(${dist > 0 ? "140px" : "-140px"})`
-    : `translateX(-50%) translateX(${dist > 0 ? "140px" : "-140px"})`;
-  setTimeout(() => pill.remove(), 400);
-});
-document.addEventListener("pointercancel", () => { pillSwipeStart = null; });
 
 
 document.addEventListener('DOMContentLoaded', () => {

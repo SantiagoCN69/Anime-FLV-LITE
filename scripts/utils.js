@@ -207,3 +207,45 @@ export function crearAnimeCard(anime, opciones = {}) {
 
     return card;
 }
+
+//pildora visual check
+export function mostrarPildora(mensaje, tipo = "default", onClick = null) {
+  document.querySelector('.pildora')?.remove();
+
+  const pill = document.createElement("div");
+  pill.className = `pildora pildora-${tipo}`;
+  pill.textContent = mensaje;
+  if (onClick) pill.onclick = onClick;
+
+  document.body.appendChild(pill);
+
+  setTimeout(() => pill.remove(), 3000);
+}
+
+let pillSwipeStart = null;
+document.addEventListener("pointerdown", (e) => {
+  pillSwipeStart = e.target.closest?.(".pildora")
+    ? { x: e.clientX, y: e.clientY }
+    : null;
+});
+document.addEventListener("pointerup", (e) => {
+  if (!pillSwipeStart) return;
+  const dx = e.clientX - pillSwipeStart.x;
+  const dy = e.clientY - pillSwipeStart.y;
+  pillSwipeStart = null;
+  const pill = document.querySelector(".pildora");
+  if (!pill) return;
+  const vertical = Math.abs(dy) > Math.abs(dx);
+  const dist = vertical ? dy : dx;
+  if (Math.abs(dist) < 60) return;
+  pill.style.animation = "none";
+  void pill.offsetHeight;
+  pill.style.transition = "transform .35s ease-in, opacity .35s ease-in, filter .35s ease-in";
+  pill.style.opacity = "0";
+  pill.style.filter = "blur(8px)";
+  pill.style.transform = vertical
+    ? `translateX(-50%) translateY(${dist > 0 ? "140px" : "-140px"})`
+    : `translateX(-50%) translateX(${dist > 0 ? "140px" : "-140px"})`;
+  setTimeout(() => pill.remove(), 400);
+});
+document.addEventListener("pointercancel", () => { pillSwipeStart = null; });
