@@ -1751,14 +1751,21 @@ h4 {
   text-align: center !important;
 }
 
-#sugerencias-sin-resultados {
-  grid-area: container3 !important;
-  color: var(--t1) !important;
-  overflow: hidden !important;
-
-  height: 246px !important;
-  min-height: fit-content !important;
+.termino-busqueda-sin-resultados {
+  color: var(--btn) !important;
 }
+
+#sugerencias-sin-resultados {
+  grid-area: container3;
+  color: var(--t1);
+  overflow: hidden;
+  height: 246px;
+  min-height: fit-content;
+  h2 {
+    margin-bottom: 10px;
+}
+}
+
 #sugerencias-sin-resultados h2:after {
   content: unset !important;
 }

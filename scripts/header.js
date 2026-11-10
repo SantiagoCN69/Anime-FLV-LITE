@@ -288,14 +288,19 @@ function renderSinResultados(container, searchTerm, searchId) {
   if (!container) return;
   limpiarSeccionIA();
   container.classList.add('sin-resultados');
+  const termino = (searchTerm || '').trim();
+  const terminoVisible = termino.length > 40 ? termino.slice(0, 40).trimEnd() + '…' : termino;
+  const terminoEscapado = terminoVisible
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   container.innerHTML = `
     <img src="/img/cat.png" id="img-sin-resultados" alt="sin resultados">
     <div id="text-sin-resultados">
-      <span id="span-sin-resultados">No se encontraron resultados</span>
-      <span id="span-sin-resultados2">Prueba buscando de otra manera.</span>
+      <span id="span-sin-resultados">Sin coincidencias para <span class="termino-busqueda-sin-resultados">«${terminoEscapado || 'esa búsqueda'}»</span></span>
+      <span id="span-sin-resultados2">No hay títulos que coincidan con ese término. Las sugerencias de abajo son parecidas, no resultados exactos.</span>
     </div>
     <div id="sugerencias-sin-resultados">
-      <h2>Sugerencias</h2>
+      <h2>Títulos parecidos</h2>
       <div id="anime-grid-sin-resultados"><span class="span-carga">cargando...</span></div>
     </div>
   `;
