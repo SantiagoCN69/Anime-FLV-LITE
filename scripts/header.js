@@ -8,6 +8,17 @@ function mostrarMensajeError(container, mensaje) {
   container.innerHTML = `<span class="span-carga">${mensaje}</span>`;
 }
 
+function mostrarCargandoEnBusquedas(container) {
+  if (!container) return;
+  container.innerHTML = '<div class="init-loading-servidores"><span class="contador-busqueda-busquedas"></span></div>';
+}
+
+function obtenerContadorBusqueda() {
+  return isIndexPage
+    ? document.getElementById('contador-busqueda')
+    : busquedasContainer?.querySelector('.contador-busqueda-busquedas') || null;
+}
+
 function agregarEventListenersBusqueda(card, anime) {
   card.addEventListener('click', () => guardarBusquedaReciente(anime));
   card.addEventListener('auxclick', (e) => {
@@ -608,24 +619,30 @@ if (busquedaInput) {
       if (busquedasContainer) {
         busquedasContainer.innerHTML = '';
         busquedasContainer.classList.remove('sin-resultados');
+        busquedasContainer.style.display = 'grid';
+        document.body.classList.add('busqueda-activa');
+        setDisplay(animeDetails, 'none');
+        setDisplay(disqusThread, 'none');
+        setDisplay(verAnime, 'none');
+        mostrarCargandoEnBusquedas(busquedasContainer);
       }
       limpiarSeccionIA();
     }
 
     busquedaTimer = setTimeout(() => {
       let countdown = 22;
+      const contadorBusqueda = obtenerContadorBusqueda();
 
-      if (searchId === currentSearch && isIndexPage) {
-        if (loadingSpan) loadingSpan.style.display = 'block';
-        if (contadorSpan) contadorSpan.textContent = 'cargando resultados...';
+      if (searchId === currentSearch) {
+        if (isIndexPage && loadingSpan) loadingSpan.style.display = 'block';
+        if (contadorBusqueda) contadorBusqueda.textContent = 'cargando resultados...';
       }
 
 initialDelayTimer = setTimeout(() => {
-        if (searchId === currentSearch && isIndexPage) {
-          
+        if (searchId === currentSearch) {
           // Insertamos la estructura de la barra de carga en lugar del texto con los segundos
-          if (contadorSpan) {
-            contadorSpan.innerHTML = `
+          if (contadorBusqueda) {
+            contadorBusqueda.innerHTML = `
               <div class="carga-servidor-container">
                 <span class="carga-servidor-texto">Iniciando servidores...</span>
                 <div class="carga-servidor-barra">
@@ -640,10 +657,16 @@ initialDelayTimer = setTimeout(() => {
             // Ya no actualizamos el contadorSpan aquí, solo esperamos a que llegue a 0
             if (countdown <= 0) {
               clearInterval(busquedaCountdownInterval);
-              if (searchId === currentSearch && resultadosContainer && resultadosContainer.innerHTML.trim() === '') {
-                if (loadingSpan) loadingSpan.style.display = 'none';
-                seccionResultados?.classList.remove('hidden');
-                mostrarMensajeError(resultadosContainer, 'El servidor tarda demasiado en responder.');
+              if (searchId === currentSearch) {
+                if (isIndexPage) {
+                  if (resultadosContainer && resultadosContainer.innerHTML.trim() === '') {
+                    if (loadingSpan) loadingSpan.style.display = 'none';
+                    seccionResultados?.classList.remove('hidden');
+                    mostrarMensajeError(resultadosContainer, 'El servidor tarda demasiado en responder.');
+                  }
+                } else if (busquedasContainer && busquedasContainer.querySelector('.contador-busqueda-busquedas')) {
+                  mostrarMensajeError(busquedasContainer, 'El servidor tarda demasiado en responder.');
+                }
               }
             }
           }, 1000);
