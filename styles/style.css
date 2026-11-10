@@ -741,17 +741,16 @@ main {
   0% { 
     width: 0%; 
   }
-  15% { 
-    width: 60%; /* Avanza rápido al 60% */
+  30% { 
+    width: 45%; /* Avance inicial ágil, pero sin saltar bruscamente a más de la mitad */
   }
-  85% { 
-    width: 80%; /* Se estanca y avanza lento hasta el 80% */
+  75% { 
+    width: 80%; /* El avance se ralentiza para simular carga, pero mantiene un ritmo visible */
   }
   100% { 
-    width: 100%; /* Termina rápido al 100% */
+    width: 100%; /* Cierre fluido hasta el final */
   }
 }
-
 .animacion-carga {
     width: 24px;
     height: 24px;
@@ -1869,7 +1868,6 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
 
 /* Píldora visual check (Base) */
 .pildora {
-  pointer-events: none;
   position: fixed;
   left: 50%;
   width: max-content;
@@ -1889,6 +1887,7 @@ background: linear-gradient(120deg, #8b5cf6, #ec4899, #f97316, #3b82f6, #8b5cf6)
               inset 0 1px 0 rgba(255, 255, 255, 0.3);
   top: 30px; 
   transform: translateX(-50%) translateY(0);
+  touch-action: pan-y;
   animation: mostrarOcultarPildora 3s forwards;
 }
 
