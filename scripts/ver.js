@@ -3,34 +3,57 @@ const MODO_DIAGNOSTICO_REPRODUCTOR = false;
 const esDesarrollo = ["localhost", "127.0.0.1"].includes(location.hostname) || location.protocol === "file:";
 const debugLog = (esDesarrollo || MODO_DIAGNOSTICO_REPRODUCTOR) ? console.log.bind(console) : () => {};
 
-// Función para buscar anime en TMDB
-async function buscarAnimeTMDB(titulo) {
-  const url = new URL(
-    "https://api.themoviedb.org/3/search/tv"
-  );
-
+// Petición TMDB compartida: construye la URL, registra la llamada en
+// desarrollo y devuelve el JSON. Lanza error si la API responde !ok.
+async function consultarTMDB(ruta, parametros) {
+  const url = new URL(`https://api.themoviedb.org/3/${ruta}`);
   url.searchParams.set("api_key", TMDB_API_KEY);
-  url.searchParams.set("query", titulo);
   url.searchParams.set("language", "en-US");
+  for (const [clave, valor] of Object.entries(parametros)) {
+    url.searchParams.set(clave, valor);
+  }
 
+  debugLog(`[Vidrift] Petición TMDB ${ruta}`, url.toString());
   const respuesta = await fetch(url, {
-    headers: {
-      accept: "application/json"
-    }
+    headers: { accept: "application/json" }
   });
 
   if (!respuesta.ok) {
-    throw new Error(`Error TMDB: ${respuesta.status}`);
+    throw new Error(`Error TMDB ${ruta}: ${respuesta.status}`);
   }
 
   const datos = await respuesta.json();
-  return datos.results.map(anime => ({
+  debugLog(`[Vidrift] Respuesta TMDB ${ruta}`, datos.results ?? datos);
+  return datos;
+}
+
+// Búsqueda en series/anime (endpoint /search/tv).
+async function buscarAnimeTMDB(titulo) {
+  const datos = await consultarTMDB("search/tv", { query: titulo });
+  return (datos.results || []).map(anime => ({
     id: anime.id,
     titulo: anime.name,
     tituloOriginal: anime.original_name,
     fecha: anime.first_air_date,
-    popularidad: anime.popularity
+    popularidad: anime.popularity,
+    mediaType: "tv"
   }));
+}
+
+// Respaldo global: /search/multi cubre series y películas. Solo interesan
+// esos dos tipos; se descartan personas y colecciones.
+async function buscarTMDBGlobal(titulo) {
+  const datos = await consultarTMDB("search/multi", { query: titulo });
+  return (datos.results || [])
+    .filter(item => item.media_type === "tv" || item.media_type === "movie")
+    .map(item => ({
+      id: item.id,
+      titulo: item.title || item.name,
+      tituloOriginal: item.original_title || item.original_name,
+      fecha: item.release_date || item.first_air_date,
+      popularidad: item.popularity,
+      mediaType: item.media_type
+    }));
 }
 
 function quitarSufijoTemporada(titulo) {
@@ -55,17 +78,34 @@ function normalizarNombre(nombre) {
     .trim();
 }
 
+// Prueba primero /search/tv con el título y su variante sin temporada; si
+// ninguna devuelve nada, repite con /search/multi (series + películas).
+// Las consultas de cada etapa van en paralelo y una petición fallida no
+// arrastra a las demás.
 async function buscarAnimeTMDBConRespaldo(titulo) {
   const tituloBase = quitarSufijoTemporada(titulo);
   const consultas = [...new Set([titulo, tituloBase].filter(Boolean))];
+  const tolerante = fn => consulta => fn(consulta).catch(() => []);
 
-  for (const consulta of consultas) {
-    const resultados = await buscarAnimeTMDB(consulta);
-    debugLog("[Vidrift] Consulta TMDB", { consulta, resultados });
-    if (resultados.length) return resultados;
-  }
+  const series = await Promise.all(
+    consultas.map(tolerante(async consulta => {
+      const resultados = await buscarAnimeTMDB(consulta);
+      debugLog("[Vidrift] Consulta TMDB", { consulta, resultados });
+      return resultados;
+    }))
+  );
+  const resultadoTv = series.find(resultados => resultados.length);
+  if (resultadoTv) return resultadoTv;
 
-  return [];
+  const globales = await Promise.all(
+    consultas.map(tolerante(async consulta => {
+      const resultados = await buscarTMDBGlobal(consulta);
+      debugLog("[Vidrift] Consulta TMDB global", { consulta, resultados });
+      return resultados;
+    }))
+  );
+
+  return globales.find(resultados => resultados.length) || [];
 }
 
 function detectarTemporadaDesdeAnimeId(id) {
@@ -171,10 +211,12 @@ async function seleccionarResultadoTMDBParaVidrift(resultados) {
   debugLog("[Vidrift] Seleccionando resultado TMDB", { animeId, resultadosCount: resultados.length });
   const temporada = detectarTemporadaDesdeAnimeId(animeId);
 
-  const resultadosValidos = [];
-
-  for (const resultado of resultados) {
-    const existe = await verificarTemporadaTMDB(resultado.id, temporada);
+  // Las verificaciones son independientes: en paralelo el camino "frío"
+  // (sin caché TMDB) tarda una sola llamada a TMDB en vez de una por resultado.
+  // Las películas no tienen temporadas: se aceptan directamente.
+  const comprobaciones = await Promise.all(resultados.map(async resultado => {
+    const esPelicula = resultado.mediaType === "movie";
+    const existe = esPelicula || await verificarTemporadaTMDB(resultado.id, temporada);
     debugLog("[Vidrift] Comprobando resultado TMDB para la temporada", {
       tmdbId: resultado.id,
       titulo: resultado.titulo,
@@ -182,10 +224,11 @@ async function seleccionarResultadoTMDBParaVidrift(resultados) {
       temporada,
       existe
     });
-    if (existe) {
-      resultadosValidos.push({ ...resultado, tmdbId: resultado.id, tmdbSeason: temporada });
-    }
-  }
+    return existe
+      ? { ...resultado, tmdbId: resultado.id, tmdbSeason: esPelicula ? 1 : temporada }
+      : null;
+  }));
+  const resultadosValidos = comprobaciones.filter(Boolean);
 
   if (resultadosValidos.length === 0) return null;
 
@@ -298,6 +341,10 @@ let capitulosVistosGlobales = [];
 let dropdownGenerado = false;
 
 let episodios = [];
+// false mientras la lista de episodios no haya llegado de Firestore/API: en
+// ese caso cargarVideoDesdeEpisodio puede arrancar Vidrift con un episodio
+// mínimo { number } en vez de esperar o consultar la API de episodios.
+let episodiosCargados = false;
 let tituloAnime = (animeId || "").replaceAll("-", " ");
 let portadaAnime = '';
 let episodioActualIndex = Number.parseInt(episodeNumber, 10);
@@ -1232,6 +1279,7 @@ async function cargarEpisodios() {
       tituloAnime = data.titulo || data.title || tituloAnime;
       portadaAnime = data.portada || data.cover || '';
       episodios = data.episodios || [];
+      episodiosCargados = true;
       aplicarFondoAnime(data);
       if (episodios.length) {
         // Generar dropdown después de cargar episodios
@@ -1259,6 +1307,7 @@ async function cargarEpisodios() {
     tituloAnime = data.title || tituloAnime;
 
     episodios = (data.episodes || []).map(ep => ({ number: ep.number }));
+    episodiosCargados = true;
 
     if (!episodios.length) {
       throw new Error("La API no devolvió episodios");
@@ -1395,6 +1444,7 @@ async function recuperarEpisodioFaltanteDesdeApi(numeroEpisodio) {
         ? { ...ep, ...episodioLocal }
         : ep;
     });
+    episodiosCargados = true;
 
     if (hayEpisodioNuevo) {
       // El capítulo nuevo puede haber llegado a Firestore con sus servidores;
@@ -1413,18 +1463,29 @@ async function recuperarEpisodioFaltanteDesdeApi(numeroEpisodio) {
   }
 }
 
+// La carga temprana de Vidrift y la de servidores pueden pedir el documento
+// al mismo tiempo: una sola promesa evita dos lecturas de Firestore.
+let promesaDatosAnime = null;
+
 async function obtenerDatosAnimeParaServidores() {
   if (firestoreEnPausaPorCuota) return null;
-  try {
-    if (documentoAnimeCache) return documentoAnimeCache;
-    const animeDatosSnap = await getDoc(doc(db, "datos-animes", animeId));
-    const datos = animeDatosSnap.data() || {};
-    recordarDocumentoAnime(datos);
-    return datos;
-  } catch (error) {
-    activarModoApiDirecta(error);
-    return null;
+  if (documentoAnimeCache) return documentoAnimeCache;
+  if (!promesaDatosAnime) {
+    promesaDatosAnime = (async () => {
+      try {
+        const animeDatosSnap = await getDoc(doc(db, "datos-animes", animeId));
+        const datos = animeDatosSnap.data() || {};
+        recordarDocumentoAnime(datos);
+        return datos;
+      } catch (error) {
+        activarModoApiDirecta(error);
+        return null;
+      } finally {
+        promesaDatosAnime = null;
+      }
+    })();
   }
+  return promesaDatosAnime;
 }
 
 function sonElMismoServidor(a, b) {
@@ -1448,7 +1509,19 @@ function aplicarServidoresDeApi(ep, servidores, mantenerReproduccion) {
   );
 }
 
-async function cargarVideoDesdeEpisodio(index) {
+// Evita cargas duplicadas del mismo episodio: la carga temprana de Vidrift y
+// la que dispara cargarEpisodios() al terminar comparten esta guarda, así el
+// iframe no se recrea dos veces.
+const cargasEpisodioEnCurso = new Set();
+
+function cargarVideoDesdeEpisodio(index) {
+  if (cargasEpisodioEnCurso.has(index)) return Promise.resolve();
+  cargasEpisodioEnCurso.add(index);
+  return cargarVideoDesdeEpisodioInterno(index)
+    .finally(() => cargasEpisodioEnCurso.delete(index));
+}
+
+async function cargarVideoDesdeEpisodioInterno(index) {
   const t0Carga = performance.now();
   const controles = document.getElementById("controles");
   controles.innerHTML = "<span id='cargando-servidores'></span>";
@@ -1457,6 +1530,11 @@ async function cargarVideoDesdeEpisodio(index) {
 
   const tEp = performance.now();
   let ep = episodios.find(ep => String(ep.number) === String(index));
+  if (!ep && !episodiosCargados) {
+    // La lista de episodios todavía no llegó, pero Vidrift solo necesita el
+    // número: arrancamos en paralelo con un episodio mínimo.
+    ep = { number: index };
+  }
   if (!ep) {
     console.log(tSalto(), "episodio", index, "no está en la lista, consultando API...");
     ep = await recuperarEpisodioFaltanteDesdeApi(index);
@@ -1684,11 +1762,12 @@ function cacheTmdbEsValida() {
   return cacheTmdbVidrift?.animeId === animeId && Boolean(cacheTmdbVidrift?.tmdbId);
 }
 
-function guardarCacheTmdbVidrift(tmdbId, tmdbSeason) {
+function guardarCacheTmdbVidrift(tmdbId, tmdbSeason, mediaType) {
   cacheTmdbVidrift = {
     animeId,
     tmdbId,
-    tmdbSeason: Number(tmdbSeason) > 0 ? Number(tmdbSeason) : detectarTemporadaDesdeAnimeId(animeId)
+    tmdbSeason: Number(tmdbSeason) > 0 ? Number(tmdbSeason) : detectarTemporadaDesdeAnimeId(animeId),
+    mediaType: mediaType === "movie" ? "movie" : "tv"
   };
 }
 
@@ -1700,7 +1779,7 @@ function sembrarCacheTmdbDesdeDatos(datos) {
   const temporada = temporadaGuardada > 0 && (temporadaDetectada === 1 || temporadaGuardada === temporadaDetectada)
     ? temporadaGuardada
     : temporadaDetectada;
-  guardarCacheTmdbVidrift(datos.tmdbId, temporada);
+  guardarCacheTmdbVidrift(datos.tmdbId, temporada, datos.tmdbMediaType);
 }
 
 function recordarDocumentoAnime(datos) {
@@ -1721,23 +1800,23 @@ async function resolverDatosTmdbVidrift() {
       let animeDatos = documentoAnimeCache;
 
       if (!animeDatos) {
-        debugLog("Buscando ID de TMDB en Firestore.", animeId);
-        const animeDatosSnap = await getDoc(animeDatosRef);
-
-        if (animeDatosSnap.exists()) {
-          animeDatos = animeDatosSnap.data();
-          recordarDocumentoAnime(animeDatos);
+        // Comparte la promesa en curso con la carga de servidores: una sola
+        // lectura de Firestore para ambos consumidores.
+        animeDatos = await obtenerDatosAnimeParaServidores();
+        if (animeDatos) {
+          debugLog("Documento de Firestore obtenido para TMDB.", animeId);
         } else {
-          debugLog("El documento no existe en Firestore.");
+          debugLog("El documento no existe en Firestore o no se pudo leer.");
         }
       }
 
       if (animeDatos?.tmdbId) {
         debugLog("ID de TMDB encontrado en Firestore.", animeDatos.tmdbId);
-        const tmdbSeason = await resolverTemporadaVidrift(animeDatos.tmdbId, animeDatos.tmdbSeason);
+        const esPelicula = animeDatos.tmdbMediaType === "movie";
+        const tmdbSeason = esPelicula ? 1 : await resolverTemporadaVidrift(animeDatos.tmdbId, animeDatos.tmdbSeason);
         if (!tmdbSeason) return null;
-        guardarCacheTmdbVidrift(animeDatos.tmdbId, tmdbSeason);
-        if (Number(animeDatos.tmdbSeason) !== tmdbSeason) {
+        guardarCacheTmdbVidrift(animeDatos.tmdbId, tmdbSeason, animeDatos.tmdbMediaType);
+        if (!esPelicula && Number(animeDatos.tmdbSeason) !== tmdbSeason) {
           ejecutarEnSegundoPlano(
             setDoc(animeDatosRef, { tmdbSeason }, { merge: true }),
             "No se pudo actualizar la temporada TMDB en Firestore"
@@ -1785,9 +1864,9 @@ async function resolverDatosTmdbVidrift() {
       temporada: tmdbSeason
     });
 
-    guardarCacheTmdbVidrift(tmdbId, tmdbSeason);
+    guardarCacheTmdbVidrift(tmdbId, tmdbSeason, resultado?.mediaType);
     ejecutarEnSegundoPlano(
-      setDoc(animeDatosRef, { tmdbId, tmdbSeason }, { merge: true }),
+      setDoc(animeDatosRef, { tmdbId, tmdbSeason, tmdbMediaType: resultado?.mediaType || "tv" }, { merge: true }),
       "No se pudo guardar la asociación TMDB en Firestore"
     );
 
@@ -1998,15 +2077,19 @@ async function mostrarVideo(link, botonSeleccionado) {
     const brandColor = btnColor.startsWith('#') ? btnColor.slice(1) : btnColor || "7c5cff";
 
     // Función para cargar el iframe con el ID de TMDB
-    const cargarIframeConTMDB = (tmdbId, tmdbSeason) => {
+    const cargarIframeConTMDB = (tmdbId, tmdbSeason, mediaType) => {
       if (reproduccionId !== reproduccionActualId) return;
       console.log(tSalto(), "TMDB resuelto, creando iframe Vidrift ep", episodioActualIndex);
       cancelarFallbackDeCarga();
       debugLog("Cargando Vidrift con el ID de TMDB.", tmdbId);
 
-      // Construir URL con todos los parámetros de branding
-      // Formato Vidrift: /tv/{tmdbId}/{temporada}/{episodio}.
-      const baseUrl = `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioActualIndex}`;
+      // Construir URL con todos los parámetros de branding.
+      // Vidrift tiene formas distintas para serie y película:
+      // /tv/{tmdbId}/{temporada}/{episodio} y /movie/{tmdbId}.
+      const esPelicula = mediaType === "movie";
+      const baseUrl = esPelicula
+        ? `https://embed.vidrift.net/embed/movie/${tmdbId}`
+        : `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioActualIndex}`;
       debugLog("[Vidrift] Embed preparado", {
         animeId,
         tmdbId,
@@ -2078,7 +2161,7 @@ async function mostrarVideo(link, botonSeleccionado) {
           return;
         }
 
-        const next = siguiente
+        const next = !esPelicula && siguiente
           ? { season: tmdbSeason, episode: Number(siguiente.number) }
           : null;
         iframe.contentWindow?.postMessage(
@@ -2278,7 +2361,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       return;
     }
 
-    cargarIframeConTMDB(asociacion.tmdbId, asociacion.tmdbSeason);
+    cargarIframeConTMDB(asociacion.tmdbId, asociacion.tmdbSeason, asociacion.mediaType);
     return;
   }
 
@@ -2409,6 +2492,14 @@ btnAnterior.addEventListener("click", async (e) => {
   }
 });
 
+
+// Vidrift solo necesita el número de episodio de la URL: se arranca de
+// inmediato, en paralelo con la carga de episodios, sin esperar a Firestore.
+// Si la lista tarda, cargarVideoDesdeEpisodio usa un episodio mínimo.
+ejecutarEnSegundoPlano(
+  cargarVideoDesdeEpisodio(episodioActualIndex),
+  "No se pudo iniciar la carga temprana del episodio"
+);
 
 cargarEpisodios()
   .then(() => {
