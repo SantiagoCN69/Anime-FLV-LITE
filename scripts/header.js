@@ -575,7 +575,13 @@ function ver(id) {
 
 // === BÚSQUEDA ===
 const busquedaInput = document.getElementById('busqueda');
-let busquedaTimer, busquedaCountdownInterval, initialDelayTimer, blurTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null;
+let busquedaTimer, busquedaCountdownInterval, initialDelayTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null;
+
+function quitarFocusBusqueda() {
+  setTimeout(() => {
+    if (document.activeElement === busquedaInput) busquedaInput.blur();
+  }, 1000);
+}
 
 function hayBusquedasRecientes() {
   return busquedasCacheadas.length > 0;
@@ -608,7 +614,6 @@ if (busquedaInput) {
     const searchId = currentSearch;
     clearTimeout(busquedaTimer);
     clearTimeout(initialDelayTimer);
-    clearTimeout(blurTimer);
     if (busquedaCountdownInterval) clearInterval(busquedaCountdownInterval);
     if (currentController) currentController.abort();
     if (currentIaController) {
@@ -616,11 +621,6 @@ if (busquedaInput) {
       currentIaController = null;
     }
     limpiarSeccionIA();
-
-    // Timer para quitar el focus después de 3 segundos de inactividad
-    blurTimer = setTimeout(() => {
-      if (busquedaInput) busquedaInput.blur();
-    }, 3000);
 
     const loadingSpan = document.getElementById('init-loading-servidores-busqueda');
     const contadorSpan = document.getElementById('contador-busqueda');
@@ -701,6 +701,7 @@ initialDelayTimer = setTimeout(() => {
                 } else if (busquedasContainer && busquedasContainer.querySelector('.contador-busqueda-busquedas')) {
                   mostrarMensajeError(busquedasContainer, 'El servidor tarda demasiado en responder.');
                 }
+                quitarFocusBusqueda();
               }
             }
           }, 1000);
@@ -722,6 +723,7 @@ initialDelayTimer = setTimeout(() => {
 
           const resultados = resData || [];
           mostrarResultados(resultados, valor, searchId);
+          quitarFocusBusqueda();
         })
         .catch(err => {
           if (err.name === 'AbortError') return;
@@ -737,6 +739,7 @@ initialDelayTimer = setTimeout(() => {
           } else if (busquedasContainer) {
             mostrarMensajeError(busquedasContainer, 'Error de conexión.');
           }
+          quitarFocusBusqueda();
         });
     }, 300);
   });
