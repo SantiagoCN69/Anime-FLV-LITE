@@ -434,22 +434,12 @@ overflow: hidden;
 
 #controles button.servidor-activo {
   min-width: 100%;
-  max-width: 100%;
   transition: min-width 0.3s ease, max-width 0.3s ease;
 }
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
-  max-width: 100px;
 }
 
-/* Estado "solo Vidrift" forzado por JS un instante para animar el cambio de
-   tamaño cuando aparecen los demás servidores (ver renderizarServidores).
-   transition:none evita que el salto al estado previo se anime. */
-#controles.cargado-otros button.servidor-activo.animando-tamano {
-  min-width: 100%;
-  max-width: 100%;
-  transition: none;
-}
 
 #controles button:last-child {
   border-right: none;

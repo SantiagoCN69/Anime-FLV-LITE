@@ -1700,11 +1700,6 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     controles.appendChild(btn);
   });
 
-  // Marca cuando hay servidores además de Vidrift para poder estilizarlos.
-  if (controles.querySelectorAll("button").length > 1) {
-    controles.classList.add("cargado-otros");
-  }
-
   // 🔥 Primer video por defecto (omite mediafire)
   if (embeds && embeds.length > 0) {
     const firstPlayable = embeds.find(s =>
@@ -1739,15 +1734,15 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     videoContenedorGlobal.innerHTML = "No hay servidores disponibles para mostrar.";
   }
 
-  // Los botones se recrean en cada render, así que la transición CSS de
-  // tamaño no tiene estado previo del que animar. Al aparecer los demás
-  // servidores se fija el tamaño "solo Vidrift" un instante y se suelta:
-  // la transición lo anima hacia el tamaño de .cargado-otros.
-  const botonActivo = controles.querySelector(".servidor-activo");
-  if (!yaTeniaOtrosServidores && controles.classList.contains("cargado-otros") && botonActivo) {
-    botonActivo.classList.add("animando-tamano");
-    void botonActivo.offsetWidth;
-    botonActivo.classList.remove("animando-tamano");
+  // Cuando aparecen los demás servidores, el botón activo transiciona de
+  // 100% a 100px. Como los botones se recrean en cada render no hay estado
+  // previo que animar: un reflow fija el tamaño "solo Vidrift" y recién
+  // ahí se marca el contenedor para que la transición corra.
+  if (controles.querySelectorAll("button").length > 1) {
+    if (!yaTeniaOtrosServidores && controles.querySelector(".servidor-activo")) {
+      void controles.offsetHeight;
+    }
+    controles.classList.add("cargado-otros");
   }
   actualizarEstadoBotonDoblado(todosLosServidores);
 }
