@@ -556,7 +556,7 @@ function agregarBotonBuscarIA(container, searchTerm, posicion) {
   const mensaje = document.createElement('p');
   mensaje.className = 'cta-busqueda-ia-mensaje';
   mensaje.textContent = posicion === 'antes'
-    ? 'Estos resultados no parecen coincidir del todo con tu búsqueda.'
+    ? 'Estos resultados no coinciden? Prueba con la IA.'
     : '¿No encontraste exactamente lo que buscabas? Cuéntale a la IA qué tipo de anime quieres ver.';
   cta.append(mensaje, boton);
 
