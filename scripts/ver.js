@@ -1287,7 +1287,9 @@ async function cargarEpisodios() {
         }
         // Actualizar texto de botones de navegación
         actualizarTextoBotonesNavegacion();
-        await cargarVideoDesdeEpisodio(episodioActualIndex);
+        if (episodioCargadoIndex !== episodioActualIndex) {
+          await cargarVideoDesdeEpisodio(episodioActualIndex);
+        }
         return episodios;
       }
     }
@@ -1370,7 +1372,9 @@ async function cargarEpisodios() {
     }
     // Actualizar texto de botones de navegación
     actualizarTextoBotonesNavegacion();
-    await cargarVideoDesdeEpisodio(episodioActualIndex);
+    if (episodioCargadoIndex !== episodioActualIndex) {
+      await cargarVideoDesdeEpisodio(episodioActualIndex);
+    }
     return episodios;
   } catch (err) {
 
@@ -1512,6 +1516,9 @@ function aplicarServidoresDeApi(ep, servidores, mantenerReproduccion) {
 // la que dispara cargarEpisodios() al terminar comparten esta guarda, así el
 // iframe no se recrea dos veces.
 const cargasEpisodioEnCurso = new Set();
+// Último episodio cargado con éxito: evita que cargarEpisodios() dispare
+// una segunda carga del episodio que la carga temprana ya resolvió.
+let episodioCargadoIndex = null;
 
 function cargarVideoDesdeEpisodio(index) {
   if (cargasEpisodioEnCurso.has(index)) return Promise.resolve();
@@ -1552,6 +1559,10 @@ async function cargarVideoDesdeEpisodioInterno(index) {
   // lista de servidores. Se renderiza de inmediato y el cache, Firestore o
   // la API solo agregan el resto de botones después, sin recargar el iframe.
   renderizarServidores([]);
+
+  // Vidrift ya está reproduciendo: el episodio cuenta como cargado aunque la
+  // API de servidores falle después, así cargarEpisodios() no lo recarga.
+  episodioCargadoIndex = index;
 
   const cacheKey = `servers_${animeId}_${ep.number}`;
   const cached = serverCache.get(cacheKey);
