@@ -1670,7 +1670,6 @@ h4 {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-left: auto;
 }
 
 .theme-dot {
@@ -2261,6 +2260,9 @@ textarea {
 }
 
 @media (max-width: 600px) {
+  .theme-dots {
+    margin-left: auto; 
+  }
   footer {
     flex-direction: column;
     align-items: start;
