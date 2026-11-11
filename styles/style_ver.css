@@ -421,6 +421,7 @@ overflow: hidden;
   z-index: 2;
   padding: 15px;
   font-family: 'Manrope', sans-serif;
+  transition: filter 0.3s ease;
 }
 
 #controles button {
@@ -431,6 +432,23 @@ overflow: hidden;
 }
 #controles button:last-child {
   border-right: none;
+}
+
+/* Montaje animado de botones de servidor: arrancan colapsados (ancho 0 y
+   transparentes) y crecen a flex:1, así Vidrift se encoge fluidamente en vez
+   de dar un salto cuando aparecen los demás servidores. */
+#controles button.montando-servidor {
+  flex-grow: 0;
+  min-width: 0;
+  padding: 0;
+  opacity: 0;
+  transition: flex-grow .35s ease, min-width .35s ease, padding .35s ease, opacity .3s ease, filter .3s ease;
+}
+#controles button.montando-servidor.visible {
+  flex-grow: 1;
+  min-width: 100px;
+  padding: 15px;
+  opacity: 1;
 }
 #controles a {
   min-width: 65px;

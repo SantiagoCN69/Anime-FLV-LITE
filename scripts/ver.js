@@ -1603,6 +1603,9 @@ async function cargarVideoDesdeEpisodioInterno(index) {
 
 function renderizarServidores(todosLosServidores, opciones = {}) {
   const servidorAnterior = embeds[servidorActualIndex];
+  const clavesServidoresAnteriores = new Set(
+    embeds.map(s => `${s.name}|${s.url}|${s.vidrift ? 1 : 0}`)
+  );
   const mantenerReproduccion = Boolean(opciones.mantenerReproduccion && reproduccionActualId);
 
   // Filtramos los servidores antes de renderizarlos
@@ -1685,6 +1688,14 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     const btn = document.createElement("button");
     btn.textContent = String(srv.name || '').split(" ")[0] || `${i + 1}`;
     btn.dataset.serverIndex = i;
+    // Solo los servidores que no estaban en el render anterior montan
+    // colapsados y crecen con transición; los existentes (p. ej. Vidrift) se
+    // reacomodan fluidamente por el flex, sin desaparecer. En la primera
+    // renderización (sin botones previos) no hay animación de entrada.
+    if (clavesServidoresAnteriores.size > 0 &&
+        !clavesServidoresAnteriores.has(`${srv.name}|${srv.url}|${srv.vidrift ? 1 : 0}`)) {
+      btn.classList.add("montando-servidor");
+    }
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.classList.add("cargado");
     
@@ -1698,6 +1709,11 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     
     controles.appendChild(btn);
   });
+
+  // Forzar el estilo colapsado de los botones nuevos antes de soltarlo a su
+  // tamaño real, si no el navegador no pinta el estado inicial y no transiciona.
+  void controles.offsetHeight;
+  controles.querySelectorAll("button.montando-servidor").forEach(b => b.classList.add("visible"));
 
   // 🔥 Primer video por defecto (omite mediafire)
   if (embeds && embeds.length > 0) {
