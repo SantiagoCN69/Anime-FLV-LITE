@@ -1270,12 +1270,11 @@ async function sincronizarServidoresConApi(ep, datosFirestore = undefined) {
 async function cargarEpisodios() {
 
   if (!firestoreEnPausaPorCuota) try {
-    const episodiosRef = doc(db, "datos-animes", animeId);
-    const docSnap = await getDoc(episodiosRef);
+    // Reutiliza la promesa/caché compartida: la carga temprana de Vidrift
+    // pide el mismo documento, así solo se hace una lectura de Firestore.
+    const data = await obtenerDatosAnimeParaServidores();
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      recordarDocumentoAnime(data);
+    if (data && Object.keys(data).length) {
       tituloAnime = data.titulo || data.title || tituloAnime;
       portadaAnime = data.portada || data.cover || '';
       episodios = data.episodios || [];
