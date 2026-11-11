@@ -353,6 +353,10 @@ if (!Number.isInteger(episodioActualIndex) || episodioActualIndex < 0) {
   episodioActualIndex = 1;
 }
 let embeds = [];
+// La animación de montaje de los botones de servidor solo corre durante la
+// carga inicial del episodio de la URL; al cambiar de capítulo todo es
+// instantáneo.
+let animacionMontajeServidores = true;
 let bloquearAnuncios = localStorage.getItem("bloquearAnuncios") !== "false";
 // Esta preferencia se lee al abrir el reproductor. Vidrift recibe los
 // parámetros correspondientes al crear el iframe.
@@ -1546,6 +1550,9 @@ async function cargarVideoDesdeEpisodioInterno(index) {
     return;
   }
 
+  // A partir del primer cambio de episodio la animación de montaje queda
+  // desactivada para siempre en esta página.
+  if (index !== episodioActualIndex) animacionMontajeServidores = false;
   episodioActualIndex = index;
   history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
@@ -1603,9 +1610,13 @@ async function cargarVideoDesdeEpisodioInterno(index) {
 
 function renderizarServidores(todosLosServidores, opciones = {}) {
   const servidorAnterior = embeds[servidorActualIndex];
-  const clavesServidoresAnteriores = new Set(
-    embeds.map(s => `${s.name}|${s.url}|${s.vidrift ? 1 : 0}`)
-  );
+  // La clave de los servidores incluye el episodio: al cambiar de capítulo
+  // todos cuentan como nuevos y montan con transición. Vidrift usa una clave
+  // fija para no colapsar nunca.
+  const claveDeServidor = (s) => s.vidrift
+    ? "vidrift"
+    : `${episodioActualIndex}|${s.name}|${s.url}`;
+  const clavesServidoresAnteriores = new Set(embeds.map(claveDeServidor));
   const mantenerReproduccion = Boolean(opciones.mantenerReproduccion && reproduccionActualId);
 
   // Filtramos los servidores antes de renderizarlos
@@ -1692,8 +1703,9 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     // colapsados y crecen con transición; los existentes (p. ej. Vidrift) se
     // reacomodan fluidamente por el flex, sin desaparecer. En la primera
     // renderización (sin botones previos) no hay animación de entrada.
-    if (clavesServidoresAnteriores.size > 0 &&
-        !clavesServidoresAnteriores.has(`${srv.name}|${srv.url}|${srv.vidrift ? 1 : 0}`)) {
+    if (animacionMontajeServidores &&
+        clavesServidoresAnteriores.size > 0 &&
+        !clavesServidoresAnteriores.has(claveDeServidor(srv))) {
       btn.classList.add("montando-servidor");
     }
     btn.onclick = () => mostrarVideo(srv, btn);
