@@ -353,10 +353,6 @@ if (!Number.isInteger(episodioActualIndex) || episodioActualIndex < 0) {
   episodioActualIndex = 1;
 }
 let embeds = [];
-// La animación de montaje de los botones de servidor solo corre durante la
-// carga inicial del episodio de la URL; al cambiar de capítulo todo es
-// instantáneo.
-let animacionMontajeServidores = true;
 let bloquearAnuncios = localStorage.getItem("bloquearAnuncios") !== "false";
 // Esta preferencia se lee al abrir el reproductor. Vidrift recibe los
 // parámetros correspondientes al crear el iframe.
@@ -1550,9 +1546,6 @@ async function cargarVideoDesdeEpisodioInterno(index) {
     return;
   }
 
-  // A partir del primer cambio de episodio la animación de montaje queda
-  // desactivada para siempre en esta página.
-  if (index !== episodioActualIndex) animacionMontajeServidores = false;
   episodioActualIndex = index;
   history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
 
@@ -1610,13 +1603,6 @@ async function cargarVideoDesdeEpisodioInterno(index) {
 
 function renderizarServidores(todosLosServidores, opciones = {}) {
   const servidorAnterior = embeds[servidorActualIndex];
-  // La clave de los servidores incluye el episodio: al cambiar de capítulo
-  // todos cuentan como nuevos y montan con transición. Vidrift usa una clave
-  // fija para no colapsar nunca.
-  const claveDeServidor = (s) => s.vidrift
-    ? "vidrift"
-    : `${episodioActualIndex}|${s.name}|${s.url}`;
-  const clavesServidoresAnteriores = new Set(embeds.map(claveDeServidor));
   const mantenerReproduccion = Boolean(opciones.mantenerReproduccion && reproduccionActualId);
 
   // Filtramos los servidores antes de renderizarlos
@@ -1670,7 +1656,9 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
   embeds = [...servidores];
 
   const controles = document.getElementById("controles");
+  const yaTeniaOtrosServidores = controles.classList.contains("cargado-otros");
   controles.innerHTML = "";
+  controles.classList.remove("cargado-otros");
   
   embeds.forEach((srv, i) => {
     const url = srv.url?.toLowerCase?.() || "";
@@ -1694,20 +1682,11 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
       controles.classList.add("con-mediafire");
       return;
     }
-
+    
     // 🔥 RESTO -> button normal
     const btn = document.createElement("button");
     btn.textContent = String(srv.name || '').split(" ")[0] || `${i + 1}`;
     btn.dataset.serverIndex = i;
-    // Solo los servidores que no estaban en el render anterior montan
-    // colapsados y crecen con transición; los existentes (p. ej. Vidrift) se
-    // reacomodan fluidamente por el flex, sin desaparecer. En la primera
-    // renderización (sin botones previos) no hay animación de entrada.
-    if (animacionMontajeServidores &&
-        clavesServidoresAnteriores.size > 0 &&
-        !clavesServidoresAnteriores.has(claveDeServidor(srv))) {
-      btn.classList.add("montando-servidor");
-    }
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.classList.add("cargado");
     
@@ -1722,10 +1701,10 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     controles.appendChild(btn);
   });
 
-  // Forzar el estilo colapsado de los botones nuevos antes de soltarlo a su
-  // tamaño real, si no el navegador no pinta el estado inicial y no transiciona.
-  void controles.offsetHeight;
-  controles.querySelectorAll("button.montando-servidor").forEach(b => b.classList.add("visible"));
+  // Marca cuando hay servidores además de Vidrift para poder estilizarlos.
+  if (controles.querySelectorAll("button").length > 1) {
+    controles.classList.add("cargado-otros");
+  }
 
   // 🔥 Primer video por defecto (omite mediafire)
   if (embeds && embeds.length > 0) {
@@ -1759,6 +1738,17 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     }
   } else {
     videoContenedorGlobal.innerHTML = "No hay servidores disponibles para mostrar.";
+  }
+
+  // Los botones se recrean en cada render, así que la transición CSS de
+  // tamaño no tiene estado previo del que animar. Al aparecer los demás
+  // servidores se fija el tamaño "solo Vidrift" un instante y se suelta:
+  // la transición lo anima hacia el tamaño de .cargado-otros.
+  const botonActivo = controles.querySelector(".servidor-activo");
+  if (!yaTeniaOtrosServidores && controles.classList.contains("cargado-otros") && botonActivo) {
+    botonActivo.classList.add("animando-tamano");
+    void botonActivo.offsetWidth;
+    botonActivo.classList.remove("animando-tamano");
   }
   actualizarEstadoBotonDoblado(todosLosServidores);
 }

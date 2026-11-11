@@ -430,25 +430,29 @@ overflow: hidden;
   border-right: 1px solid var(--br);
   border-bottom: 1px solid var(--br);
 }
-#controles button:last-child {
-  border-right: none;
+
+
+#controles button.servidor-activo {
+  min-width: 100%;
+  max-width: 100%;
+  transition: min-width 0.3s ease, max-width 0.3s ease;
+}
+#controles.cargado-otros button.servidor-activo {
+  min-width: 100px;
+  max-width: 100px;
 }
 
-/* Montaje animado de botones de servidor: arrancan colapsados (ancho 0 y
-   transparentes) y crecen a flex:1, así Vidrift se encoge fluidamente en vez
-   de dar un salto cuando aparecen los demás servidores. */
-#controles button.montando-servidor {
-  flex-grow: 0;
-  min-width: 0;
-  padding: 0;
-  opacity: 0;
-  transition: flex-grow .35s ease, min-width .35s ease, padding .35s ease, opacity .3s ease, filter .3s ease;
+/* Estado "solo Vidrift" forzado por JS un instante para animar el cambio de
+   tamaño cuando aparecen los demás servidores (ver renderizarServidores).
+   transition:none evita que el salto al estado previo se anime. */
+#controles.cargado-otros button.servidor-activo.animando-tamano {
+  min-width: 100%;
+  max-width: 100%;
+  transition: none;
 }
-#controles button.montando-servidor.visible {
-  flex-grow: 1;
-  min-width: 100px;
-  padding: 15px;
-  opacity: 1;
+
+#controles button:last-child {
+  border-right: none;
 }
 #controles a {
   min-width: 65px;
