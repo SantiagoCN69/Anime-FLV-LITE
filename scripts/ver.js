@@ -614,7 +614,7 @@ btnBloquear?.addEventListener("click", () => {
 const btnCambioServers = document.getElementById("btn-cambio-servers");
 if (btnCambioServers) {
   // Actualizar estado inicial del botón según el parámetro URL o preferencia
-  btnCambioServers.textContent = modoDoblado ? "subtitulado" : "doblado";
+  btnCambioServers.textContent = modoDoblado ? "Subtitulado" : "Doblado";
   btnCambioServers.classList.toggle("activo", modoDoblado);
   
   btnCambioServers.addEventListener("click", function() {
@@ -622,7 +622,7 @@ if (btnCambioServers) {
     preferenciaDoblado = modoDoblado;
     
     // Cambiamos el texto del botón según el estado
-    this.textContent = modoDoblado ? "subtitulado" : "doblado";
+    this.textContent = modoDoblado ? "Subtitulado" : "Doblado";
     this.classList.toggle("activo", modoDoblado); // Por si quieres darle estilos CSS extra
     
     // Guardar preferencia en localStorage
@@ -681,7 +681,7 @@ function actualizarEstadoBotonDoblado(servidores) {
     btn.disabled = false;
     btn.style.opacity = "1";
     btn.style.cursor = "pointer";
-    btn.textContent = modoDoblado ? "subtitulado" : "doblado";
+    btn.textContent = modoDoblado ? "Subtitulado" : "Doblado";
     btn.classList.toggle("activo", modoDoblado);
   }
 }
@@ -1642,7 +1642,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
       const btn = document.getElementById("btn-cambio-servers");
       if (btn) {
-        btn.textContent = modoDoblado ? "subtitulado" : "doblado";
+        btn.textContent = modoDoblado ? "Subtitulado" : "Doblado";
         btn.classList.toggle("activo", modoDoblado);
       }
     }
@@ -2165,8 +2165,8 @@ async function mostrarVideo(link, botonSeleccionado) {
       const preferirAudioEspanol = preferenciaDoblado;
       const preferirSubtitulosEspanol = true;
       debugLog("[Vidrift] Preferencia de idioma aplicada", {
-        preferencia: preferenciaDoblado ? "doblado" : "subtitulado",
-        modoServidoresActual: modoDoblado ? "doblado" : "subtitulado",
+        preferencia: preferenciaDoblado ? "Doblado" : "Subtitulado",
+        modoServidoresActual: modoDoblado ? "Doblado" : "Subtitulado",
         subtitulosEspanol: preferirSubtitulosEspanol
       });
       let audioComprobado = !preferirAudioEspanol;
