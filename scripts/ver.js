@@ -1611,17 +1611,21 @@ async function cargarVideoDesdeEpisodioInterno(index) {
   return ep;
 }
 
+let animacionInicialCompletada = false;
+
+document.getElementById("controles")?.addEventListener("wheel", (evento) => {
+  if (evento.deltaY !== 0) {
+    evento.preventDefault();
+    evento.currentTarget.scrollLeft += evento.deltaY;
+  }
+}, { passive: false });
+
 function renderizarServidores(todosLosServidores, opciones = {}) {
   const servidorAnterior = embeds[servidorActualIndex];
   const mantenerReproduccion = Boolean(opciones.mantenerReproduccion && reproduccionActualId);
 
-  // Filtramos los servidores antes de renderizarlos
   let servidores = filtrarServidores(todosLosServidores, modoDoblado);
 
-  // Si el episodio solo está disponible en el otro idioma, usarlo en vez de
-  // mostrar un falso "No hay servidores disponibles". Antes esto solo cubría
-  // doblado -> subtitulado; por eso un episodio exclusivamente (Lat) fallaba
-  // cuando la URL abría con servers=sub.
   if (!servidores?.length) {
     const modoAlternativo = !modoDoblado;
     const servidoresAlternativos = filtrarServidores(todosLosServidores, modoAlternativo);
@@ -1630,8 +1634,6 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
       modoDoblado = modoAlternativo;
       servidores = servidoresAlternativos;
 
-      // Reflejar el modo realmente disponible, sin cambiar la preferencia
-      // guardada del usuario para otros episodios.
       const newUrl = new URL(window.location);
       newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
       window.history.replaceState({}, "", newUrl);
@@ -1644,8 +1646,6 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     }
   }
 
-  // Vidrift no depende de los enlaces de este episodio, pero se agrega después
-  // de comprobar el idioma alternativo para no impedir ese fallback.
   const vidriftServer = {
     name: "Vidrift",
     type: "player",
@@ -1654,26 +1654,17 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
   };
   servidores = [vidriftServer, ...servidores];
 
-  if (!servidores?.length) {
-    videoContenedorGlobal.innerHTML = modoDoblado 
-      ? "<p class='span-carga'>No hay servidores doblados disponibles para este episodio.</p>" 
-      : "<p class='span-carga'>No hay servidores disponibles.</p>";
-    document.getElementById("controles").innerHTML = "";
-    return;
-  }
-
-  // Clonamos el array para no mutar los datos en caché
   embeds = [...servidores];
 
   const controles = document.getElementById("controles");
-  const yaTeniaOtrosServidores = controles.classList.contains("cargado-otros");
   controles.innerHTML = "";
-  controles.classList.remove("cargado-otros");
-  
+  controles.classList.remove("cargado-otros", "con-mediafire", "cargado");
+
+  let cantidadBotones = 0;
+
   embeds.forEach((srv, i) => {
     const url = srv.url?.toLowerCase?.() || "";
 
-    // 🔥 MEDIAFIRE -> <a> DESCARGAR
     if (url.includes("mediafire.com")) {
       const a = document.createElement("a");
       a.href = srv.url;
@@ -1692,69 +1683,50 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
       controles.classList.add("con-mediafire");
       return;
     }
-    
-    // 🔥 RESTO -> button normal
+
     const btn = document.createElement("button");
-    btn.textContent = String(srv.name || '').split(" ")[0] || `${i + 1}`;
+    btn.textContent = String(srv.name || "").split(" ")[0] || `${i + 1}`;
     btn.dataset.serverIndex = i;
     btn.onclick = () => mostrarVideo(srv, btn);
-    controles.classList.add("cargado");
-    
-    // Rueda del ratón para scroll horizontal
-    controles.addEventListener('wheel', (evento) => {
-      if (evento.deltaY !== 0) {
-        evento.preventDefault();
-        controles.scrollLeft += evento.deltaY; 
-      }
-    });
-    
     controles.appendChild(btn);
+    cantidadBotones++;
   });
 
-  // 🔥 Primer video por defecto (omite mediafire)
-  if (embeds && embeds.length > 0) {
-    const firstPlayable = embeds.find(s =>
-      !s.url?.includes("mediafire.com")
-    );
-    const buttons = controles.querySelectorAll("button");
+  if (cantidadBotones > 0) {
+    controles.classList.add("cargado");
 
-    if (buttons.length > 0) {
-      let indexInEmbeds = embeds.indexOf(firstPlayable || embeds[0]);
+    const firstPlayable = embeds.find(s => !s.url?.toLowerCase?.().includes("mediafire.com"));
+    let indexInEmbeds = embeds.indexOf(firstPlayable || embeds[0]);
 
-      if (mantenerReproduccion) {
-        if (servidorAnterior?.vidrift) {
-          indexInEmbeds = embeds.findIndex(servidor => servidor.vidrift);
-        } else if (servidorAnterior?.url) {
-          indexInEmbeds = embeds.findIndex(servidor => servidor.url === servidorAnterior.url);
-        }
-        if (indexInEmbeds < 0) indexInEmbeds = servidorActualIndex;
+    if (mantenerReproduccion) {
+      if (servidorAnterior?.vidrift) {
+        indexInEmbeds = embeds.findIndex(servidor => servidor.vidrift);
+      } else if (servidorAnterior?.url) {
+        indexInEmbeds = embeds.findIndex(servidor => servidor.url === servidorAnterior.url);
       }
+      if (indexInEmbeds < 0) indexInEmbeds = servidorActualIndex;
+    }
 
-      servidorActualIndex = indexInEmbeds;
-      const buttonToSelect = buttons[indexInEmbeds] || buttons[0];
+    servidorActualIndex = indexInEmbeds;
+    const buttonToSelect = controles.querySelector(`button[data-server-index="${indexInEmbeds}"]`) || controles.querySelector("button");
 
-      if (mantenerReproduccion) {
-        buttonToSelect?.classList.add("servidor-activo");
-      } else {
-        mostrarVideo(firstPlayable || embeds[0], buttonToSelect);
-      }
+    if (mantenerReproduccion) {
+      buttonToSelect?.classList.add("servidor-activo");
     } else {
-      videoContenedorGlobal.innerHTML = "No se encontraron botones de servidor.";
+      mostrarVideo(embeds[indexInEmbeds], buttonToSelect);
     }
   } else {
-    videoContenedorGlobal.innerHTML = "No hay servidores disponibles para mostrar.";
+    videoContenedorGlobal.innerHTML = "No se encontraron botones de servidor.";
   }
 
-  // Cuando aparecen los demás servidores, el botón activo transiciona de
-  // 100% a 100px. Como los botones se recrean en cada render no hay estado
-  // previo que animar: un reflow fija el tamaño "solo Vidrift" y recién
-  // ahí se marca el contenedor para que la transición corra.
-  if (controles.querySelectorAll("button").length > 1) {
-    if (!yaTeniaOtrosServidores && controles.querySelector(".servidor-activo")) {
+  if (cantidadBotones > 1) {
+    if (!animacionInicialCompletada && controles.querySelector(".servidor-activo")) {
       void controles.offsetHeight;
+      animacionInicialCompletada = true;
     }
     controles.classList.add("cargado-otros");
   }
+
   actualizarEstadoBotonDoblado(todosLosServidores);
 }
 
