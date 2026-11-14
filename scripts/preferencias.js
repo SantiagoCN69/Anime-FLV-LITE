@@ -322,7 +322,7 @@ function initPreferencias() {
 
   const selectCV = document.getElementById('select-cv');
   if (selectCV) {
-    const currentCV = localStorage.getItem('continuar_viendo_pos') || 'cv-ambas';
+    const currentCV = localStorage.getItem('continuar_viendo_pos') || 'cv-main';
     selectCV.value = currentCV;
     document.body.classList.remove('cv-main', 'cv-sidebar', 'cv-ambas');
     document.body.classList.add(currentCV);
