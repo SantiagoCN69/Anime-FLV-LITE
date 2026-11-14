@@ -944,7 +944,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   margin: 1rem;
   margin-bottom: 1.5rem;
 } 
-@media (max-width: 370px) {
+@media (max-width: 387px) {
   .botones-reproductor span {
     font-size: clamp(0.7rem, 2vw, 0.8rem); 
   }
