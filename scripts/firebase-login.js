@@ -247,9 +247,6 @@ onAuthStateChanged(auth, (user) => {
   crearmodal(user);
   document.dispatchEvent(new CustomEvent('authStateReady', { detail: { user } }));
   
-  const btnLogin = document.getElementById('btn-login');
-  if (btnLogin) btnLogin.disabled = false;
-  
   cargarTemaDesdeFirestore();
 });
 
