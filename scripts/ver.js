@@ -2173,6 +2173,8 @@ async function mostrarVideo(link, botonSeleccionado) {
       let intervaloEstadoVidrift = null;
       let recibirEstadoVidrift;
       let intentosInfoSiguiente = 0;
+      const servidoresVidriftProbados = new Set();
+      let servidorVidriftOriginal = null;
 
       const enviarInformacionSiguienteAVidrift = () => {
         const siguiente = episodios.find(({ number }) => Number(number) > episodioActualIndex);
@@ -2298,8 +2300,48 @@ async function mostrarVideo(link, botonSeleccionado) {
         if (preferirSubtitulosEspanol) {
           debugLog("[Vidrift] Pista española detectada", {
             servidor: event.data.server,
-            subtitulo: subtituloEspanol || null
+            subtitulo: subtituloEspanol || null,
+            servidores: event.data.servers?.map(({ value, label, state }) => ({ value, label, state }))
           });
+        }
+
+        // Algunos servidores internos de Vidrift no exponen subtítulos en
+        // español aunque otros sí. Si el actual no tiene la pista, se pide a
+        // Vidrift cambiar de servidor y el estado nuevo vuelve por este mismo
+        // listener. Cada servidor se prueba una sola vez por episodio.
+        if (preferirSubtitulosEspanol && !subtituloEspanol) {
+          const servidorActual = event.data.server;
+          servidorVidriftOriginal ??= servidorActual;
+          if (servidorActual) servidoresVidriftProbados.add(servidorActual);
+          const siguienteServidor = event.data.servers?.find(
+            (servidor) => servidor.value
+              && servidor.value !== servidorActual
+              && (!servidor.state || servidor.state === "ready")
+              && !servidoresVidriftProbados.has(servidor.value)
+          );
+          if (siguienteServidor) {
+            servidoresVidriftProbados.add(siguienteServidor.value);
+            iframe.contentWindow.postMessage(
+              { type: "vidrift:set", server: siguienteServidor.value },
+              "https://embed.vidrift.net"
+            );
+            debugLog("[Vidrift] Sin subtítulo en español en este servidor; probando otro", {
+              servidorActual,
+              siguienteServidor: siguienteServidor.value,
+              etiqueta: siguienteServidor.label
+            });
+          } else if (servidorActual && servidorActual !== servidorVidriftOriginal) {
+            // Ningún servidor interno tiene la pista: se vuelve al original
+            // para no dejar al espectador en una fuente distinta a la que
+            // eligió o le tocó por failover.
+            iframe.contentWindow.postMessage(
+              { type: "vidrift:set", server: servidorVidriftOriginal },
+              "https://embed.vidrift.net"
+            );
+            debugLog("[Vidrift] Ningún servidor tiene subtítulo en español; se restaura el original", {
+              servidorOriginal: servidorVidriftOriginal
+            });
+          }
         }
 
         if (preferirAudioEspanol && audioEspanol) {
