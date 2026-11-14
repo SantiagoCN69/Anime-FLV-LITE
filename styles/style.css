@@ -2260,7 +2260,7 @@ textarea {
 }
 
 @media (max-width: 600px) {
-  .theme-dots {
+  .setting-row .theme-dots {
     margin-left: auto; 
   }
   footer {
