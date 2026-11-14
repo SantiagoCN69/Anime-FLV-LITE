@@ -230,26 +230,7 @@
 }
 
 @media screen and (max-width: 640px) {
-  .header-schedule {
-    align-items: stretch;
-    flex-direction: column;
-  }
 
-  .search-input {
-    width: 100%;
-    max-width: none;
-  }
-
-  .day-buttons {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: .5rem;
-  }
-
-  .btn-day {
-    flex: 0 0 auto;
-  }
 
   .anime-card-schedule {
     grid-template-columns: 52px minmax(0, 1fr);
