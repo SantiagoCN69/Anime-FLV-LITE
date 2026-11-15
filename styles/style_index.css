@@ -1065,7 +1065,10 @@ nav.filtros {
   gap: 0.5rem;
   margin-bottom: 0.20rem;
   .hero-badge {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 99px;
+    border: none;
   }
 }
 
@@ -1074,7 +1077,6 @@ nav.filtros {
   display: inline-flex;
   align-items: center;
   text-wrap: nowrap;
-  border-radius: 999px;
   font-size: 0.7rem;
   opacity: 0.8;
   font-weight: 700;
@@ -1093,31 +1095,31 @@ nav.filtros {
 }
 .hero-badge--ongoing {
   color: #3ec87f;
-  /* background: rgba(62, 200, 127, 0.12);
-  border: 1px solid rgba(62, 200, 127, 0.3); */
+  background: rgba(62, 200, 127, 0.12);
+  border: 1px solid rgba(62, 200, 127, 0.3);
 }
 
 .hero-badge--new {
   color: #FFFF66;
-  /* background: rgba(255, 255, 102, 0.12);
-  border: 1px solid rgba(255, 255, 102, 0.3); */
+    background: rgba(255, 255, 102, 0.12);
+    border: 1px solid rgba(255, 255, 102, 0.3);
 }
 
 .hero-badge--status {
   color: #f64f4f;
-  /* background: rgba(246, 79, 79, 0.12);
-  border: 1px solid rgba(246, 79, 79, 0.3); */
+  background: rgba(246, 79, 79, 0.12);
+  border: 1px solid rgba(246, 79, 79, 0.3);
 }
 
 .hero-badge--personalizado {
   background: linear-gradient(135deg,
-    color-mix(in srgb, var(--btn) 50%, white) 0%,
-    color-mix(in srgb, var(--btn) 50%, white) 50%);
 
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  border: none; /* Eliminamos el borde */
+   color-mix(in srgb, var(--btn) 45%, transparent) 0%,
+
+    color-mix(in srgb, var(--btn) 25%, transparent) 100%);
+
+  border: 1px solid rgba(245, 87, 108, 0.5);
+
 }
 .hero-slide__title {
   padding-bottom: 5px;
