@@ -405,7 +405,13 @@ async function resolverTemporadaEfectivaSlug() {
 
       const nodos = await obtenerCadenaTemporadasTv();
       const posicion = nodos.findIndex(nodo => nodo.slug === animeId);
-      return posicion > 0 ? posicion + 1 : detectada;
+      // La posición solo cuenta como temporada si la serie usa marcadores
+      // reales: sin ellos, un spin-off con subtítulo propio
+      // ("dragon-ball-super-beerus") no es una temporada de la serie base.
+      const hayMarcadoresTemporada = nodos.some(nodo =>
+        nodo.slug !== animeId && obtenerSlugBaseDeTemporada(nodo.slug) !== nodo.slug
+      );
+      return posicion > 0 && hayMarcadoresTemporada ? posicion + 1 : detectada;
     })();
   }
   return promesaTemporadaEfectiva;
