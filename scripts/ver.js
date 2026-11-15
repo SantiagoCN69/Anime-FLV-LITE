@@ -712,6 +712,19 @@ function getNumeroCapitulo(episodio, index) {
   return index + 1;
 }
 
+// Posición del episodio dentro de la lista. La navegación (siguiente,
+// anterior y maratón) usa la posición y no `number ± 1`, así tolera
+// especiales y saltos de numeración (ej. 12 -> 14 sin 13).
+function obtenerPosicionEpisodio(numeroEpisodio) {
+  const buscado = String(numeroEpisodio);
+  let pos = episodios.findIndex(ep => String(ep.number) === buscado);
+  if (pos === -1) {
+    const num = parseInt(numeroEpisodio, 10);
+    pos = episodios.findIndex((ep, idx) => getNumeroCapitulo(ep, idx) === num);
+  }
+  return pos;
+}
+
 // Funciones globales para el selector de capítulos
 function generarDropdownCapitulos() {
   if (!dropdownCapitulos || !episodios || episodios.length === 0) return;
@@ -1512,7 +1525,8 @@ function guardarServidoresEnCache(episodio, servidores) {
 }
 
 function obtenerSiguienteEpisodio(index) {
-  return episodios.find(e => String(e.number) === String(Number(index) + 1));
+  const pos = obtenerPosicionEpisodio(index);
+  return pos === -1 ? undefined : episodios[pos + 1];
 }
 
 async function precargarSiguienteEpisodio(index, datosFirestore = undefined) {
@@ -2845,18 +2859,29 @@ function actualizarEstadoBotones() {
     return;
   }
 
-  const primerEpisodio = episodios[0];
-  const primerNumero = getNumeroCapitulo(primerEpisodio, 0);
-  const esPrimerEpisodio = episodioActualIndex <= primerNumero;
-  
-  btnAnterior.disabled = esPrimerEpisodio;
-  btnAnterior.classList.toggle('desactivado', esPrimerEpisodio);
+  const pos = obtenerPosicionEpisodio(episodioActualIndex);
+  if (pos !== -1) {
+    const esPrimerEpisodio = pos === 0;
+    btnAnterior.disabled = esPrimerEpisodio;
+    btnAnterior.classList.toggle('desactivado', esPrimerEpisodio);
 
-  const ultimoEpisodio = episodios[episodios.length - 1];
-  const ultimoNumero = getNumeroCapitulo(ultimoEpisodio, episodios.length - 1);
-  const esUltimoEpisodio = episodioActualIndex >= ultimoNumero;
-  btnSiguiente.disabled = esUltimoEpisodio;
-  btnSiguiente.classList.toggle('desactivado', esUltimoEpisodio);
+    const esUltimoEpisodio = pos === episodios.length - 1;
+    btnSiguiente.disabled = esUltimoEpisodio;
+    btnSiguiente.classList.toggle('desactivado', esUltimoEpisodio);
+  } else {
+    // Episodio fuera de la lista (ej. 404 o carga a medio camino):
+    // conservar la comparación numérica como antes.
+    const primerNumero = getNumeroCapitulo(episodios[0], 0);
+    const esPrimerEpisodio = episodioActualIndex <= primerNumero;
+    btnAnterior.disabled = esPrimerEpisodio;
+    btnAnterior.classList.toggle('desactivado', esPrimerEpisodio);
+
+    const ultimoEpisodio = episodios[episodios.length - 1];
+    const ultimoNumero = getNumeroCapitulo(ultimoEpisodio, episodios.length - 1);
+    const esUltimoEpisodio = episodioActualIndex >= ultimoNumero;
+    btnSiguiente.disabled = esUltimoEpisodio;
+    btnSiguiente.classList.toggle('desactivado', esUltimoEpisodio);
+  }
   
   // Activar el selector de capítulos cuando hay episodios
   if (btnSelectorCapitulo) {
@@ -2870,17 +2895,18 @@ function actualizarEstadoBotones() {
 const tSalto = () => `[SALTO-CAP +${Math.round(performance.now())}ms]`;
 
 async function irAlSiguienteCapitulo() {
-  const ultimoEpisodio = episodios[episodios.length - 1];
-  if (ultimoEpisodio && episodioActualIndex < ultimoEpisodio.number) {
+  const pos = obtenerPosicionEpisodio(episodioActualIndex);
+  const siguiente = pos === -1 ? undefined : episodios[pos + 1];
+  if (siguiente) {
     const inicio = performance.now();
-    console.log(tSalto(), "inicio salto a cap", episodioActualIndex + 1);
+    console.log(tSalto(), "inicio salto a cap", siguiente.number);
     // El guardado de "visto" (getDoc + setDoc en Firestore) va en paralelo con
     // la carga del siguiente capítulo: esperarlo en serie añadía segundos al
     // salto automático de fin de episodio.
     const guardadoVisto = marcarCapituloActualComoVisto()
       .then(() => console.log(tSalto(), "visto guardado", Math.round(performance.now() - inicio), "ms"))
       .catch(e => console.warn(tSalto(), "error guardando visto", e));
-    await cargarVideoDesdeEpisodio(episodioActualIndex + 1);
+    await cargarVideoDesdeEpisodio(siguiente.number);
     console.log(tSalto(), "cargarVideoDesdeEpisodio listo", Math.round(performance.now() - inicio), "ms");
     await guardadoVisto;
     refrescarUIEstadoCapitulo();
@@ -2899,13 +2925,14 @@ btnSiguiente.addEventListener("click", async (e) => {
 
 btnAnterior.addEventListener("click", async (e) => {
   e.preventDefault();
-  const primerEpisodio = episodios[0];
-  if (primerEpisodio && episodioActualIndex > primerEpisodio.number) {
+  const pos = obtenerPosicionEpisodio(episodioActualIndex);
+  const anterior = pos > 0 ? episodios[pos - 1] : undefined;
+  if (anterior) {
     // const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
     // if (marcarVistoBtn && marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
     //   await toggleYGuardarEstadoCapitulo();
     // }
-    await cargarVideoDesdeEpisodio(episodioActualIndex - 1);
+    await cargarVideoDesdeEpisodio(anterior.number);
     refrescarUIEstadoCapitulo();
     sincronizarUINavegacion();
   }
