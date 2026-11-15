@@ -892,18 +892,11 @@ function actualizarNumeroCapitulo() {
 
 function actualizarTextoBotonesNavegacion() {
   if (!episodios || episodios.length === 0) return;
-  
-  // Buscar el índice actual de forma más robusta
-  let currentIndex = -1;
-  
-  // Primero intentar buscar por número exacto (usando comparación numérica)
-  const numeroActual = parseInt(episodioActualIndex, 10);
-  currentIndex = episodios.findIndex((ep, idx) => getNumeroCapitulo(ep, idx) === numeroActual);
-  
-  // Último fallback: usar episodioActualIndex - 1
-  if (currentIndex === -1) {
-    currentIndex = parseInt(episodioActualIndex, 10) - 1;
-  }
+
+  // Misma posición que usa la navegación (botones y maratón): buscar por
+  // `number - 1` asumía numeración correlativa y mostraba capítulos
+  // equivocados en series con especiales o huecos en la numeración.
+  const currentIndex = obtenerPosicionEpisodio(episodioActualIndex);
   
   if (textoAnterior) {
     if (currentIndex > 0) {
@@ -2603,7 +2596,13 @@ async function mostrarVideo(link, botonSeleccionado) {
       let servidorVidriftOriginal = null;
 
       const enviarInformacionSiguienteAVidrift = () => {
-        const siguiente = episodios.find(({ number }) => Number(number) > episodioActualIndex);
+        // Mismo criterio que los botones de navegación: el siguiente es el
+        // vecino en la lista, no el primer número mayor (hay series con
+        // especiales o huecos en la numeración).
+        const posActual = obtenerPosicionEpisodio(episodioActualIndex);
+        const siguiente = posActual === -1
+          ? episodios.find(({ number }) => Number(number) > Number(episodioActualIndex))
+          : episodios[posActual + 1];
 
         // La lista de capítulos y el iframe se cargan en paralelo. Esperar un
         // instante evita ocultar el botón "Siguiente episodio" por error.
