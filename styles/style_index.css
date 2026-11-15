@@ -1046,12 +1046,12 @@ nav.filtros {
   flex-direction: column;
   justify-content: start;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 1rem;
   height: 100%;
   padding: 2rem;
   max-width: min(60%, 720px);
   
-  padding-bottom: calc(60px + 2rem);
+  padding-bottom: calc(40px + 3.5rem);
 }
 
 /* The feature should introduce the catalogue, not postpone it. */
@@ -1059,56 +1059,65 @@ nav.filtros {
   opacity: .82;
 }
 
-.hero-slide__actions .hero-btn--secondary:hover,
-.hero-slide__actions .hero-btn--secondary:focus-visible {
-  opacity: 1;
-}
-
 .hero-slide__badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0.20rem;
+  .hero-badge {
+    font-size: 0.85rem;
+  }
 }
 
 .hero-badge {
   /* backdrop-filter: blur(8px); */
   display: inline-flex;
   align-items: center;
-  padding: 0.28rem 0.8rem;
   text-wrap: nowrap;
   border-radius: 999px;
   font-size: 0.7rem;
+  opacity: 0.8;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
-  border: 1px solid rgba(var(--bgt), .1);
-  background: color-mix(in srgb, var(--btn2) 15%, var(--b));
 }
-
+.hero-badge:not(:last-child)::after {
+  content: "";
+  display: inline-block;
+  width: 4px;       /* Tamaño del círculo */
+  height: 4px;      /* Tamaño del círculo */
+  background-color: #ffffff; /* Color del círculo */
+  border-radius: 50%;
+  margin-left: 12px;  /* Espacio a la izquierda */
+  margin-right: 12px; /* Espacio a la derecha */
+  vertical-align: middle;
+}
 .hero-badge--ongoing {
   color: #3ec87f;
-  background: rgba(62, 200, 127, 0.12);
-  border: 1px solid rgba(62, 200, 127, 0.3);
+  /* background: rgba(62, 200, 127, 0.12);
+  border: 1px solid rgba(62, 200, 127, 0.3); */
 }
 
 .hero-badge--new {
   color: #FFFF66;
-  background: rgba(255, 255, 102, 0.12);
-  border: 1px solid rgba(255, 255, 102, 0.3);
+  /* background: rgba(255, 255, 102, 0.12);
+  border: 1px solid rgba(255, 255, 102, 0.3); */
 }
 
 .hero-badge--status {
   color: #f64f4f;
-  background: rgba(246, 79, 79, 0.12);
-  border: 1px solid rgba(246, 79, 79, 0.3);
+  /* background: rgba(246, 79, 79, 0.12);
+  border: 1px solid rgba(246, 79, 79, 0.3); */
 }
 
 .hero-badge--personalizado {
   background: linear-gradient(135deg,
-   color-mix(in srgb, var(--btn) 45%, transparent) 0%,
-    color-mix(in srgb, var(--btn) 25%, transparent) 100%);
-  border: 1px solid rgba(245, 87, 108, 0.5);
+    color-mix(in srgb, var(--btn) 50%, white) 0%,
+    color-mix(in srgb, var(--btn) 50%, white) 50%);
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border: none; /* Eliminamos el borde */
 }
 .hero-slide__title {
   padding-bottom: 5px;
@@ -1145,7 +1154,6 @@ nav.filtros {
 
 .hero-slide__extra-badges {
 display: flex;
-gap: 8px;
 }
 
 
@@ -1222,8 +1230,7 @@ gap: 8px;
 }
 @media (hover: hover) {
   .hero-btn:hover {
-    transform: translateY(-4px) !important;
-    transition-delay: 0s !important
+    filter: brightness(1.2);
   }
 }
 

@@ -799,10 +799,11 @@ function generarSlideHTML(a, i, usarBannerDinamico = false) {
         ${customBadgesHtml}
         <div class="hero-slide__actions ${isPE ? 'left-align' : ''}">
           <a href="/ver?id=${a.id}&episode=1" class="hero-btn hero-btn--primary ${isPE ? 'hidden' : ''}">
-            <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.49 9.6L5.6 16.77C4.9 17.19 4 16.69 4 15.87V7.87C4 4.38 7.77 2.2 10.8 3.94L15.39 6.58L17.48 7.78C18.17 8.19 18.18 9.19 17.49 9.6Z"/><path d="M18.09 15.46L14.04 17.8L10 20.13C8.55 20.96 6.91 20.79 5.72 19.95C5.14 19.55 5.21 18.66 5.82 18.3L18.53 10.68C19.13 10.32 19.92 10.66 20.03 11.35C20.28 12.9 19.64 14.57 18.09 15.46Z"/></svg></span> Ver Ahora
+            <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools --> <path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 4.59863L18.6021 12L7.5 19.4014V4.59863ZM9 7.40141V16.5986L15.8979 12L9 7.40141Z" fill="#ffffff"></path> </g></svg></span> Ver Ahora
           </a>
           <a href="/anime?id=${a.id}" class="hero-btn hero-btn--secondary">
-            <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 17V11" stroke-linecap="round"/><circle cx="1" cy="1" r="1" transform="matrix(1 0 0 -1 11 9)" fill="currentColor"/><path d="M7 3.34C8.47 2.49 10.18 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 10.18 2.49 8.47 3.34 7" stroke-linecap="round"/></svg></span> <span class="hero-btn__label">Más información</span>
+            <span class="hero-btn__label">Más información</span>
+            <span class="hero-btn__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M6 12H18M18 12L13 7M18 12L13 17" stroke="Currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg></span>
           </a>
         </div>
       </div>
