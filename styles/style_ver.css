@@ -440,8 +440,23 @@ overflow: hidden;
   color: var(--t1);
   border-right: 1px solid var(--br);
   border-bottom: 1px solid var(--br);
+  
 }
-
+#controles button.prefer {
+  opacity: 1;
+  
+}
+#controles button.prefer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  background-color: #f3c654; /* Tono amarillo/dorado de la esquina */
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+  pointer-events: none; /* Evita que interfiera con el clic en el botón */
+}
 
 #controles button.servidor-activo {
   min-width: 100%;
@@ -475,7 +490,7 @@ overflow: hidden;
   background-color: var(--br);
   border-bottom: 2px solid var(--btn);
 }
-#controles .servidor-activo::after {
+#controles .servidor-activo::before {
   content: "";
   position: absolute;
   bottom: 0;

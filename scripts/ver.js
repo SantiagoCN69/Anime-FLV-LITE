@@ -1390,19 +1390,19 @@ function reordenarServidores(servidores) {
     // Solo jkanime con /umv?e= y /um?e= tienen prioridad máxima
     else if ((url.includes('jkanime.net') || url.includes('jkplayer')) &&
              (url.includes('/umv?e=') || url.includes('/um?e='))) {
-      jkanimePriority.push(srv);
+      jkanimePriority.push({ ...srv, preferido: true });
     }
     else if (url.includes('yourupload.com/embed/')) {
-      priority.push(srv);
+      priority.push({ ...srv, preferido: true });
     }
     else if (url.includes('mega.nz/')) {
-      priority.push(srv);
+      priority.push({ ...srv, preferido: true });
     }
     else if (url.includes('mp4upload.com')) {
-      priority.push(srv);
+      priority.push({ ...srv, preferido: true });
     }
     else if (url.includes('mdy48tn97.com')) {
-      priority.push(srv);
+      priority.push({ ...srv, preferido: true });
     }
     else if (url.includes('mediafire.com')) {
       mediafire.push({ ...srv, name: "Descargar" });
@@ -1993,6 +1993,11 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
     const btn = document.createElement("button");
     btn.textContent = String(srv.name || "").split(" ")[0] || nombreServidorDesdeUrl(srv.url, `${i + 1}`);
+    if (srv.vidrift) {
+      btn.classList.add("prefer", "vidrift");
+    } else if (srv.preferido) {
+      btn.classList.add("prefer");
+    }
     btn.dataset.serverIndex = i;
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
