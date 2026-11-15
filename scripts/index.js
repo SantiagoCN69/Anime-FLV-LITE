@@ -1713,7 +1713,7 @@ function inicializarContinuarViendo() {
       const btn = container.querySelector(`.scroll-btn-${dir}`);
       if (btn) {
         btn.style.cssText = 'opacity: 1; pointer-events: auto;';
-        btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 634 : -634, behavior: 'smooth' });
+        btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 889 : -889, behavior: 'smooth' });
       }
     });
   }
