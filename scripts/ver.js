@@ -1848,10 +1848,14 @@ const cargasEpisodioEnCurso = new Set();
 let episodioCargadoIndex = null;
 
 function cargarVideoDesdeEpisodio(index) {
-  if (cargasEpisodioEnCurso.has(index)) return Promise.resolve();
-  cargasEpisodioEnCurso.add(index);
-  return cargarVideoDesdeEpisodioInterno(index)
-    .finally(() => cargasEpisodioEnCurso.delete(index));
+  // ep.number puede llegar como string desde la API/Firestore: sin esta
+  // conversión "12" + offset produce "124" en la URL de Vidrift.
+  const indice = Number(index);
+  if (!Number.isFinite(indice)) return Promise.resolve();
+  if (cargasEpisodioEnCurso.has(indice)) return Promise.resolve();
+  cargasEpisodioEnCurso.add(indice);
+  return cargarVideoDesdeEpisodioInterno(indice)
+    .finally(() => cargasEpisodioEnCurso.delete(indice));
 }
 
 async function cargarVideoDesdeEpisodioInterno(index) {
@@ -2446,8 +2450,8 @@ async function mostrarVideo(link, botonSeleccionado) {
       // Cuando la temporada del slug no existe en TMDB se reproduce desde la
       // temporada 1 unificada: el capítulo local se desplaza por los caps de
       // las temporadas anteriores (episodioOffsetTemporadaVidrift).
-      const offsetEpisodioTemporada = esPelicula ? 0 : episodioOffsetTemporadaVidrift;
-      const episodioVidrift = episodioActualIndex + offsetEpisodioTemporada;
+      const offsetEpisodioTemporada = esPelicula ? 0 : Number(episodioOffsetTemporadaVidrift) || 0;
+      const episodioVidrift = Number(episodioActualIndex) + offsetEpisodioTemporada;
       const baseUrl = esPelicula
         ? `https://embed.vidrift.net/embed/movie/${tmdbId}`
         : `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioVidrift}`;
