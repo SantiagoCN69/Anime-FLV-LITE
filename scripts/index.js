@@ -596,9 +596,14 @@ async function cargarUltimosCapsVistos() {
           const originalIndex = indicesFetch[i];
           const cap = currentState[originalIndex];
 
-          const siguienteCapitulo = cap.ultimoVisto + 1;
           const episodios = Array.isArray(animeDetails.episodios) ? animeDetails.episodios : Object.values(animeDetails.episodios || {});
-          const siguienteEpisodio = episodios.find(ep => Number(ep.number) === siguienteCapitulo);
+          // El siguiente capítulo es el vecino en la lista, no ultimoVisto + 1:
+          // hay series con especiales o huecos en la numeración.
+          const posUltimoVisto = episodios.findIndex(ep => Number(ep.number) === cap.ultimoVisto);
+          const siguienteEpisodio = posUltimoVisto === -1
+            ? episodios.find(ep => Number(ep.number) > cap.ultimoVisto)
+            : episodios[posUltimoVisto + 1];
+          const siguienteCapitulo = siguienteEpisodio ? Number(siguienteEpisodio.number) : cap.ultimoVisto + 1;
 
           if (siguienteEpisodio) {
             freshData[originalIndex] = {
