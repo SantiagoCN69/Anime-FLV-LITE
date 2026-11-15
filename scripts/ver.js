@@ -885,6 +885,9 @@ if (btnSelectorCapitulo && dropdownCapitulos) {
   // Toggle del dropdown
   btnSelectorCapitulo.addEventListener("click", (e) => {
     e.stopPropagation();
+    // El dropdown se genera una sola vez: al abrirlo se repintan las clases
+    // "visto"/"activo" desde capitulosVistosGlobales, que ya está en memoria.
+    actualizarEstadoActivoDropdown();
     dropdownCapitulos.classList.toggle("oculto");
     btnSelectorCapitulo.classList.toggle("open");
   });
