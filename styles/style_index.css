@@ -1358,6 +1358,7 @@ display: flex;
 .hero-slide__content {
   padding-inline: 1rem;
   padding-top: 1.5rem;
+  padding-bottom: calc(40px + 3rem);
 }
   .hero-slide__actions {
     width: calc(100% - 2rem);
