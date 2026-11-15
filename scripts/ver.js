@@ -680,6 +680,63 @@ let documentoAnimeCache = undefined;
 const CACHE_TTL = 5 * 60 * 1000;
 const serverCache = new Map();
 let firestoreEnPausaPorCuota = false;
+
+// --- Caché persistida de la asociación TMDB de Vidrift ---
+// La resolución (Firestore/TMDB/relations de la API) solo hace falta una
+// vez por anime: el resultado se guarda en localStorage y las siguientes
+// visitas o cambios de capítulo lo usan sin volver a preguntar a la API.
+// `confiable` marca que viene de esta caché: como animeId y la temporada
+// efectiva son fijos por página, se puede usar sin revalidar la temporada.
+const CLAVE_CACHE_VIDRIFT = animeId ? `vidrift:tmdb:${animeId}` : null;
+const CACHE_VIDRIFT_TTL = 7 * 24 * 60 * 60 * 1000;
+
+function persistirCacheTmdbVidrift() {
+  if (!CLAVE_CACHE_VIDRIFT || !cacheTmdbVidrift?.tmdbId) return;
+  try {
+    localStorage.setItem(CLAVE_CACHE_VIDRIFT, JSON.stringify({
+      tmdbId: cacheTmdbVidrift.tmdbId,
+      tmdbSeason: cacheTmdbVidrift.tmdbSeason,
+      mediaType: cacheTmdbVidrift.mediaType,
+      temporadaEfectiva: cacheTmdbVidrift.temporadaEfectiva,
+      offsetEpisodio: cacheTmdbVidrift.offsetEpisodio,
+      guardadoEn: Date.now()
+    }));
+  } catch {
+    // localStorage puede no estar disponible; la caché en memoria sigue.
+  }
+}
+
+function cargarCacheTmdbVidriftPersistida() {
+  if (!CLAVE_CACHE_VIDRIFT) return;
+  try {
+    const datos = JSON.parse(localStorage.getItem(CLAVE_CACHE_VIDRIFT) || "null");
+    if (!datos?.tmdbId || !datos.tmdbSeason) return;
+    if (Date.now() - (Number(datos.guardadoEn) || 0) > CACHE_VIDRIFT_TTL) {
+      localStorage.removeItem(CLAVE_CACHE_VIDRIFT);
+      return;
+    }
+    cacheTmdbVidrift = {
+      animeId,
+      tmdbId: datos.tmdbId,
+      tmdbSeason: Number(datos.tmdbSeason) || 1,
+      mediaType: datos.mediaType === "movie" ? "movie" : "tv",
+      temporadaEfectiva: datos.temporadaEfectiva ?? null,
+      offsetEpisodio: Number(datos.offsetEpisodio) || 0,
+      confiable: true
+    };
+    episodioOffsetTemporadaVidrift = cacheTmdbVidrift.offsetEpisodio;
+    debugLog("[Vidrift] Asociación TMDB restaurada desde caché local", {
+      animeId,
+      tmdbId: cacheTmdbVidrift.tmdbId,
+      temporada: cacheTmdbVidrift.tmdbSeason,
+      offset: cacheTmdbVidrift.offsetEpisodio
+    });
+  } catch {
+    // JSON corrupto o storage no disponible: se resuelve por la vía normal.
+  }
+}
+
+cargarCacheTmdbVidriftPersistida();
 let avisoCuotaMostrado = false;
 
 function esErrorDeCuotaFirestore(error) {
@@ -2118,8 +2175,10 @@ function guardarCacheTmdbVidrift(tmdbId, tmdbSeason, mediaType, temporadaEfectiv
     tmdbSeason: Number(tmdbSeason) > 0 ? Number(tmdbSeason) : detectarTemporadaDesdeAnimeId(animeId),
     mediaType: mediaType === "movie" ? "movie" : "tv",
     temporadaEfectiva,
-    offsetEpisodio
+    offsetEpisodio,
+    confiable: true
   };
+  persistirCacheTmdbVidrift();
 }
 
 function sembrarCacheTmdbDesdeDatos(datos) {
@@ -2139,6 +2198,15 @@ async function resolverDatosTmdbVidrift() {
   if (promesaTmdbVidrift) return promesaTmdbVidrift;
 
   promesaTmdbVidrift = (async () => {
+    // Caché ya resuelta (memoria o localStorage): animeId y temporada
+    // efectiva son fijos por página, así que no hace falta volver a
+    // consultar Firestore/TMDB ni la cadena de relations de la API.
+    // Esto evita que cambiar de capítulo dispare otra resolución lenta.
+    if (cacheTmdbVidrift?.animeId === animeId && cacheTmdbVidrift?.tmdbId && cacheTmdbVidrift.confiable) {
+      episodioOffsetTemporadaVidrift = cacheTmdbVidrift.offsetEpisodio || 0;
+      return cacheTmdbVidrift;
+    }
+
     const temporadaEfectiva = await resolverTemporadaEfectivaSlug();
     if (cacheTmdbEsValida(temporadaEfectiva)) {
       // El offset forma parte de la temporada unificada: restaurarlo para
