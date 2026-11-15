@@ -185,7 +185,7 @@ async function verificarTemporadaTMDB(tmdbId, temporada) {
 }
 
 async function resolverTemporadaVidrift(tmdbId, temporadaGuardada) {
-  const temporadaDetectada = detectarTemporadaDesdeAnimeId(animeId);
+  const temporadaDetectada = await resolverTemporadaEfectivaSlug();
   const temporadaManual = Number(temporadaGuardada);
   const temporadaGuardadaValida = Number.isInteger(temporadaManual) && temporadaManual > 0;
   const tieneSufijoTemporada = temporadaDetectada !== 1;
@@ -199,6 +199,19 @@ async function resolverTemporadaVidrift(tmdbId, temporadaGuardada) {
 
   const existe = await verificarTemporadaTMDB(tmdbId, temporadaDetectada);
   if (!existe) {
+    // La web puede repartir en varias temporadas lo que TMDB/Vidrift une en
+    // una sola (Jujutsu Kaisen: 3 temporadas aquí, 1 de 59 caps en TMDB).
+    // Si la temporada del slug no existe en TMDB, se reproduce desde la
+    // temporada 1 sumando los capítulos de las temporadas anteriores.
+    if (temporadaDetectada > 1) {
+      const offset = await resolverOffsetTemporadaMultiTmdb();
+      if (offset !== null) {
+        debugLog("[Vidrift] Temporada ausente en TMDB; se usa la temporada base con offset", {
+          animeId, tmdbId, temporada: temporadaDetectada, offset
+        });
+        return 1;
+      }
+    }
     debugLog("[Vidrift] La temporada detectada no existe en TMDB", { animeId, tmdbId, temporada: temporadaDetectada });
     return temporadaGuardadaValida ? temporadaManual : null;
   }
@@ -207,58 +220,340 @@ async function resolverTemporadaVidrift(tmdbId, temporadaGuardada) {
   return temporadaDetectada;
 }
 
+// --- Temporadas repartidas en la web pero unificadas en TMDB/Vidrift ---
+// Algunas series están divididas en varias temporadas en la página pero
+// TMDB/Vidrift las trata como una sola (Jujutsu Kaisen: 3 temporadas aquí,
+// 1 temporada de 59 caps en TMDB). Cuando la temporada del slug no existe
+// en TMDB se reproduce desde la temporada 1 sumando los capítulos de las
+// temporadas anteriores: la temporada N, capítulo E local pasa a ser el
+// capítulo E + (caps de las temporadas 1..N-1) dentro de la temporada TMDB.
+
+// Capítulos extra que hay que sumar al número de episodio local para
+// obtener el episodio real dentro de la temporada unificada de TMDB.
+let episodioOffsetTemporadaVidrift = 0;
+let promesaOffsetTemporada = null;
+const cacheAnimeApi = new Map();
+
+async function consultarAnimeApi(slug) {
+  const clave = String(slug || "");
+  if (cacheAnimeApi.has(clave)) return cacheAnimeApi.get(clave);
+
+  const promesa = (async () => {
+    try {
+      const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${encodeURIComponent(clave)}`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  })();
+  cacheAnimeApi.set(clave, promesa);
+  return promesa;
+}
+
+const PALABRAS_ORDINAL_TEMPORADA = "first|primera|primer|second|segunda|segundo|third|tercera|tercero|fourth|cuarta|cuarto|fifth|quinta|quinto|sixth|sexta|sexto|seventh|septima|séptima|eighth|octava|octavo|ninth|novena|noveno|tenth|decima|décima";
+
+// Quita el marcador de temporada del final del slug para obtener el anime
+// base ("jujutsu-kaisen-2nd-season" -> "jujutsu-kaisen").
+function obtenerSlugBaseDeTemporada(id) {
+  const slug = String(id || "");
+  const patrones = [
+    /-\d+(?:st|nd|rd|th)-(?:season|temporada)$/i,
+    /-(?:season|temporada)-\d+$/i,
+    /-\d+-(?:season|temporada)$/i,
+    /-(?:s|t)-\d+$/i,
+    /-(?:s|t)\d+$/i,
+    /-(?:season|temporada)\d+$/i,
+    /-dai-\d+-ki$/i,
+    /-r\d+$/i,
+    new RegExp(`-(?:${PALABRAS_ORDINAL_TEMPORADA})-(?:season|temporada)$`, "i"),
+    new RegExp(`-(?:season|temporada)-(?:${PALABRAS_ORDINAL_TEMPORADA})$`, "i"),
+    /-(?:i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i
+  ];
+
+  for (const patron of patrones) {
+    const base = slug.replace(patron, "");
+    if (base && base !== slug) return base;
+  }
+  return slug;
+}
+
+const ORDENES_TEMPORADA_POR_NUMERO = {
+  1: ["first", "primera", "primer"],
+  2: ["second", "segunda", "segundo"],
+  3: ["third", "tercera", "tercero"],
+  4: ["fourth", "cuarta", "cuarto"],
+  5: ["fifth", "quinta", "quinto"],
+  6: ["sixth", "sexta", "sexto"],
+  7: ["seventh", "septima", "séptima"],
+  8: ["eighth", "octava", "octavo"],
+  9: ["ninth", "novena", "noveno"],
+  10: ["tenth", "decima", "décima"]
+};
+
+function sufijoOrdinalNumero(numero) {
+  if (numero === 1) return "1st";
+  if (numero === 2) return "2nd";
+  if (numero === 3) return "3rd";
+  return `${numero}th`;
+}
+
+// Genera los slugs candidatos para una temporada intermedia a partir del
+// slug base, cubriendo las convenciones más usadas (2nd-season, season-2,
+// segunda-temporada, etc.). Se prueban en orden hasta que la API responda.
+function generarCandidatosSlugTemporada(slugBase, temporada) {
+  const candidatos = [
+    `${slugBase}-${sufijoOrdinalNumero(temporada)}-season`,
+    `${slugBase}-season-${temporada}`,
+    `${slugBase}-${temporada}-season`,
+    `${slugBase}-${temporada}-temporada`,
+    `${slugBase}-temporada-${temporada}`,
+    `${slugBase}-season${temporada}`,
+    `${slugBase}-t${temporada}`,
+    `${slugBase}-s${temporada}`
+  ];
+
+  for (const palabra of ORDENES_TEMPORADA_POR_NUMERO[temporada] || []) {
+    candidatos.push(
+      `${slugBase}-${palabra}-season`,
+      `${slugBase}-season-${palabra}`,
+      `${slugBase}-${palabra}-temporada`,
+      `${slugBase}-temporada-${palabra}`
+    );
+  }
+
+  return [...new Set(candidatos)].filter(slug => slug && slug !== slugBase);
+}
+
+// Dos slugs pertenecen a la misma serie si comparten el slug base o uno es
+// prefijo del otro. Esto evita mezclar spin-offs o series sin relación que
+// aparezcan en el campo relations de la API.
+function mismaSerieSlugs(slugA, slugB) {
+  const baseA = obtenerSlugBaseDeTemporada(slugA);
+  const baseB = obtenerSlugBaseDeTemporada(slugB);
+  const esPrefijo = (x, y) => x === y || x.startsWith(`${y}-`) || y.startsWith(`${x}-`);
+  return esPrefijo(slugA, slugB) || esPrefijo(baseA, baseB) || esPrefijo(slugA, baseB) || esPrefijo(baseA, slugB);
+}
+
+// Solo las entradas de TV cuentan como temporadas: las películas, OVAs y
+// especiales quedan fuera aunque compartan la misma serie.
+function esTemporadaTvAnime(data) {
+  const categoria = String(data?.category || "").toLowerCase();
+  if (!categoria) return true;
+  return !/(pel[ií]cula|movie|film|ova|ona|especial|special|short|recap|recuento)/.test(categoria);
+}
+
+let promesaCadenaTemporadas = null;
+
+// Recorre el campo relations de la API (BFS acotado) y devuelve las
+// temporadas de TV de la serie ordenadas por startDate. A diferencia del
+// marcador del slug, esto también reconoce temporadas con nombre propio
+// (p. ej. "jujutsu-kaisen-shimetsu-kaiyuu-zenpen" = temporada 3).
+async function obtenerCadenaTemporadasTv() {
+  if (!promesaCadenaTemporadas) {
+    promesaCadenaTemporadas = (async () => {
+      const visitados = new Set();
+      const cola = [animeId];
+      const encontrados = new Map();
+
+      while (cola.length && visitados.size < 20) {
+        const slug = cola.shift();
+        if (visitados.has(slug)) continue;
+        visitados.add(slug);
+
+        const datos = await consultarAnimeApi(slug);
+        if (!datos) continue;
+
+        const episodios = Array.isArray(datos.episodes) ? datos.episodes.length : 0;
+        encontrados.set(slug, {
+          slug,
+          episodios,
+          startDate: datos.startDate || "",
+          esTv: esTemporadaTvAnime(datos)
+        });
+
+        for (const rel of datos.relations || []) {
+          const relSlug = typeof rel?.slug === "string" ? rel.slug : "";
+          if (relSlug && !visitados.has(relSlug) && mismaSerieSlugs(animeId, relSlug)) {
+            cola.push(relSlug);
+          }
+        }
+      }
+
+      return [...encontrados.values()]
+        .filter(nodo => nodo.esTv && nodo.episodios > 0)
+        .sort((a, b) => String(a.startDate).localeCompare(String(b.startDate)) || a.slug.localeCompare(b.slug));
+    })();
+  }
+  return promesaCadenaTemporadas;
+}
+
+let promesaTemporadaEfectiva = null;
+
+// Número de temporada real dentro de la serie: el marcador del slug si lo
+// tiene; si no, la posición en la cadena de relations de la API (una
+// temporada con nombre propio también cuenta). Devuelve 1 cuando el slug
+// es la primera temporada o una serie suelta.
+async function resolverTemporadaEfectivaSlug() {
+  const detectada = detectarTemporadaDesdeAnimeId(animeId);
+  if (detectada > 1) return detectada;
+  if (!promesaTemporadaEfectiva) {
+    promesaTemporadaEfectiva = (async () => {
+      const datos = await consultarAnimeApi(animeId);
+      const relaciones = Array.isArray(datos?.relations) ? datos.relations : [];
+      if (!relaciones.length) return detectada;
+
+      const nodos = await obtenerCadenaTemporadasTv();
+      const posicion = nodos.findIndex(nodo => nodo.slug === animeId);
+      return posicion > 0 ? posicion + 1 : detectada;
+    })();
+  }
+  return promesaTemporadaEfectiva;
+}
+
+// Suma los capítulos de las temporadas 1..N-1 del slug actual usando solo
+// la API del backend. Devuelve null si no se puede determinar (así el
+// caller conserva el fallo anterior en vez de reproducir un episodio
+// equivocado).
+async function resolverOffsetTemporadaMultiTmdb() {
+  const temporada = await resolverTemporadaEfectivaSlug();
+  if (temporada <= 1) {
+    episodioOffsetTemporadaVidrift = 0;
+    return 0;
+  }
+  if (!promesaOffsetTemporada) {
+    promesaOffsetTemporada = (async () => {
+      // Camino principal: la cadena de relations ordena las temporadas
+      // reales de la serie, incluidas las que no tienen marcador en el
+      // slug. El offset es la suma de capítulos de las temporadas
+      // anteriores a la actual.
+      const nodos = await obtenerCadenaTemporadasTv();
+      const posicion = nodos.findIndex(nodo => nodo.slug === animeId);
+      if (posicion > 0) {
+        const total = nodos.slice(0, posicion).reduce((acc, nodo) => acc + nodo.episodios, 0);
+        episodioOffsetTemporadaVidrift = total;
+        debugLog("[Vidrift] Temporada unificada en TMDB (cadena de relations)", {
+          animeId, temporada, offset: total
+        });
+        return total;
+      }
+
+      // Respaldo: marcador de temporada en el slug + slugs candidatos.
+      const slugBase = obtenerSlugBaseDeTemporada(animeId);
+      let total = 0;
+
+      // Temporada 1: el anime base sin sufijo de temporada.
+      const datosBase = await consultarAnimeApi(slugBase);
+      const capsBase = Array.isArray(datosBase?.episodes) ? datosBase.episodes.length : 0;
+      if (!capsBase) {
+        debugLog("[Vidrift] Sin episodios para la temporada base", { animeId, slugBase });
+        return null;
+      }
+      total += capsBase;
+
+      // Temporadas intermedias: 2..temporada-1. Se prueban los slugs
+      // candidatos generados a partir del slug base hasta que la API
+      // devuelva una temporada con episodios.
+      for (let k = 2; k < temporada; k++) {
+        let caps = 0;
+        for (const candidato of generarCandidatosSlugTemporada(slugBase, k)) {
+          const datos = await consultarAnimeApi(candidato);
+          caps = Array.isArray(datos?.episodes) ? datos.episodes.length : 0;
+          if (caps) break;
+        }
+
+        if (!caps) {
+          debugLog("[Vidrift] No se pudo resolver la temporada intermedia", {
+            animeId, slugBase, temporada: k
+          });
+          return null;
+        }
+        total += caps;
+      }
+
+      episodioOffsetTemporadaVidrift = total;
+      debugLog("[Vidrift] Temporada unificada en TMDB", { animeId, temporada, offset: total });
+      return total;
+    })();
+  }
+  return promesaOffsetTemporada;
+}
+
 async function seleccionarResultadoTMDBParaVidrift(resultados) {
   debugLog("[Vidrift] Seleccionando resultado TMDB", { animeId, resultadosCount: resultados.length });
-  const temporada = detectarTemporadaDesdeAnimeId(animeId);
+  const temporadaDetectada = await resolverTemporadaEfectivaSlug();
 
   // Las verificaciones son independientes: en paralelo el camino "frío"
   // (sin caché TMDB) tarda una sola llamada a TMDB en vez de una por resultado.
   // Las películas no tienen temporadas: se aceptan directamente.
-  const comprobaciones = await Promise.all(resultados.map(async resultado => {
-    const esPelicula = resultado.mediaType === "movie";
-    const existe = esPelicula || await verificarTemporadaTMDB(resultado.id, temporada);
-    debugLog("[Vidrift] Comprobando resultado TMDB para la temporada", {
-      tmdbId: resultado.id,
-      titulo: resultado.titulo,
-      tituloOriginal: resultado.tituloOriginal,
-      temporada,
-      existe
-    });
-    return existe
-      ? { ...resultado, tmdbId: resultado.id, tmdbSeason: esPelicula ? 1 : temporada }
-      : null;
-  }));
-  const resultadosValidos = comprobaciones.filter(Boolean);
-
-  if (resultadosValidos.length === 0) return null;
-
-  // Agrupar por nombre normalizado
-  const gruposPorNombre = new Map();
-  for (const resultado of resultadosValidos) {
-    const nombreNormalizado = normalizarNombre(resultado.titulo);
-    if (!gruposPorNombre.has(nombreNormalizado)) {
-      gruposPorNombre.set(nombreNormalizado, []);
-    }
-    gruposPorNombre.get(nombreNormalizado).push(resultado);
-  }
-
-  // Si hay grupos con múltiples resultados del mismo nombre, elegir el más popular de cada grupo
-  const mejoresDeCadaGrupo = [];
-  for (const [nombre, grupo] of gruposPorNombre) {
-    if (grupo.length > 1) {
-      // Ordenar por popularidad descendente y tomar el primero
-      grupo.sort((a, b) => (b.popularidad || 0) - (a.popularidad || 0));
-      debugLog("[Vidrift] Múltiples resultados con mismo nombre, eligiendo el más popular", {
-        nombre,
-        cantidad: grupo.length,
-        seleccionado: grupo[0]
+  const intentarConTemporada = async (temporada) => {
+    const comprobaciones = await Promise.all(resultados.map(async resultado => {
+      const esPelicula = resultado.mediaType === "movie";
+      const existe = esPelicula || await verificarTemporadaTMDB(resultado.id, temporada);
+      debugLog("[Vidrift] Comprobando resultado TMDB para la temporada", {
+        tmdbId: resultado.id,
+        titulo: resultado.titulo,
+        tituloOriginal: resultado.tituloOriginal,
+        temporada,
+        existe
       });
+      return existe
+        ? { ...resultado, tmdbId: resultado.id, tmdbSeason: esPelicula ? 1 : temporada }
+        : null;
+    }));
+    const resultadosValidos = comprobaciones.filter(Boolean);
+
+    if (resultadosValidos.length === 0) return null;
+
+    // Agrupar por nombre normalizado
+    const gruposPorNombre = new Map();
+    for (const resultado of resultadosValidos) {
+      const nombreNormalizado = normalizarNombre(resultado.titulo);
+      if (!gruposPorNombre.has(nombreNormalizado)) {
+        gruposPorNombre.set(nombreNormalizado, []);
+      }
+      gruposPorNombre.get(nombreNormalizado).push(resultado);
     }
-    mejoresDeCadaGrupo.push(grupo[0]);
+
+    // Si hay grupos con múltiples resultados del mismo nombre, elegir el más popular de cada grupo
+    const mejoresDeCadaGrupo = [];
+    for (const [nombre, grupo] of gruposPorNombre) {
+      if (grupo.length > 1) {
+        // Ordenar por popularidad descendente y tomar el primero
+        grupo.sort((a, b) => (b.popularidad || 0) - (a.popularidad || 0));
+        debugLog("[Vidrift] Múltiples resultados con mismo nombre, eligiendo el más popular", {
+          nombre,
+          cantidad: grupo.length,
+          seleccionado: grupo[0]
+        });
+      }
+      mejoresDeCadaGrupo.push(grupo[0]);
+    }
+
+    // Retornar el primero de los mejores (o el único si no hubo agrupación)
+    return { tmdbId: mejoresDeCadaGrupo[0].tmdbId, tmdbSeason: mejoresDeCadaGrupo[0].tmdbSeason, resultado: mejoresDeCadaGrupo[0] };
+  };
+
+  let seleccion = await intentarConTemporada(temporadaDetectada);
+
+  // Serie repartida en varias temporadas en la web pero unificada en TMDB:
+  // si ningún resultado contiene la temporada del slug, se reintenta con
+  // la temporada 1 y los capítulos se reproducen con el offset acumulado.
+  if (!seleccion && temporadaDetectada > 1) {
+    const offset = await resolverOffsetTemporadaMultiTmdb();
+    if (offset !== null) {
+      seleccion = await intentarConTemporada(1);
+      if (seleccion) {
+        debugLog("[Vidrift] Temporada no existe en TMDB; se usa la temporada base con offset", {
+          animeId,
+          temporada: temporadaDetectada,
+          offset
+        });
+      }
+    }
   }
 
-  // Retornar el primero de los mejores (o el único si no hubo agrupación)
-  return { tmdbId: mejoresDeCadaGrupo[0].tmdbId, tmdbSeason: mejoresDeCadaGrupo[0].tmdbSeason, resultado: mejoresDeCadaGrupo[0] };
+  return seleccion;
 }
 
 const params = new URLSearchParams(location.search);
@@ -1106,6 +1401,9 @@ function reordenarServidores(servidores) {
     else if (url.includes('mp4upload.com')) {
       priority.push(srv);
     }
+    else if (url.includes('mdy48tn97.com')) {
+      priority.push(srv);
+    }
     else if (url.includes('mediafire.com')) {
       mediafire.push({ ...srv, name: "Descargar" });
     }
@@ -1145,9 +1443,10 @@ async function guardarServidoresEnFirestore(ep, servidores) {
       const animeDatos = animeDatosSnap.data() || {};
       const episodios = Array.isArray(animeDatos.episodios) ? [...animeDatos.episodios] : [];
       const episodioIndex = episodios.findIndex(e => String(e.number) === String(ep.number));
-      const servidoresExistentes = episodioIndex === -1
+      const servidoresExistentes = (episodioIndex === -1
         ? []
-        : Array.isArray(episodios[episodioIndex].servidores) ? episodios[episodioIndex].servidores : [];
+        : Array.isArray(episodios[episodioIndex].servidores) ? episodios[episodioIndex].servidores : []
+      ).map(normalizarServidor);
 
       // Conservar todos los servidores ya guardados (incluidos los manuales),
       // y sumar solamente URLs nuevas de la API.
@@ -1179,6 +1478,16 @@ async function guardarServidoresEnFirestore(ep, servidores) {
   }
 }
 
+// El formato viejo guardaba el nombre en `nombre`; el actual usa `name`.
+// Se normaliza al leer y al escribir para que Firestore se limpie solo.
+function normalizarServidor(servidor) {
+  if (servidor?.name === undefined && servidor?.nombre !== undefined) {
+    const { nombre, ...resto } = servidor;
+    return { ...resto, name: nombre };
+  }
+  return servidor;
+}
+
 function obtenerServidoresValidosDeFirestore(animeDatos, episodio) {
   // 🔥 CAMBIO: Buscar por number en lugar de url (ya que url puede estar vacío)
   const episodioGuardado = animeDatos?.episodios?.find(e => String(e.number) === String(episodio.number));
@@ -1186,9 +1495,7 @@ function obtenerServidoresValidosDeFirestore(animeDatos, episodio) {
 
   if (!servidores?.length) return [];
 
-  // No usar el formato anterior: necesita renovarse desde la API.
-  const esFormatoViejo = servidores.some(s => s.nombre && s.name === undefined);
-  return esFormatoViejo ? [] : servidores;
+  return servidores.map(normalizarServidor);
 }
 
 function guardarServidoresEnCache(episodio, servidores) {
@@ -1685,7 +1992,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     }
 
     const btn = document.createElement("button");
-    btn.textContent = String(srv.name || "").split(" ")[0] || `${i + 1}`;
+    btn.textContent = String(srv.name || "").split(" ")[0] || nombreServidorDesdeUrl(srv.url, `${i + 1}`);
     btn.dataset.serverIndex = i;
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
@@ -1732,6 +2039,15 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
 const controles = document.getElementById("controles");
 
+function nombreServidorDesdeUrl(url, fallback) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "").split(".")[0];
+    return host ? host.charAt(0).toUpperCase() + host.slice(1) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 async function esEnlaceValidoMega(fileId) {
   debugLog("Verificando si el enlace de Mega es válido.", fileId);
   try {
@@ -1753,28 +2069,32 @@ async function esEnlaceValidoMega(fileId) {
   }
 }
 
-function cacheTmdbEsValida() {
-  return cacheTmdbVidrift?.animeId === animeId && Boolean(cacheTmdbVidrift?.tmdbId);
+// La caché solo es válida para la temporada efectiva del slug actual: un
+// slug sin marcador puede ser una temporada posterior de la serie (p. ej.
+// "shimetsu-kaiyuu-zenpen") y un tmdbSeason=1 cacheado no debe reproducir
+// el episodio 1 de la temporada unificada sin el offset correspondiente.
+function cacheTmdbEsValida(temporadaEfectiva) {
+  return cacheTmdbVidrift?.animeId === animeId
+    && Boolean(cacheTmdbVidrift?.tmdbId)
+    && cacheTmdbVidrift.temporadaEfectiva === temporadaEfectiva;
 }
 
-function guardarCacheTmdbVidrift(tmdbId, tmdbSeason, mediaType) {
+function guardarCacheTmdbVidrift(tmdbId, tmdbSeason, mediaType, temporadaEfectiva = null, offsetEpisodio = 0) {
   cacheTmdbVidrift = {
     animeId,
     tmdbId,
     tmdbSeason: Number(tmdbSeason) > 0 ? Number(tmdbSeason) : detectarTemporadaDesdeAnimeId(animeId),
-    mediaType: mediaType === "movie" ? "movie" : "tv"
+    mediaType: mediaType === "movie" ? "movie" : "tv",
+    temporadaEfectiva,
+    offsetEpisodio
   };
 }
 
 function sembrarCacheTmdbDesdeDatos(datos) {
+  // Solo marca Firestore como consultado: la temporada efectiva puede
+  // requerir la cadena de relations de la API (async), así que la
+  // validación real de la caché ocurre en resolverDatosTmdbVidrift.
   firestoreTmdbConsultado = true;
-  if (!datos?.tmdbId || cacheTmdbEsValida()) return;
-  const temporadaDetectada = detectarTemporadaDesdeAnimeId(animeId);
-  const temporadaGuardada = Number(datos.tmdbSeason);
-  const temporada = temporadaGuardada > 0 && (temporadaDetectada === 1 || temporadaGuardada === temporadaDetectada)
-    ? temporadaGuardada
-    : temporadaDetectada;
-  guardarCacheTmdbVidrift(datos.tmdbId, temporada, datos.tmdbMediaType);
 }
 
 function recordarDocumentoAnime(datos) {
@@ -1784,13 +2104,20 @@ function recordarDocumentoAnime(datos) {
 }
 
 async function resolverDatosTmdbVidrift() {
-  if (cacheTmdbEsValida()) return cacheTmdbVidrift;
   if (promesaTmdbVidrift) return promesaTmdbVidrift;
 
   promesaTmdbVidrift = (async () => {
+    const temporadaEfectiva = await resolverTemporadaEfectivaSlug();
+    if (cacheTmdbEsValida(temporadaEfectiva)) {
+      // El offset forma parte de la temporada unificada: restaurarlo para
+      // que el episodio de Vidrift sea el correcto aunque venga de caché.
+      episodioOffsetTemporadaVidrift = cacheTmdbVidrift.offsetEpisodio || 0;
+      return cacheTmdbVidrift;
+    }
+
     const animeDatosRef = doc(db, "datos-animes", animeId);
 
-    if (!cacheTmdbEsValida() && !firestoreTmdbConsultado) {
+    if (!firestoreTmdbConsultado) {
       firestoreTmdbConsultado = true;
       let animeDatos = documentoAnimeCache;
 
@@ -1810,7 +2137,7 @@ async function resolverDatosTmdbVidrift() {
         const esPelicula = animeDatos.tmdbMediaType === "movie";
         const tmdbSeason = esPelicula ? 1 : await resolverTemporadaVidrift(animeDatos.tmdbId, animeDatos.tmdbSeason);
         if (!tmdbSeason) return null;
-        guardarCacheTmdbVidrift(animeDatos.tmdbId, tmdbSeason, animeDatos.tmdbMediaType);
+        guardarCacheTmdbVidrift(animeDatos.tmdbId, tmdbSeason, animeDatos.tmdbMediaType, temporadaEfectiva, episodioOffsetTemporadaVidrift);
         if (!esPelicula && Number(animeDatos.tmdbSeason) !== tmdbSeason) {
           ejecutarEnSegundoPlano(
             setDoc(animeDatosRef, { tmdbSeason }, { merge: true }),
@@ -1828,8 +2155,6 @@ async function resolverDatosTmdbVidrift() {
       if (animeDatos) {
         debugLog("El documento de Firestore no tiene tmdbId.");
       }
-    } else if (cacheTmdbEsValida()) {
-      return cacheTmdbVidrift;
     }
 
     debugLog("Buscando el anime en TMDB.", tituloAnime);
@@ -1846,7 +2171,7 @@ async function resolverDatosTmdbVidrift() {
     if (!seleccion) {
       debugLog("[Vidrift] Ningún resultado de TMDB contiene la temporada solicitada.", {
         animeId,
-        temporada: detectarTemporadaDesdeAnimeId(animeId)
+        temporada: temporadaEfectiva
       });
       return { error: "TMDB no devolvió una coincidencia con la temporada solicitada" };
     }
@@ -1859,7 +2184,7 @@ async function resolverDatosTmdbVidrift() {
       temporada: tmdbSeason
     });
 
-    guardarCacheTmdbVidrift(tmdbId, tmdbSeason, resultado?.mediaType);
+    guardarCacheTmdbVidrift(tmdbId, tmdbSeason, resultado?.mediaType, temporadaEfectiva, episodioOffsetTemporadaVidrift);
     ejecutarEnSegundoPlano(
       setDoc(animeDatosRef, { tmdbId, tmdbSeason, tmdbMediaType: resultado?.mediaType || "tv" }, { merge: true }),
       "No se pudo guardar la asociación TMDB en Firestore"
@@ -1983,6 +2308,17 @@ function esFuenteVideoDirecta(url) {
   return /\.(?:mp4|m3u8)(?:\?|$)/i.test(url);
 }
 
+// Vidrift marca cada fuente interna como "failed" cuando no tiene nada que
+// reproducir. Si todas quedan en ese estado el embed muestra "This one won't
+// play right now" y ninguna guarda de carga lo detecta: el iframe ya cargó
+// bien y el timeout de 12 s se canceló en su evento load.
+function vidriftAgotoSusFuentes(data) {
+  const servidores = data?.servers;
+  return Array.isArray(servidores)
+    && servidores.length > 0
+    && servidores.every(servidor => servidor?.state === "failed");
+}
+
 function crearVideoDirecto(url, reproduccionId) {
   const video = document.createElement("video");
   video.src = url;
@@ -2082,14 +2418,21 @@ async function mostrarVideo(link, botonSeleccionado) {
       // Vidrift tiene formas distintas para serie y película:
       // /tv/{tmdbId}/{temporada}/{episodio} y /movie/{tmdbId}.
       const esPelicula = mediaType === "movie";
+      // Cuando la temporada del slug no existe en TMDB se reproduce desde la
+      // temporada 1 unificada: el capítulo local se desplaza por los caps de
+      // las temporadas anteriores (episodioOffsetTemporadaVidrift).
+      const offsetEpisodioTemporada = esPelicula ? 0 : episodioOffsetTemporadaVidrift;
+      const episodioVidrift = episodioActualIndex + offsetEpisodioTemporada;
       const baseUrl = esPelicula
         ? `https://embed.vidrift.net/embed/movie/${tmdbId}`
-        : `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioActualIndex}`;
+        : `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioVidrift}`;
       debugLog("[Vidrift] Embed preparado", {
         animeId,
         tmdbId,
         temporada: tmdbSeason,
-        episodio: episodioActualIndex,
+        episodio: episodioVidrift,
+        episodioLocal: episodioActualIndex,
+        offsetTemporada: offsetEpisodioTemporada,
         baseUrl
       });
       const params = new URLSearchParams({
@@ -2159,7 +2502,7 @@ async function mostrarVideo(link, botonSeleccionado) {
         }
 
         const next = !esPelicula && siguiente
-          ? { season: tmdbSeason, episode: Number(siguiente.number) }
+          ? { season: tmdbSeason, episode: Number(siguiente.number) + offsetEpisodioTemporada }
           : null;
         iframe.contentWindow?.postMessage(
           { type: "vidrift:nextup-info", next },
@@ -2354,6 +2697,34 @@ async function mostrarVideo(link, botonSeleccionado) {
       };
       window.addEventListener("message", recibirEstadoVidrift);
       limpiarPreferenciaSubtitulos = limpiarListenerVidrift;
+
+      // Vigilancia de fallos internos de Vidrift, independiente del listener
+      // de idiomas: aunque este se limpie al resolver pistas o a los 30 s,
+      // este sondeo sigue pidiendo vidrift:state para detectar que todas las
+      // fuentes del embed fallaron y pasar al siguiente servidor de la página.
+      // Se limpia solo cuando esta reproducción deja de ser la activa.
+      const sondeoEstadoFallosVidrift = setInterval(() => {
+        if (reproduccionId !== reproduccionActualId) {
+          clearInterval(sondeoEstadoFallosVidrift);
+          window.removeEventListener("message", vigilarFallosVidrift);
+          return;
+        }
+        solicitarEstadoVidrift();
+      }, 8000);
+      const vigilarFallosVidrift = (event) => {
+        if (
+          event.origin !== "https://embed.vidrift.net" ||
+          event.source !== iframe.contentWindow ||
+          event.data?.type !== "vidrift:state" ||
+          !vidriftAgotoSusFuentes(event.data)
+        ) return;
+
+        clearInterval(sondeoEstadoFallosVidrift);
+        window.removeEventListener("message", vigilarFallosVidrift);
+        intentarSiguienteServidor(reproduccionId, "Vidrift agotó todas sus fuentes para este título");
+      };
+      window.addEventListener("message", vigilarFallosVidrift);
+
       setTimeout(() => {
         if (reproduccionId === reproduccionActualId) {
           limpiarListenerVidrift();
@@ -2618,14 +2989,24 @@ window.addEventListener('message', async (event) => {
   const nuevoEpisodio = esCambioDeEpisodio ? event.data.episode : null;
 
   const numeroEpisodio = Number(nuevoEpisodio);
+  // Vidrift numera dentro de la temporada unificada de TMDB; si la web
+  // reparte la serie en varias temporadas hay que restar el offset para
+  // obtener el capítulo local de esta página.
+  const episodioLocalVidrift = numeroEpisodio - episodioOffsetTemporadaVidrift;
+  // Si Vidrift avanza más allá del final de la temporada local (el siguiente
+  // capítulo global pertenece a otra temporada de la web), el número local
+  // no existe en la lista y el evento se ignora.
+  const episodioLocalExiste = !episodiosCargados || !episodios.length
+    || episodios.some((ep, idx) => String(getNumeroCapitulo(ep, idx)) === String(episodioLocalVidrift));
   if (
-    Number.isInteger(numeroEpisodio) &&
-    numeroEpisodio > 0 &&
-    numeroEpisodio !== episodioActualIndex &&
+    Number.isInteger(episodioLocalVidrift) &&
+    episodioLocalVidrift > 0 &&
+    episodioLocalVidrift !== episodioActualIndex &&
+    episodioLocalExiste &&
     !cambioEpisodioVidriftEnCurso
   ) {
     cambioEpisodioVidriftEnCurso = true;
-    debugLog("[Vidrift] Cambio interno de capítulo detectado.", numeroEpisodio);
+    debugLog("[Vidrift] Cambio interno de capítulo detectado.", numeroEpisodio, "-> local", episodioLocalVidrift);
 
     try {
       // Se hace antes de actualizar el índice, igual que al usar el botón
@@ -2633,11 +3014,11 @@ window.addEventListener('message', async (event) => {
       await marcarCapituloActualComoVisto();
 
       // Actualizar el episodio actual
-      episodioActualIndex = numeroEpisodio;
+      episodioActualIndex = episodioLocalVidrift;
 
       // Actualizar URL
       const newUrl = new URL(window.location);
-      newUrl.searchParams.set("episode", numeroEpisodio);
+      newUrl.searchParams.set("episode", episodioLocalVidrift);
       newUrl.searchParams.set("servers", modoDoblado ? "dob" : "sub");
       window.history.pushState({}, "", newUrl);
 
