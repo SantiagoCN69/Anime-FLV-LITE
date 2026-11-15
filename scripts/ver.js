@@ -2328,7 +2328,8 @@ function soportaPantallaCompletaContenedor() {
 
 // Navegadores sin Fullscreen API en elementos (iPhone Safari) no pueden poner
 // #video en fullscreen real: se simula con position:fixed vía la clase
-// video-fs-simulado, que además quita bordes y márgenes.
+// video-fs-simulado. Nunca se usa como fallback de un requestFullscreen
+// rechazado: eso dejaba el contenedor sin borde sin estar en pantalla.
 let pantallaCompletaSimulada = false;
 
 function aplicarPantallaCompletaSimulada() {
@@ -2341,6 +2342,12 @@ function quitarPantallaCompletaSimulada() {
   document.documentElement.classList.remove("video-fs-simulado");
   manejarCambioPantallaCompleta();
 }
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && pantallaCompletaSimulada) {
+    quitarPantallaCompletaSimulada();
+  }
+});
 
 const manejarCambioPantallaCompleta = () => {
   const elemento = elementoEnPantallaCompleta();
@@ -2376,14 +2383,17 @@ async function manejarFullscreenVidrift(solicitar) {
     if (soportaPantallaCompletaContenedor()) {
       try {
         await solicitarPantallaCompleta(videoDiv);
-        enviarEstadoFullscreenVidrift();
-        return;
       } catch (error) {
+        // Si el anuncio de Vidrift consumió el gesto, el navegador rechaza
+        // requestFullscreen: se avisa al player del estado real y el
+        // siguiente clic vuelve a intentarlo.
         debugLog("[Vidrift] requestFullscreen rechazado", error?.message || error);
       }
+      enviarEstadoFullscreenVidrift();
+      return;
     }
-    // Sin Fullscreen API en elementos (iPhone) o si el navegador la rechaza:
-    // fullscreen simulado con CSS fijo sobre #video.
+    // Sin Fullscreen API en elementos (iPhone): fullscreen simulado con
+    // CSS fijo sobre #video.
     aplicarPantallaCompletaSimulada();
     enviarEstadoFullscreenVidrift();
     return;

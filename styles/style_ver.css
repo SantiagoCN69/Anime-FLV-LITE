@@ -535,6 +535,13 @@ html.video-pantalla-completa #video,
   margin: 0 !important;
   padding: 0 !important;
 }
+
+html.video-fs-simulado #video {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+}
 iframe {
   height: 100%;
   width: 100%;
