@@ -58,7 +58,7 @@ z-index: -1;
 }
 
 .grid-animes.Recomendaciones {
-  padding-right: 30px;
+  /* padding-right: 30px; */
  display: flex !important;
  /* width: fit-content; */
  max-width: 100%;
