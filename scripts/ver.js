@@ -1467,6 +1467,9 @@ function reordenarServidores(servidores) {
     else if (url.includes('mdy48tn97.com')) {
       priority.push({ ...srv, preferido: true });
     }
+    else if (url.includes('mixdrop.top/e/')) {
+      priority.push({ ...srv, preferido: true });
+    }
     else if (url.includes('mp4upload.com')) {
       priority.push({ ...srv, preferido: true });
     }
