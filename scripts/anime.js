@@ -213,6 +213,18 @@ const actualizarMetadatosSEO = anime => {
   });
 };
 
+const animeDetailsGridEl = document.querySelector('.anime-details');
+const seccionRelacionadosEl = document.getElementById('relacionados');
+
+// La fila container4 del grid siempre existe en grid-template-areas;
+// sin esta clase su gap queda aunque #relacionados este oculto.
+function actualizarGridAnimeDetails() {
+  if (!animeDetailsGridEl || !seccionRelacionadosEl) return;
+  const visible = getComputedStyle(seccionRelacionadosEl).display !== 'none';
+  animeDetailsGridEl.classList.toggle('sin-relacionados', !visible);
+}
+actualizarGridAnimeDetails();
+
 function renderRelacionados(anime) {
   const relacionadosContainer = document.getElementById('animes-relacionados');
   const relacionadosSection = document.getElementById('relacionados');
@@ -223,6 +235,7 @@ function renderRelacionados(anime) {
 
   if (!relacionadosContainer || !listaRelaciones?.length) {
     if (relacionadosSection) relacionadosSection.style.display = 'none';
+    actualizarGridAnimeDetails();
     return;
   }
 
@@ -230,6 +243,7 @@ function renderRelacionados(anime) {
   isRendering = true;
 
   if (relacionadosSection) relacionadosSection.style.display = 'flex';
+  actualizarGridAnimeDetails();
   if (initLoading) initLoading.style.display = 'block';
   relacionadosContainer.innerHTML = '';
 
@@ -331,10 +345,12 @@ function renderRelacionados(anime) {
       }
     } else {
       if (relacionadosSection) relacionadosSection.style.display = 'none';
+      actualizarGridAnimeDetails();
     }
 
   } catch (error) {
     if (relacionadosSection) relacionadosSection.style.display = 'none';
+    actualizarGridAnimeDetails();
     console.error('Error al renderizar animes relacionados:', error);
   } finally {
     if (initLoading) initLoading.style.display = 'none';
