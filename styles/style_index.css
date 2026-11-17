@@ -856,13 +856,6 @@ nav.filtros {
 .page-button {
   flex: 0 0 auto;
 }
-.pagination::-webkit-scrollbar {
-  height: 8px;
-}
-.pagination::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: var(--btn);
-}
 
 .page-button {
   scroll-snap-align: center;

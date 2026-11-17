@@ -5,8 +5,8 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove, deleteDoc, query, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseconfig.js";
-import { observerAnimeCards, aplicarViewTransition, mostrarPildora as mostrarPildoraUtil } from "./utils.js";
-import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from "./ai-recommendations.js";
+import { observerAnimeCards, aplicarViewTransition, mostrarPildora as mostrarPildoraUtil, crearAnimeCard } from "./utils.js";
+import { attachIaGridWheelScroll, loadIaRecommendationsIntoGrid, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 // Inicializar Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -22,6 +22,8 @@ let episodiosFiltrados = []; // Episodios después de aplicar filtro y orden
 let vistosCache = []; // Cache de episodios vistos para evitar llamadas repetidas
 let primeraCarga = true; // Bandera para mostrar overlay solo en la primera carga
 let skipScrollAlPrimerNoVisto = false; // Para evitar scroll cuando viene de búsqueda/paginación manual
+let sugerenciasController = null; // AbortController de la sección Sugerencias
+let ultimoIdSugerencias = null; // Slug del anime para el que ya se pidieron sugerencias
 
 const titulo = id.replaceAll("-", " ").toLowerCase();
 const tituloFormateado = titulo.charAt(0).toUpperCase() + titulo.slice(1);
@@ -340,6 +342,41 @@ function renderRelacionados(anime) {
   }
 }
 
+// Sugerencias generadas por IA a partir del anime actual.
+// La sección nace oculta en el HTML y solo se muestra si hay tarjetas.
+async function cargarSugerenciasIA(anime) {
+  const section = document.getElementById('sugerencias');
+  const grid = document.getElementById('anime-grid-sugerencias');
+  if (!section || !grid) return;
+
+  const slugActual = anime.titulo || id;
+  if (!slugActual || ultimoIdSugerencias === slugActual) return;
+  ultimoIdSugerencias = slugActual;
+
+  if (sugerenciasController) sugerenciasController.abort();
+  sugerenciasController = new AbortController();
+  const signal = sugerenciasController.signal;
+
+  attachIaGridWheelScroll(grid);
+
+  const tituloActual = formatTitleFromSlug(slugActual);
+  const prompt = buildFavoritesAnimePrompt([tituloActual], [tituloActual], '', 7);
+
+  await loadIaRecommendationsIntoGrid({
+    prompt,
+    grid,
+    isStale: () => ultimoIdSugerencias !== slugActual,
+    signal,
+    crearAnimeCard,
+    observerAnimeCards,
+    max: 7
+  });
+
+  if (!signal.aborted && ultimoIdSugerencias === slugActual && grid.querySelector('.anime-card')) {
+    section.style.display = 'flex';
+  }
+}
+
 const BANNER_PESO_MIN_BYTES = 7 * 1024;
 const BANNER_PESO_PROXIES = [
   'https://anizenlite.netlify.app/.netlify/functions/banner-peso',
@@ -559,6 +596,7 @@ if (anime.estado) {
   aplicarFondoAnime(anime);
   setAnimeDescripcion(descripcionEl, anime.descripcion);
   renderGeneros(generoContainer, anime.generos);
+  cargarSugerenciasIA(anime);
 
   const container = document.querySelector("#capitulos");
 

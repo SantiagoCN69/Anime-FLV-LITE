@@ -162,7 +162,8 @@ body:not(.animaciones-off) header {
   grid-template-areas: 
     "container1 container2"
     "container3 container3"
-    "container4 container4";
+    "container4 container4"
+    "container5 container5";
   gap: 55px;
   height: fit-content;
   position: unset;
@@ -955,19 +956,8 @@ body:not(.animaciones-off) header {
 
 }
 
-/* Para navegadores WebKit (Chrome, Safari) */
-.episodes-list::-webkit-scrollbar, .timeline-containe::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar {
-  width: 8px;
-}
-.episodes-list::-webkit-scrollbar-thumb, .timeline-containe::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb {
-  background-color: var(--p);
-  border-radius: 5px;
-}
 .anime-description {
   padding-right: 4px;
-}
-.anime-description::-webkit-scrollbar {
-  width: 4px;
 }
 .episodes-list li {
   width: 100%;
@@ -1156,15 +1146,6 @@ body:not(.animaciones-off) header {
   background-color: var(--btn);
   border-color: var(--btn);
   font-weight: 600;
-}
-
-.pagination-options::-webkit-scrollbar {
-  width: 6px;
-}
-
-.pagination-options::-webkit-scrollbar-thumb {
-  background-color: var(--br);
-  border-radius: 5px;
 }
 
 @media (max-width: 600px) {
@@ -1361,6 +1342,13 @@ display: none;
 grid-area: container4;
 flex-direction: column;
 position: relative;
+margin-bottom: 0;
+}
+#sugerencias {
+display: none;
+grid-area: container5;
+flex-direction: column;
+position: relative;
 margin-bottom: 2.5rem;
 }
 /* Contenedor principal desplazable */
@@ -1370,10 +1358,7 @@ margin-bottom: 2.5rem;
   overflow-x: auto;
   padding-bottom: 8px;
 }
-.timeline-container::-webkit-scrollbar, .timeline-container::-webkit-scrollbar-thumb {
-  height: 6px;
-  border-radius: 5px;
-}
+
 /* Nodo individual (Año + Tarjeta) */
 .timeline-node {
   display: flex;
@@ -1470,12 +1455,13 @@ margin-bottom: 2.5rem;
   padding-inline: 1rem;
   padding-top: calc(80px + 2rem);
   grid-template-columns: minmax(150px, 1fr);
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto;
   grid-template-areas: 
     "container1"
     "container2"
     "container3"
-    "container4";
+    "container4"
+    "container5";
 
   max-height: fit-content ;
   gap: 2.5rem;

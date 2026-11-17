@@ -62,6 +62,7 @@ body:not(.animaciones-off) header {
 main {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 2rem;
   margin-top: calc(80px + 2rem);
   margin-bottom: 1.5rem;
@@ -84,6 +85,13 @@ main section:nth-child(2) {
   flex-direction: column;
   gap: 15px;
 }
+#sugerencias {
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  gap: 15px;
+  flex: 0 0 100%;
+}
 #noticias_container {
   min-width: 263px;
   padding-right: 5px;
@@ -95,13 +103,7 @@ main section:nth-child(2) {
   position: relative;
   height: clamp(400px, calc(100dvh - 219px), 1000px);
 }
-#noticias_container::-webkit-scrollbar {
-  height: 8px;
-}
-#noticias_container::-webkit-scrollbar-thumb {
-  background-color: var(--btn);
-  border-radius: 5px;
-}
+
 .tarjeta-noticia {
   cursor: pointer;
   margin-inline: auto;
@@ -779,13 +781,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   color: var(--t1);
 }
 
-.dropdown-capitulos::-webkit-scrollbar {
-  width: 8px;
-}
-.dropdown-capitulos::-webkit-scrollbar-thumb {
-  background-color: var(--br);
-  border-radius: 5px;
-}
 @media (max-width: 400px) {
   #botones-reproductor1 span, #botones-reproductor1 svg {
     display: none;
@@ -915,8 +910,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 @media screen and (max-width:1100px) {
   main {
     flex-direction: column;
-    height: clamp(700px, calc(100dvh - 80px - 3.5rem), 1000px);
-    height: clamp(700px, calc(calc(var(--vh, 1vh) * 100) - 80px - 3.5rem), 1000px) !important;
     margin-inline: 1rem;
     width: calc(100% - 2rem);
   }
@@ -924,6 +917,10 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     flex: 1;
     height: unset;
     width: 100%;
+  }
+  #video, iframe {
+    min-height: clamp(300px, calc(100dvh - 200px), 700px);
+    min-height: clamp(300px, calc(calc(var(--vh, 1vh) * 100) - 200px), 700px) !important;
   }
   main section:nth-child(2) {
     height: unset;
@@ -948,10 +945,14 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 }
 @media screen and (max-width:600px){
    main {
-    height: clamp(740px, calc(100dvh - 80px - 2.5rem), 1000px);
-    height: clamp(740px, calc(calc(var(--vh, 1vh) * 100) - 80px - 2.5rem), 1000px) !important;
     margin-top: calc(80px + 1rem);
    }
+
+   #video, iframe {
+    min-height: clamp(300px, calc(100dvh - 650px), 500px);
+    min-height: clamp(300px, calc(calc(var(--vh, 1vh) * 100) - 650px), 500px) !important;
+  }
+
   .botones-reproductor,  .botones-reproductor > div{
     gap: 8px;
   }

@@ -42,7 +42,7 @@ const PATRON_PUNTUACION_PROSA = /[.!?;:"'¿¡()]/;
 const PATRON_TITULO = /^[a-z0-9]+(?:[- ][a-z0-9]+)*$/;
 const MINIMO_TITULOS_VALIDOS = 3;
 
-export function parseAnimeNamesFromResponse(text) {
+export function parseAnimeNamesFromResponse(text, max = 5) {
   const crudos = String(text || '')
     .split(/[\n,]+/)
     .map(t => t
@@ -64,7 +64,7 @@ export function parseAnimeNamesFromResponse(text) {
   }
 
   // Se conserva el formato con espacios que espera el buscador del backend.
-  return validos.slice(0, 5).map(t => t.replace(/-/g, ' '));
+  return validos.slice(0, max).map(t => t.replace(/-/g, ' '));
 }
 
 export async function fetchIAResponse(prompt, signal) {
@@ -122,9 +122,12 @@ export async function resolveAnimeByName(nombre, signal) {
 }
 
 export async function fetchRecommendationsFromIA(searchTerm, signal) {
-  const prompt = buildSimilarAnimePrompt(searchTerm);
+  return fetchRecommendationsFromPrompt(buildSimilarAnimePrompt(searchTerm), signal);
+}
+
+export async function fetchRecommendationsFromPrompt(prompt, signal, max = 5) {
   const respuesta = await fetchIAResponse(prompt, signal);
-  const nombres = parseAnimeNamesFromResponse(respuesta);
+  const nombres = parseAnimeNamesFromResponse(respuesta, max);
 
   if (!nombres.length) return [];
 
@@ -167,16 +170,22 @@ export function attachIaGridWheelScroll(grid) {
 
 export async function loadIaRecommendationsIntoGrid({
   searchTerm,
+  prompt,
   grid,
   isStale,
   signal,
   crearAnimeCard,
-  observerAnimeCards
+  observerAnimeCards,
+  max = 5
 }) {
   if (!grid) return;
 
   try {
-    const animes = await fetchRecommendationsFromIA(searchTerm, signal);
+    const animes = await fetchRecommendationsFromPrompt(
+      prompt || buildSimilarAnimePrompt(searchTerm),
+      signal,
+      max
+    );
 
     if (isStale?.()) return;
 
@@ -207,7 +216,7 @@ export async function loadIaRecommendationsIntoGrid({
   }
 }
 
-export function buildFavoritesAnimePrompt(favoritos, excluidos = [], filtroExtra = '') {
+export function buildFavoritesAnimePrompt(favoritos, excluidos = [], filtroExtra = '', cantidad = 5) {
   const listaFavoritos = favoritos.join(', ');
   const listaExcluidos = excluidos.length ? excluidos.join(', ') : 'Ninguno';
   const instruccionExtra = filtroExtra ? `\n* Considera esta especificación clave: ${filtroExtra}.` : '';
@@ -215,13 +224,13 @@ export function buildFavoritesAnimePrompt(favoritos, excluidos = [], filtroExtra
   return `Actúa como un recomendador experto de anime.
 
 1. Analiza los siguientes animes favoritos: ${listaFavoritos}.
-2. Genera 5 recomendaciones de animes similares en género, tono o temática.
+2. Genera ${cantidad} recomendaciones de animes similares en género, tono o temática.
 
 Reglas:
 * NUNCA recomiendes animes de esta lista de excluidos: ${listaExcluidos}.${instruccionExtra}
 * Usa exclusivamente el título oficial en japonés (romaji). Nunca en español ni inglés.
 * Formato obligatorio: kebab-case (minúsculas y guiones en lugar de espacios).
-* Devuelve exactamente 5 nombres separados por comas.
+* Devuelve exactamente ${cantidad} nombres separados por comas.
 * Sin explicaciones, introducciones ni saltos de línea.
 
 Ejemplo:

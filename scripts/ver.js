@@ -1048,7 +1048,8 @@ function actualizarEstadoBotonDoblado(servidores) {
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, deleteDoc, runTransaction, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
-import { mostrarPildora } from "./utils.js";
+import { mostrarPildora, crearAnimeCard, observerAnimeCards } from "./utils.js";
+import { attachIaGridWheelScroll, loadIaRecommendationsIntoGrid, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 
 // Inicialización de Firebase optimizada
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
@@ -1763,6 +1764,43 @@ async function cargarEpisodios() {
   }
 }
 
+let sugerenciasController = null;
+let ultimoIdSugerencias = null;
+
+// Sugerencias generadas por IA a partir del anime actual.
+// La sección nace oculta en el HTML y solo se muestra si hay tarjetas.
+async function cargarSugerenciasIA() {
+  const section = document.getElementById('sugerencias');
+  const grid = document.getElementById('anime-grid-sugerencias');
+  if (!section || !grid || !animeId) return;
+
+  if (ultimoIdSugerencias === animeId) return;
+  ultimoIdSugerencias = animeId;
+
+  if (sugerenciasController) sugerenciasController.abort();
+  sugerenciasController = new AbortController();
+  const signal = sugerenciasController.signal;
+
+  attachIaGridWheelScroll(grid);
+
+  const tituloActual = tituloAnime || animeId.replaceAll('-', ' ');
+  const prompt = buildFavoritesAnimePrompt([tituloActual], [tituloActual], '', 7);
+
+  await loadIaRecommendationsIntoGrid({
+    prompt,
+    grid,
+    isStale: () => ultimoIdSugerencias !== animeId,
+    signal,
+    crearAnimeCard,
+    observerAnimeCards,
+    max: 7
+  });
+
+  if (!signal.aborted && ultimoIdSugerencias === animeId && grid.querySelector('.anime-card')) {
+    section.style.display = 'flex';
+  }
+}
+cargarSugerenciasIA();
 function aplicarFondoAnime(anime) {
   const bannerUrl = anime.banner;
   const portadaUrl = anime.portada || anime.cover;
@@ -2577,7 +2615,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.allowFullscreen = true;
       iframe.allow = "autoplay; fullscreen";
       iframe.style.border = "0";
-      iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups";
+      iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation";
 
       // Los subtítulos españoles se buscan siempre. El audio solo se cambia
       // cuando existe una pista española: si no existe, se conserva el audio

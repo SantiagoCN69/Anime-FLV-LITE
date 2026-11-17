@@ -106,9 +106,9 @@ button {
 }
 
 /* Scrollbar styles */
-::-webkit-scrollbar {width: 7px;}
+::-webkit-scrollbar {width: 7px; height: 7px;}
 ::-webkit-scrollbar-track {background: transparent;}
-::-webkit-scrollbar-thumb {background-color: var(--p);}
+::-webkit-scrollbar-thumb {background-color: var(--br); border-radius: 8px;}
 ::-webkit-scrollbar-thumb:hover {
   /* background: linear-gradient(135deg, var(--btn) 0%, var(--btn2) 100%); */
   cursor: pointer;
@@ -1860,10 +1860,7 @@ h4 {
     background-position: 0% 50%;
   }
 }
-#anime-grid-ia-busqueda::-webkit-scrollbar-thumb,
-#anime-grid-sin-resultados::-webkit-scrollbar-thumb {
-  background-color: var(--btn) !important;
-}
+
 .recomendaciones-ia-busqueda h2 {
   color: var(--btn);
   font-size: 1.5rem;
@@ -1876,7 +1873,8 @@ h4 {
   content: unset !important;
 }
 
-#anime-grid-ia-busqueda {
+#anime-grid-ia-busqueda,
+#anime-grid-sugerencias {
   align-items: center;
   position: relative;
   overflow-x: auto;
@@ -1888,32 +1886,33 @@ h4 {
   height: fit-content;
 }
 
-#anime-grid-ia-busqueda .anime-card {
+#anime-grid-ia-busqueda .anime-card,
+#anime-grid-sugerencias .anime-card {
   min-width: 250px;
   width: 250px;
   height: fit-content;
   flex-shrink: 0;
 }
 
-#anime-grid-ia-busqueda .anime-card div > img:first-of-type {
+#anime-grid-ia-busqueda .anime-card div > img:first-of-type,
+#anime-grid-sugerencias .anime-card div > img:first-of-type {
   height: 130px !important;
 }
 
-#anime-grid-ia-busqueda::-webkit-scrollbar {
-  height: 8px;
+#anime-grid-sugerencias {
+  overflow-x: scroll;
 }
 
-#anime-grid-ia-busqueda::-webkit-scrollbar-thumb {
-  background-color: var(--btn);
-  border-radius: 5px;
+#sugerencias .anime-card {
+  width: 185px;
+  min-width: 185px;
 }
 
-.episodes-list::-webkit-scrollbar, .animes-relacionados::-webkit-scrollbar, #anime-grid-sin-resultados::-webkit-scrollbar, #anime-grid-ia-busqueda::-webkit-scrollbar {
-  height: 8px;
-}
-.episodes-list::-webkit-scrollbar-thumb, .animes-relacionados::-webkit-scrollbar-thumb, .anime-description::-webkit-scrollbar-thumb, #anime-grid-sin-resultados::-webkit-scrollbar-thumb, #anime-grid-ia-busqueda::-webkit-scrollbar-thumb {
-  background-color: var(--p);
-  border-radius: 5px;
+
+#sugerencias .anime-card img.cover {
+  aspect-ratio: 5 / 6;
+  height: auto !important;
+  min-height: fit-content;
 }
 
 /* Píldora visual check (Base) */
@@ -2176,7 +2175,6 @@ footer ul a {
 footer ul a:hover,
 footer ul a:focus-visible {
     color: var(--btn);
-    text-decoration: underline;
 }
 
 /* Botón de volver arriba */

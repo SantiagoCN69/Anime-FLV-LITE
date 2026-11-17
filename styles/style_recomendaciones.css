@@ -66,13 +66,7 @@ z-index: -1;
  overflow-x: auto;
  padding-block: 12px;
 }
-.grid-animes.Recomendaciones::-webkit-scrollbar {
-  height: 9px;
-}
-.grid-animes.Recomendaciones::-webkit-scrollbar-thumb {
-  background-color: var(--p);
-  border-radius: 7px;
-}
+
 .grid-animes.Recomendaciones .anime-card {
   flex: 1;
   min-width: 180px;
