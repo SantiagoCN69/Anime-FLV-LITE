@@ -2535,7 +2535,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       const params = new URLSearchParams({
         brand: "Anizen",
         brandColor: brandColor,
-        brandLogo: "https://ani.zenlite.workers.dev/icons/icon3.png",
+        brandLogo: "https://ani.zenlite.workers.dev/icons/icon-no-background.pngg",
         poster: "https://ani.zenlite.workers.dev/icons/poster.png",
         watermark: "1",
         showTitle: "1",
