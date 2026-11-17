@@ -1931,7 +1931,11 @@ async function cargarVideoDesdeEpisodioInterno(index) {
   }
 
   episodioActualIndex = index;
-  history.replaceState({}, "", `ver.html?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`);
+  history.replaceState(
+    {},
+    "",
+    `${window.location.pathname}?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`
+  );
 
   // Vidrift solo necesita tmdbId + temporada + episodio: no depende de la
   // lista de servidores. Se renderiza de inmediato y el cache, Firestore o
