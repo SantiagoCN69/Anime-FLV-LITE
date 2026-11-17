@@ -815,7 +815,19 @@ function generarSlideHTML(a, i, usarBannerDinamico = false) {
     </article>`;
 }
 
+const SLIDES_PERSONALIZADOS_CACHE_KEY = 'slidesPersonalizadosCache';
+const SLIDES_PERSONALIZADOS_TTL = 60 * 60 * 1000; // 1 hora
+
 async function generarSlidesPersonalizados() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(SLIDES_PERSONALIZADOS_CACHE_KEY));
+    if (cached && cached.timestamp && (Date.now() - cached.timestamp) < SLIDES_PERSONALIZADOS_TTL && Array.isArray(cached.slides)) {
+      return cached.slides;
+    }
+  } catch (e) {
+    localStorage.removeItem(SLIDES_PERSONALIZADOS_CACHE_KEY);
+  }
+
   const historial = await obtenerHistorialParaIA();
   
   if (historial.length === 0) return [];
@@ -844,6 +856,13 @@ async function generarSlidesPersonalizados() {
         type: 'Personalizado',
         badges: ['Recomendado para ti', 'Según tu historial']
       });
+    }
+
+    if (slidesPersonalizados.length) {
+      localStorage.setItem(SLIDES_PERSONALIZADOS_CACHE_KEY, JSON.stringify({
+        timestamp: Date.now(),
+        slides: slidesPersonalizados
+      }));
     }
 
     return slidesPersonalizados;
