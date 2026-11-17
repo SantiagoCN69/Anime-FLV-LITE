@@ -918,9 +918,8 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     height: unset;
     width: 100%;
   }
-  #video, iframe {
-    min-height: clamp(300px, calc(100dvh - 200px), 700px);
-    min-height: clamp(300px, calc(calc(var(--vh, 1vh) * 100) - 200px), 700px) !important;
+   #video, iframe {
+    aspect-ratio: 16 / 9;
   }
   main section:nth-child(2) {
     height: unset;
@@ -948,10 +947,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     margin-top: calc(80px + 1rem);
    }
 
-   #video, iframe {
-    min-height: clamp(300px, calc(100dvh - 650px), 500px);
-    min-height: clamp(300px, calc(calc(var(--vh, 1vh) * 100) - 650px), 500px) !important;
-  }
+
 
   .botones-reproductor,  .botones-reproductor > div{
     gap: 8px;
