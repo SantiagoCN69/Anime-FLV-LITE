@@ -630,7 +630,6 @@ const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
 const btnAnterior = document.getElementById("btn-anterior-capitulo");
 const btnSelectorCapitulo = document.getElementById("btn-selector-capitulo");
 const dropdownCapitulos = document.getElementById("dropdown-capitulos");
-const numeroCapituloActual = document.getElementById("numero-capitulo-actual");
 const textoAnterior = document.getElementById("texto-anterior");
 const textoSiguiente = document.getElementById("texto-siguiente");
 const videoContenedorGlobal = document.getElementById("video");
@@ -879,9 +878,6 @@ function seleccionarCapitulo(numCapitulo) {
 }
 
 function actualizarNumeroCapitulo() {
-  if (numeroCapituloActual) {
-    numeroCapituloActual.textContent = `Episodio ${episodioActualIndex}`;
-  }
   document.title = "AniZen - " + animeId + " - " + episodioActualIndex;
   const btnCapElement = document.getElementById("btn-cap");
   if (btnCapElement) {
@@ -1062,10 +1058,8 @@ const btnCap = document.getElementById("btn-cap");
 if (btnVolverAnime) btnVolverAnime.textContent = tituloAnime;
 if (btnCap) btnCap.textContent = `Episodio ${episodioActualIndex}`;
 
-// Inicializar el número del capítulo después de que btnCap esté disponible
-if (numeroCapituloActual) {
-  actualizarNumeroCapitulo();
-}
+// Inicializar el número del capítulo y los textos de navegación
+actualizarNumeroCapitulo();
 
 const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
 const textoEstado = document.getElementById("texto-estado-capitulo");
