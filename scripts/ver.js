@@ -2615,7 +2615,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.allowFullscreen = true;
       iframe.allow = "autoplay; fullscreen";
       iframe.style.border = "0";
-      iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation";
+      iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups";
 
       // Los subtítulos españoles se buscan siempre. El audio solo se cambia
       // cuando existe una pista española: si no existe, se conserva el audio
