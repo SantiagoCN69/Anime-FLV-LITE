@@ -974,7 +974,7 @@ section.content-section h2:first-of-type.cargado::after {
     content: attr(data-text);
   }
 }
-@media screen and (max-width: 360px) {
+@media screen and (max-width: 381px) {
   .headder-section:not(.headder-section1) > svg, .dynamic-header-icon, .svg-header {
     display: none;
   }
