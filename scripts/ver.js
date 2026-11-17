@@ -2064,11 +2064,6 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
     const btn = document.createElement("button");
     btn.textContent = String(srv.name || "").split(" ")[0] || nombreServidorDesdeUrl(srv.url, `${i + 1}`);
-    if (srv.vidrift) {
-      btn.classList.add("prefer", "vidrift");
-    } else if (srv.preferido) {
-      btn.classList.add("prefer");
-    }
     btn.dataset.serverIndex = i;
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
@@ -2103,6 +2098,16 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
   }
 
   if (cantidadBotones > 1) {
+    embeds.forEach((srv, i) => {
+      const btn = controles.querySelector(`button[data-server-index="${i}"]`);
+      if (!btn) return;
+      if (srv.vidrift) {
+        btn.classList.add("prefer", "vidrift");
+      } else if (srv.preferido) {
+        btn.classList.add("prefer");
+      }
+    });
+
     if (!animacionInicialCompletada && controles.querySelector(".servidor-activo")) {
       void controles.offsetHeight;
       animacionInicialCompletada = true;
