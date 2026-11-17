@@ -5,7 +5,9 @@ import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid
 function mostrarMensajeError(container, mensaje) {
   if (!container) return;
   container.classList.remove('sin-resultados');
+  const loadingEl = container.querySelector('#init-loading-servidores-busqueda');
   container.innerHTML = `<span class="span-carga">${mensaje}</span>`;
+  if (loadingEl) container.prepend(loadingEl);
 }
 
 function mostrarCargandoEnBusquedas(container) {
@@ -288,6 +290,7 @@ function renderSinResultados(container, searchTerm, searchId) {
   if (!container) return;
   limpiarSeccionIA();
   container.classList.add('sin-resultados');
+  const loadingEl = container.querySelector('#init-loading-servidores-busqueda');
   const termino = (searchTerm || '').trim();
   const terminoVisible = termino.length > 40 ? termino.slice(0, 40).trimEnd() + '…' : termino;
   const terminoEscapado = terminoVisible
@@ -304,6 +307,7 @@ function renderSinResultados(container, searchTerm, searchId) {
       <div id="anime-grid-sin-resultados"><span class="span-carga">cargando...</span></div>
     </div>
   `;
+  if (loadingEl) container.prepend(loadingEl);
   const scrollHorizontal = container.querySelector('#anime-grid-sin-resultados');
   if (scrollHorizontal) {
     scrollHorizontal.onwheel = (e) => {
@@ -693,11 +697,9 @@ initialDelayTimer = setTimeout(() => {
               clearInterval(busquedaCountdownInterval);
               if (searchId === currentSearch) {
                 if (isIndexPage) {
-                  if (resultadosContainer && resultadosContainer.innerHTML.trim() === '') {
-                    if (loadingSpan) loadingSpan.style.display = 'none';
-                    seccionResultados?.classList.remove('hidden');
-                    mostrarMensajeError(resultadosContainer, 'El servidor tarda demasiado en responder.');
-                  }
+                  if (loadingSpan) loadingSpan.style.display = 'none';
+                  seccionResultados?.classList.remove('hidden');
+                  mostrarMensajeError(resultadosContainer, 'El servidor tarda demasiado en responder.');
                 } else if (busquedasContainer && busquedasContainer.querySelector('.contador-busqueda-busquedas')) {
                   mostrarMensajeError(busquedasContainer, 'El servidor tarda demasiado en responder.');
                 }
