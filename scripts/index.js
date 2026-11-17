@@ -818,6 +818,13 @@ function generarSlideHTML(a, i, usarBannerDinamico = false) {
 const SLIDES_PERSONALIZADOS_CACHE_KEY = 'slidesPersonalizadosCache';
 const SLIDES_PERSONALIZADOS_TTL = 60 * 60 * 1000; // 1 hora
 
+// Ping ligero al backend de IA para "despertar" el servicio (cold start en Render)
+// sin consumir una llamada real a la API.
+function wakeUpIAApi() {
+  fetch('https://backend-ia-anime.onrender.com/', { method: 'GET', mode: 'no-cors', keepalive: true })
+    .catch(() => {});
+}
+
 async function generarSlidesPersonalizados() {
   try {
     const cached = JSON.parse(localStorage.getItem(SLIDES_PERSONALIZADOS_CACHE_KEY));
@@ -875,6 +882,10 @@ async function generarSlidesPersonalizados() {
 async function cargarHeroSlider() {
   const container = document.getElementById('hero-slider');
   if (!container) return;
+
+  // Despierta el backend de IA mientras cargan los banners,
+  // para que esté listo si hay que generar slides personalizados.
+  wakeUpIAApi();
 
   try {
     const res = await fetch('/banners-slides.json');
