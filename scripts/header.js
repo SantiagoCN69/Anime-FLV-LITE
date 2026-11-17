@@ -1,6 +1,34 @@
 import { observerAnimeCards, crearAnimeCard } from './utils.js';
 import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from './ai-recommendations.js';
 
+const TEXTOS_CARGA_SERVIDORES = [
+  'revisa los horarios para ver los estrenos de la semana...',
+  'consulta los populares para descubrir rankings...',
+  'activa el modo cine para una vista más limpia...',
+  'pide recomendaciones a la IA si no encuentras un título...',
+  'los servidores marcado son los que mejor funcionan...',
+  'instala AniZen para acceder mas facilmente...',
+  'revisa las noticias de anime dentro del reproductor...'
+];
+
+function obtenerIndiceTextoCargaServidor(indiceAnterior = -1) {
+  const totalTextos = TEXTOS_CARGA_SERVIDORES.length;
+  let indice;
+  do {
+    indice = Math.floor(Math.random() * totalTextos);
+  } while (totalTextos > 1 && indice === indiceAnterior);
+  return indice;
+}
+
+function actualizarTextoCargaServidor(contenedorCarga, texto) {
+  const elementoTexto = contenedorCarga?.querySelector('.carga-servidor-texto');
+  if (!elementoTexto) return;
+  const nuevoElemento = document.createElement('span');
+  nuevoElemento.className = 'carga-servidor-texto';
+  nuevoElemento.textContent = texto;
+  elementoTexto.replaceWith(nuevoElemento);
+}
+
 // === UTILIDADES ===
 function mostrarMensajeError(container, mensaje) {
   if (!container) return;
@@ -579,7 +607,7 @@ function ver(id) {
 
 // === BÚSQUEDA ===
 const busquedaInput = document.getElementById('busqueda');
-let busquedaTimer, busquedaCountdownInterval, initialDelayTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null;
+let busquedaTimer, busquedaCountdownInterval, busquedaTextosInterval, initialDelayTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null;
 
 function quitarFocusBusqueda() {
   setTimeout(() => {
@@ -619,6 +647,7 @@ if (busquedaInput) {
     clearTimeout(busquedaTimer);
     clearTimeout(initialDelayTimer);
     if (busquedaCountdownInterval) clearInterval(busquedaCountdownInterval);
+    if (busquedaTextosInterval) clearInterval(busquedaTextosInterval);
     if (currentController) currentController.abort();
     if (currentIaController) {
       currentIaController.abort();
@@ -682,12 +711,20 @@ initialDelayTimer = setTimeout(() => {
           if (contadorBusqueda) {
             contadorBusqueda.innerHTML = `
               <div class="carga-servidor-container">
-                <span class="carga-servidor-texto">Iniciando servidores...</span>
+                <span class="carga-servidor-texto"></span>
                 <div class="carga-servidor-barra">
                   <div class="carga-servidor-progreso"></div>
                 </div>
               </div>
             `;
+
+            let indiceTextoActual = -1;
+            const mostrarTextoAleatorio = () => {
+              indiceTextoActual = obtenerIndiceTextoCargaServidor(indiceTextoActual);
+              actualizarTextoCargaServidor(contadorBusqueda, TEXTOS_CARGA_SERVIDORES[indiceTextoActual]);
+            };
+            mostrarTextoAleatorio();
+            busquedaTextosInterval = setInterval(mostrarTextoAleatorio, 6000);
           }
           
           busquedaCountdownInterval = setInterval(() => {
@@ -695,6 +732,7 @@ initialDelayTimer = setTimeout(() => {
             // Ya no actualizamos el contadorSpan aquí, solo esperamos a que llegue a 0
             if (countdown <= 0) {
               clearInterval(busquedaCountdownInterval);
+              if (busquedaTextosInterval) clearInterval(busquedaTextosInterval);
               if (searchId === currentSearch) {
                 if (isIndexPage) {
                   if (loadingSpan) loadingSpan.style.display = 'none';
@@ -720,6 +758,7 @@ initialDelayTimer = setTimeout(() => {
           if (searchId !== currentSearch) return;
           clearTimeout(initialDelayTimer);
           clearInterval(busquedaCountdownInterval);
+          if (busquedaTextosInterval) clearInterval(busquedaTextosInterval);
           if (isIndexPage && loadingSpan) loadingSpan.style.display = 'none';
           if (contadorSpan) contadorSpan.textContent = '';
 
@@ -732,6 +771,7 @@ initialDelayTimer = setTimeout(() => {
           if (searchId !== currentSearch) return;
           clearTimeout(initialDelayTimer);
           clearInterval(busquedaCountdownInterval);
+          if (busquedaTextosInterval) clearInterval(busquedaTextosInterval);
           if (contadorSpan) contadorSpan.textContent = '';
           console.error('Error al buscar anime:', err);
           if (isIndexPage) {

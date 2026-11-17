@@ -720,6 +720,29 @@ main {
   margin-top: 12px;
 }
 
+.carga-servidor-texto {
+  display: block;
+  min-height: 1.4em;
+  animation: cargaServidorTextoEntrada 0.45s ease-out both;
+}
+
+.span-carga {
+  animation: cargaServidorTextoEntrada 0.3s ease-out both;
+}
+
+@keyframes cargaServidorTextoEntrada {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
 .carga-servidor-barra {
   width: 220px;
   height: 6px;
