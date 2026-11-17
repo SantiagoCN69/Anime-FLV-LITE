@@ -1920,9 +1920,9 @@ async function cargarVideoDesdeEpisodioInterno(index) {
     ep = { number: index };
   }
   if (!ep) {
-    console.log(tSalto(), "episodio", index, "no está en la lista, consultando API...");
+    debugLog(tSalto(), "episodio", index, "no está en la lista, consultando API...");
     ep = await recuperarEpisodioFaltanteDesdeApi(index);
-    console.log(tSalto(), "recuperarEpisodioFaltanteDesdeApi tardó", Math.round(performance.now() - tEp), "ms");
+    debugLog(tSalto(), "recuperarEpisodioFaltanteDesdeApi tardó", Math.round(performance.now() - tEp), "ms");
   }
   if (!ep) {
     btnCap.textContent = "Episodio desconocido";
@@ -1945,15 +1945,15 @@ async function cargarVideoDesdeEpisodioInterno(index) {
   const cacheKey = `servers_${animeId}_${ep.number}`;
   const cached = serverCache.get(cacheKey);
   if (cached && Date.now() - cached.time < CACHE_TTL) {
-    console.log(tSalto(), "servers en cache para cap", ep.number);
+    debugLog(tSalto(), "servers en cache para cap", ep.number);
     renderizarServidores(cached.data, { mantenerReproduccion: true });
     ejecutarEnSegundoPlano(precargarSiguienteEpisodio(index), "No se pudo precargar el siguiente episodio");
     return;
   }
-  console.log(tSalto(), "cache de servers MISS para cap", ep.number, "edad:", cached ? `${Math.round((Date.now() - cached.time) / 1000)}s` : "nunca");
+  debugLog(tSalto(), "cache de servers MISS para cap", ep.number, "edad:", cached ? `${Math.round((Date.now() - cached.time) / 1000)}s` : "nunca");
 
   let datosFirestore = await obtenerDatosAnimeParaServidores();
-  console.log(tSalto(), "datos Firestore listos", Math.round(performance.now() - t0Carga), "ms");
+  debugLog(tSalto(), "datos Firestore listos", Math.round(performance.now() - t0Carga), "ms");
   const servidoresFirestore = obtenerServidoresValidosDeFirestore(datosFirestore, ep);
   ejecutarEnSegundoPlano(
     precargarSiguienteEpisodio(index, datosFirestore),
@@ -1963,15 +1963,15 @@ async function cargarVideoDesdeEpisodioInterno(index) {
   if (servidoresFirestore.length) {
     ep.servidores = guardarServidoresEnCache(ep, servidoresFirestore);
     renderizarServidores(ep.servidores, { mantenerReproduccion: true });
-    console.log(tSalto(), "servidores Firestore renderizados", servidoresFirestore.length);
+    debugLog(tSalto(), "servidores Firestore renderizados", servidoresFirestore.length);
   } else {
-    console.log(tSalto(), "sin servidores en Firestore, la API solo agregará botones");
+    debugLog(tSalto(), "sin servidores en Firestore, la API solo agregará botones");
   }
 
   try {
     const tApi = performance.now();
     const servidoresApi = await obtenerServidoresDesdeApi(ep);
-    console.log(tSalto(), "API servidores respondió en", Math.round(performance.now() - tApi), "ms");
+    debugLog(tSalto(), "API servidores respondió en", Math.round(performance.now() - tApi), "ms");
     if (servidoresApi === null) {
       return ep;
     }
@@ -2512,7 +2512,7 @@ async function mostrarVideo(link, botonSeleccionado) {
     // Función para cargar el iframe con el ID de TMDB
     const cargarIframeConTMDB = (tmdbId, tmdbSeason, mediaType) => {
       if (reproduccionId !== reproduccionActualId) return;
-      console.log(tSalto(), "TMDB resuelto, creando iframe Vidrift ep", episodioActualIndex);
+      debugLog(tSalto(), "TMDB resuelto, creando iframe Vidrift ep", episodioActualIndex);
       cancelarFallbackDeCarga();
       debugLog("Cargando Vidrift con el ID de TMDB.", tmdbId);
 
@@ -2850,7 +2850,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       const tIframe = performance.now();
       iframe.addEventListener("load", () => {
         if (reproduccionId !== reproduccionActualId) return;
-        console.log(tSalto(), "iframe Vidrift cargado en", Math.round(performance.now() - tIframe), "ms");
+        debugLog(tSalto(), "iframe Vidrift cargado en", Math.round(performance.now() - tIframe), "ms");
         cancelarFallbackDeCarga();
         enviarEstadoFullscreenVidrift();
         solicitarEstadoVidrift();
@@ -2868,7 +2868,7 @@ async function mostrarVideo(link, botonSeleccionado) {
 
     const tTmdb = performance.now();
     const asociacion = await resolverDatosTmdbVidrift();
-    console.log(tSalto(), "resolverDatosTmdbVidrift tardó", Math.round(performance.now() - tTmdb), "ms");
+    debugLog(tSalto(), "resolverDatosTmdbVidrift tardó", Math.round(performance.now() - tTmdb), "ms");
     if (reproduccionId !== reproduccionActualId) return;
 
     if (!asociacion?.tmdbId) {
@@ -2983,19 +2983,19 @@ async function irAlSiguienteCapitulo() {
   const siguiente = pos === -1 ? undefined : episodios[pos + 1];
   if (siguiente) {
     const inicio = performance.now();
-    console.log(tSalto(), "inicio salto a cap", siguiente.number);
+    debugLog(tSalto(), "inicio salto a cap", siguiente.number);
     // El guardado de "visto" (getDoc + setDoc en Firestore) va en paralelo con
     // la carga del siguiente capítulo: esperarlo en serie añadía segundos al
     // salto automático de fin de episodio.
     const guardadoVisto = marcarCapituloActualComoVisto()
-      .then(() => console.log(tSalto(), "visto guardado", Math.round(performance.now() - inicio), "ms"))
-      .catch(e => console.warn(tSalto(), "error guardando visto", e));
+      .then(() => debugLog(tSalto(), "visto guardado", Math.round(performance.now() - inicio), "ms"))
+      .catch(e => console.warn("[Vidrift] error guardando visto", e));
     await cargarVideoDesdeEpisodio(siguiente.number);
-    console.log(tSalto(), "cargarVideoDesdeEpisodio listo", Math.round(performance.now() - inicio), "ms");
+    debugLog(tSalto(), "cargarVideoDesdeEpisodio listo", Math.round(performance.now() - inicio), "ms");
     await guardadoVisto;
     refrescarUIEstadoCapitulo();
     sincronizarUINavegacion();
-    console.log(tSalto(), "salto completo", Math.round(performance.now() - inicio), "ms");
+    debugLog(tSalto(), "salto completo", Math.round(performance.now() - inicio), "ms");
     return true;
   }
   return false;
@@ -3069,7 +3069,7 @@ window.addEventListener('message', async (event) => {
     return;
   }
 
-  console.log(tSalto(), "evento Vidrift recibido:", event.data?.type, event.data?.episode ?? "");
+  debugLog(tSalto(), "evento Vidrift recibido:", event.data?.type, event.data?.episode ?? "");
 
   // Vidrift emite este evento al comenzar créditos o el ending. En modo
   // maratón saltamos de inmediato, sin esperar los cinco segundos de la
