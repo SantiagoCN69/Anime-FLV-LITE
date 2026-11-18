@@ -403,7 +403,6 @@ footer {
   }
 }
 .sidebar-collapsed #historial .anime-card:hover {
-  border-color: var(--br);
   transform: scale(1) translateX(8px);
 }
 }
@@ -493,7 +492,6 @@ footer {
     }
   }
   #historial .anime-card:hover {
-    border-color: var(--br);
     transform: scale(1) translateX(8px);
   }
 }

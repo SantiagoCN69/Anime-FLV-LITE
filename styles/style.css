@@ -1278,7 +1278,7 @@ a.btn-buscar-ia:hover {
   width: 100%;
   height: 50%; 
 
-  background: linear-gradient(to top, rgba(var(--bgti), 0.7), transparent);
+  background: linear-gradient(to top, rgba(var(--bgti), 1), transparent);
   pointer-events: none;
   z-index: 1;
   transition: bottom 0.3s ease, height 0.3s ease;
