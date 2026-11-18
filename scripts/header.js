@@ -99,8 +99,8 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
       }
     });
     resultadosContainer.classList.remove('sin-resultados');
-    const headderBusqueda = document.getElementById('headder-section-busqueda');
-    if (headderBusqueda) headderBusqueda.style.display = '';
+    const headerBusqueda = document.getElementById('header-section-busqueda');
+    if (headerBusqueda) headerBusqueda.style.display = '';
   }
   limpiarSeccionIA();
   handlesearchChange();
@@ -478,8 +478,8 @@ function mostrarResultados(data, searchTerm, searchId) {
     if (resultados.length > 0) {
       resultadosContainer.classList.remove('sin-resultados');
       seccionResultados?.classList.remove('hidden');
-      const headderBusqueda = document.getElementById('headder-section-busqueda');
-      if (headderBusqueda) headderBusqueda.style.display = '';
+      const headerBusqueda = document.getElementById('header-section-busqueda');
+      if (headerBusqueda) headerBusqueda.style.display = '';
       const cards = [];
       resultados.forEach(anime => {
         const card = crearAnimeCard(anime);
@@ -498,8 +498,8 @@ function mostrarResultados(data, searchTerm, searchId) {
       }
     } else {
       seccionResultados?.classList.remove('hidden');
-      const headderBusqueda = document.getElementById('headder-section-busqueda');
-      if (headderBusqueda) headderBusqueda.style.display = 'none';
+      const headerBusqueda = document.getElementById('header-section-busqueda');
+      if (headerBusqueda) headerBusqueda.style.display = 'none';
       renderSinResultados(resultadosContainer, searchTerm, searchId);
       if (busquedaH2) busquedaH2.textContent = 'No hay resultados';
     }
