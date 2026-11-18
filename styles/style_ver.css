@@ -211,6 +211,7 @@ main section:nth-child(2) {
 .contenedor-btn-cap {
   justify-content: space-between;
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -218,7 +219,6 @@ main section:nth-child(2) {
   font-weight: 600;
   font-size: 1.5rem;
   color: var(--t1);
-  margin-right: 10px;
   font-family: 'Oxanium', sans-serif;
 }
 #btn-estado-capitulo {
@@ -279,6 +279,7 @@ main section:nth-child(2) {
 .buttons-container, #share {
   display: flex;
   align-items: center;
+  margin-left: auto;
   gap: 8px;
 }
 #share, #cine {
