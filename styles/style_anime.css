@@ -99,15 +99,17 @@ body:not(.animaciones-off) header {
 #links {
   font-weight: bold;
   display: flex;
-  gap: 8px;
+  gap: 12px;
   position: absolute;
   top: calc(80px + 2rem);
   left: 1rem;
   width: calc(100vw - 2rem);
   overflow: hidden;
   color: var(--t1);
-  opacity: .7;
-      text-transform: capitalize;
+  text-transform: capitalize;
+  * {
+    opacity: .7;
+  }
 }
 @media (min-width: 1100px) {
   #links {
@@ -121,6 +123,7 @@ body:not(.animaciones-off) header {
   transition: transform .3s, color .3s, opacity .3s;
 }
 #btn-volver-anime {
+  opacity: .8;
   color: unset;
   height: 21px;
   text-overflow: ellipsis;
@@ -683,12 +686,12 @@ body:not(.animaciones-off) header {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
-  min-height: 24.5px;
+  min-height: 25.5px;
   z-index: 1;
 }
   
 .genero a {
-  height: 24.5px;
+  height: 25.5px;
   color: var(--t2);
   padding: 4px 12px;
   border-radius: 999px;
@@ -706,7 +709,7 @@ body:not(.animaciones-off) header {
 .anime-description {
   position: relative;
   color: var(--t1);
-  opacity: .7;
+  opacity: .8;
   font-size: .9rem; 
   text-align: start;
   font-family: 'Manrope', sans-serif;
