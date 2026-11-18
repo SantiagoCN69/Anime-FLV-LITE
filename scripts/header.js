@@ -724,7 +724,7 @@ initialDelayTimer = setTimeout(() => {
               actualizarTextoCargaServidor(contadorBusqueda, TEXTOS_CARGA_SERVIDORES[indiceTextoActual]);
             };
             mostrarTextoAleatorio();
-            busquedaTextosInterval = setInterval(mostrarTextoAleatorio, 6000);
+            busquedaTextosInterval = setInterval(mostrarTextoAleatorio, 4500);
           }
           
           busquedaCountdownInterval = setInterval(() => {
