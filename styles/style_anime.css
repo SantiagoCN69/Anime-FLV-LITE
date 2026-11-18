@@ -411,8 +411,8 @@ svg.cta__play {
     }
   }
   #botones-estado {
-    transform: scale(1.2);
-    margin-block: 8px;
+    transform: scale(1.1);
+    margin-block: 5px;
   }
 }
 @media (hover: hover) and (pointer: fine) {
