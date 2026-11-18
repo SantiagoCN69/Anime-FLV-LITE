@@ -173,7 +173,9 @@
   object-fit: cover;
   transform: none;
 }
-
+.anime-card-schedule:hover .container-img {
+  transform: none !important;
+}
 .anime-card-schedule:hover .cover {
   transform: none;
 }
