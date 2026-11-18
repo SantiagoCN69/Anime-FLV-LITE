@@ -535,6 +535,8 @@ body:has(header.search-active) .logout-modal {
   opacity: .8;
   position: relative;
 }
+
+
 /* .sidebar li:not(:has(> a))::after, .sidebar a:not(.btn-siguiente-capitulo)::after {
   content: "";
   position: absolute;
@@ -553,7 +555,12 @@ body:has(header.search-active) .logout-modal {
 }
 .sidebar li:not(:has(> a)):hover::after, .sidebar a:not(.btn-siguiente-capitulo):hover::after {
   opacity: 1;
+}
+.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-capitulo) {
+  padding-inline: 25.5px !important;
 } */
+
+
 .sidebar li:not(:has(> a)):hover, .sidebar li a:hover {
   transform: translateX(4px);
   color: var(--t2);
