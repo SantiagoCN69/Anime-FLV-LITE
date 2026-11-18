@@ -531,8 +531,8 @@ body:has(header.search-active) .logout-modal {
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform .2s, padding-inline .3s ease;
-  opacity: .8;
+  transition: transform .2s, padding-inline .3s ease, opacity .2s ease, color .2s ease;
+  opacity: .7;
   position: relative;
 }
 
@@ -541,19 +541,23 @@ body:has(header.search-active) .logout-modal {
   content: "";
   position: absolute;
   border-radius: 14px;
-  top: 0;
-  left: 0;
-  margin-left: 5px;
-  width: calc(100% - 5px);
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: calc(100% - 16px);
+  height: calc(100% - 8px);
+
   background: linear-gradient(to right,
   color-mix(in srgb, var(--b) 50%, var(--btn) 25%),
-  transparent 90%);
+  var(--p) 90%);
+  background: #ffffff22;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity .3s ease;
   z-index: -1;
 }
-.sidebar li:not(:has(> a)):hover::after, .sidebar a:not(.btn-siguiente-capitulo):hover::after {
+.sidebar li:not(:has(> a)):hover::after, .sidebar a:not(.btn-siguiente-capitulo):hover::after,
+.sidebar li:not(:has(> a)).active-menu-item::after {
   opacity: 1;
 }
 .sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-capitulo) {
@@ -562,15 +566,15 @@ body:has(header.search-active) .logout-modal {
 
 
 .sidebar li:not(:has(> a)):hover, .sidebar li a:hover {
-  transform: translateX(4px);
-  color: var(--t2);
+
+  color: var(--btn);
   opacity: 1;
 }
 
 
 .sidebar li:not(:has(> a)).active-menu-item {
-  transform: translateX(4px);
-  color: var(--t2);
+
+  color: var(--btn);
   opacity: 1
 }
 
@@ -2076,7 +2080,7 @@ h4 {
   height: 25px;
 }
 .sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-capitulo) {
-  padding-inline:30.5px ;
+  padding-inline:28.5px ;
 }
 
 .sidebar-collapsed .sidebar li:not(:has(> a)):hover,  
