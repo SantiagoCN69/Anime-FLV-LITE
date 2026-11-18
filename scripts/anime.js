@@ -788,11 +788,15 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
     }
 
     // Obtener episodios vistos (usar cache si está disponible)
-    let vistos = vistosCache.length > 0 ? vistosCache : await obtenerCapitulosVistos(id) || [];
+    // Normalizar a string: Firestore puede tener números guardados y las
+    // comparaciones de abajo usan ep.number.toString().
+    let vistos = (vistosCache.length > 0 ? vistosCache : await obtenerCapitulosVistos(id) || []).map(String);
 
     // Validar y limpiar episodios si es necesario
-    const numerosValidos = new Set(episodios.map(ep => ep.number));
-    const vistosFiltrados = vistos.filter(num => numerosValidos.has(num));
+    // ep.number puede venir como número (ej. cap 0) y vistos guarda strings:
+    // normalizar ambos lados a string para que "0" no se borre por error de tipo.
+    const numerosValidos = new Set(episodios.map(ep => String(ep.number)));
+    const vistosFiltrados = vistos.filter(num => numerosValidos.has(String(num)));
 
     if (vistos.length !== vistosFiltrados.length) {
         await actualizarCapitulosVistos(id, vistosFiltrados);
@@ -1651,10 +1655,10 @@ function actualizarBotonVerAhora(episodios, vistos = []) {
   const ctaFill = document.querySelector('.cta__fill');
   if (!contenedor || !ctaText || !ctaSmall || !ctaFill || !episodios?.length) return;
 
-  const listaVistos = Array.isArray(vistos) ? vistos : [];
+  const listaVistos = (Array.isArray(vistos) ? vistos : []).map(String);
   const epObjetivo = episodios.find(ep => !listaVistos.includes(ep.number.toString())) || episodios[0];
   const totalEpisodios = episodios.length;
-  const cantidadVistos = listaVistos.length;
+  const cantidadVistos = episodios.filter(ep => listaVistos.includes(ep.number.toString())).length;
   const noVistos = Math.max(totalEpisodios - cantidadVistos, 0);
   const progreso = totalEpisodios > 0 ? (cantidadVistos / totalEpisodios) * 100 : 0;
   const completado = cantidadVistos > 0 && noVistos === 0;
