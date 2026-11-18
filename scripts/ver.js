@@ -1092,8 +1092,8 @@ async function refrescarUIEstadoCapitulo() {
     debugLog("No se encontraron elementos de UI para el estado del capítulo.");
     return;
   }
-  estaVisto ? btnEstadoCapitulo.classList.add("visto") : btnEstadoCapitulo.classList.remove("visto");
   textoEstado.textContent = estaVisto ? "Visto" : "No visto";
+  estaVisto ? btnEstadoCapitulo.classList.add("visto") : btnEstadoCapitulo.classList.remove("visto");
 }
 
 async function toggleYGuardarEstadoCapitulo() {
@@ -1221,9 +1221,11 @@ btnEstadoCapitulo?.addEventListener("click", async () => {
     if (isVisto) {
       btnEstadoCapitulo.classList.remove('visto');
       btnEstadoCapitulo.classList.add('no-visto');
+      textoEstado.textContent = "No visto";
     } else {
       btnEstadoCapitulo.classList.remove('no-visto');
       btnEstadoCapitulo.classList.add('visto');
+      textoEstado.textContent = "Visto";
     }
 
     await toggleYGuardarEstadoCapitulo();
