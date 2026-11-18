@@ -1017,6 +1017,12 @@ body:not(.animaciones-off) header {
   border-bottom-left-radius: 15px;
   transition: transform 0.2s, filter 0.2s;
   transform-origin: bottom center; 
+  filter: brightness(1.2);
+}
+.ep-visto .episode-thumb {
+  filter: brightness(0.6);
+  border: 2px solid var(--br);
+  opacity: 0.8;
 }
 .no-thumb img {
   width: 0;
