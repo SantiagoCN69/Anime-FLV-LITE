@@ -1244,9 +1244,10 @@ svg.cta__play {
   backdrop-filter: blur(10px);
   transition: filter 0.2s, background-color 0.2s;
 }
-
-.icon-eye:hover {
-  background-color: var(--br);
+@media (hover: hover) and (pointer: fine) {
+  .icon-eye:hover {
+    background-color: var(--br);
+  }
 }
 
 .ep-visto .icon-eye {
