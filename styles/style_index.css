@@ -316,183 +316,115 @@ footer {
 
 /*historial en pantalla muy anchas*/
 
-
-/* Pantallas de más de 1200px cuando la sidebar está colapsada */
-@media (min-width: 1241px) {
-.sidebar-collapsed #sections-ultcaps-historial {display: flex;gap: 2rem;}
-.sidebar-collapsed #section-ultcaps {flex:1;}
-.sidebar-collapsed #section-historial {width: 374px;}
-.sidebar-collapsed #header-section-historial {margin-top: 0;}
-
-.sidebar-collapsed #historial {grid-template-columns: 1fr;padding-bottom: 1px;}
-.sidebar-collapsed #historial .anime-card {
-  border: 1px solid transparent;
-  background: var(--p);
-  display: grid;
-  height: 95px;
-  grid-template-columns: 58px minmax(0, 1fr);
-  column-gap: 12px;
-  border-radius: 14px;
-  padding: 12px;
-  .container-img {
-    border-radius: 8px;
-    position: unset;
-    filter: unset;
-  }
-  .container-img::after {
-    display: none;
-  }
-  &:hover .container-img {
-    transform: unset;
+.layout-horizontal {
+  & #sections-ultcaps-historial {
+    display: flex;
+    gap: 2rem;
   }
 
-  .play-icon {
-    bottom: 12px;
-    right: 12px;
-    width: 22px !important;
-    height: 22px !important;
-    transform: none;
+  & #section-ultcaps {
+    flex: 1;
   }
-  .anime-card:hover .play-icon {
-    transform: none !important;
-  }
-  .estado {
-    bottom: 12px;
-    left: 82px;
-    transform: none;
-    opacity: .9;
-    width: 85px;
-    text-wrap: nowrap;
-    color: var(--t1);
-    background: btn;
-    padding-block: 10px;
-  }
-  /* Selecciona el contenedor que tenga dentro una imagen con ese src exacto */
-  .estado:has(img[src="../icons/circle-solid-blue.svg"]) {
-    background-color: color-mix(in srgb, #63e6be 10%, transparent);
-  }
-  .estado:has(img[src="../icons/circle-solid.svg"]) {
-    background-color: color-mix(in srgb, rgb(255, 41, 41) 10%, transparent);
-  }
-  .type {
-    top: unset;
-    bottom: 12px;
-    left: calc(85px + 82px + 9.5px);
-    transform: none;
-    opacity: .9;
-    padding-block: 10px;
-    color: var(--t1);
-    background-color: color-mix(in srgb, var(--t2) 10%, transparent);
-    width: 64px;
-  }
-  .rating {
-    top: unset;
-    bottom: 12px;
-    left: calc(85px + 82px + 9.5px + 64px + 9.5px);
-    padding-block: 10px;
-    transform: none;
-    opacity: .9;
-    background-color: color-mix(in srgb, rgb(255, 244, 79) 10%, transparent);
-  }
-  strong {
-    margin: 0;
-  }
-  estado {
-    position: absolute;
-    left: 0;
-  }
-}
-.sidebar-collapsed #historial .anime-card:hover {
-  transform: scale(1) translateX(8px);
-}
-}
 
-/* Pantallas de más de 1300px (sin importar ninguna clase) */
-@media (min-width: 1391px) {
-  #sections-ultcaps-historial {display: flex;gap: 2rem;}
-  #section-ultcaps {flex:1;}
-  #section-historial {width: 374px;}
-  #header-section-historial {margin-top: 0;}
-  
-  #historial {grid-template-columns: 1fr; padding-bottom: 1px;}
-  #historial .anime-card {
+  & #section-historial {
+    width: 374px;
+  }
+
+  & #header-section-historial {
+    margin-top: 0;
+  }
+
+  & #historial {
+    grid-template-columns: 1fr;
+    padding-bottom: 1px;
+
+    & .anime-card {
       border: 1px solid transparent;
-  background: var(--p);
-    display: grid;
-    height: 95px;
-    grid-template-columns: 58px minmax(0, 1fr);
-    column-gap: 12px;
-    border-radius: 14px;
-    padding: 12px;
-    .container-img {
-      border-radius: 8px;
-      position: unset;
-      filter: unset;
-    }
-    .container-img::after {
-      display: none;
-    }
-    &:hover .container-img {
-      transform: unset;
-    }
+      background: var(--p);
+      display: grid;
+      height: 95px;
+      grid-template-columns: 58px minmax(0, 1fr);
+      column-gap: 12px;
+      border-radius: 14px;
+      padding: 12px;
 
-    .play-icon {
-      bottom: 12px;
-      right: 12px;
-      width: 22px !important;
-      height: 22px !important;
-      transform: none;
+      &:hover {
+        transform: scale(1) translateX(8px);
+
+        & .container-img {
+          transform: unset;
+        }
+
+        & .play-icon {
+          transform: none !important;
+        }
+      }
+
+      & .container-img {
+        border-radius: 8px;
+        position: unset;
+        filter: unset;
+
+        &::after {
+          display: none;
+        }
+      }
+
+      & .play-icon {
+        bottom: 12px;
+        right: 12px;
+        width: 22px !important;
+        height: 22px !important;
+        transform: none;
+        background: #ffffff33;
+      }
+
+      & .estado {
+        position: absolute;
+        bottom: 12px;
+        left: 82px;
+        transform: none;
+        opacity: 0.9;
+        width: 85px;
+        text-wrap: nowrap;
+        color: var(--t1);
+        padding-block: 10px;
+
+        &:has(img[src="../icons/circle-solid-blue.svg"]) {
+          background-color: color-mix(in srgb, #63e6be 10%, transparent);
+        }
+
+        &:has(img[src="../icons/circle-solid.svg"]) {
+          background-color: color-mix(in srgb, rgb(255, 41, 41) 10%, transparent);
+        }
+      }
+
+      & .type {
+        top: unset;
+        bottom: 12px;
+        left: calc(85px + 82px + 9.5px);
+        transform: none;
+        opacity: 0.9;
+        padding-block: 10px;
+        color: var(--t1);
+        background-color: color-mix(in srgb, var(--t2) 10%, transparent);
+        width: 64px;
+      }
+
+      & .rating {
+        top: unset;
+        bottom: 12px;
+        left: calc(85px + 82px + 9.5px + 64px + 9.5px);
+        padding-block: 10px;
+        transform: none;
+        opacity: 0.9;
+        background-color: color-mix(in srgb, rgb(255, 244, 79) 10%, transparent);
+      }
+
+      & strong {
+        margin: 0;
+      }
     }
-    .anime-card:hover .play-icon {
-      transform: none !important;
-    }
-    .estado {
-      bottom: 12px;
-      left: 82px;
-      transform: none;
-      opacity: 0.9;
-      width: 85px;
-      text-wrap: nowrap;
-      color: var(--t1);
-      padding-block: 10px;
-    }
-      /* Selecciona el contenedor que tenga dentro una imagen con ese src exacto */
-  .estado:has(img[src="../icons/circle-solid-blue.svg"]) {
-    background-color: color-mix(in srgb, #63e6be 10%, transparent);
-  }
-  .estado:has(img[src="../icons/circle-solid.svg"]) {
-    background-color: color-mix(in srgb, rgb(255, 41, 41) 10%, transparent);
-  }
-    .type {
-      top: unset;
-      bottom: 12px;
-      left: calc(85px + 82px + 12px);
-      transform: none;
-      opacity: 0.9;
-      padding-block: 10px;
-      color: var(--t1);
-      background-color: color-mix(in srgb, var(--t2) 10%, transparent);
-      width: 64px;
-    }
-    .rating {
-      top: unset;
-      bottom: 12px;
-      left: calc(85px + 82px + 9.5px + 64px + 9.5px);
-      padding-block: 10px;
-      transform: none;
-      opacity: 0.9;
-      background-color: color-mix(in srgb, rgb(255, 244, 79) 10%, transparent);
-    }
-    strong {
-      margin: 0;
-    }
-    estado {
-      position: absolute;
-      left: 0;
-    }
-  }
-  #historial .anime-card:hover {
-    transform: scale(1) translateX(8px);
   }
 }
 

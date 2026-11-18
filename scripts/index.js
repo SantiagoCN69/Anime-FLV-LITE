@@ -1755,11 +1755,23 @@ function inicializarContinuarViendo() {
   }
 }
 
+function actualizarLayout() {
+  const ancho = window.innerWidth;
+  const colapsada = document.body.classList.contains('sidebar-collapsed');
+
+  // Más susceptible cuando la sidebar está colapsada (1241px), menos cuando está visible (1391px)
+  const activar = (colapsada && ancho >= 1241) || (!colapsada && ancho >= 1391);
+  document.body.classList.toggle('layout-horizontal', activar);
+}
+
 document.getElementById('Collapse-aside')?.addEventListener('click', () => {
   document.body.classList.toggle('sidebar-collapsed');
   localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+  actualizarLayout();
 });
 
+window.addEventListener('resize', actualizarLayout);
+actualizarLayout(); // Se ejecuta al iniciar para aplicar el estado guardado en localStorage
 
 // =========================================
 // 3. TOOLTIP ULTRA-OPTIMIZADO V2 (EXTENDIDO)
