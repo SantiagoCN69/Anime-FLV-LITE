@@ -363,9 +363,10 @@ svg.cta__play {
   opacity: .92;
 }
 /* sin cargar */
-@media (max-width: 424px) {
+@media (max-width: 431px) {
   #botones-estado, #botones-estados-sp {
     gap: 6.5px;
+    flex-wrap: nowrap;
   }
   .btn-estado {
     padding: 13.5px;
@@ -859,15 +860,15 @@ svg.cta__play {
   gap: 10px;
 }
 #filtro-caps {
-  height: 40px;
+  height: 41px;
   display: flex;
   gap: 5px;
   justify-content: space-between;
   width: 226.5px;
   background: var(--p);
+  filter: brightness(1.2);
   padding: 4px;
   border-radius: 24px;
-  border: 1px solid var(--br);
 }
 
 .btn-filtro-cap {
@@ -946,10 +947,10 @@ svg.cta__play {
 }
 
 #filtro-caps2 button {
-  height: 40px;
+  height: 41px;
   aspect-ratio: 1;
-  border: 1px solid var(--br);
   background: var(--p);
+  filter: brightness(1.2);
   border-radius: 24px;
   color: var(--t1);
   display: flex;
@@ -1128,7 +1129,6 @@ svg.cta__play {
   gap: 8px;
   padding: 10px 16px;
   background-color: var(--p);
-  border: 1px solid var(--br);
   border-radius: 12px;
   color: var(--t1);
   font-size: 0.9rem;
@@ -1156,9 +1156,8 @@ svg.cta__play {
   bottom: calc(100% + 10px);
   right: 0;
   background-color: var(--p);
-  border: 1px solid var(--br);
   border-radius: 12px;
-  min-width: 150px;
+  min-width: 159px;
   max-height: 300px;
   overflow-y: auto;
   padding: 8px;
@@ -1181,8 +1180,8 @@ svg.cta__play {
 
 .pagination-option {
   padding: 10px 16px;
-  background-color: transparent;
-  border: 1px solid var(--br);
+  background-color: var(--p);
+  filter: brightness(1.3);
   border-radius: 8px;
   color: var(--t1);
   font-size: 0.9rem;
@@ -1245,6 +1244,11 @@ svg.cta__play {
   backdrop-filter: blur(10px);
   transition: filter 0.2s, background-color 0.2s;
 }
+
+.icon-eye:hover {
+  background-color: var(--br);
+}
+
 .ep-visto .icon-eye {
   background-color: var(--br);
   filter: brightness(1.3);
@@ -1456,7 +1460,6 @@ margin-bottom: 2.5rem;
   display: flex;
   align-items: center;
   background: var(--p);
-  border: 1px solid var(--p);
   border-radius: 14px;
   padding: 12px;
   gap: 15px;
@@ -1464,7 +1467,6 @@ margin-bottom: 2.5rem;
 }
 
 .timeline-card-horizontal:hover {
-  border-color: var(--br);
   transform: translateY(-2px);
   filter: brightness(1.2);
 }
