@@ -623,6 +623,12 @@ if (anime.estado) {
     }
     // Si no hay episodios, retornar. Si hay episodios (caso de actualización), continuar
     if (!anime.episodios || anime.episodios.length === 0) {
+      const ctaText = document.querySelector('.cta__text strong');
+      const ctaSmall = document.querySelector('.cta__text small');
+      const contenedor = document.getElementById('contenedor-barra-progreso');
+      if (ctaText) ctaText.textContent = 'Próximamente';
+      if (ctaSmall) ctaSmall.textContent = '';
+      if (contenedor) contenedor.href = '#';
       return;
     }
   }
@@ -772,6 +778,12 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
         capContenedor.innerHTML = '<span class="span-carga">No hay capitulos disponibles</span>';
         if (initLoadingCap) initLoadingCap.style.display = 'none';
         capContenedor.classList.add("cargado");
+        const ctaText = document.querySelector('.cta__text strong');
+        const ctaSmall = document.querySelector('.cta__text small');
+        const contenedor = document.getElementById('contenedor-barra-progreso');
+        if (ctaText) ctaText.textContent = 'Sin capítulos';
+        if (ctaSmall) ctaSmall.textContent = '';
+        if (contenedor) contenedor.href = '#';
         return;
     }
 
@@ -806,6 +818,9 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
 
     // Guardar episodios filtrados globalmente
     episodiosFiltrados = episodiosFiltradosTemp;
+
+    // CTA "Ver ahora" / "Continuar viendo": lleva al primer episodio no visto
+    actualizarBotonVerAhora(episodios, vistos);
 
     // Mostrar mensaje si no hay resultados después del filtro
     if (episodiosFiltrados.length === 0 && episodios.length > 0) {
@@ -855,9 +870,6 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
     capContenedor.appendChild(fragment);
 
     if (initLoadingCap) initLoadingCap.style.display = 'none';
-    if (episodios.length > 0) {
-        actualizarProgresoCapitulos(episodios.length, vistos);
-    }
 
     capContenedor.classList.add("cargado");
     capContenedor.style.setProperty("--caps", episodios.length);
@@ -1236,7 +1248,7 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
     const total = document.querySelectorAll(".episode-btn").length;
     const vistosEnUI = document.querySelectorAll(".episode-btn.ep-visto").length;
 
-    actualizarProgresoCapitulos(total, vistosEnUI);
+    actualizarBotonVerAhora(animeActual?.episodios || [], vistosCache);
 
     // Mostrar overlay SOLO si se marcó el último capítulo como visto
     // (verificar que el capítulo marcado es el último de los episodios FILTRADOS)
@@ -1632,32 +1644,31 @@ async function obtenerFavoritosAnime() {
   return animes;
 }
 
-async function actualizarProgresoCapitulos(totalEpisodios, episodiosVistos) {
-  // Evitamos dividir por cero si no hay episodios
-  if (!totalEpisodios || totalEpisodios === 0) return;
+function actualizarBotonVerAhora(episodios, vistos = []) {
+  const contenedor = document.getElementById('contenedor-barra-progreso');
+  const ctaText = document.querySelector('.cta__text strong');
+  const ctaSmall = document.querySelector('.cta__text small');
+  const ctaFill = document.querySelector('.cta__fill');
+  if (!contenedor || !ctaText || !ctaSmall || !ctaFill || !episodios?.length) return;
 
-  // Verificamos si recibimos un Array (para usar .length) o un Número directo
-  const cantidadVistos = Array.isArray(episodiosVistos) 
-    ? episodiosVistos.length 
-    : Number(episodiosVistos);
+  const listaVistos = Array.isArray(vistos) ? vistos : [];
+  const epObjetivo = episodios.find(ep => !listaVistos.includes(ep.number.toString())) || episodios[0];
+  const totalEpisodios = episodios.length;
+  const cantidadVistos = listaVistos.length;
+  const noVistos = Math.max(totalEpisodios - cantidadVistos, 0);
+  const progreso = totalEpisodios > 0 ? (cantidadVistos / totalEpisodios) * 100 : 0;
+  const completado = cantidadVistos > 0 && noVistos === 0;
 
-  const progreso = (cantidadVistos / totalEpisodios) * 100;
-  const progresoFixed = progreso.toFixed(0);
+  contenedor.classList.toggle('cargo-progreso', cantidadVistos > 0);
+  ctaText.textContent = completado ? 'Ver de nuevo' : (cantidadVistos > 0 ? 'Continuar' : 'Ver ahora');
+  ctaSmall.textContent = completado
+    ? 'Completado'
+    : cantidadVistos > 0
+      ? `Episodio ${epObjetivo.number} / ${totalEpisodios}`
+      : ``;
 
-  const progresoBtn = document.getElementById('btn-progreso');
-  if (progresoBtn) {
-    progresoBtn.style.setProperty('--progreso', progresoFixed);
-  }
-
-  const progresoText = document.getElementById('progreso-text');
-  if (progresoText) {
-    progresoText.textContent = `${progresoFixed}%`;
-  }
-
-  const progresoElement = document.getElementById('progreso');
-  if (progresoElement) {
-    progresoElement.style.width = `${progreso}%`;
-  }
+  ctaFill.style.setProperty('--progress', progreso.toFixed(1));
+  contenedor.href = `ver?id=${id}&episode=${epObjetivo.number}`;
 }
 
 const btnViendo = document.getElementById('btn-viendo');

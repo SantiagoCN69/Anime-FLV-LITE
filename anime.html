@@ -208,19 +208,26 @@
         <p class="span-text-anime1" id="statuscargando"></p>
       </div>
 
-    <div class="genero">
-      <a href="" style="width: 100px;" class="genre-link genre-link-cargando"></a>
-      <a href="" style="width: 60px;" class="genre-link genre-link-cargando"></a>
-      <a href="" style="width: 120px;" class="genre-link genre-link-cargando"></a>
+    <div class="genero" id="generos">
+      <a href="" style="width: 100px;" class="genre-link genre-link-cargando" aria-hidden="true"></a>
+      <a href="" style="width: 60px;" class="genre-link genre-link-cargando" aria-hidden="true"></a>
+      <a href="" style="width: 120px;" class="genre-link genre-link-cargando" aria-hidden="true"></a>
     </div>
+    
     <div id="botones-estado">
-      <div class="btn-estado" id="contenedor-barra-progreso">
-        <p>Progreso <span id="text2"> de episodios</span></p>
-        <div id="btn-progreso" title="Progreso de capítulos vistos">
-          <div id="progreso"></div>
-        </div>
-        <span id="progreso-text">0%</span>
-      </div>
+      <a class="btn-estado" id="contenedor-barra-progreso" href="#" aria-label="Ver ahora">
+        <span class="cta__ring">
+          <svg viewBox="0 0 48 48" fill="white">
+            <circle class="cta__track" cx="24" cy="24" r="21" pathLength="100"/>
+            <circle class="cta__fill" cx="24" cy="24" r="21" pathLength="100" style="--progress: 0"/>
+          </svg>
+          <svg class="cta__play" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+        </span>
+        <span class="cta__text">
+          <strong>Ver ahora</strong>
+          <small></small>
+        </span>
+      </a>
       <div  id="botones-estados-sp">
       <button type="button" class="btn-estado" title="Favorito" id="btn-fav" data-text="Favorito" aria-label="Favorito"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg></button>
 
