@@ -222,20 +222,17 @@ main section:nth-child(2) {
   font-family: 'Oxanium', sans-serif;
 }
 #btn-estado-capitulo {
-  background: var(--p);
+  background: var(--br);
   padding: 5px 15px;
   border-radius: 24px;
   transition: opacity 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform .3s;
-  border: 1px solid var(--br);
-  transition: padding .3s, width .3s;
+  transition: transform .3s, padding .3s, width .3s;
 }
 #btn-estado-capitulo.visto {
-  background: #001A15;
-  border: 1px solid #006B50;
+  background: #17231F;
 }
 @media (hover: hover) {
   #btn-estado-capitulo:hover {
@@ -252,7 +249,7 @@ main section:nth-child(2) {
 }
 
 .visto .texto-estado-capitulo {
-  color: #00D9A3 !important;
+  color: #65C9A5 !important;
   opacity: 1;
 }
 
@@ -285,7 +282,7 @@ main section:nth-child(2) {
   gap: 8px;
 }
 #share, #cine {
-  background: var(--p);
+  background: var(--br);
   border: none;
   border-radius: 99px;
   width: 31px;
@@ -294,7 +291,6 @@ main section:nth-child(2) {
   padding: 5px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--br);
 }
 #cine {
   padding-left: 8px;
@@ -441,7 +437,6 @@ overflow: hidden;
   background-color: var(--p);
   color: var(--t1);
   border-right: 1px solid var(--br);
-  border-bottom: 1px solid var(--br);
   
 }
 #controles button.prefer {
@@ -478,7 +473,6 @@ overflow: hidden;
   align-items: center;
   justify-content: center;
   background: #3ca0e7;
-  border: 1px solid #64bfff;
   opacity: 1;
   right: 0;
   top: 0;
@@ -490,7 +484,6 @@ overflow: hidden;
 #controles .servidor-activo {
   color: var(--t1);
   background-color: var(--br);
-  border-bottom: 2px solid var(--btn);
 }
 #controles .servidor-activo::before {
   content: "";
@@ -620,10 +613,8 @@ iframe {
   color: var(--t1);
   transition: transform .3s, filter .3s;  
   padding: 15px;
-  border: 2px solid transparent;
   font-family: 'Zen Kaku Gothic New', sans-serif;
-  
-  border: 1px solid var(--br);
+
   span {
     align-self: flex-end;
   }
@@ -638,8 +629,6 @@ iframe {
 }
 
 .btn-anterior, .btn-siguiente {
-  background-color: var(--p);
-  border: 1px solid var(--br);
   width: auto;
   min-width: 97px;
   flex-shrink: 0;
@@ -653,6 +642,7 @@ iframe {
 
 .btn-anterior {
    border-radius: 99px;
+   background-color: var(--br);
 }
 
 .btn-siguiente {
@@ -661,19 +651,17 @@ iframe {
   border-radius: 99px;
 }
 .botones-reproductor button {
-  background-color: var(--p);
+  background-color: var(--br);
   flex: 1;
   gap: 8px;
 }
 .desactivado {
   opacity: 0.5 !important;
-  background-color: var(--p) !important;
   cursor: not-allowed !important;
 }
 
 .btn-selector-capitulo {
   background-color: var(--p);
-  border: 1px solid var(--br);
   gap: 8px;
   position: relative;
   min-width: 144px;
@@ -722,7 +710,6 @@ iframe {
   font-weight: 600;
   color: var(--t1);
   padding-bottom: 10px;
-  margin-bottom: 3px;
   margin-top: 3px;
   text-align: start;
   padding-top: 0;
@@ -822,7 +809,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 #btn-bloquear-anuncios.activo {
   background-color: rgba(167, 243, 208, 0.12); /* Fondo sutil */
   color: #a7f3d0; /* Menta pastel brillante para legibilidad */
-  border: 1px solid rgba(167, 243, 208, 0.4);
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
 }
@@ -831,7 +817,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 #btn-modo-maraton.activo {
   background-color: rgba(251, 113, 133, 0.12); /* Fondo sutil */
   color: #fda4af; /* Rosa pastel brillante */
-  border: 1px solid rgba(251, 113, 133, 0.4);
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
 }

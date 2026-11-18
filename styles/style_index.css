@@ -360,20 +360,29 @@ footer {
     bottom: 12px;
     left: 82px;
     transform: none;
-    opacity: 1;
+    opacity: .9;
     width: 85px;
     text-wrap: nowrap;
-    color: var(--btn);
+    color: var(--t1);
+    background: btn;
     padding-block: 10px;
+  }
+  /* Selecciona el contenedor que tenga dentro una imagen con ese src exacto */
+  .estado:has(img[src="../icons/circle-solid-blue.svg"]) {
+    background-color: color-mix(in srgb, #63e6be 10%, transparent);
+  }
+  .estado:has(img[src="../icons/circle-solid.svg"]) {
+    background-color: color-mix(in srgb, rgb(255, 41, 41) 10%, transparent);
   }
   .type {
     top: unset;
     bottom: 12px;
     left: calc(85px + 82px + 9.5px);
     transform: none;
-    opacity: 1;
+    opacity: .9;
     padding-block: 10px;
-    color: var(--btn2);
+    color: var(--t1);
+    background-color: color-mix(in srgb, var(--t2) 10%, transparent);
     width: 64px;
   }
   .rating {
@@ -382,7 +391,8 @@ footer {
     left: calc(85px + 82px + 9.5px + 64px + 9.5px);
     padding-block: 10px;
     transform: none;
-    opacity: 1;
+    opacity: .9;
+    background-color: color-mix(in srgb, rgb(255, 244, 79) 10%, transparent);
   }
   strong {
     margin: 0;
@@ -441,20 +451,28 @@ footer {
       bottom: 12px;
       left: 82px;
       transform: none;
-      opacity: 1;
+      opacity: 0.9;
       width: 85px;
       text-wrap: nowrap;
-      color: var(--btn);
+      color: var(--t1);
       padding-block: 10px;
     }
+      /* Selecciona el contenedor que tenga dentro una imagen con ese src exacto */
+  .estado:has(img[src="../icons/circle-solid-blue.svg"]) {
+    background-color: color-mix(in srgb, #63e6be 10%, transparent);
+  }
+  .estado:has(img[src="../icons/circle-solid.svg"]) {
+    background-color: color-mix(in srgb, rgb(255, 41, 41) 10%, transparent);
+  }
     .type {
       top: unset;
       bottom: 12px;
       left: calc(85px + 82px + 12px);
       transform: none;
-      opacity: 1;
+      opacity: 0.9;
       padding-block: 10px;
-      color: var(--btn2);
+      color: var(--t1);
+      background-color: color-mix(in srgb, var(--t2) 10%, transparent);
       width: 64px;
     }
     .rating {
@@ -463,7 +481,8 @@ footer {
       left: calc(85px + 82px + 9.5px + 64px + 9.5px);
       padding-block: 10px;
       transform: none;
-      opacity: 1;
+      opacity: 0.9;
+      background-color: color-mix(in srgb, rgb(255, 244, 79) 10%, transparent);
     }
     strong {
       margin: 0;

@@ -94,8 +94,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: transparent;
-  border: 1px solid var(--btn);
+  background: color-mix(in srgb, var(--btn) 10%, transparent);
   color: var(--btn);
   padding: 8px 16px;
   border-radius: 24px;
@@ -106,24 +105,23 @@
 }
 
 .btn-outline:hover {
-  background: rgba(var(--bgt), 0.08);
-  border-color: var(--btn);
+  filter: brightness(1.2);
 }
 
 .btn-outline.danger {
   color: var(--btn2);
-  border-color: var(--btn2);
+  background: color-mix(in srgb, var(--btn2) 10%, transparent);
 }
 
 .btn-outline.danger:hover {
-  background: rgba(var(--bgt), 0.08);
+  filter: brightness(1.2);
 }
 
 /* Select Personalizado */
 .custom-select {
   appearance: none;
   background-color: var(--b);
-  border: 1px solid var(--br);
+  border: none;
   color: var(--t1);
   padding: 10px 36px 10px 16px;
   border-radius: 24px;
