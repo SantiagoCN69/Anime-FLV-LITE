@@ -1980,6 +1980,11 @@ async function cargarVideoDesdeEpisodioInterno(index) {
     `${window.location.pathname}?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`
   );
 
+  // Los botones anterior/siguiente y el dropdown reflejan el nuevo capitulo
+  // de inmediato: la carga de servidores (Firestore/API) puede tardar o
+  // fallar y no debe dejar la navegacion con los numeros del episodio viejo.
+  sincronizarUINavegacion();
+
   // Vidrift solo necesita tmdbId + temporada + episodio: no depende de la
   // lista de servidores. Se renderiza de inmediato y el cache, Firestore o
   // la API solo agregan el resto de botones después, sin recargar el iframe.
