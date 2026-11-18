@@ -311,15 +311,7 @@ body:not(.animaciones-off) header {
 /* .btn-estado:not(#contenedor-barra-progreso):active {
   transform: translateY(-2px) scale(.9) !important;
 } */
-#btn-fav {
-  grid-area: fav;
-  background: #5a131aad;
-  border: 1px solid #5a131aad;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
+
 
 #btn-fav.favorito {
   background: #fb3447; 
