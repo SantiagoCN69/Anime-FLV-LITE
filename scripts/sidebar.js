@@ -38,7 +38,7 @@ function inicializarSidebar(sidebarSelector = '.sidebar', toggleId = 'menu-toggl
     'noticias_container', 'capitulos', 'animes-relacionados',
     'anime-grid-sin-resultados', 'controles', 
     'sugerencias-sin-resultados', 'anime-grid-ia-busqueda',
-    'anime-grid-sugerencias'
+    'anime-grid-sugerencias', 'generos'
   ]);
 
   // Manejadores de eventos internos
