@@ -108,7 +108,6 @@
   text-align: left;
   overflow: hidden;
   background: var(--p);
-  border: 1px solid var(--br);
   border-radius: 18px;
   padding: 12px;
 }

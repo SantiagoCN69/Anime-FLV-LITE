@@ -273,10 +273,9 @@ body.cv-sidebar #section-continuar-viendo {
     padding: 10px 20px;
     grid-column: -2 / -1;
     align-self: end;
-          background: rgba(255, 255, 255, 0.08);
-  color: var(--t1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--t1);
+    backdrop-filter: blur(8px);
   }
 
   .ver-mas-btn:hover {
@@ -353,7 +352,6 @@ footer {
     width: 22px !important;
     height: 22px !important;
     transform: none;
-    border: 1px solid rgba(var(--bgt), .5);
   }
   .anime-card:hover .play-icon {
     transform: none !important;
@@ -365,7 +363,6 @@ footer {
     opacity: 1;
     width: 85px;
     text-wrap: nowrap;
-    border: 1px solid var(--btn);
     color: var(--btn);
     padding-block: 10px;
   }
@@ -376,7 +373,6 @@ footer {
     transform: none;
     opacity: 1;
     padding-block: 10px;
-    border: 1px solid var(--btn2);
     color: var(--btn2);
     width: 64px;
   }
@@ -387,7 +383,6 @@ footer {
     padding-block: 10px;
     transform: none;
     opacity: 1;
-    border: 1px solid rgba(var(--bgt), .5);
   }
   strong {
     margin: 0;
@@ -438,7 +433,6 @@ footer {
       width: 22px !important;
       height: 22px !important;
       transform: none;
-      border: 1px solid rgba(var(--bgt), .5);
     }
     .anime-card:hover .play-icon {
       transform: none !important;
@@ -450,7 +444,6 @@ footer {
       opacity: 1;
       width: 85px;
       text-wrap: nowrap;
-      border: 1px solid var(--btn);
       color: var(--btn);
       padding-block: 10px;
     }
@@ -461,7 +454,6 @@ footer {
       transform: none;
       opacity: 1;
       padding-block: 10px;
-      border: 1px solid var(--btn2);
       color: var(--btn2);
       width: 64px;
     }
@@ -472,7 +464,6 @@ footer {
       padding-block: 10px;
       transform: none;
       opacity: 1;
-      border: 1px solid rgba(var(--bgt), .5);
     }
     strong {
       margin: 0;
@@ -798,7 +789,6 @@ nav.filtros {
   transition: background 0.3s ease, transform 0.3s ease;
   background: rgba(255, 255, 255, 0.08);
   color: var(--t1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(8px);
   svg {
     width: 20px;
@@ -1058,8 +1048,8 @@ nav.filtros {
   gap: 0.5rem;
   margin-bottom: 0.20rem;
   .hero-badge {
-    font-size: 0.75rem;
-    padding: 0.3rem 0.6rem;
+    font-size: 12px;
+    padding: 4px 10px;
     border-radius: 99px;
     border: none;
   }
@@ -1175,7 +1165,7 @@ display: flex;
   height: 40px;
   border-radius: 999px;
   font-weight: 700;
-  font-size: 0.92rem;
+  font-size: 14px;
   line-height: 1;
   white-space: nowrap;
   transition: transform 0.2s ease, filter 0.2s ease, background 0.2s ease;
@@ -1186,8 +1176,8 @@ display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
 }
 
 .hero-btn__icon svg {
@@ -1201,19 +1191,18 @@ display: flex;
 }
 
 .hero-btn--primary {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--t1);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+background: var(--t1);
+color: var(--p);
   backdrop-filter: blur(8px);
   border-radius: 24px;
-  }
+}
 
 
 
 .hero-btn--secondary {
-  background: var(--btn2);
+  background: #ffffff33;
   border-radius: 14px;
+  backdrop-filter: blur(8px);
 }
 @media (max-width: 400px) {
   .hero-btn--primary {
@@ -1236,12 +1225,11 @@ display: flex;
   z-index: 4;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(var(--bgt), .1);
   border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(var(--bgt), .1);
+  background: #ffffff33;
   color: var(--t1);
   backdrop-filter: blur(8px);
   transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
@@ -1512,7 +1500,6 @@ display: flex;
   height: 40px;
   border-radius: 99px;
   background: rgba(var(--bgt), .1);
-  border: 1px solid rgba(var(--bgt), .1);
   color: var(--t1);
   cursor: pointer;
   display: flex;
