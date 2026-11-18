@@ -1022,6 +1022,10 @@ function actualizarEstadoBotonDoblado(servidores) {
   const btn = document.getElementById("btn-cambio-servers");
   if (!btn) return;
 
+  // Lista vacía = render provisional solo-Vidrift: no hay datos
+  // reales de servidores y no debe revertir la preferencia sub/dob.
+  if (!servidores?.length) return;
+
   const tienedoblado = servidores.some(s => 
     (s.name || "").toLowerCase().includes("(lat)")
   );
