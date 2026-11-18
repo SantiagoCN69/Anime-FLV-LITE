@@ -286,16 +286,17 @@ body:not(.animaciones-off) header {
   padding: 7.5px;
   padding-right: 14px;
   border-radius: 999px;
-  max-width: 126px;
-  width: 126px;
+  max-width: 128px;
+  width: 128px;
+  max-width: 145px;
+  width: 145px;
   overflow: hidden;
   transition: background 0.3s ease, max-width 0.1s ease, width 0.1s ease, gap 0.1s ease;
 }
 #contenedor-barra-progreso.cargo-progreso {
-  max-width: 129px;
-  width: 129px;
   gap: 8px;
 }
+
 #contenedor-barra-progreso:not(.cargo-progreso) .cta__ring .cta__fill,
 #contenedor-barra-progreso:not(.cargo-progreso) .cta__ring .cta__track {
   opacity: 0;
@@ -314,8 +315,8 @@ body:not(.animaciones-off) header {
 .cta__ring {
   position: relative;
   width: 27px;
-  min-width: 27px;
-  height: 27px;
+  height: auto;
+  aspect-ratio: 1 / 1;
 }
 .cta__ring > svg:first-child {
   position: absolute;
@@ -342,8 +343,8 @@ svg.cta__play {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: 16px;
-  height: 16px;
+  width: 14.5px;
+  height: auto;
   transition: width .2s, height .2s;
 }
 .cta__text {
@@ -362,59 +363,55 @@ svg.cta__play {
   opacity: .92;
 }
 /* sin cargar */
-@media (max-width: 409px) {
-  #contenedor-barra-progreso:not(.cargo-progreso) {
-    max-width: 240px !important;
-    width: 240px !important;
-    justify-content: center;
-    gap: 8px;
+@media (max-width: 424px) {
+  #botones-estado, #botones-estados-sp {
+    gap: 6.5px;
   }
-  #contenedor-barra-progreso {
-    max-width: 123px !important;
-    width: 123px !important;
+  .btn-estado {
+    padding: 13.5px;
   }
-
-  #contenedor-barra-progreso:not(.cargo-progreso) .cta__text {
-    width: fit-content !important;
+  .btn-estado svg {
+    width: 23px;
+    height: 23px;
   }
-
-
-  .cargo-progreso .cta__text {
-    transform: scale(0.9);
-  }
-}
-
-@media (max-width: 402px) {
-  #contenedor-barra-progreso.cargo-progreso {
-    max-width: 240px !important;
-    width: 240px !important;
-    gap: 8px;
-    .cta__text {
-      width: fit-content !important;
+  #botones-estados-sp {
+    flex: 1;
+    button {
+      flex: 1;
     }
   }
-  #botones-estado {
-    transform: scale(1.1);
-    margin-block: 5px;
+}
+@media (max-width: 403px) {
+  #botones-estado, #botones-estados-sp {
+    gap: 5px;
+  }
+  .btn-estado {
+    padding: 12px;
+  }
+  .btn-estado svg {
+    width: 22px;
+    height: 22px;
   }
 }
-
-@media (max-width: 272px) {
-  #botones-estado {
-    flex-wrap: nowrap;
-  }
+@media (max-width: 381px) {
   #contenedor-barra-progreso {
     height: 100% !important;
     border-radius: 14px;
+    flex: 1;
+    justify-content: center;
+    max-width: 100%;
+    flex-wrap: wrap;
+    padding-right: 7.5px;
+  }
+
+  .cta__text {
+    width: fit-content;
   }
   #botones-estados-sp {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
-
-
 @media (hover: hover) and (pointer: fine) {
   .btn-estado:hover::after {
     opacity: 1;
@@ -1908,7 +1905,7 @@ z-index: 0;
   justify-content: center;
   border-radius: 12px;
   background: rgba(var(--bgt), .1);
-  border: 1px solid rgba(var(--bgt), .1);
+  /* border: 1px solid rgba(var(--bgt), .1); */
   color: var(--t1);
 }
 @keyframes modalAppear {
