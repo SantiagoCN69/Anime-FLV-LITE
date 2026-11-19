@@ -469,6 +469,7 @@ body:has(header.search-active) .logout-modal {
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   background: var(--b);
+  font-family: 'Oxanium', sans-serif;
   will-change: transform;
   -ms-overflow-style: none; 
   scrollbar-width: none; 
@@ -477,8 +478,9 @@ body:has(header.search-active) .logout-modal {
   }
 }
 .sidebar span {
-    pointer-events: none;
-    height: 21px;
+  align-self: center;
+  pointer-events: none;
+  height: 19px;
 }
 .overlay {
     position: fixed;
