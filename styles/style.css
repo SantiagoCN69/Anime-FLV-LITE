@@ -2033,32 +2033,39 @@ h4 {
   top: 30px; 
   transform: translateX(-50%) translateY(0);
   touch-action: none;
-  animation: mostrarOcultarPildora 3s forwards;
+  animation: mostrarEntradaPildora .45s cubic-bezier(.34, 1.56, .64, 1);
 }
 
-@keyframes mostrarOcultarPildora {
-  0% {
-    top: -60px;
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
-    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  15% {
-    top: 30px; 
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  85% {
-    top: 30px; 
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    animation-timing-function: ease-in;
-  }
-  100% {
+@keyframes mostrarEntradaPildora {
+  from {
     top: -60px;
     opacity: 0;
     transform: translateX(-50%) translateY(-20px);
   }
+  to {
+    top: 30px;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.pildora.clicable {
+  cursor: pointer;
+}
+
+.pildora.saliendo {
+  animation: none;
+  opacity: 0;
+  top: -60px;
+  transition: top .35s ease-in, opacity .35s ease-in;
+}
+
+.pildora.deslizando {
+  animation: none;
+  opacity: 0;
+  filter: blur(8px);
+  transition: transform .35s ease-in, opacity .35s ease-in, filter .35s ease-in;
+  transform: translateX(-50%) translate(var(--desliz-x, 0px), var(--desliz-y, 0px));
 }
 /* --- Variantes --- */
 
