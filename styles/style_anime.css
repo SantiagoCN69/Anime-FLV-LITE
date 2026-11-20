@@ -281,20 +281,19 @@ body:not(.animaciones-off) header {
 
   display: flex;
   align-items: center;
-  justify-content: start;
-  gap: 4px;
+  gap: 8px;
   padding: 7.5px;
   padding-right: 14px;
   border-radius: 999px;
-  max-width: 128px;
-  width: 128px;
-  max-width: 145px;
   width: 145px;
+  max-width: 145px;
   overflow: hidden;
   transition: background 0.3s ease, max-width 0.1s ease, width 0.1s ease, gap 0.1s ease;
 }
 #contenedor-barra-progreso.cargo-progreso {
   gap: 8px;
+  max-width: 128px;
+  width: 128px;
 }
 
 #contenedor-barra-progreso:not(.cargo-progreso) .cta__ring .cta__fill,
@@ -351,7 +350,7 @@ svg.cta__play {
   display: flex;
   flex-direction: column;
   line-height: 1.25;
-  width: 0;
+
   white-space: nowrap;
 }
 .cta__text strong {
@@ -867,7 +866,7 @@ svg.cta__play {
   width: 226.5px;
   background: var(--p);
   filter: brightness(1.2);
-  padding: 4px;
+  padding: 6px;
   border-radius: 24px;
 }
 
@@ -878,7 +877,7 @@ svg.cta__play {
   border-radius: 24px;
   background: transparent;
   color: var(--t1);
-  font-size: 0.85rem;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -975,7 +974,8 @@ svg.cta__play {
 #filtro-capitulo {
   width: 100%;
   padding: 12px 15px;
-  border: 1px solid var(--br);
+  border: none;
+  filter: brightness(1.2);
   border-radius: 24px;
   background-color: var(--p);
   color: var(--t1);
