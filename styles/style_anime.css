@@ -291,9 +291,7 @@ body:not(.animaciones-off) header {
   transition: background 0.3s ease, max-width 0.1s ease, width 0.1s ease, gap 0.1s ease;
 }
 #contenedor-barra-progreso.cargo-progreso {
-  gap: 8px;
-  max-width: 128px;
-  width: 128px;
+  justify-content: flex-start;
 }
 
 #contenedor-barra-progreso:not(.cargo-progreso) .cta__ring .cta__fill,
@@ -756,6 +754,7 @@ svg.cta__play {
 /* 2. Contenedor principal */
 .anime-description-container {
   max-width: 600px;
+  min-height: 142px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
