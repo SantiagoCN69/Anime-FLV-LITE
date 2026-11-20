@@ -726,20 +726,20 @@ svg.cta__play {
   
 .genero a {
   height: 25.5px;
-  color: var(--t2);
   padding: 4px 12px;
   border-radius: 999px;
   font-size: .8rem;
   white-space: nowrap;
   transition: all .2s ease;
+  opacity: .9;
   &:hover {
-    border-color: var(--t2);
-    color: var(--t2);
     filter: brightness(1.2);
   }
 }
 .genero a.cargado {
-  background: var(--br);
+  background-color: color-mix(in srgb, var(--btn) 20%, transparent);
+  backdrop-filter: blur(5px);
+  
 }
 .anime-description {
   position: relative;
@@ -1053,13 +1053,12 @@ svg.cta__play {
   border-radius: 13px;
   border-bottom-left-radius: 15px;
   transition: transform 0.2s, filter 0.2s;
-  transform-origin: bottom center; 
-  filter: brightness(1.2);
+  transform-origin: bottom center;
 }
 .ep-visto .episode-thumb {
   filter: brightness(0.6);
   /* border: 2px solid var(--br); */
-  opacity: 0.8;
+  opacity: 0.5;
 }
 .no-thumb img {
   width: 0;
