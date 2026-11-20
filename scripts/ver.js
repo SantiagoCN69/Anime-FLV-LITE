@@ -1035,6 +1035,7 @@ function actualizarEstadoBotonDoblado(servidores) {
     if (modoDoblado) {
       modoDoblado = false;
       btn.textContent = "Doblado";
+      btn.classList.remove("activo");
       const newUrl = new URL(window.location);
       newUrl.searchParams.set("servers", "sub");
       window.history.replaceState({}, "", newUrl);
