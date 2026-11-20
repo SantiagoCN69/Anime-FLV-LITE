@@ -607,12 +607,15 @@ function ver(id) {
 
 // === BÚSQUEDA ===
 const busquedaInput = document.getElementById('busqueda');
-let busquedaTimer, busquedaCountdownInterval, busquedaTextosInterval, initialDelayTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null;
+let busquedaTimer, busquedaCountdownInterval, busquedaTextosInterval, initialDelayTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null, focusBlurTimer;
 
+// El blur solo ocurre tras 3s sin escribir: cada evento 'input' lo resetea,
+// así no se quita el foco mientras el usuario sigue tecleando.
 function quitarFocusBusqueda() {
-  setTimeout(() => {
+  clearTimeout(focusBlurTimer);
+  focusBlurTimer = setTimeout(() => {
     if (document.activeElement === busquedaInput) busquedaInput.blur();
-  }, 1000);
+  }, 3000);
 }
 
 function hayBusquedasRecientes() {
@@ -640,6 +643,7 @@ if (busquedaInput) {
 
   busquedaInput.addEventListener('input', () => {
     const valor = busquedaInput.value.trim();
+    clearTimeout(focusBlurTimer);
     sincronizarBusquedasRecientes();
     
     currentSearch++;
@@ -660,7 +664,7 @@ if (busquedaInput) {
     const seccionResultados = document.getElementById('Busqueda-Resultados');
     const resultadosContainer = document.getElementById('resultados-busqueda');
 
-    if (!valor) {
+    if (!valor || valor.length < 2) {
       if (isIndexPage) limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, resultadosContainer);
       else limpiarVistaAnimePage();
       return;
@@ -783,6 +787,6 @@ initialDelayTimer = setTimeout(() => {
           }
           quitarFocusBusqueda();
         });
-    }, 300);
+    }, 500);
   });
 }
