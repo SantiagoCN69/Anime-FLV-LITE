@@ -98,6 +98,7 @@ body:not(.animaciones-off) header {
 }
 #links {
   font-weight: bold;
+  height: 22px;
   display: flex;
   gap: 12px;
   position: absolute;
