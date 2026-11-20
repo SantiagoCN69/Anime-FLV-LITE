@@ -977,6 +977,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   border-radius: 99px;
 } */
 
-.footer {
+footer {
   background: var(--b);
 }
