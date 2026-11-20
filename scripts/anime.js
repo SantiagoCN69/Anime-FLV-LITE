@@ -736,7 +736,7 @@ function obtenerInfoEstadoAnime() {
 function mostrarOverlayCapitulosCompletados() {
   // Evita duplicados usando el flag global
   if (overlayCompletadosActivo) return;
-  if (capContenedor.querySelector(".caps-completados-card")) return;
+  if (document.querySelector(".caps-completados-card")) return;
 
   overlayCompletadosActivo = true;
 
@@ -756,7 +756,9 @@ function mostrarOverlayCapitulosCompletados() {
       </div>
   `;
 
-  capContenedor.appendChild(overlay);
+  // Va en document.body (no en capContenedor): es position:fixed y así sobrevive
+  // a los re-renders de crearBotonesEpisodios que limpian capContenedor.innerHTML
+  document.body.appendChild(overlay);
 
   requestAnimationFrame(() => overlay.classList.add("show"));
 
