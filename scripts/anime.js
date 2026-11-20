@@ -724,6 +724,15 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   return li;
 };
 
+function obtenerInfoEstadoAnime() {
+  const estado = (animeActual?.estado || document.getElementById('statuscargado')?.textContent || '').toLowerCase();
+  return {
+    estado,
+    esFinalizado: estado.includes('finaliz') || estado.includes('conclu') || estado.includes('completed'),
+    enEmision: estado.includes('emisi')
+  };
+}
+
 function mostrarOverlayCapitulosCompletados() {
   // Evita duplicados usando el flag global
   if (overlayCompletadosActivo) return;
@@ -731,13 +740,19 @@ function mostrarOverlayCapitulosCompletados() {
 
   overlayCompletadosActivo = true;
 
+  // Si el anime sigue en emisión no se "completa": se muestra variante "Al día"
+  const { esFinalizado, enEmision } = obtenerInfoEstadoAnime();
+  const alDia = enEmision && !esFinalizado;
+
   const overlay = document.createElement("div");
   overlay.className = "caps-completados-card";
   overlay.innerHTML = `
-      <div class="caps-completados-icono">🏆</div>
+      <div class="caps-completados-icono">${alDia ? '✨' : '🏆'}</div>
       <div>
-        <h3>¡Felicidades!</h3>
-        <p>Has visto todos los episodios disponibles.</p>
+        <h3>${alDia ? '¡Al día!' : '¡Felicidades!'}</h3>
+        <p>${alDia
+          ? 'Has visto todos los capítulos disponibles. ¡Estás al día!'
+          : 'Has visto todos los episodios disponibles.'}</p>
       </div>
   `;
 
@@ -1659,17 +1674,24 @@ function actualizarBotonVerAhora(episodios, vistos = []) {
   const epObjetivo = episodios.find(ep => !listaVistos.includes(ep.number.toString())) || episodios[0];
   const totalEpisodios = episodios.length;
   const cantidadVistos = episodios.filter(ep => listaVistos.includes(ep.number.toString())).length;
-  const noVistos = Math.max(totalEpisodios - cantidadVistos, 0);
   const progreso = totalEpisodios > 0 ? (cantidadVistos / totalEpisodios) * 100 : 0;
-  const completado = cantidadVistos > 0 && noVistos === 0;
+  const todosVistos = totalEpisodios > 0 && cantidadVistos === totalEpisodios;
+  const { esFinalizado } = obtenerInfoEstadoAnime();
 
-  contenedor.classList.toggle('cargo-progreso', cantidadVistos > 0);
-  ctaText.textContent = completado ? 'Ver de nuevo' : (cantidadVistos > 0 ? 'Continuar' : 'Ver ahora');
-  ctaSmall.textContent = completado
-    ? 'Completado'
-    : cantidadVistos > 0
-      ? `Episodio ${epObjetivo.number} / ${totalEpisodios}`
-      : ``;
+  // Cuando ya no hay progreso pendiente ("Ver de nuevo" / "Al día") no se marca como cargo
+  contenedor.classList.toggle('cargo-progreso', cantidadVistos > 0 && !todosVistos);
+
+  if (!todosVistos) {
+    ctaText.textContent = cantidadVistos > 0 ? 'Continuar' : 'Ver ahora';
+    ctaSmall.textContent = cantidadVistos > 0 ? `Episodio ${epObjetivo.number} / ${totalEpisodios}` : ``;
+  } else if (esFinalizado) {
+    ctaText.textContent = 'Ver de nuevo';
+    ctaSmall.textContent = 'Completado';
+  } else {
+    // Anime en emisión (u otro estado): no se puede "completar", solo estar al día
+    ctaText.textContent = 'Ver de nuevo';
+    ctaSmall.textContent = `Al día · ${cantidadVistos}/${totalEpisodios} Ep`;
+  }
 
   ctaFill.style.setProperty('--progress', progreso.toFixed(1));
   contenedor.href = `ver?id=${id}&episode=${epObjetivo.number}`;
