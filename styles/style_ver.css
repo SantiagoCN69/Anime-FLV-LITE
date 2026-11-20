@@ -72,15 +72,15 @@ main {
   min-height: unset !important;
 }
 
-main section:nth-child(1) {
+main > section:nth-child(1) {
   width: calc(100% - 263px - 2rem);
   display: flex;
   flex-direction: column;
   gap:15px;
 }
-main section:nth-child(2) {
+main > section:nth-child(2) {
   position: relative;
-  margin-top: 36.5px;
+  margin-top: 37px;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -137,6 +137,7 @@ main section:nth-child(2) {
   border-radius: 14px;
 }
 #links {
+  height: 22px;
   font-weight: bold;
   display: flex;
   gap: 12px;
@@ -216,6 +217,7 @@ main section:nth-child(2) {
 }
 
 .btn-cap, h3 {
+  height: 31px;
   font-weight: 600;
   font-size: 1.5rem;
   color: var(--t1);
@@ -899,7 +901,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     margin-inline: 1rem;
     width: calc(100% - 2rem);
   }
-  main section:nth-child(1) {
+  main > section:nth-child(1) {
     flex: 1;
     height: unset;
     width: 100%;
@@ -907,7 +909,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
    #video, iframe {
     aspect-ratio: 16 / 9;
   }
-  main section:nth-child(2) {
+  main >section:nth-child(2) {
     height: unset;
     margin-top: unset;
     max-width: none;
