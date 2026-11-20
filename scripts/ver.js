@@ -1461,9 +1461,10 @@ function reordenarServidores(servidores) {
     if (url.includes('zilla-networks.com')) {
       return; // Omitir este servidor
     }
-    // Solo jkanime con /umv?e= y /um?e= tienen prioridad máxima
+    // Solo jkanime con /umv?e= tiene prioridad máxima.
+    // Los /um?e= se tratan como servidores normales (sin preferencia).
     else if ((url.includes('jkanime.net') || url.includes('jkplayer')) &&
-             (url.includes('/umv?e=') || url.includes('/um?e='))) {
+             url.includes('/umv?e=')) {
       jkanimePriority.push({ ...srv, preferido: true });
     }
     else if (url.includes('yourupload.com/embed/')) {
