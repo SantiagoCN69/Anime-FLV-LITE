@@ -418,6 +418,7 @@ footer {
         padding-block: 10px;
         transform: none;
         opacity: 0.9;
+        backdrop-filter: none;
         background-color: color-mix(in srgb, rgb(255, 244, 79) 10%, transparent);
       }
 
