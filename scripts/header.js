@@ -609,9 +609,12 @@ function ver(id) {
 const busquedaInput = document.getElementById('busqueda');
 let busquedaTimer, busquedaCountdownInterval, busquedaTextosInterval, initialDelayTimer, ocultarRecientesTimer, currentSearch = 0, currentController = null, currentIaController = null, focusBlurTimer;
 
-// El blur solo ocurre tras 3s sin escribir: cada evento 'input' lo resetea,
-// así no se quita el foco mientras el usuario sigue tecleando.
+// El blur solo ocurre en móvil (para ocultar el teclado) y tras 3s sin
+// escribir: cada evento 'input' lo resetea, así no se quita el foco
+// mientras el usuario sigue tecleando. En PC no se quita nunca.
+const esDispositivoTactil = window.matchMedia('(pointer: coarse)').matches;
 function quitarFocusBusqueda() {
+  if (!esDispositivoTactil) return;
   clearTimeout(focusBlurTimer);
   focusBlurTimer = setTimeout(() => {
     if (document.activeElement === busquedaInput) busquedaInput.blur();
