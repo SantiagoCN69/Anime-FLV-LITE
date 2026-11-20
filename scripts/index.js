@@ -446,6 +446,62 @@ function crearElementoSiguienteCapitulo(itemData) {
   return btn;
 }
 
+// Tarjeta de "Continuar viendo": creación y actualización en sitio
+function crearTarjetaContinuarViendo(data) {
+  const total = data.totalCapitulos || 12;
+  const capsVistos = Math.max((data.siguienteCapitulo || 1) - 1, 1);
+
+  const card = document.createElement('a');
+  card.className = 'continue-card anime-card';
+  card.href = `/ver?id=${data.id}&episode=${data.siguienteCapitulo}`;
+  card.dataset.id = data.id;
+  card.dataset.episode = data.siguienteCapitulo;
+
+  card.innerHTML = `
+    <div class="card-thumbnail container-img">
+      <img src="${data.portada}" alt="${data.titulo}" onerror="this.src='/icons/poster.png'">
+      <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
+      <span class="chapter ep-badge">EP ${data.siguienteCapitulo}</span>
+    </div>
+    <div class="card-info">
+      <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%">
+      <div class="progress-fill-background"></div>
+      </div>
+      </div>
+      <strong>${data.titulo}</strong>
+      <span class="card-meta">${capsVistos}/${total} eps</span>
+    </div>`;
+
+  return card;
+}
+
+// Actualiza una tarjeta existente sin recrearla (evita parpadeos)
+function actualizarTarjetaContinuarViendo(card, data) {
+  const total = data.totalCapitulos || 12;
+  const capsVistos = Math.max((data.siguienteCapitulo || 1) - 1, 1);
+
+  card.href = `/ver?id=${data.id}&episode=${data.siguienteCapitulo}`;
+  card.dataset.episode = data.siguienteCapitulo;
+
+  const img = card.querySelector('.container-img img');
+  if (img && img.getAttribute('src') !== data.portada) {
+    img.src = data.portada;
+    img.alt = data.titulo;
+  }
+
+  const badge = card.querySelector('.ep-badge');
+  if (badge) badge.textContent = `EP ${data.siguienteCapitulo}`;
+
+  const fill = card.querySelector('.progress-fill');
+  if (fill) fill.style.width = `${Math.min((capsVistos / total) * 100, 100)}%`;
+
+  const titulo = card.querySelector('.card-info strong');
+  if (titulo) titulo.textContent = data.titulo;
+
+  const meta = card.querySelector('.card-meta');
+  if (meta) meta.textContent = `${capsVistos}/${total} eps`;
+}
+
 async function cargarUltimosCapsVistos() {
   const sectionsidebar  = document.getElementById('continuar-viendo-sidebar')
   const ultimosCapsContainer = document.getElementById('ultimos-caps-viendo');
@@ -1677,7 +1733,10 @@ function inicializarContinuarViendo() {
 
   if (datos.length === 0) {
     container.classList.add('hidden');
-    if (grid) grid.innerHTML = '';
+    if (grid) {
+      grid.innerHTML = '';
+      grid.dataset.firma = '';
+    }
     return;
   }
 
@@ -1685,63 +1744,59 @@ function inicializarContinuarViendo() {
     container.classList.remove('hidden');
 
     // ----------------------------------------------------
-    // OPTIMIZACIÓN: Solo renderizar si hay cambios
+    // Firma de los datos: si nada cambió (mismos animes,
+    // episodios, títulos, portadas y orden) no tocamos el DOM.
     // ----------------------------------------------------
-    const datosActuales = Array.from(grid.children).map(card => ({
-      id: card.dataset.id,
-      episode: card.dataset.episode
-    }));
+    const firma = datos.map(d =>
+      `${d.id}|${d.siguienteCapitulo}|${d.totalCapitulos}|${d.titulo}|${d.portada}`
+    ).join(';');
 
-    const datosNuevos = datos.map(d => ({
-      id: d.id,
-      episode: String(d.siguienteCapitulo)
-    }));
-
-    const hayCambios = JSON.stringify(datosActuales) !== JSON.stringify(datosNuevos);
-
-    if (!hayCambios) {
-      // Asegurar que las tarjetas tengan la clase 'show'
+    if (grid.dataset.firma === firma) {
       observerAnimeCards(grid.querySelectorAll('.anime-card:not(.show)'));
       return;
     }
+    grid.dataset.firma = firma;
+
+    const idsNuevos = new Set(datos.map(d => d.id));
 
     // ----------------------------------------------------
-    // Modificación: Integrado renderFlipOptimizado
+    // Render incremental dentro del FLIP: se reutilizan las
+    // cards existentes (solo se actualizan sus datos), se
+    // crean únicamente las nuevas y se eliminan las que ya
+    // no están. Nada de innerHTML='' -> cero parpadeo.
     // ----------------------------------------------------
     renderFlipOptimizado(grid, () => {
-      grid.innerHTML = '';
-      const cards = [];
-
-      datos.forEach((data, index) => {
-        const total = data.totalCapitulos || 12;
-        const capsVistos = Math.max((data.siguienteCapitulo || 1) - 1, 1);
-
-        const card = document.createElement('a');
-        card.className = 'continue-card anime-card';
-        card.href = `/ver?id=${data.id}&episode=${data.siguienteCapitulo}`;
-        card.dataset.id = data.id;
-        card.dataset.episode = data.siguienteCapitulo;
-
-        card.innerHTML = `
-          <div class="card-thumbnail container-img">
-            <img src="${data.portada}" alt="${data.titulo}" onerror="this.src='/icons/poster.png'">
-            <img src="./icons/play-solid-trasparent.svg" class="play-icon" alt="ver">
-            <span class="chapter ep-badge">EP ${data.siguienteCapitulo}</span>
-          </div>
-          <div class="card-info">
-            <div class="progress-track"><div class="progress-fill" style="width: ${Math.min((capsVistos/total)*100, 100)}%">
-            <div class="progress-fill-background"></div>
-            </div>
-            </div>
-            <strong>${data.titulo}</strong>
-            <span class="card-meta">${capsVistos}/${total} eps</span>
-          </div>`;
-
-        grid.appendChild(card);
-        cards.push(card);
+      // 1. Indexar cards existentes y eliminar las que ya no están
+      const existentes = new Map();
+      Array.from(grid.children).forEach(card => {
+        if (idsNuevos.has(card.dataset.id)) {
+          existentes.set(card.dataset.id, card);
+        } else {
+          card.remove();
+        }
       });
 
-      observerAnimeCards(cards);
+      // 2. Actualizar existentes / crear solo las nuevas
+      const cardsNuevas = [];
+      const cardsFinales = datos.map(data => {
+        let card = existentes.get(data.id);
+        if (card) {
+          actualizarTarjetaContinuarViendo(card, data);
+        } else {
+          card = crearTarjetaContinuarViendo(data);
+          cardsNuevas.push(card);
+        }
+        return card;
+      });
+
+      // 3. Reordenar moviendo nodos (no se destruyen ni recrean)
+      cardsFinales.forEach((card, i) => {
+        const ref = grid.children[i];
+        if (ref !== card) grid.insertBefore(card, ref || null);
+      });
+
+      // 4. Observar solo las cards recién creadas
+      if (cardsNuevas.length) observerAnimeCards(cardsNuevas);
     });
 
     // Inicializar botones scroll
