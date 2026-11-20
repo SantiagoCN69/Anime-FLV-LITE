@@ -2812,17 +2812,36 @@ async function mostrarVideo(link, botonSeleccionado) {
               siguienteServidor: siguienteServidor.value,
               etiqueta: siguienteServidor.label
             });
-          } else if (servidorActual && servidorActual !== servidorVidriftOriginal) {
-            // Ningún servidor interno tiene la pista: se vuelve al original
-            // para no dejar al espectador en una fuente distinta a la que
-            // eligió o le tocó por failover.
-            iframe.contentWindow.postMessage(
-              { type: "vidrift:set", server: servidorVidriftOriginal },
-              "https://embed.vidrift.net"
-            );
-            debugLog("[Vidrift] Ningún servidor tiene subtítulo en español; se restaura el original", {
-              servidorOriginal: servidorVidriftOriginal
-            });
+          } else {
+            // Ningún servidor interno tiene la pista. Se avisa una sola vez
+            // por reproducción con la opción de saltar al siguiente servidor
+            // externo. Solo cuenta como agotado cuando Vidrift ya expuso la
+            // lista de servidores: un state sin `servers` no es concluyente.
+            if (
+              !avisoSubEspanolAgotado
+              && Array.isArray(event.data.servers)
+              && event.data.servers.length > 0
+            ) {
+              avisoSubEspanolAgotado = true;
+              mostrarPildora(
+                "Vidrift no tiene subtítulos en español en ningún servidor. Prueba el siguiente servidor.",
+                "default",
+                () => intentarSiguienteServidor(reproduccionId, "Vidrift sin subtítulos en español", false),
+                6000
+              );
+            }
+            if (servidorActual && servidorActual !== servidorVidriftOriginal) {
+              // Ningún servidor interno tiene la pista: se vuelve al original
+              // para no dejar al espectador en una fuente distinta a la que
+              // eligió o le tocó por failover.
+              iframe.contentWindow.postMessage(
+                { type: "vidrift:set", server: servidorVidriftOriginal },
+                "https://embed.vidrift.net"
+              );
+              debugLog("[Vidrift] Ningún servidor tiene subtítulo en español; se restaura el original", {
+                servidorOriginal: servidorVidriftOriginal
+              });
+            }
           }
         }
 
@@ -2948,7 +2967,7 @@ async function mostrarVideo(link, botonSeleccionado) {
   cargarIframeServidor(url, videoDiv, reproduccionId);
 }
 
-function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo = "El servidor actual falló o no respondió") {
+function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo = "El servidor actual falló o no respondió", mostrarAviso = true) {
   if (reproduccionId !== reproduccionActualId) return;
 
   const siguienteIndice = embeds.findIndex((servidor, indice) =>
@@ -2983,11 +3002,15 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   });
 
   // El motivo también se muestra en pantalla: Live Server y algunos iframes
-  // pueden limpiar la consola mientras se reemplaza el reproductor.
-  mostrarPildora(
-    `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`,
-    "default"
-  );
+  // pueden limpiar la consola mientras se reemplaza el reproductor. Cuando el
+  // salto lo inicia el propio aviso (p. ej. la píldora de subtítulos), el
+  // mensaje sería redundante y se omite.
+  if (mostrarAviso) {
+    mostrarPildora(
+      `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`,
+      "default"
+    );
+  }
 
   mostrarVideo(siguienteServidor, siguienteBoton);
 }
