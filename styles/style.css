@@ -538,7 +538,6 @@ body:has(header.search-active) .logout-modal {
   }
 }
 .sidebar span {
-  align-self: center;
   pointer-events: none;
   height: 19px;
 }
