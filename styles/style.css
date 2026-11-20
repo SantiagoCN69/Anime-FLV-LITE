@@ -511,6 +511,7 @@ body:has(header.search-active) .logout-modal {
 }
 /* Sidebar (barra lateral izquierda) */
 .sidebar {
+  background: var(--b);
   overscroll-behavior-y: contain;
   display: flex;
   flex-direction: column;
