@@ -912,7 +912,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     margin-top: unset;
     max-width: none;
     width: 100%;
-    gap: 15px;
+    gap: 20px;
   }
 
   #noticias_container {

@@ -1977,7 +1977,7 @@ h4 {
   overflow-y: hidden;
   display: flex;
   gap: 1rem;
-  padding: 8px;
+  padding-block: 5px;
   min-height: 200px;
   height: fit-content;
 }
