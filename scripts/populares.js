@@ -313,11 +313,15 @@ btnAlert.addEventListener('click', () => {
 modal.addEventListener('click', () => {
     modal.classList.remove('active');
 });
-window.addEventListener('scroll', () => {
+const cerrarModalYFiltros = () => {
     modal.classList.remove('active');
     document.querySelectorAll('.btn-filtro').forEach(opcion => {
         opcion.classList.remove('active');
     });
+};
+window.addEventListener('scroll', cerrarModalYFiltros);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cerrarModalYFiltros();
 });
 
 
