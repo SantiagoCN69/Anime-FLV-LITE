@@ -563,7 +563,7 @@ const renderAnime = anime => {
 let estadoTransformado = anime.estado;
 if (anime.estado) {
   const estadoLower = anime.estado.toLowerCase();
-  if (estadoLower === 'en emisión' || "en emision") {
+  if (estadoLower === 'en emisión' || estadoLower === 'en emision') {
     estadoTransformado = 'emision';
   } else if (estadoLower === 'finalizado') {
     estadoTransformado = 'finalizado';
