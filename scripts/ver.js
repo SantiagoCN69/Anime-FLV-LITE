@@ -2651,6 +2651,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       let intervaloEstadoVidrift = null;
       let recibirEstadoVidrift;
       let intentosInfoSiguiente = 0;
+      let avisoSubEspanolAgotado = false;
       const servidoresVidriftProbados = new Set();
       let servidorVidriftOriginal = null;
 
