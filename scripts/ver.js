@@ -1955,7 +1955,6 @@ async function cargarVideoDesdeEpisodioInterno(index) {
   const t0Carga = performance.now();
   const controles = document.getElementById("controles");
   controles.innerHTML = "<span id='cargando-servidores'></span>";
-  controles.classList.remove("con-mediafire");
   btnCap.textContent = `Episodio ${index}`;
 
   const tEp = performance.now();
@@ -2091,31 +2090,12 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
   const controles = document.getElementById("controles");
   controles.innerHTML = "";
-  controles.classList.remove("cargado-otros", "con-mediafire", "cargado");
+  controles.classList.remove("cargado-otros", "cargado");
 
   let cantidadBotones = 0;
 
   embeds.forEach((srv, i) => {
-    const url = srv.url?.toLowerCase?.() || "";
-
-    if (url.includes("mediafire.com")) {
-      const a = document.createElement("a");
-      a.href = srv.url;
-      a.innerHTML = `
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path opacity="0.5" d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15"
-            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 3V16M12 16L16 11.625M12 16L8 11.625"
-            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      `;
-      a.classList.add("btn-descarga");
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      controles.appendChild(a);
-      controles.classList.add("con-mediafire");
-      return;
-    }
+    if ((srv.url?.toLowerCase?.() || "").includes("mediafire.com")) return;
 
     const btn = document.createElement("button");
     btn.textContent = nombreVisibleServidor(srv, i);
@@ -2124,6 +2104,21 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     controles.appendChild(btn);
     cantidadBotones++;
   });
+
+  const servidorDescarga = servidores.find(srv => (srv.url?.toLowerCase?.() || "").includes("mediafire.com"));
+  const btnDescargar = document.getElementById("descargar");
+  const botonesContainer = document.querySelector(".buttons-container");
+  if (btnDescargar && botonesContainer) {
+    if (servidorDescarga) {
+      btnDescargar.href = servidorDescarga.url;
+      btnDescargar.hidden = false;
+      botonesContainer.classList.add("con-descarga");
+    } else {
+      btnDescargar.hidden = true;
+      btnDescargar.removeAttribute("href");
+      botonesContainer.classList.remove("con-descarga");
+    }
+  }
 
   if (cantidadBotones > 0) {
     controles.classList.add("cargado");
