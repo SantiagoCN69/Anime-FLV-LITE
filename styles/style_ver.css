@@ -659,6 +659,7 @@ iframe {
   gap: 8px;
 }
 .desactivado {
+  background: var(--br);
   opacity: 0.5 !important;
   cursor: not-allowed !important;
 }
