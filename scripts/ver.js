@@ -1097,7 +1097,6 @@ async function refrescarUIEstadoCapitulo() {
     debugLog("No se encontraron elementos de UI para el estado del capítulo.");
     return;
   }
-  textoEstado.textContent = estaVisto ? "Visto" : "No visto";
   estaVisto ? btnEstadoCapitulo.classList.add("visto") : btnEstadoCapitulo.classList.remove("visto");
 }
 
@@ -1176,7 +1175,7 @@ async function toggleYGuardarEstadoCapitulo() {
       generarDropdownCapitulos();
 
       mostrarPildora(
-        `Episodio ${indiceCapitulo} ${nuevoEstadoVisto ? "marcado como visto" : "eliminado de vistos"}`,
+        `Episodio ${indiceCapitulo} ${nuevoEstadoVisto ? "Visto" : "Quitado de vistos"}`,
         nuevoEstadoVisto ? "visto" : "eliminado"
       );
     } catch (error) {
@@ -1226,11 +1225,9 @@ btnEstadoCapitulo?.addEventListener("click", async () => {
     if (isVisto) {
       btnEstadoCapitulo.classList.remove('visto');
       btnEstadoCapitulo.classList.add('no-visto');
-      textoEstado.textContent = "No visto";
     } else {
       btnEstadoCapitulo.classList.remove('no-visto');
       btnEstadoCapitulo.classList.add('visto');
-      textoEstado.textContent = "Visto";
     }
 
     await toggleYGuardarEstadoCapitulo();
