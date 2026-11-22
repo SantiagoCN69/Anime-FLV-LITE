@@ -2506,7 +2506,7 @@ function crearIframeServidor(url, reproduccionId) {
   iframe.style.border = "none";
   iframe.allowFullscreen = true;
   iframe.scrolling = "no";
-  if (bloquearAnuncios) iframe.sandbox = "allow-scripts allow-same-origin allow-forms";
+  if (bloquearAnuncios) iframe.sandbox = "allow-scripts allow-forms";
 
   iframe.onerror = () => {
     if (reproduccionId === reproduccionActualId) {
@@ -2630,7 +2630,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.allowFullscreen = true;
       iframe.allow = "autoplay; fullscreen";
       iframe.style.border = "0";
-      iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups";
+      iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation";
 
       // Los subtítulos españoles se buscan siempre. El audio solo se cambia
       // cuando existe una pista española: si no existe, se conserva el audio
