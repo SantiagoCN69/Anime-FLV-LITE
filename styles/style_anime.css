@@ -1775,7 +1775,7 @@ z-index: 0;
   /* Caja de búsqueda */
   .header-caps .search-caps {
     position: absolute;
-    top: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
     gap: 10px;
