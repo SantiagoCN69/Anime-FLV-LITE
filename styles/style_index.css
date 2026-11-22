@@ -97,9 +97,7 @@
   top: 80px;
   transition-duration: 0.1s;
   background: transparent !important;
-  button {
-    border: 1px solid var(--br);
-  }
+
   svg, span {
     opacity: .7;
   }
