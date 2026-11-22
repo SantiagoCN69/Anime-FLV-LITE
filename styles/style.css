@@ -185,7 +185,7 @@ header {
   margin: 0 auto;
   height:80px;
   background: var(--b);
-  gap:1rem;
+  gap:1.5rem;
   border-bottom: 1px solid var(--br);
   transition: backdrop-filter 0.3s ease, background-color .3s ease, border-bottom .3s ease;
 
@@ -221,7 +221,7 @@ header #busqueda{
 
 
 .title {
-  height: 35px;
+  height: 31px;
   font-family: 'Oxanium', sans-serif;
   font-weight: 700;
   letter-spacing: 1px ;
@@ -497,7 +497,7 @@ body:has(header.search-active) .logout-modal {
   border-radius: 5px;
   display: block;
   width: 25px;
-  height: 2px;
+  height: 1.5px;
   background-color: var(--t1);
   margin: 6px 0;
   transition: transform .2s, opacity .2s;
@@ -674,7 +674,7 @@ body:has(header.search-active) .logout-modal {
 
 @media screen and (max-width: 600px) {
   .title {
-    height: 30px;
+    height: 28px;
   }
   .sidebar {
     background: var(--b);
