@@ -755,7 +755,7 @@ svg.cta__play {
 /* 2. Contenedor principal */
 .anime-description-container {
   max-width: 600px;
-  min-height: 142px;
+  /* min-height: 142px; */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -776,7 +776,7 @@ svg.cta__play {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
-  height: 60px;
+  /* height: 60px; */
   max-height: 60px;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -1248,7 +1248,10 @@ svg.cta__play {
     background-color: var(--br);
   }
 }
-
+.ep-visto .episode-thumb {
+  opacity: 1;
+  filter: brightness(1);
+}
 .ep-visto .icon-eye {
   background-color: var(--br);
   filter: brightness(1.3);
