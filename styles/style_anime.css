@@ -400,11 +400,18 @@ svg.cta__play {
     justify-content: center;
     max-width: 100%;
     flex-wrap: wrap;
-    padding-right: 7.5px;
+    padding-right: unset;
+    padding-inline: 14px;
+    align-items: start;
+    padding-top: 1.4rem;
   }
 
   .cta__text {
     width: fit-content;
+    small {
+      position: absolute;
+      bottom: 1.4rem;
+    }
   }
   #botones-estados-sp {
     display: grid;
@@ -513,6 +520,7 @@ svg.cta__play {
   z-index: 1;
 }
 #info1 a {
+  height: 22px;
   font-size: 1rem;
   font-weight: 500;
   opacity: .9;
@@ -526,14 +534,7 @@ svg.cta__play {
     font-size: 0.9rem;
   }
 }
-@media (max-width: 390px) {
-  #info1 {
-    gap: 11px;
-  }
-  #info1 a {
-    font-size: 0.8rem;
-  }
-}
+
 #info1 a:nth-child(3) {
   position: relative;
 }
@@ -647,7 +648,7 @@ svg.cta__play {
 }
 #anocargando, #categoriacargando, #statuscargando, #scorecargando {
   width: 70px;
-  height: 21.5px;
+  height: 22px;
   margin: 0;
 }
 #categoriacargando {
