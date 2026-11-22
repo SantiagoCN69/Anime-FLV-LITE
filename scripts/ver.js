@@ -2184,9 +2184,28 @@ function nombreServidorDesdeUrl(url, fallback) {
   }
 }
 
-function nombreVisibleServidor(srv, indice) {
+function nombreBaseServidor(srv) {
   return String(srv?.name || "").split(" ")[0]
-    || nombreServidorDesdeUrl(srv?.url, `Servidor ${indice + 1}`);
+    || nombreServidorDesdeUrl(srv?.url, "");
+}
+
+function nombreVisibleServidor(srv, indice) {
+  const base = nombreBaseServidor(srv);
+  if (!base) return `Servidor ${indice + 1}`;
+
+  // Si el mismo nombre aparece varias veces en embeds, se numera por orden:
+  // el primero queda igual y los siguientes llevan " 2", " 3", etc.
+  const lista = Array.isArray(embeds) ? embeds : [];
+  const baseNormalizada = base.toLowerCase();
+  let apariciones = 0;
+  for (let i = 0; i < lista.length; i++) {
+    const otro = nombreBaseServidor(lista[i]);
+    if (otro.toLowerCase() === baseNormalizada) {
+      apariciones++;
+      if (i === indice) break;
+    }
+  }
+  return apariciones > 1 ? `${base} ${apariciones}` : base;
 }
 
 async function esEnlaceValidoMega(fileId) {
