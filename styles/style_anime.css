@@ -400,18 +400,13 @@ svg.cta__play {
     justify-content: center;
     max-width: 100%;
     flex-wrap: wrap;
-    padding-right: unset;
-    padding-inline: 14px;
-    align-items: start;
-    padding-top: 1.4rem;
+    padding-right: 7.5px;
+    justify-content: center !important;
   }
 
   .cta__text {
     width: fit-content;
-    small {
-      position: absolute;
-      bottom: 1.4rem;
-    }
+
   }
   #botones-estados-sp {
     display: grid;
