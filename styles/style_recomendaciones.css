@@ -239,23 +239,17 @@ z-index: -1;
   left: 50%;
   width: 40px; /* Ligeramente más grande (antes 30px) */
   height: 40px;
-  margin: -20px 0 0 -20px; /* Ajustado al nuevo ancho/alto para centrar perfecto */
   background: none;
   /* Anillo base casi transparente */
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  
-  /* Detalles del color de giro */
-  border-top: 3px solid var(--btn);
-  border-right: 3px solid transparent; /* Hacer un lado transparente le da un estilo más dinámico */
   border-radius: 50%;
-  
   /* Animación más rápida y constante */
   animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  border: 3px solid var(--btn, rgba(255, 255, 255, 0.15));
+  border-top-color: var(--btn);
+  display: inline-block;
+  -webkit-mask-image: linear-gradient(to bottom, #000 15%, transparent 80%);
+  mask-image: linear-gradient(to bottom, #000 15%, transparent 80%);
+  animation: carga-animacion 1.5s infinite linear;
 }
 
 /* (Opcional) Si decides usar el pulso, esta es una versión más suave */
@@ -273,6 +267,7 @@ z-index: -1;
 }
 
 .btn-generar {
+  width: 200px;
   justify-content: center;
   display: flex;
   align-items: center;
@@ -282,9 +277,6 @@ z-index: -1;
   font-size: 1rem;
   font-weight: 500;
   transition: all 0.3s ease;
-}
-
-.btn-generar {
   background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
   color: var(--t1);
 }
