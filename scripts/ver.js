@@ -2121,7 +2121,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     }
 
     const btn = document.createElement("button");
-    btn.textContent = String(srv.name || "").split(" ")[0] || nombreServidorDesdeUrl(srv.url, `${i + 1}`);
+    btn.textContent = nombreVisibleServidor(srv, i);
     btn.dataset.serverIndex = i;
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
@@ -2185,6 +2185,11 @@ function nombreServidorDesdeUrl(url, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function nombreVisibleServidor(srv, indice) {
+  return String(srv?.name || "").split(" ")[0]
+    || nombreServidorDesdeUrl(srv?.url, `Servidor ${indice + 1}`);
 }
 
 async function esEnlaceValidoMega(fileId) {
@@ -2824,7 +2829,7 @@ async function mostrarVideo(link, botonSeleccionado) {
             ) {
               avisoSubEspanolAgotado = true;
               mostrarPildora(
-                "Vidrift no tiene subtítulos en español en ningún servidor. Prueba el siguiente servidor.",
+                "Server sin subtítulos en español. Prueba el siguiente.",
                 "default",
                 () => intentarSiguienteServidor(reproduccionId, "Vidrift sin subtítulos en español", false),
                 6000
@@ -2996,8 +3001,8 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   registrarCambioAutomaticoServidor({
     animeId,
     episodio: episodioActualIndex,
-    desde: embeds[servidorActualIndex]?.name || "desconocido",
-    hacia: siguienteServidor.name || `Servidor ${siguienteIndice + 1}`,
+    desde: nombreVisibleServidor(embeds[servidorActualIndex], servidorActualIndex),
+    hacia: nombreVisibleServidor(siguienteServidor, siguienteIndice),
     motivo
   });
 
@@ -3007,7 +3012,7 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   // mensaje sería redundante y se omite.
   if (mostrarAviso) {
     mostrarPildora(
-      `Servidor no disponible: ${motivo}. Cambiando a ${siguienteServidor.name || `Servidor ${siguienteIndice + 1}`}.`,
+      `${motivo}. Cambiando a ${nombreVisibleServidor(siguienteServidor, siguienteIndice)}.`,
       "default"
     );
   }
