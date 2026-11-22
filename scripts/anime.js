@@ -2085,7 +2085,7 @@ function mostrarPildora(opcion, estado = true, anime = null, cap = null) {
     "ya-viendo": { clase: "pildora-viendo", texto: `${anime} ya está en viendo` },
     "ya-pendiente": { clase: "pildora-pendiente", texto: `${anime} ya está en pendientes` },
     "ya-visto": { clase: "pildora-visto", texto: `${anime} ya está en vistos` },
-    capvisto: { clase: "pildora-visto", texto: `Capítulo ${cap} ${accion} vistos` },
+    capvisto: { clase: "pildora-visto", texto: `Episodio ${cap} ${accion} vistos` },
     actualizando: { clase: "pildora-default", texto: `Actualizando ${anime}...` },
     "no-user": { clase: "pildora-no-user", texto: "Inicia sesión para guardar tu progreso" },
     "alerta texto": { clase: "pildora-default", texto: "Título copiado al portapapeles" }
