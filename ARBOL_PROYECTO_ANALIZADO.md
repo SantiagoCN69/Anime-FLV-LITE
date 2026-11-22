@@ -329,7 +329,7 @@ Anime-FLV-LITE/
   - Iconos de sección con MorphSVG (GSAP)
   - Carga de secciones:
     - Últimos Episodios
-    - Mis Favoritos
+    - Favoritos
     - Viendo
     - Pendientes
     - Completados
