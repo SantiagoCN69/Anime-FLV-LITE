@@ -1176,7 +1176,7 @@ async function toggleYGuardarEstadoCapitulo() {
       generarDropdownCapitulos();
 
       mostrarPildora(
-        `Capítulo ${indiceCapitulo} ${nuevoEstadoVisto ? "marcado como visto" : "eliminado de vistos"}`,
+        `Episodio ${indiceCapitulo} ${nuevoEstadoVisto ? "marcado como visto" : "eliminado de vistos"}`,
         nuevoEstadoVisto ? "visto" : "eliminado"
       );
     } catch (error) {

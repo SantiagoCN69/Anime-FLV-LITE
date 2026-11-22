@@ -154,7 +154,7 @@ export function crearAnimeCard(anime, opciones = {}) {
         }
         estadoHtml = `<span class="estado"><img src="../icons/${icon}" alt="${textoEstado}">${textoEstado}</span>`;
     } else if (episodioUrl && !estado) {
-        estadoHtml = `<span class="estado">Capítulo ${episodioUrl}</span>`;
+        estadoHtml = `<span class="estado">Episodio ${episodioUrl}</span>`;
     }
 
     let ratingHtml = '';
