@@ -872,6 +872,7 @@ svg.cta__play {
   min-width: 51px;
   overflow: hidden;
   padding: 2px 11px;
+  padding-block: unset;
   border: none;
   border-radius: 24px;
   background: transparent;
@@ -904,6 +905,7 @@ svg.cta__play {
     flex: 1;
     text-align: center;
     padding: 8px 1px;
+    padding-block: unset;
     font-size: 0.7rem;
   }
 
