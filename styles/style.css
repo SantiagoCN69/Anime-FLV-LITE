@@ -34,7 +34,7 @@
   height: unset !important;
   min-height: unset !important;
 }
-.no-user .sidebar li:not(:has(> a)), .no-user .sidebar a:not(.btn-siguiente-capitulo) {
+.no-user .sidebar li:not(:has(> a)), .no-user .sidebar a:not(.btn-siguiente-episodio) {
   padding: 22px 25px;
 }
 * {
@@ -580,12 +580,12 @@ body:has(header.search-active) .logout-modal {
   position: relative;
   color: var(--t1);
 }
-.sidebar a:not(.btn-siguiente-capitulo) {
+.sidebar a:not(.btn-siguiente-episodio) {
   color: var(--t1);
   width: 100%;
   display: block;
   }
-.sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
+.sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-episodio) {
   padding: 16px 22PX;
   flex: 1;
   display: flex;
@@ -599,7 +599,7 @@ body:has(header.search-active) .logout-modal {
 }
 
 
-/* .sidebar li:not(:has(> a))::after, .sidebar a:not(.btn-siguiente-capitulo)::after {
+/* .sidebar li:not(:has(> a))::after, .sidebar a:not(.btn-siguiente-episodio)::after {
   content: "";
   position: absolute;
   border-radius: 14px;
@@ -618,11 +618,11 @@ body:has(header.search-active) .logout-modal {
   transition: opacity .3s ease;
   z-index: -1;
 }
-.sidebar li:not(:has(> a)):hover::after, .sidebar a:not(.btn-siguiente-capitulo):hover::after,
+.sidebar li:not(:has(> a)):hover::after, .sidebar a:not(.btn-siguiente-episodio):hover::after,
 .sidebar li:not(:has(> a)).active-menu-item::after {
   opacity: 1;
 }
-.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-capitulo) {
+.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-episodio) {
   padding-inline: 25.5px !important;
 } */
 
@@ -690,7 +690,7 @@ body:has(header.search-active) .logout-modal {
   height: unset;
   min-height: unset;
  }
- .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-capitulo) {
+ .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-episodio) {
   padding: 22px 25px;
  }
   #btn-login span{
@@ -1103,7 +1103,7 @@ section.content-section h2:first-of-type.cargado::after {
   }
 }
 
-.btn-siguiente-capitulo {
+.btn-siguiente-episodio {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1112,11 +1112,11 @@ section.content-section h2:first-of-type.cargado::after {
   transition: background .5s, transform .3s, padding .3s;
   border-radius: 14px;
 }
-.btn-siguiente-capitulo:hover {
+.btn-siguiente-episodio:hover {
   background: rgba(var(--bgt), .1);
   transform: scale(1.02) translateY(-2px);
 }
-.btn-siguiente-capitulo .portada-anime {
+.btn-siguiente-episodio .portada-anime {
   min-width: 45px;
   height: 65px;
   object-fit: cover;
@@ -1136,7 +1136,7 @@ section.content-section h2:first-of-type.cargado::after {
   line-height: 1.5em;
 }
 
-.contenedor-texto-capitulo {
+.contenedor-texto-episodio {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -2149,7 +2149,7 @@ h4 {
   max-width: 25px;
   height: 25px;
 }
-.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-capitulo) {
+.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-episodio) {
   padding-inline:28.5px ;
 }
 
@@ -2190,10 +2190,10 @@ h4 {
 .sidebar-collapsed .sidebar h2 {
   opacity: 0;
 }
-.sidebar-collapsed .btn-siguiente-capitulo {
+.sidebar-collapsed .btn-siguiente-episodio {
   padding-inline: 5px;
 }
-.sidebar-collapsed .btn-siguiente-capitulo:hover {
+.sidebar-collapsed .btn-siguiente-episodio:hover {
   background: none;
 }
 /* main */

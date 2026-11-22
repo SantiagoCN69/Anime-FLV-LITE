@@ -130,7 +130,7 @@ function inicializarSidebar(sidebarSelector = '.sidebar', toggleId = 'menu-toggl
  */
 function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id, totalCapitulos }) {
   const btn = document.createElement('a');
-  btn.className = 'btn-siguiente-capitulo';
+  btn.className = 'btn-siguiente-episodio';
   btn.href = `/ver?id=${id}&episode=${siguienteCapitulo}`;
 
   const img = document.createElement('img');
@@ -142,7 +142,7 @@ function crearElementoSiguienteCapitulo({ portada, titulo, siguienteCapitulo, id
   };
 
   const contenedorTexto = document.createElement('div');
-  contenedorTexto.className = 'contenedor-texto-capitulo';
+  contenedorTexto.className = 'contenedor-texto-episodio';
 
   // Inyección segura de datos dinámicos
   const spanTitulo = document.createElement('span');

@@ -223,7 +223,7 @@ main > section:nth-child(2) {
   color: var(--t1);
   font-family: 'Oxanium', sans-serif;
 }
-#btn-estado-capitulo {
+#btn-estado-episodio {
   background: var(--br);
   padding: 5px 15px;
   border-radius: 24px;
@@ -233,15 +233,15 @@ main > section:nth-child(2) {
   justify-content: center;
   transition: transform .3s, padding .3s, width .3s;
 }
-#btn-estado-capitulo.visto {
+#btn-estado-episodio.visto {
   background: #17231F;
 }
 @media (hover: hover) {
-  #btn-estado-capitulo:hover {
+  #btn-estado-episodio:hover {
     color: var(--t2) !important;
   }
 }
-.texto-estado-capitulo {
+.texto-estado-episodio {
   font-size: 0.9rem;
   margin-left: 5px;
   color: var(--t1);
@@ -250,12 +250,12 @@ main > section:nth-child(2) {
   font-family: 'Manrope', sans-serif;
 }
 
-.visto .texto-estado-capitulo {
+.visto .texto-estado-episodio {
   color: #65C9A5 !important;
   opacity: 1;
 }
 
-#btn-estado-capitulo::before {
+#btn-estado-episodio::before {
   transition: opacity .3s, color .3s;
   content: "";
   width: 16px;
@@ -268,7 +268,7 @@ main > section:nth-child(2) {
   mask-size: contain;
   mask: url('../icons/eye-slash-solid.svg') no-repeat center;
 }
-#btn-estado-capitulo.visto::before {
+#btn-estado-episodio.visto::before {
   content: "";
   -webkit-mask-size: contain;
   background-color: #00D9A3;
@@ -663,13 +663,13 @@ iframe {
   cursor: not-allowed !important;
 }
 
-.btn-selector-capitulo {
+.btn-selector-episodio {
   background-color: var(--p);
   gap: 8px;
   position: relative;
   min-width: 144px;
 }
-.btn-selector-capitulo.open {
+.btn-selector-episodio.open {
   background-color: var(--br);
 }
 @media (hover: hover) {
@@ -678,12 +678,12 @@ iframe {
   }
 }
 
-.btn-selector-capitulo svg {
+.btn-selector-episodio svg {
   width: 16px;
   height: 16px;
   transition: transform 0.3s ease;
 }
-.btn-selector-capitulo.open svg {
+.btn-selector-episodio.open svg {
   transform: rotate(180deg);
 }
 .dropdown-capitulos {
@@ -776,9 +776,9 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     display: none;
   }
 
-#btn-anterior-capitulo::before, 
-#btn-selector-capitulo::before, 
-#btn-siguiente-capitulo::before {
+#btn-anterior-episodio::before, 
+#btn-selector-episodio::before, 
+#btn-siguiente-episodio::before {
   content: "";
   display: block;
   width: 20px;
@@ -793,17 +793,17 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   mask-position: center;
 }
 
-#btn-anterior-capitulo::before {
+#btn-anterior-episodio::before {
   -webkit-mask-image: url('/icons/prev.svg');
   mask-image: url('/icons/prev.svg');
 }
 
-#btn-selector-capitulo::before {
+#btn-selector-episodio::before {
   -webkit-mask-image: url('/icons/list.svg');
   mask-image: url('/icons/list.svg');
 }
 
-#btn-siguiente-capitulo::before {
+#btn-siguiente-episodio::before {
   -webkit-mask-image: url('/icons/next1.svg');
   mask-image: url('/icons/next1.svg');
 }
@@ -966,7 +966,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   .botones-reproductor span {
     font-size: clamp(0.7rem, 2vw, 0.8rem); 
   }
-  .btn-selector-capitulo {
+  .btn-selector-episodio {
     min-width: unset !important;
   }
 }

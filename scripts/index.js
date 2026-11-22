@@ -409,7 +409,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   const btn = document.createElement('a');
  // ✅ CORRECTO
   btn.dataset.title = `ver ${itemData.titulo} EP ${itemData.siguienteCapitulo}`;
-  btn.className = 'btn-siguiente-capitulo';
+  btn.className = 'btn-siguiente-episodio';
   btn.href = `/ver?id=${itemData.id}&episode=${itemData.siguienteCapitulo}`;
   
   const portada = document.createElement('img');
@@ -421,7 +421,7 @@ function crearElementoSiguienteCapitulo(itemData) {
   };
   
   const contenedorTexto = document.createElement('div');
-  contenedorTexto.className = 'contenedor-texto-capitulo';
+  contenedorTexto.className = 'contenedor-texto-episodio';
 
   const spanTitulo = document.createElement('span'); 
   spanTitulo.classList.add('texto-2-lineas');
@@ -1115,7 +1115,7 @@ async function cargarUltimosCapitulos() {
             id: anime.id,
             portada: anime.image || anime.cover || anime['cover-lasted'] || '',
             titulo: anime.title || 'Sin título',
-            Capitulo: anime.chapter?.toString() || anime.episode?.toString() || ''
+            episodio: anime.chapter?.toString() || anime.episode?.toString() || ''
           });
           if (card) {
             fragment.appendChild(card);

@@ -88,7 +88,7 @@ const portadaEl = document.getElementById("portada");
 const descripcionEl = document.getElementById("descripcion");
 const generoContainer = document.querySelector(".genero");
 const capContenedor = document.getElementById("capitulos");
-const filtroCapitulo = document.getElementById("filtro-capitulo");
+const filtroCapitulo = document.getElementById("filtro-episodio");
 const ratingEl = document.getElementById("rating");
 const initLoadingCap = document.getElementById("init-loading-cap");
 const info1El = document.getElementById("info1");
@@ -1540,20 +1540,20 @@ cargarAnime();
 
 
 // Toggle búsqueda de capítulos
-const btnSearchCapitulo = document.getElementById('btn-search-capitulo');
-const btnCloseSearchCapitulo = document.getElementById('btn-close-search-capitulo');
+const btnSearchCapitulo = document.getElementById('btn-search-episodio');
+const btnCloseSearchCapitulo = document.getElementById('btn-close-search-episodio');
 
 if (btnSearchCapitulo) {
   btnSearchCapitulo.addEventListener('click', function () {
     document.querySelector('.header-caps').classList.add('search-active');
-    document.getElementById('filtro-capitulo').focus();
+    document.getElementById('filtro-episodio').focus();
   });
 }
 
 if (btnCloseSearchCapitulo) {
   btnCloseSearchCapitulo.addEventListener('click', function () {
     document.querySelector('.header-caps').classList.remove('search-active');
-    document.getElementById('filtro-capitulo').value = "";
+    document.getElementById('filtro-episodio').value = "";
   });
 }
 

@@ -133,10 +133,10 @@ export function crearAnimeCard(anime, opciones = {}) {
     const coverImage = anime.cover || anime.image || anime.portada || anime.images?.webp?.image_url || 'img/loading.png';
     const rating = (anime.score || anime.rating)?.toString().split(/\s+/)[0];
     const type = anime.type;
-    const capitulo = anime.Capitulo || anime.last_episode;
+    const episodio = anime.episodio || anime.last_episode;
     const estado = anime.estado || anime.status;
 
-    const chapterHtml = capitulo ? `<span class="chapter">EP ${capitulo}</span>` : '';
+    const chapterHtml = episodio ? `<span class="chapter">EP ${episodio}</span>` : '';
     const typeHtml = (type && type.toLowerCase() !== 'desconocido') ? `<span class="type">${type}</span>` : '';
 
     let estadoHtml = '';

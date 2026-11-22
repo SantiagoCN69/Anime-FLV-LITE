@@ -971,7 +971,7 @@ svg.cta__play {
 }
 
 
-#filtro-capitulo {
+#filtro-episodio {
   width: 100%;
   padding: 12px 15px;
   border: none;
@@ -983,7 +983,7 @@ svg.cta__play {
   transition: box-shadow 0.3s;
 }
 
-#filtro-capitulo:focus {
+#filtro-episodio:focus {
   outline: none;
 }
 #init-loading-cap {
@@ -1385,7 +1385,7 @@ svg.cta__play {
     opacity: 1;
   }
 }
-#btn-search-capitulo, #btn-close-search-capitulo {
+#btn-search-episodio, #btn-close-search-episodio {
     display: none !important;
 }
 .anime-title-relacionados {
@@ -1728,12 +1728,12 @@ z-index: 0;
 }
 }
 /* Ocultar botones por defecto */
-#btn-search-capitulo,
-#btn-close-search-capitulo {
+#btn-search-episodio,
+#btn-close-search-episodio {
   display: none;
 }
 @media screen and (max-width: 600px) {
-  #btn-search-capitulo, #btn-close-search-capitulo {
+  #btn-search-episodio, #btn-close-search-episodio {
     display: flex !important;
   }
   .anime-description-container {
@@ -1745,8 +1745,8 @@ z-index: 0;
   }
 }
   /* Mostrar botones en móvil */
-  #btn-search-capitulo,
-  #btn-close-search-capitulo {
+  #btn-search-episodio,
+  #btn-close-search-episodio {
     display: block;
   }
 #filtro-caps2 button {
@@ -1755,7 +1755,7 @@ z-index: 0;
 
   /* Elementos normales */
   .header-caps span,
-  #btn-search-capitulo,
+  #btn-search-episodio,
   #filtro-caps {
     transition: transform 0.2s;
     transform: translateY(0);
@@ -1763,7 +1763,7 @@ z-index: 0;
   }
 
   /* Cuando se activa búsqueda */
-  .header-caps.search-active #btn-search-capitulo {
+  .header-caps.search-active #btn-search-episodio {
     transform: translateX(60px);
   }
   .header-caps.search-active #btn-invertir-caps {
@@ -1796,7 +1796,7 @@ z-index: 0;
   }
 
   /* Estilo botón cerrar */
-  #btn-close-search-capitulo {
+  #btn-close-search-episodio {
     background: none;
     border: none;
     cursor: pointer;
@@ -1804,7 +1804,7 @@ z-index: 0;
     align-items: center;
   }
 
-  #btn-close-search-capitulo::before {
+  #btn-close-search-episodio::before {
     content: "";
     width: 20px;
     height: 20px;
@@ -1814,12 +1814,12 @@ z-index: 0;
   }
 
   /* Input */
-  #filtro-capitulo {
+  #filtro-episodio {
     padding: 9px;
   }
 
   /* Botón lupa */
-  #btn-search-capitulo {
+  #btn-search-episodio {
     background: none;
     border: none;
     cursor: pointer;
@@ -1828,7 +1828,7 @@ z-index: 0;
     justify-content: center;
   }
 
-#btn-search-capitulo::before {
+#btn-search-episodio::before {
   content: '';
   width: 20px;
   height: 20px;

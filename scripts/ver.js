@@ -626,9 +626,9 @@ document.title = animeId
   ? "AniZen - " + animeId.replaceAll("-", " ") + " - " + (episodeNumber || "")
   : "AniZen";
 
-const btnSiguiente = document.getElementById("btn-siguiente-capitulo");
-const btnAnterior = document.getElementById("btn-anterior-capitulo");
-const btnSelectorCapitulo = document.getElementById("btn-selector-capitulo");
+const btnSiguiente = document.getElementById("btn-siguiente-episodio");
+const btnAnterior = document.getElementById("btn-anterior-episodio");
+const btnSelectorCapitulo = document.getElementById("btn-selector-episodio");
 const dropdownCapitulos = document.getElementById("dropdown-capitulos");
 const textoAnterior = document.getElementById("texto-anterior");
 const textoSiguiente = document.getElementById("texto-siguiente");
@@ -1067,8 +1067,8 @@ if (btnCap) btnCap.textContent = `Episodio ${episodioActualIndex}`;
 // Inicializar el número del capítulo y los textos de navegación
 actualizarNumeroCapitulo();
 
-const btnEstadoCapitulo = document.getElementById("btn-estado-capitulo");
-const textoEstado = document.getElementById("texto-estado-capitulo");
+const btnEstadoCapitulo = document.getElementById("btn-estado-episodio");
+const textoEstado = document.getElementById("texto-estado-episodio");
 let toggleInProgress = false;
 
 async function refrescarUIEstadoCapitulo() {
@@ -1986,7 +1986,7 @@ async function cargarVideoDesdeEpisodioInterno(index) {
     `${window.location.pathname}?id=${animeId}&episode=${ep.number}&servers=${modoDoblado ? "dob" : "sub"}`
   );
 
-  // Los botones anterior/siguiente y el dropdown reflejan el nuevo capitulo
+  // Los botones anterior/siguiente y el dropdown reflejan el nuevo episodio
   // de inmediato: la carga de servidores (Firestore/API) puede tardar o
   // fallar y no debe dejar la navegacion con los numeros del episodio viejo.
   sincronizarUINavegacion();
@@ -3098,7 +3098,7 @@ btnAnterior.addEventListener("click", async (e) => {
   const pos = obtenerPosicionEpisodio(episodioActualIndex);
   const anterior = pos > 0 ? episodios[pos - 1] : undefined;
   if (anterior) {
-    // const marcarVistoBtn = document.getElementById("btn-estado-capitulo");
+    // const marcarVistoBtn = document.getElementById("btn-estado-episodio");
     // if (marcarVistoBtn && marcarVistoBtn.classList.contains('visto') && !toggleInProgress) {
     //   await toggleYGuardarEstadoCapitulo();
     // }
