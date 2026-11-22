@@ -843,6 +843,7 @@ svg.cta__play {
 }
 
 .header-caps-actions {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -851,6 +852,7 @@ svg.cta__play {
 }
 
 #filtro-caps2 {
+  margin-left: auto;
   display: flex;
   gap: 10px;
 }
@@ -867,6 +869,7 @@ svg.cta__play {
 }
 
 .btn-filtro-cap {
+  min-width: 51px;
   overflow: hidden;
   padding: 2px 11px;
   border: none;
@@ -1158,7 +1161,7 @@ svg.cta__play {
   padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-10px);
