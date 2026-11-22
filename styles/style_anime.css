@@ -1057,9 +1057,8 @@ svg.cta__play {
   transform-origin: bottom center;
 }
 .ep-visto .episode-thumb {
-  filter: brightness(0.6);
+  filter: brightness(0.3);
   /* border: 2px solid var(--br); */
-  opacity: 0.5;
 }
 .no-thumb img {
   width: 0;
@@ -1251,7 +1250,6 @@ svg.cta__play {
 }
 .ep-visto .episode-thumb {
   opacity: 1;
-  filter: brightness(1);
 }
 .ep-visto .icon-eye {
   background-color: var(--br);

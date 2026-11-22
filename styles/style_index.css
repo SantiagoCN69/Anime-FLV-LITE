@@ -1461,7 +1461,11 @@ color: var(--p);
   transition: all .3s;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
-
+@media (hover: none) {
+  .scroll-btn, .hero-slider__prev, .hero-slider__next {
+    display: none;
+  }
+}
 .scroll-btn:hover {
   filter: brightness(2);
 }
