@@ -1,6 +1,6 @@
 @import url('fonts.css');
 
-.no-user .sidebar ul > li:nth-of-type(n+3):nth-of-type(-n+6),
+.no-user .sidebar ul > li:nth-of-type(4),
 .no-user #continuar-viendo-sidebar {
   display: none !important;
 }
@@ -76,6 +76,7 @@
 }
 #indexpagination button:active { transform: scale(.95); }
 #indexpagination button svg { width: 19px; height: 19px; }
+#indexpagination button svg.svg-lista { width: 17px; height: 17px; }
 
 /* ACTIVO BASE */
 #indexpagination .active-menu-item { color: var(--t1); }
@@ -295,6 +296,20 @@ body.cv-sidebar #section-continuar-viendo {
 }
 /* 3. Para "Ambas" (cv-ambas), no ponemos "display: none" a ninguno,
       por lo que se mostrarán los dos normalmente. */
+
+/* En móvil el sidebar ya no existe: "Continuar viendo" siempre usa la sección principal. */
+@media screen and (max-width: 600px) {
+  .sidebar {
+    display: none !important;
+  }
+  body.cv-sidebar #section-continuar-viendo {
+    min-height: 0 !important;
+    height: auto !important;
+    margin-bottom: 2.5rem !important;
+    opacity: 1 !important;
+  }
+}
+
 .ver-mas-btn {
     display: block;
     background-color: var(--btn);
@@ -347,20 +362,51 @@ footer {
   }
 }
 
+/* Sección "Populares" dentro de Inicio: preview aleatorio leído del caché
+   local de populares (no genera llamadas nuevas). Comparte el patrón visual
+   de "Continuar Viendo": fila con scroll horizontal y botones laterales. */
+#header-populares-preview {
+  margin-top: 2.5rem;
+}
+
+.layout-horizontal #header-populares-preview {
+  margin-top: 0;
+}
+
+/* "Ver completo" queda a la izquierda de los botones de scroll. */
+#header-populares-preview #btn-populares-preview {
+  top: 0;
+}
+
+#populares-preview .anime-card {
+  flex: 0 0 165px;
+}
+
 /*historial en pantalla muy anchas*/
 
 .layout-horizontal {
   & #sections-ultcaps-historial {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 374px;
     gap: 2rem;
+    align-items: start;
   }
 
   & #section-ultcaps {
-    flex: 1;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  & #section-populares-preview {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
   }
 
   & #section-historial {
-    width: 374px;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: auto;
   }
 
   & #header-section-historial {
@@ -658,7 +704,7 @@ nav.filtros {
   top: 45px;
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
-  box-shadow: 2px 10px 30px rgba(0, 0, 0, 0.5);
+  background: rgba(var(--bgti), .7) !important;
   border-radius: 14px;
   z-index: 9;
   will-change: transform;
@@ -666,7 +712,8 @@ nav.filtros {
   padding: 10px;
   pointer-events: none;
   transition: opacity .2s ease, transform .3s ease, height .3s ease;
-  transform: translateY(-35px) scale(.8);
+  transform: scale(.8);
+  transform-origin: top right;
   max-height: calc(100vh - 130px);
   overflow-y: auto;
   overflow-x: hidden;
@@ -698,7 +745,7 @@ nav.filtros {
 .filtro-opciones.active {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0) scale(1);
+  transform: scale(1);
 }
 .filtro-opciones ul {
   display: grid;
@@ -1477,8 +1524,7 @@ color: var(--p);
 
 .scroll-btn {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 0;
   width: 40px;
   height: 40px;
   border-radius: 99px;
@@ -1504,7 +1550,7 @@ color: var(--p);
 }
 
 .scroll-btn:active {
-  transform: translateY(-50%) scale(0.95);
+  transform: scale(0.95);
 }
 
 .scroll-btn svg {
@@ -1610,4 +1656,12 @@ color: var(--p);
 .custom-tooltip.show {
     opacity: 1;
     transform: translateX(0);
+}
+
+/* En móvil la navegación vive en #indexpagination: el sidebar y su botón
+   hamburguesa quedan ocultos (la regla va al final para ganar la cascada). */
+@media screen and (max-width: 600px) {
+  #menu-toggle {
+    display: none !important;
+  }
 }
