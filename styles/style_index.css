@@ -373,13 +373,54 @@ footer {
   margin-top: 0;
 }
 
-/* "Ver completo" queda a la izquierda de los botones de scroll. */
-#header-populares-preview #btn-populares-preview {
-  top: 0;
+/* El título del preview enlaza a la sección Populares completa. */
+#populares-preview-titulo {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .2s ease;
 }
 
-#populares-preview .anime-card {
+#populares-preview-titulo:hover {
+  color: var(--btn);
+}
+
+#populares-preview .anime-card,
+#populares-preview .ver-todo-card {
   flex: 0 0 165px;
+}
+
+/* Tarjeta "Ver todo" al final de la fila: mismo ancho que las cards. */
+#populares-preview .ver-todo-card {
+  width: 165px;
+  aspect-ratio: 5/6;
+  height: 234px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: 0;
+  border-radius: 14px;
+  background: var(--p);
+  color: var(--t1);
+  font-family: 'Oxanium', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .2s ease, border-color .2s ease, background-color .2s ease;
+}
+
+#populares-preview .ver-todo-card:hover {
+  background: color-mix(in srgb, var(--btn) 12%, var(--p));
+}
+
+#populares-preview .ver-todo-card:active {
+  transform: translateY(-1px);
+}
+
+#populares-preview .ver-todo-card svg {
+  width: 26px;
+  height: 26px;
 }
 
 /*historial en pantalla muy anchas*/
@@ -826,7 +867,7 @@ nav.filtros {
     height: 20px;
   }
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
   }
 }
 
@@ -1032,6 +1073,8 @@ nav.filtros {
   pointer-events: none;
 } */
 .hero-slide__bg::after {
+  
+  opacity: 0.95;
   content: '';
   position: absolute;
   inset: 0;
@@ -1329,28 +1372,29 @@ color: var(--p);
 }
 
 /* ===== 6. RESPONSIVE (Media Queries) ===== */
-@media screen and (max-width: 700px) {
-  .hero-slider,
+/* @media screen and (max-width: 700px) {
+  /* .hero-slider,
   .hero-slider__track,
   .hero-slide__content {
     min-height: clamp(330px, 92vw, 380px);
-  }
-
-}
+  } 
+} */
 @media screen and (max-width: 600px) {
   .hero-slide__bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    105deg,
-    var(--b) 5%,
-    rgba(0, 0, 0, 0.25) 85%
-  );
-}
+    opacity: 0.95;
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      var(--b) 5%,
+      rgba(0, 0, 0, 0.25) 85%
+    );
+  }
 
 .hero-slide__bg::after {
+  opacity: 0.95;
   content: '';
   position: absolute;
   inset: 0;
@@ -1445,7 +1489,8 @@ color: var(--p);
   /* aspect-ratio: 16/9; */
   aspect-ratio: 5/6;
 }
-.anime-card:hover .card-thumbnail.container-img {
+.anime-card:hover .card-thumbnail.container-img,
+#populares-preview .anime-card:hover .container-img {
   transform: translate(0) !important;
 } 
 .card-thumbnail img {

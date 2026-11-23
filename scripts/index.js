@@ -32,14 +32,17 @@ if ('serviceWorker' in navigator) {
 
 let userID = localStorage.getItem('userID') || "null";
 
+// El login no recarga la página: al resolverse el estado de auth se actualiza
+// el userID para que las listas y secciones lean las listas del usuario correcto.
+document.addEventListener('authStateReady', () => {
+  userID = localStorage.getItem('userID') || "null";
+});
+
 // Todas las siluetas viven en el mismo path para que MorphSVG pueda interpolarlas.
 const iconosDeSeccion = {
   'Ultimos-Episodios': '',
  'Contacto': 'M36.1768 17.1832L63.4709 5.94446L39.5886 63.9445L29.3533 40.0621M63.4709 5.94446L29.3533 40.0621M29.3533 40.0621L5.47095 29.8268L19.118 24.2074',
-  'Mis-Favoritos': 'M31.939 16.483C33.846 6.946 48.506 6.347 54.828 12.668c6.115 6.115 5.721 16.533 0 22.889L31.939 58.445 9.05 35.557C6.016 32.521 4.311 28.405 4.311 24.113S6.016 15.704 9.05 12.668c5.913-5.913 20.981-5.722 22.889 3.815Z',
-  'Viendo': 'M61.154 32.474C61.154 39.122 48.256 52.419 32.344 52.419S3.534 39.122 3.534 32.474 16.432 12.529 32.344 12.529s28.81 13.297 28.81 19.945ZM43.425 32.474a11.081 11.081 0 1 1-22.162 0 11.081 11.081 0 0 1 22.162 0Z',
-  'Pendientes': 'M32.315 21.509v14.371H44.89M3.571 32.287C3.571 48.162 16.44 61.031 32.315 61.031c15.874 0 28.743-12.869 28.743-28.744S48.189 3.544 32.315 3.544 3.571 16.413 3.571 32.287Z',
-  'Completados': 'M19.663 32.285l9.542 9.543 15.904-19.085M61.014 32.285c0 15.811-12.817 28.628-28.628 28.628S3.759 48.096 3.759 32.285 16.576 3.658 32.386 3.658s28.628 12.817 28.628 28.627Z',
+  'Lista': 'M13.93 2.32H51.07C54.17 2.32 55.71 3.87 55.71 6.96V62.68L32.5 46.43L9.29 62.68V6.96C9.29 3.87 10.83 2.32 13.93 2.32Z',
   'DirectorioJK': 'M11.196 14.616c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.848 21.432-10.781M11.196 32.477c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.847 21.432-10.78M11.196 13.566c0-4.644 8.931-9.792 21.432-9.667 12.501.125 21.432 5.547 21.432 10.191v36.773c0 4.644-8.931 10.192-21.432 10.192-12.501 0-21.432-6.073-21.432-10.717V13.566Z',
   'DirectorioAV1': 'M11.196 14.616c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.848 21.432-10.781M11.196 32.477c0 4.93 7.142 10.716 21.432 10.716 14.291 0 21.432-5.847 21.432-10.78M11.196 13.566c0-4.644 8.931-9.792 21.432-9.667 12.501.125 21.432 5.547 21.432 10.191v36.773c0 4.644-8.931 10.192-21.432 10.192-12.501 0-21.432-6.073-21.432-10.717V13.566Z',
   'Populares': 'M41.018 61.686c35.917-8.817 15.805-44.083-8.62-58.777-2.874 10.286-7.187 13.225-15.806 23.511C5.177 40.038 10.848 55.808 26.65 61.686c-2.395-2.939-8.573-9.111-4.313-17.633 1.47-2.939 4.408-5.878 2.941-11.755 2.874 1.469 8.816 2.939 10.284 10.285 2.394-2.939 4.881-9.11 2.581-16.163 17.993 13.224 10.644 26.449 2.875 35.266Z',
@@ -61,6 +64,8 @@ function animarSVGCambio(nuevaSeccionId) {
   const destino = iconosDeSeccion[nuevaSeccionId];
   if (!icono || !path) return;
 
+  // El icono de Lista (bookmark) necesita 2px menos que el resto
+  icono.classList.toggle('icono-lista', nuevaSeccionId === 'Lista');
   icono.hidden = !destino;
   if (!destino) return;
 
@@ -94,14 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-let favoritosCargados = false;
-let viendoCargado = false;
-let pendientesCargados = false;
-let completadosCargados = false;
 let ultimosCapsCargados = false;
 let directorioAV1Cargado = false;
 let directorioJkCargado = false;
 let labCargado = false;
+let listaCargada = false;
 let popularesCargados = false;
 let horariosCargados = false;
 let preferenciasCargadas = false;
@@ -249,7 +251,14 @@ export function mostrarSeccionDesdesearch() {
   
   let id = search.split(/[?&]/)[1] || 'Ultimos-Episodios';
   id = decodeURIComponent(id);
-  
+
+  // Las antiguas secciones de listas ahora viven dentro de ?Lista&tab=...
+  const listasLegacy = { 'Mis-Favoritos': 'favoritos', 'Viendo': 'viendo', 'Pendientes': 'pendiente', 'Completados': 'visto' };
+  if (listasLegacy[id]) {
+    history.replaceState(null, '', `?Lista&tab=${listasLegacy[id]}`);
+    id = 'Lista';
+  }
+
   const seccion = document.getElementById(id);
   if (!seccion) {
     id = 'Ultimos-Episodios';
@@ -274,16 +283,18 @@ export function mostrarSeccionDesdesearch() {
   actualizarIndicadorActivo();
   actualizarIndicadorNav();
 
-if (id === 'Ultimos-Episodios' && !heroSliderCargado) {
-  cargarHeroSlider();
-  heroSliderCargado = true;
+if (id === 'Ultimos-Episodios') {
+  if (!heroSliderCargado) {
+    cargarHeroSlider();
+    heroSliderCargado = true;
+  }
+  // Se re-genera en cada visita a Inicio: la selección sale del caché
+  // local de populares y se baraja de nuevo.
+  cargarPopularesPreview();
 }
 
 const sectionConfig = {
-  'Mis-Favoritos': { flag: () => favoritosCargados, setFlag: () => { favoritosCargados = true; }, load: () => cargarDatos(document.getElementById('favoritos'), doc(db, "usuarios", userID, "favoritos", "lista")) },
-  'Viendo': { flag: () => viendoCargado, setFlag: () => { viendoCargado = true; }, load: () => cargarDatos(document.getElementById('viendo'), doc(db, "usuarios", userID, "estados", "viendo")) },
-  'Pendientes': { flag: () => pendientesCargados, setFlag: () => { pendientesCargados = true; }, load: () => cargarDatos(document.getElementById('pendientes'), doc(db, "usuarios", userID, "estados", "pendiente")) },
-  'Completados': { flag: () => completadosCargados, setFlag: () => { completadosCargados = true; }, load: () => cargarDatos(document.getElementById('completados'), doc(db, "usuarios", userID, "estados", "visto")) },
+  'Lista': { flag: () => listaCargada, setFlag: () => { listaCargada = true; }, load: () => cargarFetch("Lista") },
   'Ultimos-Episodios': { flag: () => ultimosCapsCargados, setFlag: () => { ultimosCapsCargados = true; }, load: () => { cargarUltimosCapitulos(); cargarhistorial(); } },
   'DirectorioAV1': { flag: () => directorioAV1Cargado, setFlag: () => { directorioAV1Cargado = true; }, load: () => cargarFetch("DirectorioAV1") },
   'DirectorioJK': { flag: () => directorioJkCargado, setFlag: () => { directorioJkCargado = true; }, load: () => cargarFetch("DirectorioJK") },
@@ -304,6 +315,7 @@ if (config && !config.flag()) {
     centrarElementoEnVista(currentSection);
   }
   cerrarSidebar();
+  window.dispatchEvent(new Event('seccionchange'));
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -347,11 +359,11 @@ function actualizarIndicadorActivo(targetItem = null) {
 }
 
 window.handlesearchChange = function () {
-  let search = window.location.search.substring(1);
+  let search = decodeURIComponent(window.location.search.split(/[?&]/)[1] || '');
 
   if (!search) {
     search = 'Ultimos-Episodios';
-    history.replaceState(null, '', '?' + search);
+    history.replaceState(null, '', '?Ultimos-Episodios');
   }
 
   document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
@@ -1264,7 +1276,7 @@ async function cargarhistorial() {
 
   animesRecientes.sort((a, b) => b._cachedAt - a._cachedAt);
 
-  const animesAMostrar = animesRecientes.slice(0, 10);
+  const animesAMostrar = animesRecientes.slice(0, 11);
 
   // Solo renderiza si hay MÁS de 3 elementos (> 3)
   if (animesAMostrar.length > 4) {
@@ -1338,7 +1350,7 @@ function agregarAnimesAlContenedor(animes, contenedor) {
   });
 }
 
-function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes, idsCargados = null) {
+function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes, idsCargados = null, orden = 'recientes') {
   const btnAnterior = container.querySelector('.ver-mas-btn');
   if (btnAnterior) {
     container.removeChild(btnAnterior);
@@ -1354,15 +1366,18 @@ function manejarBotonVerMas(container, DocRef, hayMas, limite, offset, numAnimes
       // Los IDs ya están en memoria: mostrar todos los restantes en un solo clic.
       idsCargados ? idsCargados.length : limite,
       offset + numAnimes,
-      idsCargados
+      idsCargados,
+      orden
     );
     container.appendChild(verMasBtn);
   }
 }
 
-async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargados = null) {
+const ORDENES_LISTA_VALIDOS = new Set(['recientes', 'nombre-az', 'nombre-za']);
+
+export async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargados = null, orden = 'recientes') {
   if (!userID || userID === "null") {
-    container.innerHTML = '<p class="span-carga">Inicia sesión para ver tus animes en ' + container.id + '</p>';
+    container.innerHTML = '<p class="span-carga">Inicia sesión para ver tu lista</p>';
     const h2 = document.querySelector('#' + container.id + 'h2');
     h2.dataset.text = 0;
     return;
@@ -1419,6 +1434,16 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
           : [];
         idsDeListasCargados.set(container.id, titulos);
       }
+
+      // El orden de la lista en Firestore es el de agregado (más reciente primero
+      // tras el reverse). Los órdenes alternativos solo reordenan ese mismo array
+      // en memoria: no generan lecturas adicionales.
+      if (ORDENES_LISTA_VALIDOS.has(orden) && orden !== 'recientes') {
+        const factor = orden === 'nombre-za' ? -1 : 1;
+        titulos = [...titulos].sort((a, b) =>
+          factor * generarTituloDesdeId(a).localeCompare(generarTituloDesdeId(b), 'es', { sensitivity: 'base', numeric: true })
+        );
+      }
       h2.dataset.text = titulos.length;
       h2.classList.add('cargado');
 
@@ -1441,7 +1466,8 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
             limite,
             0,
             cachedData.length,
-            titulos
+            titulos,
+            orden
           );
           return;
         }
@@ -1480,12 +1506,12 @@ async function cargarDatos(container, DocRef, limite = 10, offset = 0, idsCargad
           renderFlipOptimizado(container, renderizarContenido);
         }
 
-        manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length, titulos); 
+        manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animesOrdenados.length, titulos, orden); 
         return;
       }
       
       agregarAnimesAlContenedor(animes, container);
-      manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animes.length, titulos);
+      manejarBotonVerMas(container, DocRef, offset + limite < titulos.length, limite, offset, animes.length, titulos, orden);
 
   } catch (error) {
       console.error('Error al cargar favoritos:', error);
@@ -1538,6 +1564,151 @@ function cargarFetch(direccion) {
       }
     })
     .catch(err => console.error('Error al cargar el recurso:', err));
+}
+
+// Preview de Populares en Inicio: toma los rankings ya cacheados en
+// localStorage por populares.js (animes_cache_populares_*), mezcla todos
+// los géneros/filtros, baraja y muestra una selección. No guarda nada
+// nuevo ni hace peticiones: si no hay caché, la sección queda oculta.
+const POPULARES_PREVIEW_CANTIDAD = 7;
+
+// Mismos nombres que los botones de filtro de populares.html
+const FILTROS_POPULARES = {
+  bypopularity: 'Populares',
+  all: 'Top Rated',
+  airing: 'En emisión',
+  upcoming: 'Próximos',
+  tv: 'TV',
+  movie: 'Películas',
+  ova: 'OVAs',
+  special: 'Especiales',
+  favorite: 'Favoritos'
+};
+
+// Agrupa el caché existente de populares.js por filtro
+// (clave animes_cache_populares_{rankingType}_{pagina}).
+function obtenerCachesPopulares() {
+  const porFiltro = new Map();
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith('animes_cache_populares_')) continue;
+    const rankingType = key.split('_')[3];
+    if (!rankingType) continue;
+    try {
+      const data = JSON.parse(localStorage.getItem(key))?.data || [];
+      if (!porFiltro.has(rankingType)) porFiltro.set(rankingType, []);
+      porFiltro.get(rankingType).push(...data);
+    } catch (e) { /* caché corrupta: se ignora */ }
+  }
+  return [...porFiltro.entries()]
+    .map(([rankingType, animes]) => ({ rankingType, animes }))
+    .filter(c => c.animes.length);
+}
+
+function barajarArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function deduplicarAnimes(animes) {
+  const vistos = new Set();
+  return animes.filter(anime => {
+    const id = anime?.id || anime?.title;
+    if (!id || vistos.has(id)) return false;
+    vistos.add(id);
+    return true;
+  });
+}
+
+// Desplaza una fila con scroll horizontal hasta dejar completamente visible
+// la primera tarjeta cortada en el borde (snap por tarjeta, no por px fijos).
+function scrollFilaUnaTarjeta(container, dir) {
+  const cards = Array.from(container.children);
+  if (!cards.length) return;
+
+  const scrollLeft = container.scrollLeft;
+  const limite = container.clientWidth;
+
+  if (dir === 'next') {
+    const cortada = cards.find(c => c.offsetLeft + c.offsetWidth > scrollLeft + limite + 1);
+    if (cortada) {
+      container.scrollTo({ left: Math.min(cortada.offsetLeft, container.scrollWidth - limite), behavior: 'smooth' });
+    }
+  } else {
+    const cortada = [...cards].reverse().find(c => c.offsetLeft < scrollLeft - 1);
+    if (cortada) {
+      container.scrollTo({ left: Math.max(cortada.offsetLeft, 0), behavior: 'smooth' });
+    }
+  }
+}
+
+export function cargarPopularesPreview() {
+  const section = document.getElementById('section-populares-preview');
+  const container = document.getElementById('populares-preview');
+  if (!section || !container) return;
+
+  const caches = obtenerCachesPopulares();
+  if (!caches.length) {
+    section.classList.add('hidden');
+    container.innerHTML = '';
+    return;
+  }
+
+  // Un filtro al azar por visita: el subtítulo muestra cuál salió.
+  // Sus animes van primero; si no alcanzan 7 se rellena con los demás.
+  const principal = caches[Math.floor(Math.random() * caches.length)];
+  const resto = caches.filter(c => c !== principal);
+  const animes = deduplicarAnimes([
+    ...barajarArray([...principal.animes]),
+    ...barajarArray(resto.flatMap(c => c.animes))
+  ]);
+  const seleccion = animes.slice(0, POPULARES_PREVIEW_CANTIDAD);
+
+  const subtitulo = document.getElementById('populares-preview-filtro');
+  if (subtitulo) {
+    subtitulo.textContent = `Selección de ${FILTROS_POPULARES[principal.rankingType] || principal.rankingType}`;
+  }
+
+  container.innerHTML = '';
+  const cards = [];
+  seleccion.forEach(anime => {
+    const card = crearAnimeCard(anime);
+    if (card) {
+      container.appendChild(card);
+      cards.push(card);
+    }
+  });
+  observerAnimeCards(cards);
+
+  // Mismo patrón que "Continuar Viendo": botones que desplazan la fila.
+  ['prev', 'next'].forEach(dir => {
+    const btn = section.querySelector(`.scroll-btn-${dir}`);
+    if (btn) {
+      btn.onclick = () => scrollFilaUnaTarjeta(container, dir);
+    }
+  });
+
+  // El título y la tarjeta final navegan a la sección Populares completa.
+  const irAPopulares = () => {
+    history.replaceState(null, '', '?Populares');
+    mostrarSeccionDesdesearch();
+    centrarElementoEnVista('Populares');
+  };
+  const verTodo = document.createElement('button');
+  verTodo.type = 'button';
+  verTodo.className = 'ver-todo-card';
+  verTodo.innerHTML = `
+    <span class="ver-todo-card-label">Ver todo</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6"/>
+    </svg>`;
+  verTodo.onclick = irAPopulares;
+  container.appendChild(verTodo);
+
+  section.classList.remove('hidden');
 }
 
 function centrarElementoEnVista(seccionId, smooth = true) {
@@ -1610,7 +1781,7 @@ document.addEventListener("DOMContentLoaded", () => {
     '.pagination', '#indexpagination', '.hero-slider', '#recomendaciones-favoritos',
     '#recomendaciones-personalizadas', '#sugerencias-sin-resultados',
     '#anime-grid-ia-busqueda', '#filtro-letras-av1', '#section-ultimos-caps-viendo',
-    '#filtro-anos-av1'
+    '#filtro-anos-av1', '#lista-nav', '#populares-preview'
   ].join(','); 
   
   const isException = (element) => element?.closest(excepcionesSelector) !== null;
@@ -1626,7 +1797,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- LÓGICA DE DESLIZAMIENTO DEL SIDEBAR ---
   let drag = { active: false, intent: false, startX: 0, startY: 0, width: 0 };
-  const seccionesPermitidas = ['Ultimos-Episodios', 'Mis-Favoritos', 'Viendo', 'Pendientes', 'Completados', 'Preferencias', 'Contacto'];
+  const seccionesPermitidas = ['Ultimos-Episodios', 'Lista', 'Preferencias', 'Contacto'];
 
   document.addEventListener("touchstart", (e) => {
     const touch = e.touches[0];
@@ -1688,15 +1859,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- LÓGICA DE NAVEGACIÓN ENTRE SECCIONES ---
   const navigationMap = {
     'Ultimos-Episodios': { left: 'DirectorioAV1' },
-    'Mis-Favoritos': { left: null, right: null },
-    'Viendo': { left: null, right: null },
-    'Pendientes': { left: null, right: null },
-    'Completados': { left: null, right: null },
     'DirectorioJK': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
-    'DirectorioAV1': { left: 'Recomendaciones', right: 'Ultimos-Episodios' },
-    'Recomendaciones': { left: 'Populares', right: 'DirectorioAV1' },
+    'DirectorioAV1': { left: 'Lista', right: 'Ultimos-Episodios' },
+    'Lista': { left: 'Recomendaciones', right: 'DirectorioAV1' },
+    'Recomendaciones': { left: 'Horarios', right: 'Lista' },
     'Populares': { left: 'Horarios', right: 'Recomendaciones' },
-    'Horarios': { right: 'Populares', left: null }
+    'Horarios': { right: 'Recomendaciones', left: null }
   };
 
   sections.forEach(section => {
@@ -1841,7 +2009,7 @@ function inicializarContinuarViendo() {
       const btn = container.querySelector(`.scroll-btn-${dir}`);
       if (btn) {
         btn.style.cssText = 'opacity: 1; pointer-events: auto;';
-        btn.onclick = () => grid.scrollBy({ left: dir === 'next' ? 889 : -889, behavior: 'smooth' });
+        btn.onclick = () => scrollFilaUnaTarjeta(grid, dir);
       }
     });
   }

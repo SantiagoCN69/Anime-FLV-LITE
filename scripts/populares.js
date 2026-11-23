@@ -14,7 +14,9 @@ const MAL_STATUS_MAP = {
 };
 
 let currentPage = 1;
-let rankingType = 'bypopularity'; // Valor por defecto
+const RANKINGS_VALIDOS = ['bypopularity', 'all', 'airing', 'upcoming', 'tv', 'movie', 'ova', 'special', 'favorite'];
+const rankingGuardado = localStorage.getItem('populares_filtro_activo');
+let rankingType = RANKINGS_VALIDOS.includes(rankingGuardado) ? rankingGuardado : 'bypopularity'; // Valor por defecto
 
 // Caché en memoria (5 minutos TTL)
 const malCache = new Map();
@@ -297,6 +299,7 @@ function setupRankingFilterButtons(buttonsSelector, targetButtonId) {
             }
 
             rankingType = btn.dataset.ranking || 'bypopularity';
+            localStorage.setItem('populares_filtro_activo', rankingType);
             currentPage = 1;
             cargarPopulares();
         });
@@ -304,6 +307,14 @@ function setupRankingFilterButtons(buttonsSelector, targetButtonId) {
 }
 
 setupRankingFilterButtons('#nav-populares-ranking-section > button', 'btn-populares-filtro-ranking');
+
+// Refleja el último filtro elegido al entrar a la sección
+const btnRankingActivo = document.querySelector(`#nav-populares-ranking-section > button[data-ranking="${rankingType}"]`);
+if (btnRankingActivo) {
+    btnRankingActivo.classList.add('active');
+    const spanTrigger = document.querySelector('#btn-populares-filtro-ranking span');
+    if (spanTrigger) spanTrigger.textContent = btnRankingActivo.textContent.trim();
+}
 
 const btnAlert = document.getElementById('btn-populares-alert');
 const modal = document.getElementById('modal-populares');

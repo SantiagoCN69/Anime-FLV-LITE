@@ -189,7 +189,7 @@ Anime-FLV-LITE/
 | Ruta | Vista |
 | :--- | :--- |
 | `/` o `/?Ultimos-Episodios` | Inicio |
-| `/?Mis-Favoritos` · `/?Viendo` · `/?Pendientes` · `/?Completados` | Listas personales |
+| `/?Lista&tab=viendo` · `visto` · `pendiente` · `favoritos` | Listas personales |
 | `/?DirectorioAV1` · `/?DirectorioJK` | Directorios |
 | `/?Recomendaciones` | Recomendaciones con IA |
 | `/?Populares` | Rankings de MAL |

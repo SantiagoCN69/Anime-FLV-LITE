@@ -1,0 +1,157 @@
+/* ================= LISTA: HEADER ================= */
+/* El icono bookmark se ve deformado al tamaño estándar: 2px menos que el resto */
+#lista .svg-header {
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+}
+
+/* Ajuste óptico del icono morph cuando la sección visible es Lista
+   (mismo mecanismo que style_contacto.css): el glyph queda un poco a la
+   izquierda, padding-left lo recentra dentro del cuadro. */
+#content-section-svg-dynamic:has(~ #Lista:not(.hidden)) .dynamic-header-icon {
+  padding: 12px;
+}
+
+#lista .header-section {
+  margin-bottom: 1.25rem;
+}
+
+/* ================= LISTA: NAV DE PESTAÑAS ================= */
+.lista-nav {
+  position: relative;
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-block: 1rem;
+}
+
+.lista-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.lista-tab {
+  flex: 0 0 auto;
+  padding: .65rem 0rem;
+  padding-left: 0;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  color: var(--t1);
+  font-family: 'Oxanium', sans-serif;
+  font-size: .95rem;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  transition: color .3s, border-color .3s, transform .2s;
+}
+
+.lista-tab:hover {
+  color: var(--btn);
+}
+
+.lista-tab.active {
+  color: var(--btn);
+}
+
+.lista-tab:active {
+  transform: scale(.96);
+}
+
+/* Guía indicador bajo la pestaña activa */
+.lista-indicator {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  border-radius: 99px;
+  background-color: var(--btn);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1),
+              width .35s cubic-bezier(.34, 1.56, .64, 1),
+              opacity .25s ease;
+  will-change: transform, width;
+}
+
+.lista-nav.indicador-visible .lista-indicator {
+  opacity: 1;
+}
+
+/* ================= LISTA: PANELES ================= */
+.lista-panel {
+  display: none;
+}
+
+.lista-panel.active {
+  display: block;
+}
+
+.lista-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 40px;
+  margin-bottom: 1rem;
+}
+
+.lista-count {
+  margin: 0;
+  font-size: 1rem;
+  opacity: .85;
+}
+
+/* El contador usa el mismo mecanismo ::after + data-text que el resto de secciones,
+   pero con formato "N animes" en lugar del badge "Disponibles:". */
+#Lista .lista-count.cargado::after {
+  content: attr(data-text) " animes";
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  color: var(--t1);
+  opacity: .8;
+  font-size: .95rem;
+  font-weight: 400;
+  width: auto;
+  height: auto;
+  z-index: auto;
+}
+
+/* Control de orden: reutiliza el patrón .btn-filtro + .filtro-opciones de la
+   app, pero compacto para la toolbar (la clase base está pensada para los
+   filtros del directorio: flex:1, min-width:173px, height:51px). */
+#Lista .lista-orden-section {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: auto;
+}
+
+#Lista .lista-orden-section .btn-filtro {
+  width: fit-content;
+  padding: .55rem .9rem;
+  border-radius: 12px;
+  font-family: 'Manrope', sans-serif;
+  font-size: .9rem;
+}
+
+#Lista .lista-orden-section .filtro-opciones {
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  ul {
+    min-width: unset;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 470px) {
+  .lista-toolbar {
+    flex-wrap: wrap;
+  }
+
+  #Lista .lista-count.cargado::after {
+    content: attr(data-text) " animes";
+  }
+}

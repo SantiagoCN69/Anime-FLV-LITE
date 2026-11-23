@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.6.52';
+const CACHE_VERSION = 'v8.7.53';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -19,6 +19,7 @@ const STATIC_ASSETS = [
   '/horarios.html',
   '/recomendaciones.html',
   '/populares.html',
+  '/lista.html',
   '/preferencias.html',
   '/contacto.html',
 
@@ -32,6 +33,7 @@ const STATIC_ASSETS = [
   '/styles/style_preferencias.css',
   '/styles/style_contacto.css',
   '/styles/style_populares.css',
+  '/styles/style_lista.css',
   '/styles/style_recomendaciones.css',
   '/styles/style_directoriojk.css',
   '/styles/style_horarios.css',
@@ -52,6 +54,7 @@ const STATIC_ASSETS = [
   '/scripts/horarios.js',
   '/scripts/recomendaciones.js',
   '/scripts/populares.js',
+  '/scripts/lista.js',
   '/scripts/ver.js',
   '/scripts/ai-recommendations.js',
   '/scripts/contacto.js',

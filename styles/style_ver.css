@@ -1,6 +1,6 @@
 @import url('fonts.css');
 
-.no-user .sidebar ul > li:nth-of-type(n+2):nth-of-type(-n+5),
+.no-user .sidebar ul > li:nth-of-type(2),
 .no-user #continuar-viendo-sidebar {
   display: none;
 }

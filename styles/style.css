@@ -563,8 +563,8 @@ body:has(header.search-active) .logout-modal {
   flex-direction: column;
   justify-content: space-between;
   flex-shrink: 0;
-  min-height: 501px;
-  height: calc(100vh - 81px - 3rem);
+  /* min-height: 501px; */
+  /* height: calc(100vh - 81px - 3rem); */
   max-height: 613px;
   list-style: none;
   padding: 0;
@@ -578,7 +578,7 @@ body:has(header.search-active) .logout-modal {
   display: block;
   }
 .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-episodio) {
-  padding: 16px 22PX;
+  padding: 20px 22px;
   flex: 1;
   display: flex;
   gap: 12px;
@@ -658,6 +658,13 @@ body:has(header.search-active) .logout-modal {
   width: 20px;
   max-width: 20px;
   height: 20px;
+}
+/* El icono de Lista (bookmark) se ve deformado a 20px: 2px menos que el resto */
+#btn-lista svg {
+  min-width: 18px;
+  width: 18px;
+  max-width: 18px;
+  height: 18px;
 }
 /* Sidebar oculto por defecto en móvil */
 .sidebar {
@@ -922,7 +929,7 @@ main {
     font-size: 0.9rem;
   }
   
-  #btn-ver-todo {
+  #btn-ver-todo, .btn-ver-completo {
     cursor: pointer;
     border-radius: 12px;
     font-weight: 600;
@@ -978,6 +985,7 @@ main {
   padding: 0.6rem;
  }
 
+
  @media screen and (max-width: 470px) {
   
   .btn-fuente-directorios {
@@ -992,23 +1000,25 @@ main {
  }
 
 @media (hover: hover) {
-  body:not(.animaciones-off) #btn-ver-todo:hover {
+  body:not(.animaciones-off) #btn-ver-todo:hover,
+  body:not(.animaciones-off) .btn-ver-completo:hover {
     color: var(--btn);
-    transform: translate(6px, -50%) scale(1.05) !important;
+    transform: translate(6px, -50%) !important;
     border-color: var(--btn);
   }
-  body:not(.animaciones-off) #btn-ver-todo:hover span {
+  body:not(.animaciones-off) #btn-ver-todo:hover span,
+  body:not(.animaciones-off) .btn-ver-completo:hover span {
     color: var(--btn);
   }
 }
 
 @media screen and (max-width: 425px), (min-width: 600px) and (max-width: 700px) {
-  #btn-ver-todo svg {
+  #btn-ver-todo svg, .btn-ver-completo svg {
     display: none !important;
   }
 }
 @media screen and (max-width: 360px) {
-  #btn-ver-todo {
+  #btn-ver-todo, .btn-ver-completo {
     display: none !important;
   }
 }
@@ -2140,6 +2150,12 @@ h4 {
   width: 25px;
   max-width: 25px;
   height: 25px;
+}
+.sidebar-collapsed #btn-lista svg {
+  min-width: 23px;
+  width: 23px;
+  max-width: 23px;
+  height: 23px;
 }
 .sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-episodio) {
   padding-inline:28.5px ;

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>Lista</title>
+    <link rel="stylesheet" href="styles/style_lista.css">
+    <script>
+      window.location.href = "https://ani.zenlite.workers.dev/?Lista";
+    </script>
+</head>
+
+<body>
+
+<main id="lista">
+
+    <div class="header-section header-con-subtitulo" id="header-lista">
+        <svg class="svg-header" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(6,0)">
+<path d="M6 2H38C40.6667 2 42 3.33333 42 6V54L22 40L2 54V6C2 3.33333 3.33333 2 6 2Z" stroke="currentColor" style="stroke:currentColor;stroke-opacity:1;" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>
+        <div>
+            <h2>Lista</h2>
+            <span>Tus animes organizados por estado</span>
+        </div>
+    </div>
+
+    <nav id="lista-nav" class="lista-nav" aria-label="Listas de animes">
+        <span class="lista-indicator" aria-hidden="true"></span>
+        <button type="button" class="lista-tab" data-lista="viendo">Viendo</button>
+        <button type="button" class="lista-tab" data-lista="visto">Visto</button>
+        <button type="button" class="lista-tab" data-lista="pendiente">Pendientes</button>
+        <button type="button" class="lista-tab" data-lista="favoritos">Favoritos</button>
+    </nav>
+
+    <div class="lista-panels">
+
+        <section class="lista-panel" data-panel="viendo">
+            <div class="lista-toolbar">
+                <h2 id="viendoh2" class="lista-count" data-text="0"></h2>
+                <div class="filtro-section lista-orden-section">
+                    <button type="button" class="btn-filtro" aria-label="Ordenar viendo"><span>Recientes</span></button>
+                    <div class="filtro-opciones lista-orden-opciones">
+                        <ul>
+                            <li><button type="button" class="btn-filtro-opcion active" data-orden="recientes">Recientes</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-az">Nombre A-Z</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-za">Nombre Z-A</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="viendo" class="grid-animes">
+                <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
+            </div>
+        </section>
+
+        <section class="lista-panel" data-panel="visto">
+            <div class="lista-toolbar">
+                <h2 id="completadosh2" class="lista-count" data-text="0"></h2>
+                <div class="filtro-section lista-orden-section">
+                    <button type="button" class="btn-filtro" aria-label="Ordenar vistos"><span>Recientes</span></button>
+                    <div class="filtro-opciones lista-orden-opciones">
+                        <ul>
+                            <li><button type="button" class="btn-filtro-opcion active" data-orden="recientes">Recientes</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-az">Nombre A-Z</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-za">Nombre Z-A</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="completados" class="grid-animes">
+                <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
+            </div>
+        </section>
+
+        <section class="lista-panel" data-panel="pendiente">
+            <div class="lista-toolbar">
+                <h2 id="pendientesh2" class="lista-count" data-text="0"></h2>
+                <div class="filtro-section lista-orden-section">
+                    <button type="button" class="btn-filtro" aria-label="Ordenar pendientes"><span>Recientes</span></button>
+                    <div class="filtro-opciones lista-orden-opciones">
+                        <ul>
+                            <li><button type="button" class="btn-filtro-opcion active" data-orden="recientes">Recientes</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-az">Nombre A-Z</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-za">Nombre Z-A</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="pendientes" class="grid-animes">
+                <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
+            </div>
+        </section>
+
+        <section class="lista-panel" data-panel="favoritos">
+            <div class="lista-toolbar">
+                <h2 id="favoritosh2" class="lista-count" data-text="0"></h2>
+                <div class="filtro-section lista-orden-section">
+                    <button type="button" class="btn-filtro" aria-label="Ordenar favoritos"><span>Recientes</span></button>
+                    <div class="filtro-opciones lista-orden-opciones">
+                        <ul>
+                            <li><button type="button" class="btn-filtro-opcion active" data-orden="recientes">Recientes</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-az">Nombre A-Z</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-za">Nombre Z-A</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="favoritos" class="grid-animes">
+                <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
+            </div>
+        </section>
+
+    </div>
+
+</main>
+
+<script type="module" src="scripts/lista.js"></script>
+
+</body>
+</html>
