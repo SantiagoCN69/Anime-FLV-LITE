@@ -849,8 +849,8 @@ main {
   }
 }
 .animacion-carga {
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     
     position: absolute;

@@ -1197,7 +1197,6 @@ svg.cta__play {
 .pagination-option.active {
   background-color: var(--btn);
   border-color: var(--btn);
-  font-weight: 600;
 }
 
 @media (max-width: 600px) {
