@@ -104,6 +104,12 @@
   .active-menu-item span, .active-menu-item svg {
     opacity: 1;
   }
+  .active-menu-item {
+    border: 1px solid var(--btn);
+  }
+  .active-menu-item::after {
+    content: unset;
+  }
 }
 
 /* ================= FLOATING ================= */
