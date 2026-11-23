@@ -612,8 +612,14 @@ if (anime.estado) {
   aplicarFondoAnime(anime);
   setAnimeDescripcion(descripcionEl, anime.descripcion);
   renderGeneros(generoContainer, anime.generos);
+  
+  // Mark all status buttons as loaded (they're already active from HTML)
+  document.querySelectorAll('.btn-estado').forEach(btn => {
+    btn.classList.add('cargado');
+  });
+  
   cargarSugerenciasIA(anime);
-
+  
   const container = document.querySelector("#capitulos");
 
   if (anime.estado === "Por estrenar") {
