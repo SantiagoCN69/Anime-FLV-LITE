@@ -794,6 +794,7 @@ nav.filtros {
   overflow: hidden;
   display: block;
   font-family: 'Manrope', sans-serif;
+  border-radius: 8px;
 }
 .btn-filtro-opcion:hover {
   background-color: rgba(var(--bgt), .3);

@@ -1204,7 +1204,7 @@ svg.cta__play {
   border-color: var(--btn);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 400px) {
   .pagination-container {
     flex-direction: column;
     gap: 10px;
