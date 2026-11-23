@@ -120,7 +120,7 @@
   position: fixed;
   bottom: 14px;
   width: calc(100% - .5rem);
-  padding: 12px;
+  padding: 14px;
   gap: 0;
   justify-content: center;
   border-radius: 99px;
@@ -135,9 +135,9 @@
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  height: 50px;
+  height: 48px;
   width: fit-content;
-  padding: 5px 0;
+  padding: 0px 0;
   gap: 3px;
   font-size: .75rem;
   border-radius: 20px;
