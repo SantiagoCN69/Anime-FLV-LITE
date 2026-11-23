@@ -44,6 +44,9 @@
 #indexpagination span { pointer-events: none; }
 
 /* BOTONES BASE */
+#indexpagination .nav-indicator {
+  display: none;
+}
 #indexpagination button {
   display: flex;
   align-items: center;
@@ -116,8 +119,8 @@
 #indexpagination.floating {
   position: fixed;
   bottom: 14px;
-  width: calc(100% - 1rem);
-  padding: 10px;
+  width: calc(100% - .5rem);
+  padding: 12px;
   gap: 0;
   justify-content: center;
   border-radius: 30px;
@@ -132,7 +135,7 @@
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  height: 60px;
+  height: 50px;
   width: fit-content;
   padding: 5px 0;
   gap: 3px;
@@ -142,14 +145,34 @@
   opacity: .8
 }
 
-#indexpagination.floating button.active-menu-item { padding: 5px 10px; opacity: 1}
+#indexpagination.floating button.active-menu-item { opacity: 1 }
 #indexpagination.floating span:nth-of-type(2), #indexpagination.bottom span:nth-of-type(2) { display: none; }
 
 #indexpagination.floating .active-menu-item::after {
-  border: none;
+  content: unset;
+}
+
+/* Indicador activo flotante: siempre visible, se desliza hasta el ítem activo */
+
+#indexpagination.floating .nav-indicator {
+  display: block;
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
   border-radius: 30px;
   background-color: rgba(var(--bgt), .1);
   box-shadow: 0 1px 8px -3px rgba(var(--bgt), .1);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .45s cubic-bezier(.34, 1.56, .64, 1),
+              width .45s cubic-bezier(.34, 1.56, .64, 1),
+              opacity .25s ease;
+  will-change: transform, width;
+}
+
+#indexpagination.floating .nav-indicator.rebote {
+  animation: indicadorRebote .4s ease;
 }
 
 /* Efectos floating: unificamos before y after */
@@ -240,6 +263,12 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
+}
+
+@keyframes indicadorRebote {
+  0% { scale: 1; }
+  35% { scale: 1.05; }
+  100% { scale: 1; }
 }
 
 /* seccion continuar viendo */

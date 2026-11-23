@@ -272,6 +272,7 @@ export function mostrarSeccionDesdesearch() {
   );
 
   actualizarIndicadorActivo();
+  actualizarIndicadorNav();
 
 if (id === 'Ultimos-Episodios' && !heroSliderCargado) {
   cargarHeroSlider();
@@ -1553,6 +1554,33 @@ function centrarElementoEnVista(seccionId, smooth = true) {
     behavior: smooth ? 'smooth' : 'auto'
   })
 }
+let ultimoBotonActivoNav = null;
+
+function actualizarIndicadorNav() {
+  const nav = document.getElementById('indexpagination');
+  const indicator = nav?.querySelector('.nav-indicator');
+  if (!nav || !indicator) return;
+
+  const botonActivo = nav.querySelector('.menu-item.active-menu-item');
+  if (!nav.classList.contains('floating') || !botonActivo || !nav.getClientRects().length) {
+    indicator.style.opacity = '0';
+    ultimoBotonActivoNav = null;
+    return;
+  }
+
+  const extraAncho = 5;
+  indicator.style.width = `${botonActivo.offsetWidth + extraAncho}px`;
+  indicator.style.transform = `translateX(${botonActivo.offsetLeft - extraAncho / 2}px)`;
+  indicator.style.opacity = '1';
+
+  if (botonActivo !== ultimoBotonActivoNav) {
+    ultimoBotonActivoNav = botonActivo;
+    indicator.classList.remove('rebote');
+    void indicator.offsetWidth;
+    indicator.classList.add('rebote');
+  }
+}
+
 function cerrarSidebar() {
   document.querySelector(".sidebar")?.classList.remove("active");
   document.getElementById("menu-toggle")?.classList.remove("active");
@@ -1560,6 +1588,15 @@ function cerrarSidebar() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const navPagination = document.getElementById("indexpagination");
+  if (navPagination) {
+    navPagination.addEventListener('scroll', actualizarIndicadorNav, { passive: true });
+    window.addEventListener('resize', actualizarIndicadorNav);
+    new MutationObserver(actualizarIndicadorNav)
+      .observe(navPagination, { attributes: true, attributeFilter: ['class'], subtree: true });
+    actualizarIndicadorNav();
+  }
+
   const menuBtn = document.getElementById("menu-toggle");
   const sidebar = document.querySelector(".sidebar");
   const sections = document.querySelectorAll(".content-section");
