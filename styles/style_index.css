@@ -123,7 +123,7 @@
   padding: 12px;
   gap: 0;
   justify-content: center;
-  border-radius: 30px;
+  border-radius: 99px;
   background-color: rgba(var(--bgti), .8);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(10px);
