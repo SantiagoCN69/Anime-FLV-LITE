@@ -2515,7 +2515,7 @@ function crearIframeServidor(url, reproduccionId) {
   iframe.style.border = "none";
   iframe.allowFullscreen = true;
   iframe.scrolling = "no";
-  if (bloquearAnuncios) iframe.sandbox = "allow-scripts allow-forms";
+  if (bloquearAnuncios) iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation";
 
   iframe.onerror = () => {
     if (reproduccionId === reproduccionActualId) {
