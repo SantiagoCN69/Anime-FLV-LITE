@@ -209,7 +209,7 @@
   padding: 8px 5px;
   gap: 0;
   justify-content: space-around;
-  background-color: var(--p);
+  background-color: var(--b);
   border-top: 1px solid rgba(var(--bgt), .1);
   animation: aparecer2 .25s ease;
 }
