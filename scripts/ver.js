@@ -1760,11 +1760,6 @@ async function cargarEpisodios() {
     }
     return episodios;
   } catch (err) {
-
-    const controles = document.getElementById("controles");
-    if (controles) {
-      controles.innerHTML = "<span class='span-carga'>404 No hay servidores disponibles para este episodio.</span>";
-    }
     throw err;
   }
 }
