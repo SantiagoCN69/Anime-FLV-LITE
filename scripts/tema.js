@@ -25,7 +25,7 @@ const themes = {
     bgti: '18, 16, 19'
     },
 
-    anime_zen: {
+    anizen: {
     p: '#1A1622',
     b: '#0E0B14',
     t1: '#F2EEF6',

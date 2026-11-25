@@ -4,7 +4,7 @@ import { auth, db } from "./firebase-login.js";
 import { mountThemeDots } from "./theme-dots.js";
 
 const THEME_CONFIG = {
-  themes: ['nocturno', 'sakura', 'anime_zen', 'ambar'],
+  themes: ['nocturno', 'sakura', 'anizen', 'ambar'],
   defaultTheme: 'sakura'
 };
 

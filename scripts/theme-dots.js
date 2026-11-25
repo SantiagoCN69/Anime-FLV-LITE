@@ -1,17 +1,17 @@
 // Selector de temas con círculos de color. Requiere scripts/tema.js cargado
 // (expone window.AniZenThemes); si no está, usa colores de respaldo.
 const DEFAULT_THEME = 'sakura';
-const FALLBACK_ORDER = ['nocturno', 'sakura', 'anime_zen', 'ambar'];
+const FALLBACK_ORDER = ['nocturno', 'sakura', 'anizen', 'ambar'];
 const FALLBACK_COLORS = {
   nocturno: '#3F6FD8',
   sakura: '#B54A6F',
-  anime_zen: '#a970ff',
+  anizen: '#a970ff',
   ambar: '#D9692A',
 };
 const LABELS = {
   nocturno: 'Nocturno',
   sakura: 'Sakura',
-  anime_zen: 'Anime Zen',
+  anizen: 'AniZen',
   ambar: 'Ambar',
 };
 
