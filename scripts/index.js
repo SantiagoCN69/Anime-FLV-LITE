@@ -681,7 +681,6 @@ async function cargarUltimosCapsVistos() {
               portada: animeDetails.portada,
               titulo: animeDetails.titulo,
               siguienteCapitulo: siguienteCapitulo,
-              siguienteCapituloUrl: siguienteEpisodio.url,
               totalCapitulos: episodios.length
             };
           }
