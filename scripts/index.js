@@ -2,6 +2,7 @@ import { db, auth } from './firebase-login.js';
 import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where, startAfter} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
 import { buildFavoritesAnimePrompt, fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName } from './ai-recommendations.js';
+import { fetchMALRanking, MAL_RANKING_TYPES, MAL_RANKING_LABELS } from './mal-api.js';
 
 // Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
@@ -288,8 +289,8 @@ if (id === 'Ultimos-Episodios') {
     cargarHeroSlider();
     heroSliderCargado = true;
   }
-  // Se re-genera en cada visita a Inicio: la selección sale del caché
-  // local de populares y se baraja de nuevo.
+  // Se re-genera en cada visita a Inicio: se pide un ranking al azar
+  // directamente a la API y se baraja de nuevo.
   cargarPopularesPreview();
 }
 
@@ -1566,44 +1567,13 @@ function cargarFetch(direccion) {
     .catch(err => console.error('Error al cargar el recurso:', err));
 }
 
-// Preview de Populares en Inicio: toma los rankings ya cacheados en
-// localStorage por populares.js (animes_cache_populares_*), mezcla todos
-// los géneros/filtros, baraja y muestra una selección. No guarda nada
-// nuevo ni hace peticiones: si no hay caché, la sección queda oculta.
+// Preview de Populares en Inicio: pide directamente a la API de MAL un
+// ranking al azar (tipo y página) y muestra una selección barajada.
+// No usa caché: la API siempre está disponible. Si falla, la sección
+// queda oculta.
 const POPULARES_PREVIEW_CANTIDAD = 7;
-
-// Mismos nombres que los botones de filtro de populares.html
-const FILTROS_POPULARES = {
-  bypopularity: 'Populares',
-  all: 'Top Rated',
-  airing: 'En emisión',
-  upcoming: 'Próximos',
-  tv: 'TV',
-  movie: 'Películas',
-  ova: 'OVAs',
-  special: 'Especiales',
-  favorite: 'Favoritos'
-};
-
-// Agrupa el caché existente de populares.js por filtro
-// (clave animes_cache_populares_{rankingType}_{pagina}).
-function obtenerCachesPopulares() {
-  const porFiltro = new Map();
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (!key || !key.startsWith('animes_cache_populares_')) continue;
-    const rankingType = key.split('_')[3];
-    if (!rankingType) continue;
-    try {
-      const data = JSON.parse(localStorage.getItem(key))?.data || [];
-      if (!porFiltro.has(rankingType)) porFiltro.set(rankingType, []);
-      porFiltro.get(rankingType).push(...data);
-    } catch (e) { /* caché corrupta: se ignora */ }
-  }
-  return [...porFiltro.entries()]
-    .map(([rankingType, animes]) => ({ rankingType, animes }))
-    .filter(c => c.animes.length);
-}
+const POPULARES_PREVIEW_MAX_PAGINA = 10;
+let popularesPreviewCargando = false;
 
 function barajarArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -1645,70 +1615,79 @@ function scrollFilaUnaTarjeta(container, dir) {
   }
 }
 
-export function cargarPopularesPreview() {
+export async function cargarPopularesPreview() {
   const section = document.getElementById('section-populares-preview');
   const container = document.getElementById('populares-preview');
-  if (!section || !container) return;
+  if (!section || !container || popularesPreviewCargando) return;
 
-  const caches = obtenerCachesPopulares();
-  if (!caches.length) {
+  popularesPreviewCargando = true;
+  try {
+    // Un ranking y una página al azar por visita: el subtítulo muestra cuál salió.
+    const rankingType = MAL_RANKING_TYPES[Math.floor(Math.random() * MAL_RANKING_TYPES.length)];
+    const pagina = 1 + Math.floor(Math.random() * POPULARES_PREVIEW_MAX_PAGINA);
+    const malData = await fetchMALRanking({
+      ranking_type: rankingType,
+      limit: 20,
+      offset: (pagina - 1) * 20
+    });
+
+    const seleccion = deduplicarAnimes(barajarArray(malData.animes || []))
+      .slice(0, POPULARES_PREVIEW_CANTIDAD);
+    if (!seleccion.length) {
+      section.classList.add('hidden');
+      container.innerHTML = '';
+      return;
+    }
+
+    const subtitulo = document.getElementById('populares-preview-filtro');
+    if (subtitulo) {
+      subtitulo.textContent = `Selección de ${MAL_RANKING_LABELS[rankingType] || rankingType}`;
+    }
+
+    container.innerHTML = '';
+    const cards = [];
+    seleccion.forEach(anime => {
+      const card = crearAnimeCard(anime);
+      if (card) {
+        container.appendChild(card);
+        cards.push(card);
+      }
+    });
+    observerAnimeCards(cards);
+
+    // Mismo patrón que "Continuar Viendo": botones que desplazan la fila.
+    ['prev', 'next'].forEach(dir => {
+      const btn = section.querySelector(`.scroll-btn-${dir}`);
+      if (btn) {
+        btn.onclick = () => scrollFilaUnaTarjeta(container, dir);
+      }
+    });
+
+    // El título y la tarjeta final navegan a la sección Populares completa.
+    const irAPopulares = () => {
+      history.replaceState(null, '', '?Populares');
+      mostrarSeccionDesdesearch();
+      centrarElementoEnVista('Populares');
+    };
+    const verTodo = document.createElement('button');
+    verTodo.type = 'button';
+    verTodo.className = 'ver-todo-card';
+    verTodo.innerHTML = `
+      <span class="ver-todo-card-label">Ver todo</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+      </svg>`;
+    verTodo.onclick = irAPopulares;
+    container.appendChild(verTodo);
+
+    section.classList.remove('hidden');
+  } catch (error) {
+    console.warn('[Populares] No se pudo cargar la selección aleatoria:', error);
     section.classList.add('hidden');
     container.innerHTML = '';
-    return;
+  } finally {
+    popularesPreviewCargando = false;
   }
-
-  // Un filtro al azar por visita: el subtítulo muestra cuál salió.
-  // Sus animes van primero; si no alcanzan 7 se rellena con los demás.
-  const principal = caches[Math.floor(Math.random() * caches.length)];
-  const resto = caches.filter(c => c !== principal);
-  const animes = deduplicarAnimes([
-    ...barajarArray([...principal.animes]),
-    ...barajarArray(resto.flatMap(c => c.animes))
-  ]);
-  const seleccion = animes.slice(0, POPULARES_PREVIEW_CANTIDAD);
-
-  const subtitulo = document.getElementById('populares-preview-filtro');
-  if (subtitulo) {
-    subtitulo.textContent = `Selección de ${FILTROS_POPULARES[principal.rankingType] || principal.rankingType}`;
-  }
-
-  container.innerHTML = '';
-  const cards = [];
-  seleccion.forEach(anime => {
-    const card = crearAnimeCard(anime);
-    if (card) {
-      container.appendChild(card);
-      cards.push(card);
-    }
-  });
-  observerAnimeCards(cards);
-
-  // Mismo patrón que "Continuar Viendo": botones que desplazan la fila.
-  ['prev', 'next'].forEach(dir => {
-    const btn = section.querySelector(`.scroll-btn-${dir}`);
-    if (btn) {
-      btn.onclick = () => scrollFilaUnaTarjeta(container, dir);
-    }
-  });
-
-  // El título y la tarjeta final navegan a la sección Populares completa.
-  const irAPopulares = () => {
-    history.replaceState(null, '', '?Populares');
-    mostrarSeccionDesdesearch();
-    centrarElementoEnVista('Populares');
-  };
-  const verTodo = document.createElement('button');
-  verTodo.type = 'button';
-  verTodo.className = 'ver-todo-card';
-  verTodo.innerHTML = `
-    <span class="ver-todo-card-label">Ver todo</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14M13 6l6 6-6 6"/>
-    </svg>`;
-  verTodo.onclick = irAPopulares;
-  container.appendChild(verTodo);
-
-  section.classList.remove('hidden');
 }
 
 function centrarElementoEnVista(seccionId, smooth = true) {
