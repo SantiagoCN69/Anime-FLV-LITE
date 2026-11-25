@@ -780,7 +780,7 @@ svg.cta__play {
   line-clamp: 3;
   /* height: 60px; */
   max-height: 60px;
-  -webkit-box-orient: vertical;
+  /* -webkit-box-orient: vertical; */
   overflow: hidden;
 }
 
