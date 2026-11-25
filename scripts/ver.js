@@ -2583,6 +2583,11 @@ async function mostrarVideo(link, botonSeleccionado) {
     // Convertir el color hexadecimal a formato sin # para Vidrift
     const brandColor = btnColor.startsWith('#') ? btnColor.slice(1) : btnColor || "7c5cff";
 
+    // Logo de marca según el tema activo (mismo criterio que tema.js)
+    const temaActivo = localStorage.getItem('theme') || window.AniZenThemes?.DEFAULT_THEME || 'sakura';
+    const brandLogo = `https://ani.zenlite.workers.dev/icons/temas/icon-${temaActivo}.png`;
+    const posterTema = `https://ani.zenlite.workers.dev/icons/temas/poster-${temaActivo}.png`;
+
     // Función para cargar el iframe con el ID de TMDB
     const cargarIframeConTMDB = (tmdbId, tmdbSeason, mediaType) => {
       if (reproduccionId !== reproduccionActualId) return;
@@ -2614,8 +2619,8 @@ async function mostrarVideo(link, botonSeleccionado) {
       const params = new URLSearchParams({
         brand: "Anizen",
         brandColor: brandColor,
-        brandLogo: "https://ani.zenlite.workers.dev/icons/icon-no-background.png",
-        poster: "https://ani.zenlite.workers.dev/icons/poster.png",
+        brandLogo,
+        poster: posterTema,
         watermark: "1",
         showTitle: "1",
         // hide: "episodes",
