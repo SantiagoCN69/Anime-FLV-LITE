@@ -176,6 +176,17 @@
   animation: indicadorRebote .4s ease;
 }
 
+/* Mientras se arrastra el dedo el indicador responde al instante */
+#indexpagination.floating .nav-indicator.arrastrando {
+  transition: none;
+}
+
+/* El gesto horizontal de la barra lo gestiona index.js (touch);
+   vertical sigue haciendo scroll de página */
+#indexpagination.floating {
+  touch-action: pan-y;
+}
+
 /* Efectos floating: unificamos before y after */
 #indexpagination.floating::before,
 #indexpagination.floating::after {

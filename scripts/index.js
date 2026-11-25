@@ -1732,6 +1732,9 @@ function actualizarIndicadorNav() {
   const indicator = nav?.querySelector('.nav-indicator');
   if (!nav || !indicator) return;
 
+  // Mientras se arrastra el dedo el indicador lo controla el gesto táctil.
+  if (indicator.classList.contains('arrastrando')) return;
+
   const botonActivo = nav.querySelector('.menu-item.active-menu-item');
   if (!nav.classList.contains('floating') || !botonActivo || !nav.getClientRects().length) {
     indicator.style.opacity = '0';
@@ -1766,6 +1769,85 @@ document.addEventListener("DOMContentLoaded", () => {
     new MutationObserver(actualizarIndicadorNav)
       .observe(navPagination, { attributes: true, attributeFilter: ['class'], subtree: true });
     actualizarIndicadorNav();
+
+    // --- GESTO TÁCTIL EN LA PAGINACIÓN ---
+    // Al arrastrar el dedo sobre la barra, el indicador la sigue; al soltar
+    // sobre un botón se activa esa sección (equivale a su click).
+    let navDrag = null;
+    const navBotones = () => navPagination.querySelectorAll('.menu-item');
+
+    navPagination.addEventListener('touchstart', (e) => {
+      // Solo la píldora flotante tiene indicador que seguir; en top/bottom
+      // la barra hace scroll horizontal nativo.
+      if (!navPagination.classList.contains('floating')) return;
+      const touch = e.touches[0];
+      navDrag = { x: touch.clientX, y: touch.clientY, activo: false };
+    }, { passive: true });
+
+    navPagination.addEventListener('touchmove', (e) => {
+      if (!navDrag) return;
+      const touch = e.touches[0];
+      const dx = touch.clientX - navDrag.x;
+      const dy = Math.abs(touch.clientY - navDrag.y);
+
+      if (!navDrag.activo) {
+        // Intención horizontal: si el dedo baja o apenas se mueve, es scroll/tap normal.
+        if (dy > Math.abs(dx) || Math.abs(dx) < 8) return;
+        navDrag.activo = true;
+      }
+
+      const indicator = navPagination.querySelector('.nav-indicator');
+      const botonActivo = navPagination.querySelector('.menu-item.active-menu-item');
+      if (!indicator || !botonActivo || getComputedStyle(indicator).display === 'none') return;
+      e.preventDefault();
+
+      const ancho = botonActivo.offsetWidth + 5;
+      const navRect = navPagination.getBoundingClientRect();
+      const x = touch.clientX - navRect.left - navPagination.clientLeft + navPagination.scrollLeft;
+      const botones = [...navBotones()];
+      if (!botones.length) return;
+      const minX = botones[0].offsetLeft - 2.5;
+      const ultimo = botones[botones.length - 1];
+      const maxX = ultimo.offsetLeft + ultimo.offsetWidth - 2.5 - ancho;
+      const tx = Math.min(Math.max(x - ancho / 2, minX), Math.max(minX, maxX));
+
+      indicator.classList.add('arrastrando');
+      indicator.style.width = `${ancho}px`;
+      indicator.style.transform = `translateX(${tx}px)`;
+      indicator.style.opacity = '1';
+    }, { passive: false });
+
+    const terminarNavDrag = (e) => {
+      if (!navDrag) return;
+      const eraArrastre = navDrag.activo;
+      navDrag = null;
+      if (!eraArrastre) return;
+
+      navPagination.querySelector('.nav-indicator')?.classList.remove('arrastrando');
+      const touch = e.changedTouches[0];
+
+      // Si el dedo se soltó fuera de la barra (arriba/abajo), se cancela:
+      // no se activa ninguna sección.
+      const navRect = navPagination.getBoundingClientRect();
+      const tolerancia = 12;
+      const dentro = touch.clientY >= navRect.top - tolerancia
+        && touch.clientY <= navRect.bottom + tolerancia
+        && touch.clientX >= navRect.left - tolerancia
+        && touch.clientX <= navRect.right + tolerancia;
+      if (!dentro) {
+        actualizarIndicadorNav();
+        return;
+      }
+
+      const boton = [...navBotones()].find(b => {
+        const r = b.getBoundingClientRect();
+        return touch.clientX >= r.left && touch.clientX <= r.right;
+      });
+      if (boton) boton.click();
+      actualizarIndicadorNav();
+    };
+    navPagination.addEventListener('touchend', terminarNavDrag, { passive: true });
+    navPagination.addEventListener('touchcancel', terminarNavDrag, { passive: true });
   }
 
   const menuBtn = document.getElementById("menu-toggle");
