@@ -231,7 +231,7 @@ main > section:nth-child(2) {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform .3s, padding .3s, width .3s;
+  transition: transform .3s, padding .3s, width .3s, filter .3s;
 }
 #btn-estado-episodio.visto {
   background: #17231F;
@@ -239,6 +239,7 @@ main > section:nth-child(2) {
 @media (hover: hover) {
   #btn-estado-episodio:hover {
     color: var(--t2) !important;
+    filter: brightness(1.2);
   }
 }
 .texto-estado-episodio {
@@ -301,7 +302,14 @@ main > section:nth-child(2) {
   padding: 5px;
   align-items: center;
   justify-content: center;
+  transition: filter .3s;
 }
+@media (hover: hover) {
+  #share:hover, #cine:hover, #descargar:hover {
+    filter: brightness(1.2);
+  }
+}
+
 #cine {
   padding-left: 8px;
 }
@@ -802,7 +810,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 }
 /* Botón Bloquear Anuncios (Tono Verde Menta Pastel) */
 #btn-bloquear-anuncios.activo {
-  background-color: rgba(167, 243, 208, 0.12); /* Fondo sutil */
+  background-color: rgba(167, 243, 208, 0.2); /* Fondo sutil */
   color: #a7f3d0; /* Menta pastel brillante para legibilidad */
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
@@ -810,7 +818,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 
 /* Botón Modo Maratón (Tono Rosa Sakura Pastel) */
 #btn-modo-maraton.activo {
-  background-color: rgba(251, 113, 133, 0.12); /* Fondo sutil */
+  background-color: rgba(251, 113, 133, 0.2); /* Fondo sutil */
   color: #fda4af; /* Rosa pastel brillante */
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;

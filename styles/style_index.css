@@ -1300,6 +1300,7 @@ color: var(--p);
 @media (hover: hover) {
   .hero-btn:hover {
     filter: brightness(1.2);
+    transform: scale(1.05);
   }
 }
 
@@ -1367,7 +1368,9 @@ color: var(--p);
 .hero-slide.active .hero-slide__title { transition-delay: 0.1s !important; }
 .hero-slide.active .hero-slide__synopsis { transition-delay: 0.15s !important; }
 .hero-slide.active .hero-slide__extra-badges { transition-delay: 0.2s !important; }
-.hero-slide.active .hero-slide__actions a { transition-delay: 0.25s; }
+.hero-slide.active .hero-slide__actions a {
+  transition: opacity 0.5s ease 0.25s, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s, filter 0.2s ease, background 0.2s ease;
+}
 
 .hero-slide.leaving .hero-slide__bg {
   opacity: 0;
