@@ -54,13 +54,20 @@ ambar: {
     const DEFAULT_THEME = 'sakura';
 
     const applyTheme = t => {
-        const theme = themes[t] || themes[DEFAULT_THEME];
+        const clave = themes[t] ? t : DEFAULT_THEME;
+        const theme = themes[clave];
         if (!theme) return;
 
         for (const [k, v] of Object.entries(theme)) {
             if (v !== undefined && v !== null) {
                 document.documentElement.style.setProperty(`--${k}`, v);
             }
+        }
+
+        // Favicon según el tema activo (icon-{tema}.png en el worker)
+        const iconoTema = document.querySelector('link[rel="icon"]');
+        if (iconoTema) {
+            iconoTema.href = `https://ani.zenlite.workers.dev/icons/temas/icon-${clave}.png`;
         }
     };
 
