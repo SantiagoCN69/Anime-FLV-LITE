@@ -636,6 +636,29 @@ const videoContenedorGlobal = document.getElementById("video");
 
 // Variable global para capítulos vistos (compartida con refrescarUIEstadoCapitulo)
 let capitulosVistosGlobales = [];
+// Usuario para el que se cargó capitulosVistosGlobales: si cambia la sesión
+// en la misma página, la caché se descarta y se vuelve a leer una vez.
+let capitulosVistosCargadosPara = null;
+
+// Lee el documento caps-vistos una sola vez por usuario/página. Antes cada
+// salto de capítulo hacía 2 getDoc (toggle + refrescarUI) sobre el mismo doc.
+// La promesa compartida evita lecturas dobles si dos consumidores la piden
+// antes de que termine la primera.
+let promesaCapitulosVistos = null;
+async function asegurarCapitulosVistos(user) {
+  if (capitulosVistosCargadosPara !== user) {
+    if (!promesaCapitulosVistos) {
+      promesaCapitulosVistos = (async () => {
+        const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
+        const docSnap = await getDoc(animeRef);
+        capitulosVistosGlobales = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
+        capitulosVistosCargadosPara = user;
+      })().finally(() => { promesaCapitulosVistos = null; });
+    }
+    await promesaCapitulosVistos;
+  }
+  return capitulosVistosGlobales;
+}
 
 // Cache del dropdown generado para evitar regeneraciones innecesarias
 let dropdownGenerado = false;
@@ -724,12 +747,12 @@ function cargarCacheTmdbVidriftPersistida() {
       confiable: true
     };
     episodioOffsetTemporadaVidrift = cacheTmdbVidrift.offsetEpisodio;
-    debugLog("[Vidrift] Asociación TMDB restaurada desde caché local", {
-      animeId,
-      tmdbId: cacheTmdbVidrift.tmdbId,
-      temporada: cacheTmdbVidrift.tmdbSeason,
-      offset: cacheTmdbVidrift.offsetEpisodio
-    });
+    // debugLog("[Vidrift] Asociación TMDB restaurada desde caché local", {
+    //   animeId,
+    //   tmdbId: cacheTmdbVidrift.tmdbId,
+    //   temporada: cacheTmdbVidrift.tmdbSeason,
+    //   offset: cacheTmdbVidrift.offsetEpisodio
+    // });
   } catch {
     // JSON corrupto o storage no disponible: se resuelve por la vía normal.
   }
@@ -1051,7 +1074,7 @@ function actualizarEstadoBotonDoblado(servidores) {
 }
 
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, deleteDoc, runTransaction, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, runTransaction, arrayUnion } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
 import { mostrarPildora, crearAnimeCard, observerAnimeCards } from "./utils.js";
 import { attachIaGridWheelScroll, loadIaRecommendationsIntoGrid, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
@@ -1078,12 +1101,13 @@ async function refrescarUIEstadoCapitulo() {
     return;
   }
 
-  const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
-  const docSnap = await getDoc(animeRef);
-  const capitulosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
-  
-  // Guardar TODOS los capítulos vistos en variable global para usar en el dropdown
-  capitulosVistosGlobales = capitulosVistos;
+  let capitulosVistos;
+  try {
+    capitulosVistos = await asegurarCapitulosVistos(user);
+  } catch (error) {
+    debugLog("No se pudo leer el progreso de capítulos.", error);
+    return;
+  }
 
   if (!episodios || episodios.length === 0 || episodioActualIndex < 0 ) {
     debugLog("Lista de episodios no disponible o índice inválido.");
@@ -1120,8 +1144,9 @@ async function toggleYGuardarEstadoCapitulo() {
 
   try {
     const animeRef = doc(db, "usuarios", user, "caps-vistos", animeId);
-    const docSnap = await getDoc(animeRef);
-    const episodiosVistos = docSnap.exists() ? docSnap.data().episodiosVistos || [] : [];
+    // Reutiliza la lectura cacheada: al marcar se usa arrayUnion y al quitar
+    // se valida el estado más reciente dentro de una transacción.
+    const episodiosVistos = await asegurarCapitulosVistos(user);
 
     if (!episodios || episodios.length === 0 || indiceCapitulo < 0) {
       debugLog("Lista de episodios no disponible o índice inválido.");
@@ -1146,28 +1171,45 @@ async function toggleYGuardarEstadoCapitulo() {
     const arrayNuevosVistos = Array.from(episodiosActuales);
 
     try {
-      if (arrayNuevosVistos.length === 0) {
-        // Si ya no quedan episodios vistos, eliminamos el documento
-        await deleteDoc(animeRef);
-      } else {
-        // Obtener estado del anime si existe en esta vista
-        const statusElement = document.getElementById('statuscargado');
-        const estadoTexto = statusElement ? statusElement.textContent : '';
-        const esFinalizadoPorEstado = (estadoTexto === 'Finalizado' || estadoTexto === 'Concluido');
+      const statusElement = document.getElementById('statuscargado');
+      const estadoTexto = statusElement ? statusElement.textContent : '';
+      const esFinalizadoPorEstado = (estadoTexto === 'Finalizado' || estadoTexto === 'Concluido');
+      const totalEpisodios = episodios.length;
+      const vistosTodosLosCaps = arrayNuevosVistos.length >= totalEpisodios && totalEpisodios > 0;
 
-        // Verificar si completó todos los capítulos con el array local "episodios"
-        const totalEpisodios = episodios.length;
-        const vistosTodosLosCaps = arrayNuevosVistos.length >= totalEpisodios && totalEpisodios > 0;
-        const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
-
-        // Guardar con la bandera y con merge para no sobrescribir destructivamente
+      if (nuevoEstadoVisto) {
         await setDoc(animeRef, {
           titulo,
           portada: portadaAnime,
           fechaAgregado: serverTimestamp(),
-          episodiosVistos: nuevoEstadoVisto ? arrayUnion(episodioId) : arrayRemove(episodioId),
-          esFinalizadoPorVistos: esFinalizadoPorVistos
+          episodiosVistos: arrayUnion(episodioId),
+          esFinalizadoPorVistos: esFinalizadoPorEstado && vistosTodosLosCaps
         }, { merge: true });
+      } else {
+        // La caché sirve para la UI, pero no decide qué se elimina. La
+        // transacción lee el estado más reciente y solo borra el documento
+        // si de verdad no quedan episodios vistos en ninguna sesión.
+        await runTransaction(db, async transaction => {
+          const snapActual = await transaction.get(animeRef);
+          if (!snapActual.exists()) return;
+
+          const restantes = (snapActual.data().episodiosVistos || [])
+            .map(String)
+            .filter(numero => numero !== episodioId);
+
+          if (restantes.length === 0) {
+            transaction.delete(animeRef);
+            return;
+          }
+
+          transaction.set(animeRef, {
+            titulo,
+            portada: portadaAnime,
+            fechaAgregado: serverTimestamp(),
+            episodiosVistos: restantes,
+            esFinalizadoPorVistos: false
+          }, { merge: true });
+        });
       }
 
       capitulosVistosGlobales = arrayNuevosVistos;
@@ -1999,7 +2041,7 @@ async function cargarVideoDesdeEpisodioInterno(index) {
     ejecutarEnSegundoPlano(precargarSiguienteEpisodio(index), "No se pudo precargar el siguiente episodio");
     return;
   }
-  debugLog(tSalto(), "cache de servers MISS para cap", ep.number, "edad:", cached ? `${Math.round((Date.now() - cached.time) / 1000)}s` : "nunca");
+  // debugLog(tSalto(), "cache de servers MISS para cap", ep.number, "edad:", cached ? `${Math.round((Date.now() - cached.time) / 1000)}s` : "nunca");
 
   let datosFirestore = await obtenerDatosAnimeParaServidores();
   debugLog(tSalto(), "datos Firestore listos", Math.round(performance.now() - t0Carga), "ms");
@@ -2586,7 +2628,7 @@ async function mostrarVideo(link, botonSeleccionado) {
     // Función para cargar el iframe con el ID de TMDB
     const cargarIframeConTMDB = (tmdbId, tmdbSeason, mediaType) => {
       if (reproduccionId !== reproduccionActualId) return;
-      debugLog(tSalto(), "TMDB resuelto, creando iframe Vidrift ep", episodioActualIndex);
+      // debugLog(tSalto(), "TMDB resuelto, creando iframe Vidrift ep", episodioActualIndex);
       cancelarFallbackDeCarga();
       debugLog("Cargando Vidrift con el ID de TMDB.", tmdbId);
 
@@ -2962,7 +3004,7 @@ async function mostrarVideo(link, botonSeleccionado) {
 
     const tTmdb = performance.now();
     const asociacion = await resolverDatosTmdbVidrift();
-    debugLog(tSalto(), "resolverDatosTmdbVidrift tardó", Math.round(performance.now() - tTmdb), "ms");
+    // debugLog(tSalto(), "resolverDatosTmdbVidrift tardó", Math.round(performance.now() - tTmdb), "ms");
     if (reproduccionId !== reproduccionActualId) return;
 
     if (!asociacion?.tmdbId) {
@@ -3167,7 +3209,7 @@ window.addEventListener('message', async (event) => {
     return;
   }
 
-  debugLog(tSalto(), "evento Vidrift recibido:", event.data?.type, event.data?.episode ?? "");
+  // debugLog(tSalto(), "evento Vidrift recibido:", event.data?.type, event.data?.episode ?? "");
 
   // Vidrift emite este evento al comenzar créditos o el ending. En modo
   // maratón saltamos de inmediato, sin esperar los cinco segundos de la

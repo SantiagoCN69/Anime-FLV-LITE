@@ -20,6 +20,7 @@ let filtroActual = 'todos'; // Estado del filtro: 'todos', 'vistos', 'no-vistos'
 let paginaActual = 0; // Página actual (0-indexed)
 let episodiosFiltrados = []; // Episodios después de aplicar filtro y orden
 let vistosCache = []; // Cache de episodios vistos para evitar llamadas repetidas
+let vistosCargados = false; // true cuando vistosCache refleja el estado real de Firestore
 let primeraCarga = true; // Bandera para mostrar overlay solo en la primera carga
 let skipScrollAlPrimerNoVisto = false; // Para evitar scroll cuando viene de búsqueda/paginación manual
 let sugerenciasController = null; // AbortController de la sección Sugerencias
@@ -813,7 +814,11 @@ async function crearBotonesEpisodios(anime, resetPagina = true) {
     // Obtener episodios vistos (usar cache si está disponible)
     // Normalizar a string: Firestore puede tener números guardados y las
     // comparaciones de abajo usan ep.number.toString().
-    let vistos = (vistosCache.length > 0 ? vistosCache : await obtenerCapitulosVistos(id) || []).map(String);
+    // null = error de lectura: no marcar la caché como cargada para que la
+    // próxima renderización reintente en lugar de usar una lista vacía falsa.
+    const vistosObtenidos = vistosCache.length > 0 ? vistosCache : await obtenerCapitulosVistos(id);
+    if (vistosObtenidos !== null) vistosCargados = true;
+    let vistos = (vistosObtenidos || []).map(String);
 
     // Validar y limpiar episodios si es necesario
     // ep.number puede venir como número (ej. cap 0) y vistos guarda strings:
@@ -1217,12 +1222,17 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
     const esFinalizadoPorEstado = estadoTexto === 'Finalizado' || estadoTexto === 'Concluido';
 
     // LEER UNA SOLA VEZ al inicio (optimización - antes eran 2 lecturas)
-    const snap = await getDoc(ref);
-    let nuevosVistos = [];
-
-    if (snap.exists()) {
-      const data = snap.data();
-      nuevosVistos = data.episodiosVistos || [];
+    // Si la lista ya se cargó en esta página, se usa la memoria: el toggle
+    // manual ya no paga una lectura extra por cada clic en un episodio.
+    let nuevosVistos;
+    let docExiste;
+    if (vistosCargados) {
+      nuevosVistos = [...vistosCache].map(String);
+      docExiste = nuevosVistos.length > 0;
+    } else {
+      const snap = await getDoc(ref);
+      docExiste = snap.exists();
+      nuevosVistos = docExiste ? (snap.data().episodiosVistos || []).map(String) : [];
     }
 
     if (esVisto) {
@@ -1246,30 +1256,39 @@ async function toggleCapituloVisto(animeId, titulo, episodio, esVisto) {
       vistosCache = nuevosVistos;
     } else {
       // Desmarcar como visto
-      if (snap.exists()) {
+      if (docExiste) {
         nuevosVistos = nuevosVistos.filter(ep => ep !== episodio.toString());
 
-        if (nuevosVistos.length === 0) {
-          await deleteDoc(ref);
-        } else {
-          // Verificar si aún se vieron todos los capítulos FILTRADOS
-          const totalFiltrados = episodiosFiltrados.length;
-          const vistosFiltrados = nuevosVistos.filter(ep => episodiosFiltrados.some(ef => ef.number.toString() === ep)).length;
-          const vistosTodosLosCapsFiltrados = vistosFiltrados >= totalFiltrados && totalFiltrados > 0;
-          const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCapsFiltrados;
+        // Se relee dentro de una transacción antes de reemplazar o eliminar
+        // el documento. Así se conserva el comportamiento anterior (borrar
+        // cuando no quedan vistos) sin borrar avances de otra sesión.
+        await runTransaction(db, async transaction => {
+          const snapActual = await transaction.get(ref);
+          if (!snapActual.exists()) return;
 
-          await setDoc(ref, {
+          const restantes = (snapActual.data().episodiosVistos || [])
+            .map(String)
+            .filter(numero => numero !== episodio.toString());
+
+          if (restantes.length === 0) {
+            transaction.delete(ref);
+            return;
+          }
+
+          transaction.set(ref, {
             titulo,
             fechaAgregado: serverTimestamp(),
-            episodiosVistos: nuevosVistos,
-            esFinalizadoPorVistos: esFinalizadoPorVistos
+            episodiosVistos: restantes,
+            esFinalizadoPorVistos: false
           }, { merge: true });
-        }
+        });
 
         // Actualizar cache local
         vistosCache = nuevosVistos;
       }
     }
+    // La memoria ya refleja el estado confirmado por Firestore.
+    vistosCargados = true;
 
     // Lógicas de UI post-confirmación
     const total = document.querySelectorAll(".episode-btn").length;
@@ -1312,7 +1331,7 @@ async function obtenerCapitulosVistos(animeId) {
     
   } catch (error) {
     console.error("Error al obtener capítulos vistos:", error);
-    return []; 
+    return null; // null distingue "error" de "sin capítulos vistos" ([])
   }
 }
 // Función optimizada para comparar datos según la nueva estructura del backend
@@ -2157,11 +2176,14 @@ async function actualizarFinalizadoPorLotes() {
                 const vistosTodosLosCaps = totalEpisodios > 0 && episodiosVistos >= totalEpisodios;
                 const esFinalizadoPorVistos = esFinalizadoPorEstado && vistosTodosLosCaps;
 
-                await setDoc(docSnap.ref, {
-                  esFinalizadoPorVistos: esFinalizadoPorVistos
-                }, { merge: true });
-
-                actualizados++;
+                // No reescribir el documento si el valor ya es el correcto:
+                // el mantenimiento corre una vez pero igual paga N escrituras.
+                if (data.esFinalizadoPorVistos !== esFinalizadoPorVistos) {
+                  await setDoc(docSnap.ref, {
+                    esFinalizadoPorVistos: esFinalizadoPorVistos
+                  }, { merge: true });
+                  actualizados++;
+                }
               }
             } catch (e) {
               console.error(`Error actualizando ${animeId}:`, e);
