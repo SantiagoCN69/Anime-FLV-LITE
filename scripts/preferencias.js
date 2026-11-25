@@ -5,7 +5,7 @@ import { mountThemeDots } from "./theme-dots.js";
 
 const THEME_CONFIG = {
   themes: ['nocturno', 'sakura', 'anizen', 'ambar'],
-  defaultTheme: 'sakura'
+  defaultTheme: 'anizen'
 };
 
 const temaValido = (tema) => THEME_CONFIG.themes.includes(tema) ? tema : THEME_CONFIG.defaultTheme;

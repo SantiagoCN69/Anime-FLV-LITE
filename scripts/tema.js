@@ -51,7 +51,7 @@ ambar: {
 };
 
     // CORRECCIÓN CRÍTICA: Cambiado el default a un tema existente
-    const DEFAULT_THEME = 'sakura';
+    const DEFAULT_THEME = 'anizen';
 
     const applyTheme = t => {
         const clave = themes[t] ? t : DEFAULT_THEME;
