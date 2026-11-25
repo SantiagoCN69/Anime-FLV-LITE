@@ -22,7 +22,6 @@
 
 .settings-card {
   background-color: var(--p);
-  border: 1px solid var(--br);
   border-radius: 14px;
   overflow: hidden;
 }
@@ -31,7 +30,7 @@
   display: flex;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid var(--br);
+  border-bottom: 1px solid var(--b);
 }
 
 /* La fila de una opción binaria también es su etiqueta: toda el área activa el control. */
@@ -120,7 +119,7 @@
 /* Select Personalizado */
 .custom-select {
   appearance: none;
-  background-color: var(--b);
+  background-color: var(--br);
   border: none;
   color: var(--t1);
   padding: 10px 36px 10px 16px;
