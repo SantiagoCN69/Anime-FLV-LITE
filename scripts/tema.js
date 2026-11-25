@@ -67,7 +67,7 @@ ambar: {
         // Favicon según el tema activo (icon-{tema}.png en el worker)
         const iconoTema = document.querySelector('link[rel="icon"]');
         if (iconoTema) {
-            iconoTema.href = `https://ani.zenlite.workers.dev/icons/temas/icon-${clave}.png`;
+            iconoTema.href = `https://ani.zenlite.workers.dev/icons/temas/favicon-${clave}.png`;
         }
     };
 
