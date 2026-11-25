@@ -283,6 +283,7 @@ body:not(.animaciones-off) header {
 
 #contenedor-barra-progreso {
   background: rgba(255, 255, 255, 0.08);
+  background: var(--btn);
   backdrop-filter: blur(10px);
 
   display: flex;
@@ -294,7 +295,7 @@ body:not(.animaciones-off) header {
   width: 145px;
   max-width: 145px;
   overflow: hidden;
-  transition: background 0.3s ease, max-width 0.1s ease, width 0.1s ease, gap 0.1s ease;
+  transition: background 0.3s ease, max-width 0.1s ease, width 0.1s ease, gap 0.1s ease, filter 0.2s ease;
 }
 #contenedor-barra-progreso.cargo-progreso {
   justify-content: flex-start;
@@ -311,7 +312,7 @@ body:not(.animaciones-off) header {
 
 @media (hover: hover) and (pointer: fine) {
   #contenedor-barra-progreso:hover {
-    background: rgba(255, 255, 255, 0.15);
+    filter: brightness(1.2);
   }
 }
 
