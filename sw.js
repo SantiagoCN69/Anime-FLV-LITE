@@ -1,5 +1,5 @@
 
-const CACHE_VERSION = 'v8.7.53';
+const CACHE_VERSION = 'v8.7.54';
 
 const STATIC_CACHE = `anizenlite-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `anizenlite-pages-${CACHE_VERSION}`;
@@ -54,6 +54,7 @@ const STATIC_ASSETS = [
   '/scripts/horarios.js',
   '/scripts/recomendaciones.js',
   '/scripts/populares.js',
+  '/scripts/mal-api.js',
   '/scripts/lista.js',
   '/scripts/ver.js',
   '/scripts/ai-recommendations.js',
