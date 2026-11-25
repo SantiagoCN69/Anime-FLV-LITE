@@ -1572,9 +1572,9 @@ h4 {
 }
 
 .busqueda-type {
-  color: var(--t2);
+  color: var(--t1);
   font-size: 0.75rem;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Botón de eliminar individual */
