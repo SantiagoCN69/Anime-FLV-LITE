@@ -1161,7 +1161,7 @@ svg.cta__play {
   right: 0;
   background-color: var(--p);
   border-radius: 12px;
-  min-width: 159px;
+  min-width: max-content;
   max-height: 300px;
   overflow-y: auto;
   padding: 8px;
