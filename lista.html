@@ -30,9 +30,9 @@
     <nav id="lista-nav" class="lista-nav" aria-label="Listas de animes">
         <span class="lista-indicator" aria-hidden="true"></span>
         <button type="button" class="lista-tab" data-lista="viendo">Viendo</button>
-        <button type="button" class="lista-tab" data-lista="visto">Visto</button>
         <button type="button" class="lista-tab" data-lista="pendiente">Pendientes</button>
         <button type="button" class="lista-tab" data-lista="favoritos">Favoritos</button>
+        <button type="button" class="lista-tab" data-lista="visto">Visto</button>
     </nav>
 
     <div class="lista-panels">
@@ -52,25 +52,6 @@
                 </div>
             </div>
             <div id="viendo" class="grid-animes">
-                <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
-            </div>
-        </section>
-
-        <section class="lista-panel" data-panel="visto">
-            <div class="lista-toolbar">
-                <h2 id="completadosh2" class="lista-count" data-text="0"></h2>
-                <div class="filtro-section lista-orden-section">
-                    <button type="button" class="btn-filtro" aria-label="Ordenar vistos"><span>Recientes</span></button>
-                    <div class="filtro-opciones lista-orden-opciones">
-                        <ul>
-                            <li><button type="button" class="btn-filtro-opcion active" data-orden="recientes">Recientes</button></li>
-                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-az">Nombre A-Z</button></li>
-                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-za">Nombre Z-A</button></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div id="completados" class="grid-animes">
                 <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
             </div>
         </section>
@@ -109,6 +90,25 @@
                 </div>
             </div>
             <div id="favoritos" class="grid-animes">
+                <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
+            </div>
+        </section>
+
+        <section class="lista-panel" data-panel="visto">
+            <div class="lista-toolbar">
+                <h2 id="completadosh2" class="lista-count" data-text="0"></h2>
+                <div class="filtro-section lista-orden-section">
+                    <button type="button" class="btn-filtro" aria-label="Ordenar vistos"><span>Recientes</span></button>
+                    <div class="filtro-opciones lista-orden-opciones">
+                        <ul>
+                            <li><button type="button" class="btn-filtro-opcion active" data-orden="recientes">Recientes</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-az">Nombre A-Z</button></li>
+                            <li><button type="button" class="btn-filtro-opcion" data-orden="nombre-za">Nombre Z-A</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="completados" class="grid-animes">
                 <div class="init-loading-servidores"><span class="span-carga">Cargando tu lista...</span></div>
             </div>
         </section>
