@@ -1493,6 +1493,29 @@ async function cargarAnime(idauxiliar) {
   try {
     const res = await fetch(`https://backend-animeflv-lite.onrender.com/api/anime?id=${id}`);
     const data = await res.json();
+
+    if (!data || res.status === 404 || data.message === 'Anime no encontrado en ninguna fuente') {
+      console.warn('[Anime] Anime no encontrado; revisando su estado guardado:', id);
+      localStorage.removeItem(getCacheKey(id));
+
+      // Esperar la carga que ya marca el estado y desmarcarlo por el mismo
+      // camino que usa el clic manual en el botón activo.
+      await cargaEstadoInicial;
+      const botonEstadoActivo = document.querySelector(
+        '#btn-viendo.active, #btn-pendiente.active, #btn-visto.active'
+      );
+      console.info('[Anime] Botón de estado activo detectado:', botonEstadoActivo?.id || 'ninguno');
+
+      if (botonEstadoActivo && localStorage.getItem('userID')) {
+        console.info('[Anime] Retirando el anime mediante el flujo normal:', botonEstadoActivo.id);
+        await manejarEstadoSeleccionado(botonEstadoActivo);
+      } else {
+        console.info('[Anime] No se retiró ningún estado: no hay botón activo o sesión.');
+      }
+      mostrarResultadosBusqueda(id);
+      return;
+    }
+
     const anime = normalizarDatosAPI(data);
 
     if (!anime) {
@@ -1541,10 +1564,6 @@ async function cargarAnime(idauxiliar) {
           renderAnime(anime);
         }
       }
-    }
-
-    if (data.message === 'Anime no encontrado en ninguna fuente') {
-      mostrarResultadosBusqueda(id);
     }
    }
     catch (err) {
@@ -1776,6 +1795,7 @@ buttons.forEach(btn => {
   btn.addEventListener("touchcancel", clearHover, { passive: true });
 });
 let estadosAnimesCache = null;
+let cargaEstadoInicial = null;
 
 // Devuelve {viendo: [...], pendiente: [...], visto: [...]}
 async function obtenerEstadosAnimes() {
@@ -1931,7 +1951,8 @@ async function obtenerEstadoActual() {
   const estados = await obtenerEstadosConAnime();
   return estados.length > 0 ? estados[0].toUpperCase() : null;
 }
-obtenerEstadoActual().then(estado => {
+cargaEstadoInicial = obtenerEstadoActual();
+cargaEstadoInicial.then(estado => {
   if (estado) {
     const btnSeleccionado = document.getElementById(`btn-${estado.toLowerCase()}`);
     if (btnSeleccionado) btnSeleccionado.classList.add('active'); // Solo UI
