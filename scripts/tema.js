@@ -65,10 +65,13 @@ ambar: {
         }
 
         // Favicon según el tema activo (icon-{tema}.png en el worker)
-        const iconoTema = document.querySelector('link[rel="icon"]');
-        if (iconoTema) {
-            iconoTema.href = `https://ani.zenlite.workers.dev/icons/temas/favicon-${clave}.png`;
-        }
+        // Se reemplaza el <link> y se añade ?v= para forzar la recarga en cada visita
+        const urlIcono = `https://ani.zenlite.workers.dev/icons/temas/favicon-${clave}.png?v=${Date.now()}`;
+        document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]').forEach(icono => {
+            const nuevo = icono.cloneNode();
+            nuevo.href = urlIcono;
+            icono.replaceWith(nuevo);
+        });
     };
 
     applyTheme(localStorage.getItem('theme') || DEFAULT_THEME);
