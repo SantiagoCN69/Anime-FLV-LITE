@@ -105,20 +105,6 @@ window.addEventListener('estadoAnimacionesCambiado', (event) => {
     handleScroll();
 });
 
-//INDICADOR funcion cambiar tema
-document.addEventListener('authStateReady', function() {
-  const btnLogin = document.getElementById('btn-login');
-  // Verificar si hay un tema guardado
-  if (btnLogin && !localStorage.getItem('theme')) {
-    const theme = document.createElement('div');
-    theme.classList.add('theme-indicator');
-    btnLogin.appendChild(theme);
-    btnLogin.addEventListener('click', () => {
-      theme.remove();
-    });
-  }
-});
-
 export function crearAnimeCard(anime, opciones = {}) {
     const { episodioUrl = null, variant = 'default', onClick = null } = opciones;
 

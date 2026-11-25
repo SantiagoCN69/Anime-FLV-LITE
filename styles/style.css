@@ -333,18 +333,6 @@ header #busqueda{
   margin-left: 8px;
 }
 
-.theme-indicator {
-  position: absolute;
-  right: -6px;
-  top: -4px;
-  width: 20px;
-  height: 20px;
-  background-color: var(--btn); 
-  -webkit-mask-size: contain;
-  -webkit-mask: url('../icons/circle-exclamation-solid.svg') no-repeat center;
-  mask-size: contain;
-  mask: url('../icons/circle-exclamation-solid.svg') no-repeat center;
-}
 #btn-search, #btn-close-search {
   display: none;
 }
