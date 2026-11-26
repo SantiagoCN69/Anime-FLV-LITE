@@ -2211,14 +2211,14 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
       badge.classList.add("hd");
       badge.textContent = "TOP";
     } else if (srv.mp4upload) {
-      badge.classList.add("ads");
-      badge.textContent = "ADS";
+      badge.classList.add("ad");
+      badge.textContent = "AD";
     } else if (srv.preferido) {
       badge.classList.add("fast");
       badge.textContent = "HD";
     } else {
-      badge.classList.add("ad");
-      badge.textContent = "AD";
+      badge.classList.add("ads");
+      badge.textContent = "ADS";
     }
     btn.appendChild(badge);
 
