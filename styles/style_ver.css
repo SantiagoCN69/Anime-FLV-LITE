@@ -619,11 +619,11 @@ iframe {
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;
-}
-#botones-reproductor1, #controles-switch {
   justify-content: space-between;
-  flex-wrap: nowrap;
   flex: 1;
+}
+#botones-reproductor1{
+  flex-wrap: nowrap;
 }
 
 /* Base común de los controles del reproductor: todos son pills iguales;
@@ -654,11 +654,6 @@ iframe {
 #botones-reproductor1 > button span,
 #botones-reproductor1 > a span {
   padding-top: 1.5px;
-}
-@media (max-width: 490px) {
-  #botones-reproductor1 {
-    flex-wrap: wrap;
-  }
 }
 
 .btn-anterior, .btn-siguiente {
@@ -773,10 +768,7 @@ iframe {
 }
 
 .btn-selector-episodio {
-  background-color: var(--p);
-  position: relative;
-  min-width: 175px;
-  white-space: nowrap;
+  flex: 2;
 }
 .btn-selector-episodio.open {
   background-color: var(--br);
@@ -820,6 +812,9 @@ iframe {
   pointer-events: none;
 }
 .dropdown-titulo {
+  display: flex;
+  justify-content: space-between;
+
   font-weight: 600;
   color: var(--t1);
   padding-bottom: 10px;

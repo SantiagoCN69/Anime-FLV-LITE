@@ -824,7 +824,12 @@ function generarDropdownCapitulos() {
   
   const titulo = document.createElement("div");
   titulo.className = "dropdown-titulo";
-  titulo.textContent = "Seleccionar episodio";
+  const textoTitulo = document.createElement("span");
+  textoTitulo.textContent = "Seleccionar episodio";
+  const contador = document.createElement("span");
+  contador.id = "contador-dropdown";
+  contador.className = "dropdown-contador";
+  titulo.append(textoTitulo, contador);
   dropdownCapitulos.appendChild(titulo);
   
   const grid = document.createElement("div");
@@ -966,11 +971,16 @@ function actualizarTextoBotonesNavegacion() {
     }
   }
 
-  // El selector muestra la posición actual dentro de la lista completa
-  // ("Episodios · 1/131").
   if (textoSelectorEpisodio) {
+    textoSelectorEpisodio.textContent = "Episodios";
+  }
+
+  // Contador "actual/total" junto al título del dropdown (si ya fue
+  // generado; se genera la primera vez que se abre el selector).
+  const contadorDropdown = document.getElementById("contador-dropdown");
+  if (contadorDropdown) {
     const numActual = currentIndex >= 0 ? currentIndex + 1 : episodioActualIndex;
-    textoSelectorEpisodio.textContent = `Episodios ${numActual}/${episodios.length}`;
+    contadorDropdown.textContent = `${numActual}/${episodios.length}`;
   }
 }
 
