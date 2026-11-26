@@ -569,6 +569,36 @@ border-top-right-radius: 14px;
   color: #facc15;
 }
 
+/* Tooltip de los badges de servidor (hover / touch) */
+.server-tip {
+  position: fixed;
+  z-index: 1000;
+  max-width: 220px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--br);
+  color: var(--t1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, calc(-100% - 6px));
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.server-tip.show {
+  opacity: 1;
+  transform: translate(-50%, calc(-100% - 6px));
+}
+.server-tip.below {
+  transform: translate(-50%, 6px);
+}
+.server-tip.below.show {
+  transform: translate(-50%, 0);
+}
+
 /* Misma animación de antes: el servidor activo arranca ocupando el 100%
    del ancho y se encoge a su parte cuando llega .cargado-otros. */
 #controles button.servidor-activo {

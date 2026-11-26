@@ -2153,6 +2153,42 @@ let animacionInicialCompletada = false;
 
 attachWheelScrollHorizontal(document.getElementById("controles"));
 
+// Tooltip de los badges de servidor: hover en escritorio, mantén presionado en táctil.
+const BADGE_TIPS = {
+  hd: "Vidrift: servidor prioritario. Carga rápida, múltiple y estable.",
+  fast: "Servidor recomendado: sin anuncios y con buena calidad.",
+  ad: "Puede mostrar una imagen de anuncio al cargar el video.",
+  ads: "Requiere desactivar el bloqueador de anuncios (Adblock / uBlock) para funcionar.",
+};
+let serverTipEl = null;
+let serverTipTimer = null;
+
+function posicionarTipServidor(badge) {
+  const rect = badge.getBoundingClientRect();
+  const below = rect.top < 48;
+  serverTipEl.classList.toggle("below", below);
+  serverTipEl.style.left = `${rect.left + rect.width / 2}px`;
+  serverTipEl.style.top = below ? `${rect.bottom + 6}px` : `${rect.top - 6}px`;
+}
+
+function mostrarTipServidor(badge) {
+  const texto = BADGE_TIPS[badge.dataset.tip];
+  if (!texto) return;
+  if (!serverTipEl) {
+    serverTipEl = document.createElement("div");
+    serverTipEl.className = "server-tip";
+    document.body.appendChild(serverTipEl);
+  }
+  serverTipEl.textContent = texto;
+  posicionarTipServidor(badge);
+  serverTipEl.classList.add("show");
+}
+
+function ocultarTipServidor() {
+  clearTimeout(serverTipTimer);
+  serverTipEl?.classList.remove("show");
+}
+
 function renderizarServidores(todosLosServidores, opciones = {}) {
   const servidorAnterior = embeds[servidorActualIndex];
   const mantenerReproduccion = Boolean(opciones.mantenerReproduccion && reproduccionActualId);
@@ -2219,6 +2255,22 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
       badge.classList.add("ads");
       badge.textContent = "ADS";
     }
+    badge.dataset.tip = srv.vidrift ? "hd" : srv.mp4upload ? "ad" : srv.preferido ? "fast" : "ads";
+    badge.addEventListener("mouseenter", () => mostrarTipServidor(badge));
+    badge.addEventListener("mouseleave", ocultarTipServidor);
+    badge.addEventListener("touchstart", () => {
+      serverTipTimer = setTimeout(() => {
+        mostrarTipServidor(badge);
+        // Si el tooltip llegó a mostrarse, soltar el dedo no debe cambiar de servidor.
+        badge.closest("button")?.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, { once: true, capture: true });
+      }, 350);
+    }, { passive: true });
+    ["touchend", "touchcancel", "touchmove"].forEach(ev =>
+      badge.addEventListener(ev, ocultarTipServidor, { passive: true })
+    );
     btn.appendChild(badge);
 
     btn.onclick = () => mostrarVideo(srv, btn);
