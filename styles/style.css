@@ -2000,7 +2000,7 @@ h4 {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 44px;
+  min-height: 40px;
 }
 .sugerencias-header h2,
 .sugerencias-header h3 {
