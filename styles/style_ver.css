@@ -272,7 +272,7 @@ main > section:nth-child(2) {
   gap: 8px;
 }
 #share, #cine, #descargar, #btn-estado-episodio {
-  background: var(--br);
+  background: color-mix(in srgb, var(--p) 50%, var(--br) 50%);
   border: none;
   border-radius: 99px;
   width: 31px;
@@ -666,7 +666,8 @@ iframe {
   padding: 15px;
   border: none;
   border-radius: 24px;
-  background: var(--br);
+  background: color-mix(in srgb, var(--p) 50%, var(--br) 50%);
+  /* border: 1px solid var(--br); */
   color: var(--t1);
   font-family: 'Zen Kaku Gothic New', sans-serif;
   font-weight: 600;
