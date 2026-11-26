@@ -2209,7 +2209,6 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     badge.className = "server-badge";
     if (srv.vidrift) {
       badge.classList.add("hd");
-      badge.textContent = "TOP";
     } else if (srv.mp4upload) {
       badge.classList.add("ad");
       badge.textContent = "AD";
@@ -2858,6 +2857,8 @@ async function mostrarVideo(link, botonSeleccionado) {
       let avisoSubEspanolAgotado = false;
       const servidoresVidriftProbados = new Set();
       let servidorVidriftOriginal = null;
+      let servidorSinSubtituloEspanol = null;
+      let confirmacionesSinSubtituloEspanol = 0;
 
       const enviarInformacionSiguienteAVidrift = () => {
         // Mismo criterio que los botones de navegación: el siguiente es el
@@ -2906,14 +2907,19 @@ async function mostrarVideo(link, botonSeleccionado) {
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase();
       const esEspanol = (pista = {}) => {
-        const codigo = String(
-          pista.value || pista.code || pista.lang || pista.language || pista.locale || ""
-        ).toLowerCase();
+        const valoresIdioma = [
+          pista.value, pista.code, pista.lang, pista.language, pista.locale,
+          pista.srclang, pista.languageCode, pista.isoCode,
+          pista.language?.code, pista.language?.name
+        ].filter(valor => typeof valor === "string" || typeof valor === "number");
+        const codigo = valoresIdioma.join(" ").toLowerCase();
         const descripcion = normalizarIdioma([
           pista.label, pista.name, pista.title, pista.language,
-          pista.lang, pista.locale, pista.code
+          pista.lang, pista.locale, pista.code, pista.displayName,
+          pista.languageName, pista.trackName, pista.srclang,
+          pista.language?.name
         ].filter(Boolean).join(" "));
-        return /(?:^|[-_])(?:es|spa)(?:[-_]|$)/i.test(codigo)
+        return /(?:^|[-_])(?:es|esp|spa)(?:[-_]|$)/i.test(codigo)
           || /\b(?:espanol|spanish|castellano|castilian|latam|latino(?:americano)?)\b/.test(descripcion);
       };
 
@@ -2947,9 +2953,29 @@ async function mostrarVideo(link, botonSeleccionado) {
         estadoVidriftActual = event.data;
         const audioEspanol = event.data.audios?.find(esEspanol);
         const subtituloEspanol = event.data.subtitles?.find(esEspanol);
+        // Las primeras respuestas pueden llegar antes que las pistas. Solo
+        // consideramos "sin español" tras varias respuestas iguales, una vez
+        // que el vídeo ya tiene duración o empezó a reproducirse.
+        const pistasSubtitulosDisponibles = Array.isArray(event.data.subtitles);
+        const servidorActual = event.data.server || null;
+        const videoCargado = vidriftEstaReproduciendo || Number(event.data.duration) > 0;
+        if (pistasSubtitulosDisponibles && servidorActual && videoCargado && !subtituloEspanol) {
+          if (servidorActual === servidorSinSubtituloEspanol) {
+            confirmacionesSinSubtituloEspanol++;
+          } else {
+            servidorSinSubtituloEspanol = servidorActual;
+            confirmacionesSinSubtituloEspanol = 1;
+          }
+        } else {
+          servidorSinSubtituloEspanol = null;
+          confirmacionesSinSubtituloEspanol = 0;
+        }
 
-        if (preferirSubtitulosEspanol && !subtituloEspanol) {
-          const servidorActual = event.data.server;
+        if (
+          preferirSubtitulosEspanol
+          && confirmacionesSinSubtituloEspanol >= 3
+          && !subtituloEspanol
+        ) {
           servidorVidriftOriginal ??= servidorActual;
           if (servidorActual) servidoresVidriftProbados.add(servidorActual);
           const siguienteServidor = event.data.servers?.find((servidor) =>
@@ -2958,6 +2984,8 @@ async function mostrarVideo(link, botonSeleccionado) {
               && !servidoresVidriftProbados.has(servidor.value)
           );
           if (siguienteServidor) {
+            confirmacionesSinSubtituloEspanol = 0;
+            servidorSinSubtituloEspanol = null;
             servidoresVidriftProbados.add(siguienteServidor.value);
             iframe.contentWindow.postMessage({ type: "vidrift:set", server: siguienteServidor.value }, ORIGEN_VIDRIFT);
           } else if (!avisoSubEspanolAgotado && Array.isArray(event.data.servers) && event.data.servers.length > 0) {
@@ -2995,7 +3023,8 @@ async function mostrarVideo(link, botonSeleccionado) {
           }
         }
         audioComprobado ||= !preferirAudioEspanol || Array.isArray(event.data.audios);
-        subtitulosComprobados ||= event.data.subtitle === subtituloEspanol?.value;
+        subtitulosComprobados ||= pistasSubtitulosDisponibles
+          && event.data.subtitle === subtituloEspanol?.value;
         if (audioComprobado && subtitulosComprobados) {
           limpiarListenerVidrift();
           if (limpiarPreferenciaSubtitulos === limpiarListenerVidrift) limpiarPreferenciaSubtitulos = null;
