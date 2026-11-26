@@ -2155,7 +2155,7 @@ attachWheelScrollHorizontal(document.getElementById("controles"));
 
 // Tooltip de los badges de servidor: hover en escritorio, mantén presionado en táctil.
 const BADGE_TIPS = {
-  hd: "Vidrift: servidor prioritario. Carga rápida, múltiple y estable.",
+  hd: "Vidrift: servidor prioritario. Carga rápida, múltiple y estable permitiendo modo maratón.",
   fast: "Servidor recomendado: sin anuncios y con buena calidad.",
   ad: "Puede mostrar una imagen de anuncio al cargar el video.",
   ads: "Requiere desactivar el bloqueador de anuncios (Adblock / uBlock) para funcionar.",
