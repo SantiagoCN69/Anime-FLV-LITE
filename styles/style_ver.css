@@ -611,43 +611,53 @@ iframe {
   z-index: 5 ;
 }
 
-.botones-reproductor, .botones-reproductor > div {
+.botones-reproductor,
+#botones-reproductor1,
+#controles-switch {
   position: relative;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;
 }
-.botones-reproductor > div {
+#botones-reproductor1, #controles-switch {
   justify-content: space-between;
   flex-wrap: nowrap;
   flex: 1;
 }
-.botones-reproductor button, .botones-reproductor a {
+
+/* Base común de los controles del reproductor: todos son pills iguales;
+   los switches solo agregan la pista visual a la derecha. */
+#botones-reproductor1 > button,
+#botones-reproductor1 > a,
+.switch-btn {
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
-  max-height: 50px;
+  gap: 8px;
   height: 50px;
+  max-height: 50px;
+  padding: 15px;
+  border: none;
   border-radius: 24px;
+  background: var(--br);
+  color: var(--t1);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
   font-weight: 600;
   font-size: .8rem;
-  color: var(--t1);
-  transition: transform .3s, filter .3s;  
-  padding: 15px;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
-
-  span {
-    align-self: flex-end;
-  }
+  cursor: pointer;
+  transition: transform .3s, filter .3s, opacity .3s ease,
+    min-width .3s ease, max-width .3s ease, padding .3s ease,
+    background-color .3s;
+}
+#botones-reproductor1 > button span,
+#botones-reproductor1 > a span {
+  padding-top: 1.5px;
 }
 @media (max-width: 490px) {
-  #botones-reproductor2 {
+  #botones-reproductor1 {
     flex-wrap: wrap;
-  }
-  #botones-reproductor2 button {
-    min-width: 139px;
   }
 }
 
@@ -655,8 +665,6 @@ iframe {
   width: auto;
   min-width: 97px;
   flex-shrink: 0;
-  gap: 8px;
-  transition: all 0.3s;
 }
 .btn-anterior svg, .btn-siguiente svg {
   width: 24px;
@@ -664,8 +672,7 @@ iframe {
 }
 
 .btn-anterior {
-   border-radius: 99px;
-   background-color: var(--br);
+  border-radius: 99px;
 }
 
 .btn-siguiente {
@@ -673,28 +680,110 @@ iframe {
   background: var(--btn);
   border-radius: 99px;
 }
-.botones-reproductor button {
-  background-color: var(--br);
-  flex: 1;
-  gap: 8px;
-}
 .desactivado {
   background: var(--br);
   opacity: 0.5 !important;
   cursor: not-allowed !important;
 }
 
+
+.switch-btn {
+  justify-content: start;
+
+}
+@media (hover: hover) {
+  .switch-btn:hover {
+    filter: brightness(1.3);
+  }
+}
+.switch-btn .switch {
+  margin-left: auto;
+  width: 36px;
+  height: 20px;
+  border-radius: 99px;
+  background: var(--p);
+  border: 1px solid var(--br);
+  position: relative;
+  flex-shrink: 0;
+  transition: background .3s, border-color .3s;
+}
+.switch-btn .switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--t1);
+  opacity: .45;
+  transition: transform .3s, background .3s, opacity .3s;
+}
+.switch-btn:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+.switch-btn.activo .switch {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+.switch-btn.activo .switch-thumb {
+  transform: translateX(16px);
+  background: var(--b);
+  opacity: 1;
+}
+/* Colores propios por control, como tenían antes del rediseño */
+#btn-cambio-servers.activo {
+  color: #7dd3fc;
+  background-color: rgba(125, 211, 252, 0.2);
+}
+#btn-cambio-servers.activo .switch {
+  background: #7dd3fc;
+  border-color: #7dd3fc;
+}
+#btn-modo-maraton.activo {
+  color: #fda4af;
+  background-color: rgba(251, 113, 133, 0.2);
+}
+#btn-modo-maraton.activo .switch {
+  background: #fda4af;
+  border-color: #fda4af;
+}
+#btn-bloquear-anuncios.activo {
+  color: #a7f3d0;
+  background-color: rgba(167, 243, 208, 0.2);
+}
+#btn-bloquear-anuncios.activo .switch {
+  background: #a7f3d0;
+  border-color: #a7f3d0;
+}
+.switch-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+/* Un switch deshabilitado nunca se ve activo, aunque quede la clase .activo.
+   Va bajo #controles-switch para ganar en especificidad a las reglas por id. */
+#controles-switch .switch-btn:disabled .switch {
+  background: var(--p);
+  border-color: var(--br);
+}
+#controles-switch .switch-btn:disabled .switch-thumb {
+  transform: none;
+  background: var(--t1);
+  opacity: .45;
+}
+
 .btn-selector-episodio {
   background-color: var(--p);
-  gap: 8px;
   position: relative;
-  min-width: 144px;
+  min-width: 175px;
+  white-space: nowrap;
 }
 .btn-selector-episodio.open {
   background-color: var(--br);
 }
 @media (hover: hover) {
-  .botones-reproductor button:hover, .botones-reproductor a:hover {
+  #botones-reproductor1 > button:hover,
+  #botones-reproductor1 > a:hover {
     filter: brightness(1.3) !important;
   }
 }
@@ -829,21 +918,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   mask-image: url('/icons/next1.svg');
 }
 }
-/* Botón Bloquear Anuncios (Tono Verde Menta Pastel) */
-#btn-bloquear-anuncios.activo {
-  background-color: rgba(167, 243, 208, 0.2); /* Fondo sutil */
-  color: #a7f3d0; /* Menta pastel brillante para legibilidad */
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
-}
-
-/* Botón Modo Maratón (Tono Rosa Sakura Pastel) */
-#btn-modo-maraton.activo {
-  background-color: rgba(251, 113, 133, 0.2); /* Fondo sutil */
-  color: #fda4af; /* Rosa pastel brillante */
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
-}
 #btn-bloquear-anuncios::before {
   content: "";
   display: inline-block;
@@ -886,10 +960,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
   mask-position: center;
 }
 
-#btn-cambio-servers:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 /* Botón Cambio de Servidores (Tono Azul Celeste Pastel) */
 
 #btn-cambio-servers::before {

@@ -220,12 +220,21 @@
         <span id="texto-siguiente"></span>
      </a>
     </div>
-    <div id="botones-reproductor2">
-     <button type="button" id="btn-cambio-servers" disabled>Doblado</button>
-     <button type="button" id="btn-modo-maraton">Maratón</button>
-     <button type="button" id="btn-bloquear-anuncios">AdBlock</button>
-    </div>
-  </div>
+   <div id="controles-switch">
+     <button type="button" id="btn-cambio-servers" class="switch-btn" role="switch" aria-checked="false" disabled>
+       <span class="switch-label">Doblado</span>
+       <span class="switch" aria-hidden="true"><span class="switch-thumb"></span></span>
+     </button>
+     <button type="button" id="btn-modo-maraton" class="switch-btn" role="switch" aria-checked="false">
+       <span class="switch-label">Maratón</span>
+       <span class="switch" aria-hidden="true"><span class="switch-thumb"></span></span>
+     </button>
+     <button type="button" id="btn-bloquear-anuncios" class="switch-btn" role="switch" aria-checked="false">
+       <span class="switch-label">AdBlock</span>
+       <span class="switch" aria-hidden="true"><span class="switch-thumb"></span></span>
+     </button>
+   </div>
+   </div>
 </section>
 <section>
   <div class="sugerencias-header noticias-header">

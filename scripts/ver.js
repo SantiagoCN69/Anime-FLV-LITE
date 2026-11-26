@@ -632,6 +632,7 @@ const btnSelectorCapitulo = document.getElementById("btn-selector-episodio");
 const dropdownCapitulos = document.getElementById("dropdown-capitulos");
 const textoAnterior = document.getElementById("texto-anterior");
 const textoSiguiente = document.getElementById("texto-siguiente");
+const textoSelectorEpisodio = document.getElementById("texto-selector-episodio");
 const videoContenedorGlobal = document.getElementById("video");
 
 // Variable global para capítulos vistos (compartida con refrescarUIEstadoCapitulo)
@@ -668,6 +669,10 @@ let episodios = [];
 // ese caso cargarVideoDesdeEpisodio puede arrancar Vidrift con un episodio
 // mínimo { number } en vez de esperar o consultar la API de episodios.
 let episodiosCargados = false;
+// true cuando cargarEpisodios() terminó (con o sin episodios). Sirve para
+// no ocultar la barra de navegación durante la carga inicial: sin esto la
+// barra se esconde y reaparece en cada visita (parpadeo).
+let episodiosCargaTerminada = false;
 let tituloAnime = (animeId || "").replaceAll("-", " ");
 let portadaAnime = '';
 let episodioActualIndex = Number.parseInt(episodeNumber, 10);
@@ -912,31 +917,60 @@ function actualizarNumeroCapitulo() {
 }
 
 function actualizarTextoBotonesNavegacion() {
-  if (!episodios || episodios.length === 0) return;
+  const tieneEpisodios = Array.isArray(episodios) && episodios.length > 0;
+  // Mientras la lista no haya terminado de cargar no se tocan los
+  // textos: episodios=[] es "cargando", no "sin capítulos".
+  if (!tieneEpisodios && !episodiosCargaTerminada) return;
+
+  // Sin episodios no hay navegación: textos limpios y dropdown
+  // cerrado. El estado desactivado de los botones lo maneja
+  // actualizarEstadoBotones().
+  if (!tieneEpisodios) {
+    if (dropdownCapitulos) {
+      dropdownCapitulos.classList.add("oculto");
+      btnSelectorCapitulo?.classList.remove("open");
+    }
+    if (textoAnterior) textoAnterior.textContent = "";
+    if (textoSiguiente) textoSiguiente.textContent = "";
+    if (textoSelectorEpisodio) textoSelectorEpisodio.textContent = "Episodios";
+    return;
+  }
 
   // Misma posición que usa la navegación (botones y maratón): buscar por
   // `number - 1` asumía numeración correlativa y mostraba capítulos
   // equivocados en series con especiales o huecos en la numeración.
   const currentIndex = obtenerPosicionEpisodio(episodioActualIndex);
-  
-  if (textoAnterior) {
-    if (currentIndex > 0) {
+
+  // El texto del botón solo se muestra cuando existe el episodio
+  // vecino; si no, queda vacío y el botón se ve desactivado.
+  const hayAnterior = currentIndex > 0;
+  const haySiguiente = currentIndex >= 0 && currentIndex < episodios.length - 1;
+
+  if (textoAnterior && btnAnterior) {
+    if (hayAnterior) {
       const epAnterior = episodios[currentIndex - 1];
       const numAnterior = getNumeroCapitulo(epAnterior, currentIndex - 1);
       textoAnterior.textContent = `EP ${numAnterior}`;
     } else {
-      textoAnterior.textContent = "EP -";
+      textoAnterior.textContent = "";
     }
   }
-  
-  if (textoSiguiente) {
-    if (currentIndex >= 0 && currentIndex < episodios.length - 1) {
+
+  if (textoSiguiente && btnSiguiente) {
+    if (haySiguiente) {
       const epSiguiente = episodios[currentIndex + 1];
       const numSiguiente = getNumeroCapitulo(epSiguiente, currentIndex + 1);
       textoSiguiente.textContent = `EP ${numSiguiente}`;
     } else {
-      textoSiguiente.textContent = "EP +";
+      textoSiguiente.textContent = "";
     }
+  }
+
+  // El selector muestra la posición actual dentro de la lista completa
+  // ("Episodios · 1/131").
+  if (textoSelectorEpisodio) {
+    const numActual = currentIndex >= 0 ? currentIndex + 1 : episodioActualIndex;
+    textoSelectorEpisodio.textContent = `Episodios ${numActual}/${episodios.length}`;
   }
 }
 
@@ -974,15 +1008,13 @@ if (btnSelectorCapitulo && dropdownCapitulos) {
 
 
 if (btnBloquear) {
-  btnBloquear.textContent = "AdBlock";
-  btnBloquear.classList.toggle("activo", bloquearAnuncios);
+  actualizarEstadoSwitch(btnBloquear, bloquearAnuncios);
 }
 
 btnBloquear?.addEventListener("click", () => {
   bloquearAnuncios = !bloquearAnuncios;
   localStorage.setItem("bloquearAnuncios", String(bloquearAnuncios));
-  btnBloquear.textContent = "AdBlock";
-  btnBloquear.classList.toggle("activo", bloquearAnuncios);
+  actualizarEstadoSwitch(btnBloquear, bloquearAnuncios);
   const servidorActivoBtn = document.querySelector("#controles .servidor-activo");
   if (embeds.length && servidorActivoBtn) {
     const botonesServidor = Array.from(document.querySelectorAll("#controles button"));
@@ -994,20 +1026,26 @@ btnBloquear?.addEventListener("click", () => {
 });
 // Variable global para controlar el idioma
 
+// Los controles de opciones son switches: .activo pinta el estado y
+// aria-checked lo expone a lectores de pantalla.
+function actualizarEstadoSwitch(btn, activo) {
+  if (!btn) return;
+  btn.classList.toggle("activo", activo);
+  btn.setAttribute("aria-checked", String(activo));
+}
+
 // Evento para el botón de cambio de servidores
 const btnCambioServers = document.getElementById("btn-cambio-servers");
 if (btnCambioServers) {
-  // Actualizar estado inicial del botón según el parámetro URL o preferencia
-  btnCambioServers.textContent = modoDoblado ? "Subtitulado" : "Doblado";
-  btnCambioServers.classList.toggle("activo", modoDoblado);
+  // La etiqueta es fija ("Doblado"): el switch ya indica el estado.
+  // Si el botón arranca deshabilitado (aún no se sabe si hay doblado),
+  // el switch no se pinta activo hasta que se confirme.
+  actualizarEstadoSwitch(btnCambioServers, modoDoblado && !btnCambioServers.disabled);
   
   btnCambioServers.addEventListener("click", function() {
     modoDoblado = !modoDoblado;
     preferenciaDoblado = modoDoblado;
-    
-    // Cambiamos el texto del botón según el estado
-    this.textContent = modoDoblado ? "Subtitulado" : "Doblado";
-    this.classList.toggle("activo", modoDoblado); // Por si quieres darle estilos CSS extra
+    actualizarEstadoSwitch(this, modoDoblado);
     
     // Guardar preferencia en localStorage
     localStorage.setItem("serverPreference", modoDoblado ? "dob" : "sub");
@@ -1029,12 +1067,12 @@ if (btnCambioServers) {
 // autoskip/autonext se envían como parámetros al crear su iframe.
 const btnModoMaraton = document.getElementById("btn-modo-maraton");
 if (btnModoMaraton) {
-  btnModoMaraton.classList.toggle("activo", modoMaratonActivo);
+  actualizarEstadoSwitch(btnModoMaraton, modoMaratonActivo);
 
   btnModoMaraton.addEventListener("click", function() {
     modoMaratonActivo = !modoMaratonActivo;
     localStorage.setItem("modoMaraton", String(modoMaratonActivo));
-    this.classList.toggle("activo", modoMaratonActivo);
+    actualizarEstadoSwitch(this, modoMaratonActivo);
 
     const servidorActivo = embeds[servidorActualIndex];
     if (servidorActivo?.vidrift) {
@@ -1049,7 +1087,12 @@ function actualizarEstadoBotonDoblado(servidores) {
 
   // Lista vacía = render provisional solo-Vidrift: no hay datos
   // reales de servidores y no debe revertir la preferencia sub/dob.
-  if (!servidores?.length) return;
+  if (!servidores?.length) {
+    // Mientras tanto, si el botón está deshabilitado el switch no debe
+    // mostrar el estado activo (p. ej. preferencia "dob" aún sin confirmar).
+    if (btn.disabled) actualizarEstadoSwitch(btn, false);
+    return;
+  }
 
   const tienedoblado = servidores.some(s => 
     (s.name || "").toLowerCase().includes("(lat)")
@@ -1057,10 +1100,11 @@ function actualizarEstadoBotonDoblado(servidores) {
 
   if (!tienedoblado) {
     btn.disabled = true;
+    // Sin doblado el switch queda apagado aunque la preferencia diga "dob":
+    // un toggle activo sobre un botón deshabilitado sería contradictorio.
+    actualizarEstadoSwitch(btn, false);
     if (modoDoblado) {
       modoDoblado = false;
-      btn.textContent = "Doblado";
-      btn.classList.remove("activo");
       const newUrl = new URL(window.location);
       newUrl.searchParams.set("servers", "sub");
       window.history.replaceState({}, "", newUrl);
@@ -1070,8 +1114,7 @@ function actualizarEstadoBotonDoblado(servidores) {
     btn.disabled = false;
     btn.style.opacity = "1";
     btn.style.cursor = "pointer";
-    btn.textContent = modoDoblado ? "Subtitulado" : "Doblado";
-    btn.classList.toggle("activo", modoDoblado);
+    actualizarEstadoSwitch(btn, modoDoblado);
   }
 }
 
@@ -2120,8 +2163,7 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
 
       const btn = document.getElementById("btn-cambio-servers");
       if (btn) {
-        btn.textContent = modoDoblado ? "Subtitulado" : "Doblado";
-        btn.classList.toggle("activo", modoDoblado);
+        actualizarEstadoSwitch(btn, modoDoblado);
       }
     }
   }
@@ -2767,6 +2809,10 @@ async function mostrarVideo(link, botonSeleccionado) {
       // la URL. El audio solo se cambia cuando existe una pista española
       // (modo Doblado): si no existe, se conserva el audio del servidor.
       const preferirAudioEspanol = preferenciaDoblado;
+      const inicioCargaFuentesVidrift = Date.now();
+      let firmaEstadoVidrift = null;
+      let sondeosEstadoSinCambio = 0;
+      let vidriftEstaReproduciendo = false;
       let recibirEstadoVidrift = null;
       let intervaloEstadoVidrift = null;
       let intentosInfoSiguiente = 0;
@@ -2886,10 +2932,55 @@ async function mostrarVideo(link, botonSeleccionado) {
       const vigilarFallosVidrift = (event) => {
         if (
           event.origin !== "https://embed.vidrift.net" ||
-          event.source !== iframe.contentWindow ||
-          event.data?.type !== "vidrift:state" ||
-          !vidriftAgotoSusFuentes(event.data)
+          event.source !== iframe.contentWindow
         ) return;
+
+        // vidrift:progress llega cada ~5 s solo cuando hay reproducción
+        // real: una vez visto, el embed está vivo aunque el estado se
+        // repita (pausa, buffering largo, etc.).
+        if (event.data?.type === "vidrift:progress") {
+          vidriftEstaReproduciendo = true;
+          return;
+        }
+        if (event.data?.type !== "vidrift:state") return;
+
+        // Vidrift marca todos como "failed" de forma transitoria entre
+        // rondas de reintento y a veces aparca el último en "ready" aunque
+        // nada reproduce (pantalla "won't play"). Por eso ambas señales
+        // exigen las mismas guardas: nunca hubo vidrift:progress, ningún
+        // servidor tiene duración, el estado se estabilizó varios sondeos
+        // y ya pasó el tiempo mínimo de carga.
+        const servidoresVidrift = event.data.servers;
+        const todosDefinitivos = Array.isArray(servidoresVidrift)
+          && servidoresVidrift.length > 0
+          && servidoresVidrift.every(s => s.state === "failed" || s.state === "ready");
+        const firma = JSON.stringify([
+          event.data.server,
+          servidoresVidrift?.map(s => s.state) ?? null,
+          event.data.duration
+        ]);
+        if (firma === firmaEstadoVidrift) {
+          sondeosEstadoSinCambio++;
+        } else {
+          firmaEstadoVidrift = firma;
+          sondeosEstadoSinCambio = 0;
+        }
+        const senalFallos = vidriftAgotoSusFuentes(event.data) || (
+          todosDefinitivos
+          && servidoresVidrift.some(s => s.state === "failed")
+        );
+        const agotadas = senalFallos
+          && !vidriftEstaReproduciendo
+          && !(Number(event.data.duration) > 0)
+          && sondeosEstadoSinCambio >= 2
+          && Date.now() - inicioCargaFuentesVidrift >= 20000;
+        debugLog("[Vidrift] Estado recibido por la vigilancia de fallos", {
+          server: event.data.server,
+          estados: servidoresVidrift?.map(s => `${s.value}=${s.state || "sin-probar"}`).join(" ") ?? "sin-lista",
+          duracion: event.data.duration,
+          agotadas
+        });
+        if (!agotadas) return;
 
         clearInterval(sondeoEstadoFallosVidrift);
         window.removeEventListener("message", vigilarFallosVidrift);
@@ -3052,6 +3143,10 @@ function actualizarEstadoBotones() {
     btnAnterior.classList.add('desactivado');
     btnSiguiente.disabled = true;
     btnSiguiente.classList.add('desactivado');
+    if (btnSelectorCapitulo) {
+      btnSelectorCapitulo.disabled = true;
+      btnSelectorCapitulo.classList.add('desactivado');
+    }
     return;
   }
 
@@ -3145,14 +3240,20 @@ ejecutarEnSegundoPlano(
 
 cargarEpisodios()
   .then(() => {
+    episodiosCargaTerminada = true;
     actualizarEstadoBotones();
     // Generar dropdown después de cargar episodios inicialmente
     if (typeof generarDropdownCapitulos === 'function') {
       generarDropdownCapitulos();
     }
+    actualizarTextoBotonesNavegacion();
   })
   .catch(error => {
+    episodiosCargaTerminada = true;
     console.error("Error al cargar episodios inicialmente:", error);
+    // Si la lista nunca llega, la navegación queda desactivada con
+    // textos limpios en vez de mostrar capítulos equivocados.
+    actualizarTextoBotonesNavegacion();
   });
 
 function establecerModoCine(activo) {
@@ -3184,12 +3285,13 @@ window.addEventListener('message', async (event) => {
   // debugLog(tSalto(), "evento Vidrift recibido:", event.data?.type, event.data?.episode ?? "");
 
   // Vidrift emite este evento al comenzar créditos o el ending. En modo
-  // maratón saltamos de inmediato, sin esperar los cinco segundos de la
-  // tarjeta "Siguiente episodio".
+  // maratón saltamos tras una pausa de un segundo, sin esperar los cinco
+  // segundos de la tarjeta "Siguiente episodio".
   if (event.data?.type === "vidrift:nextup" && modoMaratonActivo) {
     if (saltoOutroVidriftEnCurso) return;
     saltoOutroVidriftEnCurso = true;
     try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const avanzo = await irAlSiguienteCapitulo();
       debugLog("[Vidrift] Outro omitido por modo maratón.", { avanzo });
     } finally {
