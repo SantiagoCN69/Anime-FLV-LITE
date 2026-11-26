@@ -622,6 +622,9 @@ iframe {
   justify-content: space-between;
   flex: 1;
 }
+.botones-reproductor {
+  flex: unset
+}
 #botones-reproductor1{
   flex-wrap: nowrap;
 }
