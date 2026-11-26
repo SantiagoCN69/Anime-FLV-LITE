@@ -101,7 +101,7 @@ main > section:nth-child(2) {
   overflow-y: auto;
   gap: 15px;
   position: relative;
-  height: clamp(400px, calc(100dvh - 219px), 1000px);
+  /* height: clamp(400px, calc(100dvh - 219px), 1000px); */
 }
 /* La barra solo se oculta cuando la lista es horizontal (<=1100px);
    en escritorio el scroll vertical muestra la barra nativa. */
@@ -115,10 +115,16 @@ main > section:nth-child(2) {
   }
 }
 @media (min-width: 1101px) {
-  /* Vertical: sin botones ni espacio extra, solo el título. */
-  .noticias-header {
-    min-height: 0;
+  /* La sección de noticias toma la altura exacta de la del reproductor:
+     contain:size hace que su contenido no infle la fila flex, y la caja
+     interna crece con flex para mantener el scroll vertical. */
+  main > section:nth-child(2) {
+    contain: size;
   }
+.sugerencias-header {
+  min-height: 31px;
+}
+  /* Vertical: sin botones ni espacio extra, solo el título. */
   .noticias-header .scroll-btn {
     display: none;
   }
@@ -219,7 +225,7 @@ main > section:nth-child(2) {
 .noticia-fecha {
   top: 10px;
   left: 10px;
-  background-color: var(--btn);
+  background: color-mix(in srgb, var(--btn) 30%, transparent);
   color: var(--t1);
   opacity: .8;
   padding: 3px 8px;
@@ -237,6 +243,7 @@ main > section:nth-child(2) {
 }
 
 .btn-cap, h3 {
+  text-wrap-mode: nowrap;
   height: 31px;
   font-weight: 600;
   font-size: 1.5rem;
@@ -245,7 +252,8 @@ main > section:nth-child(2) {
 }
 #btn-estado-episodio {
   background: var(--br);
-  padding: 5px 15px;
+  padding-inline: 15px;
+  height: 31px;
   border-radius: 24px;
   transition: opacity 0.3s ease;
   display: flex;
@@ -397,7 +405,6 @@ main > section:nth-child(2) {
 }
 .reproductor-container {
   display: flex;
-  flex: 1;
   flex-direction: column;
   border-radius: 14px;
   position: relative;
@@ -430,110 +437,99 @@ overflow: hidden;
   from { opacity: .5; transform: translateX(0); }
   to { opacity: 1; transform: translateX(150%); }
 }
+/* Los servidores son pills individuales (como los switch-btn), ya no una
+   barra segmentada: cada botón flota con su propio fondo redondeado. */
 #controles {
   display: flex;
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
-  height: 50px;
-  margin-right: 0;
-  
-  border-bottom: none;
-}
-#controles.cargado {
-  border: 1px solid var(--br);
-  border-bottom: none;
-}
-#controles  {
-  overflow: auto;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin-bottom: 8px;
+  overflow-x: auto;
   scrollbar-width: none;      /* Firefox */
   -ms-overflow-style: none;   /* IE/Edge viejo */
+}
+#controles:empty {
+  display: none;
 }
 #controles::-webkit-scrollbar {
   display: none;              /* Chrome/Safari */
 }
 #controles button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 14px;
+  background: var(--br);
+  color: var(--t1);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 600;
+  font-size: .8rem;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .3s, color .3s, filter .3s, transform .3s, opacity .3s;
+}
+#controles button .server-name {
+  padding-top: 1.5px;
+  max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 100px;
-  position: relative;
-  flex: 1;
-  border: none;
-  font-weight: 500;
-  font-size: .75rem;
-  text-align: center;
-  cursor: pointer;
-  z-index: 2;
-  padding: 15px;
-  font-family: 'Manrope', sans-serif;
-  transition: filter 0.3s ease;
-}
-
-#controles button {
-  background-color: var(--p);
-  color: var(--t1);
-  border-right: 1px solid var(--br);
-  border-bottom: 2px solid transparent;
 }
 #controles button.prefer {
   opacity: 1;
-  
 }
-#controles button.prefer::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 14px;
-  height: 14px;
-  background-color: #f3c654; /* Tono amarillo/dorado de la esquina */
-  clip-path: polygon(100% 0, 100% 100%, 0 0);
-  pointer-events: none; /* Evita que interfiera con el clic en el botón */
+
+/* Etiquetas de calidad/anuncio dentro de cada botón de servidor */
+#controles .server-badge {
+  flex-shrink: 0;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+}
+#controles .server-badge.hd {
+  background: rgba(125, 211, 252, .16);
+  color: #7dd3fc;
+}
+#controles .server-badge.fast {
+  background: rgba(167, 243, 208, .14);
+  color: #a7f3d0;
+}
+#controles .server-badge.ad {
+  background: #f3c654;
+  color: #221a04;
 }
 
 #controles button.servidor-activo {
-  min-width: 100%;
-  transition: min-width 0.3s ease, max-width 0.3s ease;
-  border-bottom: 2px solid var(--btn);
-}
-#controles.cargado-otros button.servidor-activo {
-  min-width: 100px;
-}
-
-
-#controles button:last-child {
-  border-right: none;
-}
-#controles .servidor-activo {
+  background: var(--btn);
   color: var(--t1);
-  background-color: var(--br);
 }
-#controles .servidor-activo::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 20px;
-  background: linear-gradient(to top, color-mix(in srgb, var(--btn) 15%, transparent) 0%, transparent 100%);
-  pointer-events: none;
+#controles button.servidor-activo .server-badge.ad {
+  background: #fff3c4;
+  color: #221a04;
 }
 @media (hover: hover) {
   #controles button:hover {
-    filter: brightness(1.5);
+    filter: brightness(1.25);
   }
 }
 #video {
   display: flex;
-  flex: 1;
   min-height: 0;
   overflow: hidden;
 }
 #controles.cargado ~ #video {
   border: 1px solid var(--br);
-  border-top: none;
-  border-bottom-left-radius: 14px;
-  border-bottom-right-radius: 14px;
+  border-radius: 14px;
 }
 
 /* 1. Quitar el scrollbar-gutter del HTML */
@@ -561,9 +557,12 @@ html.video-fs-simulado #video {
   background: #000;
 }
 iframe {
-  height: 100%;
   width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 75vh;
+  height: fit-content;
 }
+
 .reproductor-container.censure #video {
   filter: blur(13px);
 }
@@ -989,9 +988,7 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     height: unset;
     width: 100%;
   }
-   #video, iframe {
-    aspect-ratio: 16 / 9;
-  }
+
   main >section:nth-child(2) {
     height: unset;
     margin-top: unset;
@@ -1007,9 +1004,6 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
     overflow: hidden;
     overflow-x: auto;
     height: fit-content;
-  }
-  #controles {
-    overflow: auto;
   }
 }
 @media screen and (max-width:600px){

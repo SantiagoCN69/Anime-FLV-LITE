@@ -2198,8 +2198,27 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     if ((srv.url?.toLowerCase?.() || "").includes("mediafire.com")) return;
 
     const btn = document.createElement("button");
-    btn.textContent = nombreVisibleServidor(srv, i);
     btn.dataset.serverIndex = i;
+
+    const nombre = document.createElement("span");
+    nombre.className = "server-name";
+    nombre.textContent = nombreVisibleServidor(srv, i);
+    btn.appendChild(nombre);
+
+    const badge = document.createElement("span");
+    badge.className = "server-badge";
+    if (srv.vidrift) {
+      badge.classList.add("hd");
+      badge.textContent = "HD";
+    } else if (srv.preferido) {
+      badge.classList.add("fast");
+      badge.textContent = "FAST";
+    } else {
+      badge.classList.add("ad");
+      badge.textContent = "AD";
+    }
+    btn.appendChild(badge);
+
     btn.onclick = () => mostrarVideo(srv, btn);
     controles.appendChild(btn);
     cantidadBotones++;
