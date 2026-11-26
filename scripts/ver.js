@@ -695,7 +695,7 @@ let loadingTimeout = null;
 // Identifica la carga activa para que un timeout/error tardío de un servidor
 // anterior no cambie el servidor que el usuario ya seleccionó.
 let reproduccionActualId = 0;
-let limpiarPreferenciaAudio = null;
+let limpiarPreferenciaSubtitulos = null;
 let ventanaVidriftActiva = null;
 let cambioEpisodioVidriftEnCurso = false;
 let saltoOutroVidriftEnCurso = false;
@@ -2749,8 +2749,8 @@ async function mostrarVideo(link, botonSeleccionado) {
   const esVidrift = link.vidrift === true;
   const reproduccionId = ++reproduccionActualId;
   ventanaVidriftActiva = null;
-  limpiarPreferenciaAudio?.();
-  limpiarPreferenciaAudio = null;
+  limpiarPreferenciaSubtitulos?.();
+  limpiarPreferenciaSubtitulos = null;
 
   const botones = document.querySelectorAll("#controles button");
   botones.forEach(btn => btn.classList.remove("servidor-activo"));
@@ -2813,6 +2813,8 @@ async function mostrarVideo(link, botonSeleccionado) {
         // hide: "episodes",
         // URLSearchParams codifica los espacios; no pasar el valor ya codificado.
         font: "IBM%20Plex%20Sans",
+        // Intento ligero inicial; el listener posterior lo corrige si el
+        // proveedor interno de Vidrift no respeta este parámetro.
         sub: "es",
         download: "1",
         autoskip: modoMaratonActivo ? "1" : "0",
@@ -2837,17 +2839,26 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.style.border = "0";
       iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation";
 
-      // Los subtítulos en español los preselecciona Vidrift con sub=es en
-      // la URL. El audio solo se cambia cuando existe una pista española
-      // (modo Doblado): si no existe, se conserva el audio del servidor.
+      // `sub=es` intenta preseleccionarlo al cargar. Cuando algún proveedor
+      // interno no lo respeta, se corrige al recibir las pistas reales.
       const preferirAudioEspanol = preferenciaDoblado;
+      const preferirSubtitulosEspanol = true;
       const inicioCargaFuentesVidrift = Date.now();
       let firmaEstadoVidrift = null;
       let sondeosEstadoSinCambio = 0;
       let vidriftEstaReproduciendo = false;
-      let recibirEstadoVidrift = null;
+      let estadoVidriftActual = null;
+      let subtituloEspanolPendiente = null;
+      let intentosSubtituloEspanol = 0;
+      let timeoutSubtituloEspanol = null;
+      let audioComprobado = !preferirAudioEspanol;
+      let subtitulosComprobados = false;
+      let recibirEstadoVidrift;
       let intervaloEstadoVidrift = null;
       let intentosInfoSiguiente = 0;
+      let avisoSubEspanolAgotado = false;
+      const servidoresVidriftProbados = new Set();
+      let servidorVidriftOriginal = null;
 
       const enviarInformacionSiguienteAVidrift = () => {
         // Mismo criterio que los botones de navegación: el siguiente es el
@@ -2879,10 +2890,9 @@ async function mostrarVideo(link, botonSeleccionado) {
       };
 
       const limpiarListenerVidrift = () => {
+        clearTimeout(timeoutSubtituloEspanol);
         clearInterval(intervaloEstadoVidrift);
-        if (recibirEstadoVidrift) {
-          window.removeEventListener("message", recibirEstadoVidrift);
-        }
+        window.removeEventListener("message", recibirEstadoVidrift);
       };
 
       const solicitarEstadoVidrift = () => {
@@ -2892,61 +2902,99 @@ async function mostrarVideo(link, botonSeleccionado) {
         );
       };
 
-      if (preferirAudioEspanol) {
-        const normalizarIdioma = (texto) => String(texto || "")
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase();
-        const esEspanol = (pista = {}) => {
-          // El proveedor puede declarar el idioma en campos distintos. No
-          // depender solo de label/value ni de la palabra literal "Español".
-          const codigo = String(
-            pista.value || pista.code || pista.lang || pista.language || pista.locale || ""
-          ).toLowerCase();
-          const descripcion = normalizarIdioma([
-            pista.label,
-            pista.name,
-            pista.title,
-            pista.language,
-            pista.lang,
-            pista.locale,
-            pista.code
-          ].filter(Boolean).join(" "));
+      const normalizarIdioma = (texto) => String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+      const esEspanol = (pista = {}) => {
+        const codigo = String(
+          pista.value || pista.code || pista.lang || pista.language || pista.locale || ""
+        ).toLowerCase();
+        const descripcion = normalizarIdioma([
+          pista.label, pista.name, pista.title, pista.language,
+          pista.lang, pista.locale, pista.code
+        ].filter(Boolean).join(" "));
+        return /(?:^|[-_])(?:es|spa)(?:[-_]|$)/i.test(codigo)
+          || /\b(?:espanol|spanish|castellano|castilian|latam|latino(?:americano)?)\b/.test(descripcion);
+      };
 
-          // Vidrift usa mb-es en Orion. Otros proveedores pueden usar es-419,
-          // spa o textos como Spanish, Latin Spanish y Castellano.
-          return /(?:^|[-_])(?:es|spa)(?:[-_]|$)/i.test(codigo)
-            || /\b(?:espanol|spanish|castellano|castilian|latam|latino(?:americano)?)\b/.test(descripcion);
-        };
-        let audioComprobado = false;
+      const seleccionarSubtituloEspanol = (subtitulo) => {
+        if (!subtitulo?.value || estadoVidriftActual?.subtitle === subtitulo.value) {
+          subtitulosComprobados = true;
+          return;
+        }
+        subtituloEspanolPendiente = subtitulo.value;
+        iframe.contentWindow.postMessage(
+          { type: "vidrift:set", subtitle: subtitulo.value },
+          ORIGEN_VIDRIFT
+        );
+        clearTimeout(timeoutSubtituloEspanol);
+        timeoutSubtituloEspanol = setTimeout(() => {
+          if (reproduccionId !== reproduccionActualId || subtituloEspanolPendiente !== subtitulo.value) return;
+          if (intentosSubtituloEspanol++ < 2) seleccionarSubtituloEspanol(subtitulo);
+          else subtituloEspanolPendiente = null;
+        }, 1200);
+      };
 
-        recibirEstadoVidrift = (event) => {
-          if (
-            event.origin !== "https://embed.vidrift.net" ||
-            event.source !== iframe.contentWindow ||
-            event.data?.type !== "vidrift:state"
-          ) return;
+      recibirEstadoVidrift = (event) => {
+        if (event.origin !== ORIGEN_VIDRIFT || event.source !== iframe.contentWindow) return;
+        if (event.data?.type === "vidrift:command-error" && event.data.field === "subtitle") {
+          subtituloEspanolPendiente = null;
+          clearTimeout(timeoutSubtituloEspanol);
+          return;
+        }
+        if (event.data?.type !== "vidrift:state") return;
 
-          const audioEspanol = event.data.audios?.find(esEspanol);
-          if (audioEspanol && event.data.audio !== audioEspanol.value) {
-            iframe.contentWindow.postMessage(
-              { type: "vidrift:set", audio: audioEspanol.value },
-              "https://embed.vidrift.net"
+        estadoVidriftActual = event.data;
+        const audioEspanol = event.data.audios?.find(esEspanol);
+        const subtituloEspanol = event.data.subtitles?.find(esEspanol);
+
+        if (preferirSubtitulosEspanol && !subtituloEspanol) {
+          const servidorActual = event.data.server;
+          servidorVidriftOriginal ??= servidorActual;
+          if (servidorActual) servidoresVidriftProbados.add(servidorActual);
+          const siguienteServidor = event.data.servers?.find((servidor) =>
+            servidor.value && servidor.value !== servidorActual
+              && (!servidor.state || servidor.state === "ready")
+              && !servidoresVidriftProbados.has(servidor.value)
+          );
+          if (siguienteServidor) {
+            servidoresVidriftProbados.add(siguienteServidor.value);
+            iframe.contentWindow.postMessage({ type: "vidrift:set", server: siguienteServidor.value }, ORIGEN_VIDRIFT);
+          } else if (!avisoSubEspanolAgotado && Array.isArray(event.data.servers) && event.data.servers.length > 0) {
+            avisoSubEspanolAgotado = true;
+            mostrarPildora(
+              "Server sin subtítulos en español. Prueba el siguiente.", "default",
+              () => intentarSiguienteServidor(reproduccionId, "Vidrift sin subtítulos en español", false), 6000
             );
-          }
-          // Un arreglo (aunque vacío) significa que Vidrift ya expuso las
-          // pistas: si no hay española se conserva el audio actual.
-          audioComprobado ||= Array.isArray(event.data.audios);
-          if (audioComprobado) {
-            limpiarListenerVidrift();
-            if (limpiarPreferenciaAudio === limpiarListenerVidrift) {
-              limpiarPreferenciaAudio = null;
+            if (servidorActual && servidorActual !== servidorVidriftOriginal) {
+              iframe.contentWindow.postMessage({ type: "vidrift:set", server: servidorVidriftOriginal }, ORIGEN_VIDRIFT);
             }
           }
-        };
-        window.addEventListener("message", recibirEstadoVidrift);
-        limpiarPreferenciaAudio = limpiarListenerVidrift;
-      }
+        }
+
+        if (preferirAudioEspanol && audioEspanol && event.data.audio !== audioEspanol.value) {
+          iframe.contentWindow.postMessage({ type: "vidrift:set", audio: audioEspanol.value }, ORIGEN_VIDRIFT);
+        }
+        if (preferirSubtitulosEspanol && subtituloEspanol) {
+          if (event.data.subtitle === subtituloEspanol.value) {
+            subtituloEspanolPendiente = null;
+            clearTimeout(timeoutSubtituloEspanol);
+            subtitulosComprobados = true;
+          } else if (subtituloEspanolPendiente !== subtituloEspanol.value) {
+            intentosSubtituloEspanol = 0;
+            seleccionarSubtituloEspanol(subtituloEspanol);
+          }
+        }
+        audioComprobado ||= !preferirAudioEspanol || Array.isArray(event.data.audios);
+        subtitulosComprobados ||= event.data.subtitle === subtituloEspanol?.value;
+        if (audioComprobado && subtitulosComprobados) {
+          limpiarListenerVidrift();
+          if (limpiarPreferenciaSubtitulos === limpiarListenerVidrift) limpiarPreferenciaSubtitulos = null;
+        }
+      };
+      window.addEventListener("message", recibirEstadoVidrift);
+      limpiarPreferenciaSubtitulos = limpiarListenerVidrift;
 
       // Vigilancia de fallos internos de Vidrift, independiente del listener
       // de idiomas: aunque este se limpie al resolver pistas o a los 30 s,
@@ -3046,16 +3094,12 @@ async function mostrarVideo(link, botonSeleccionado) {
       };
       window.addEventListener("message", vigilarFallosVidrift);
 
-      if (preferirAudioEspanol) {
-        setTimeout(() => {
-          if (reproduccionId === reproduccionActualId) {
-            limpiarListenerVidrift();
-            if (limpiarPreferenciaAudio === limpiarListenerVidrift) {
-              limpiarPreferenciaAudio = null;
-            }
-          }
-        }, 30000);
-      }
+      setTimeout(() => {
+        if (reproduccionId === reproduccionActualId) {
+          limpiarListenerVidrift();
+          if (limpiarPreferenciaSubtitulos === limpiarListenerVidrift) limpiarPreferenciaSubtitulos = null;
+        }
+      }, 30000);
 
       iframe.addEventListener("error", () => {
         if (reproduccionId === reproduccionActualId) intentarSiguienteServidor(reproduccionId, "El iframe de Vidrift produjo un error");
@@ -3069,12 +3113,9 @@ async function mostrarVideo(link, botonSeleccionado) {
         enviarEstadoFullscreenVidrift();
         solicitarEstadoVidrift();
         enviarInformacionSiguienteAVidrift();
-        // Las pistas de audio pueden aparecer unos segundos después de
-        // cargar o de cambiar de servidor interno; solo se sondea cuando
-        // hay una pista española que buscar (modo Doblado).
-        if (preferirAudioEspanol) {
-          intervaloEstadoVidrift = setInterval(solicitarEstadoVidrift, 1500);
-        }
+        // Las pistas pueden aparecer unos segundos después de cargar o de
+        // cambiar de servidor interno.
+        intervaloEstadoVidrift = setInterval(solicitarEstadoVidrift, 1500);
       });
 
       if (reproduccionId !== reproduccionActualId) return;
@@ -3115,8 +3156,8 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   );
 
   if (siguienteIndice === -1) {
-    limpiarPreferenciaAudio?.();
-    limpiarPreferenciaAudio = null;
+    limpiarPreferenciaSubtitulos?.();
+    limpiarPreferenciaSubtitulos = null;
 
     // El propio iframe de Vidrift ya muestra su estado cuando todas sus
     // fuentes internas fallan. Si no hay un servidor externo al cual saltar,
