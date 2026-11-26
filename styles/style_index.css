@@ -1502,6 +1502,7 @@ color: var(--p);
 .card-thumbnail {
   /* aspect-ratio: 16/9; */
   aspect-ratio: 5/6;
+  border-radius: 13px;
 }
 .anime-card:hover .card-thumbnail.container-img,
 #populares-preview .anime-card:hover .container-img {
@@ -1511,6 +1512,7 @@ color: var(--p);
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 14px;
 }
 .continue-card .container-img::after {
   bottom: 0 !important;
