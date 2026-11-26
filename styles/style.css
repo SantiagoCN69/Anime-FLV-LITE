@@ -221,6 +221,7 @@ header #busqueda{
 
 
 .title {
+  view-transition-name: home;
   height: 31px;
   font-family: 'Oxanium', sans-serif;
   font-weight: 700;
