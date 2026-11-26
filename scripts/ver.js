@@ -3265,20 +3265,18 @@ window.addEventListener('message', async (event) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const cineBtn = document.getElementById('cine');
-  const overlay = document.getElementById('cine-overlay');
 
   cineBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     establecerModoCine(!document.body.classList.contains('cine'));
   });
 
-  overlay?.addEventListener('click', () => establecerModoCine(false));
-
+  // En fase de captura: el primer clic con el modo cine activo solo lo
+  // cierra y no llega al elemento pulsado (botones, enlaces, etc.).
   document.addEventListener('click', (e) => {
     if (!document.body.classList.contains('cine')) return;
-
-    if (!e.target.closest('button, a, input, select, textarea')) {
-      establecerModoCine(false);
-    }
-  });
+    establecerModoCine(false);
+    e.preventDefault();
+    e.stopPropagation();
+  }, true);
 });
