@@ -256,26 +256,42 @@ main > section:nth-child(2) {
   color: var(--t1);
   font-family: 'Oxanium', sans-serif;
 }
-#btn-estado-episodio {
-  background: var(--br);
-  padding-inline: 15px;
-  height: 31px;
-  border-radius: 24px;
-  transition: opacity 0.3s ease;
+
+
+.buttons-container {
+  width: 163px;
+  transition: width 0.3s ease;
+}
+.buttons-container.con-descarga {
+  width: calc(163px + 31px + 8px);
+}
+.buttons-container, #share {
   display: flex;
   align-items: center;
+  margin-left: auto;
+  gap: 8px;
+}
+#share, #cine, #descargar, #btn-estado-episodio {
+  background: var(--br);
+  border: none;
+  border-radius: 99px;
+  width: 31px;
+  height: 31px;
+  display: flex;
+  padding: 5px;
+  align-items: center;
   justify-content: center;
-  transition: transform .3s, padding .3s, width .3s, filter .3s;
+  transition: filter .3s;
+}
+
+#btn-estado-episodio {
+  padding-inline: 15px;
+  width: auto;
 }
 #btn-estado-episodio.visto {
   background: #17231F;
 }
-@media (hover: hover) {
-  #btn-estado-episodio:hover {
-    color: var(--t2) !important;
-    filter: brightness(1.2);
-  }
-}
+
 .texto-estado-episodio {
   font-size: 0.9rem;
   margin-left: 5px;
@@ -312,34 +328,8 @@ main > section:nth-child(2) {
   mask-size: contain;
   mask: url('../icons/eye-solid.svg') no-repeat center;
 }
-
-.buttons-container {
-  width: 163px;
-  transition: width 0.3s ease;
-}
-.buttons-container.con-descarga {
-  width: calc(163px + 31px + 8px);
-}
-.buttons-container, #share {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  gap: 8px;
-}
-#share, #cine, #descargar {
-  background: var(--br);
-  border: none;
-  border-radius: 99px;
-  width: 31px;
-  height: 31px;
-  display: flex;
-  padding: 5px;
-  align-items: center;
-  justify-content: center;
-  transition: filter .3s;
-}
 @media (hover: hover) {
-  #share:hover, #cine:hover, #descargar:hover {
+  #btn-estado-episodio:hover, #share:hover, #cine:hover, #descargar:hover {
     filter: brightness(1.2);
   }
 }
@@ -477,7 +467,7 @@ border-top-right-radius: 14px;
   border: none;
   border-right: 1px solid var(--b);
   /* border-radius: 14px; */
-  background: var(--br);
+  background: var(--p);
   color: var(--t1);
   font-family: 'Zen Kaku Gothic New', sans-serif;
   /* font-weight: 600; */
@@ -508,7 +498,7 @@ border-top-right-radius: 14px;
   top: 2px;
   right: 0px;
   flex-shrink: 0;
-  font-size: .58rem;
+  font-size: .5rem;
   font-weight: 700;
   letter-spacing: .05em;
   line-height: 1;
@@ -536,13 +526,9 @@ border-top-right-radius: 14px;
   min-width: 100%;
   border-bottom: 2px solid var(--btn);
   color: var(--t1);
+  background: var(--br);
 }
-#controles button.servidor-activo {
-  min-width: 100%;
-  border-bottom: 2px solid var(--btn);
-  color: var(--t1);
 
-}
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
 }
