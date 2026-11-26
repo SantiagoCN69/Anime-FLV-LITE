@@ -527,7 +527,7 @@ border-top-right-radius: 14px;
 /* Misma animación de antes: el servidor activo arranca ocupando el 100%
    del ancho y se encoge a su parte cuando llega .cargado-otros. */
 #controles button.servidor-activo {
-  min-width: 100%;
+  min-width: calc(100% + 1px);
   background: var(--btn);
   color: var(--t1);
 }
