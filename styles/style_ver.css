@@ -689,11 +689,6 @@ iframe {
   cursor: not-allowed !important;
 }
 
-@media (hover: hover) {
-  .switch-btn:hover {
-    filter: brightness(1.3);
-  }
-}
 .switch-btn .switch {
   width: 36px;
   height: 20px;
@@ -776,8 +771,8 @@ iframe {
   background-color: var(--br);
 }
 @media (hover: hover) {
-  #botones-reproductor1 > button:hover,
-  #botones-reproductor1 > a:hover {
+  .botones-reproductor button:hover:not(.desactivado):not(:disabled),
+  .botones-reproductor a:hover:not(.desactivado):not(:disabled) {
     filter: brightness(1.3) !important;
   }
 }
