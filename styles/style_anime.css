@@ -1029,6 +1029,8 @@ svg.cta__play {
   display: flex;
   flex-direction: column;
   position: relative;
+  border-radius: 14px;
+  overflow: hidden;
   &:active {
     transform: scale(.98);
   }
@@ -1053,13 +1055,24 @@ svg.cta__play {
     color-mix(in srgb, var(--t2) 0%, transparent)
   );
 } */
+
+.episode-btn.ep-visto::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 3px;
+  background-color: var(--btn);
+  z-index: 2;
+  pointer-events: none;
+}
 .episode-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 13px;
   border-bottom-left-radius: 15px;
-  transition: transform 0.2s, filter 0.2s;
+  transition: transform 0.2s, filter 0.3s;
   transform-origin: bottom center;
 }
 .ep-visto .episode-thumb {
@@ -1081,7 +1094,7 @@ svg.cta__play {
   opacity: 1;
 }
 
-.episode-text {
+.episode-text, .episode-btn::before {
   padding: 8px 12px;
   font-weight: 500;
   text-align: center;
@@ -1092,19 +1105,27 @@ svg.cta__play {
   font-size: 0.9rem;
   position: absolute;
   background: var(--p);
-  bottom: 0;
-  left: 0;
+  bottom: 5px;
+  left: 5px;
   z-index: 2;
   color: rgb(var(--bgt),.6);
-  border-top-right-radius: 13px;
-  border-bottom-left-radius: 13px;
+  /* border-top-right-radius: 13px;
+  border-bottom-left-radius: 13px; */
+  border-radius: 13px;
   font-family: 'JetBrains Mono', monospace;
 }
-@media (min-width: 700px) {
 
-  .ep-visto .episode-text {
-    background: var(--br);
+@media (min-width: 700px) {
+  .episode-btn::before {
+    content: attr(aria-label);
+  }
+  .episode-btn span {
+    display: none;
+  }
+  .ep-visto .episode-text, .episode-btn.ep-visto::before {
+    background: color-mix(in srgb, var(--btn) 30%, transparent);
     color: var(--t1);
+    backdrop-filter: blur(5px);
   }
 }
 
@@ -1257,8 +1278,9 @@ svg.cta__play {
   opacity: 1;
 }
 .ep-visto .icon-eye {
-  background-color: var(--br);
+  background: color-mix(in srgb, var(--btn) 30%, transparent);
   filter: brightness(1.3);
+  backdrop-filter: blur(5px);
 }
 .ep-visto .icon-eye::after, .ep-no-visto .icon-eye::after {
   content: "";
@@ -1300,7 +1322,7 @@ svg.cta__play {
 
   .episode-btn:hover .play-icon-anime {width: 60px;height: 60px;
   border: 1px solid #fff2;opacity: 1;}
-  .episode-btn:hover .episode-thumb {filter: brightness(0.3);}
+  .episode-btn:hover .episode-thumb {filter: brightness(.5);}
 }
 
 .caps-completados-card {

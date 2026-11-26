@@ -673,6 +673,7 @@ const createEpisodeButton = (ep, vistos = [], internalId) => {
   const li = document.createElement('li');
   const btn = document.createElement('a');
   btn.href = `ver?id=${id}&episode=${ep.number}`;
+  btn.setAttribute('aria-label', `Ep ${ep.number}`);
   const visto = vistos.includes(ep.number.toString());
   btn.className = `episode-btn ${visto ? 'ep-visto' : 'ep-no-visto'}`;
   
