@@ -3053,12 +3053,6 @@ async function mostrarVideo(link, botonSeleccionado) {
           && !(Number(event.data.duration) > 0)
           && sondeosEstadoSinCambio >= 2
           && Date.now() - inicioCargaFuentesVidrift >= 20000;
-        debugLog("[Vidrift] Estado recibido por la vigilancia de fallos", {
-          server: event.data.server,
-          estados: servidoresVidrift?.map(s => `${s.value}=${s.state || "sin-probar"}`).join(" ") ?? "sin-lista",
-          duracion: event.data.duration,
-          agotadas
-        });
         if (!agotadas) return;
 
         clearInterval(sondeoEstadoFallosVidrift);
