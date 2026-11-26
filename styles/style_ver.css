@@ -462,6 +462,7 @@ overflow: hidden;
   display: none;              /* Chrome/Safari */
 }
 #controles button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -494,6 +495,9 @@ overflow: hidden;
 
 /* Etiquetas de calidad/anuncio dentro de cada botón de servidor */
 #controles .server-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
   flex-shrink: 0;
   font-size: .58rem;
   font-weight: 700;
@@ -539,9 +543,8 @@ overflow: hidden;
   display: flex;
   min-height: 0;
   overflow: hidden;
-}
-#controles.cargado ~ #video {
-  border: 1px solid var(--br);
+  aspect-ratio: 16 / 9;
+  max-height: 70vh;
   border-radius: 14px;
 }
 
@@ -571,9 +574,7 @@ html.video-fs-simulado #video {
 }
 iframe {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 75vh;
-  height: fit-content;
+  height: 100%;
 }
 
 .reproductor-container.censure #video {
