@@ -1628,8 +1628,7 @@ h4 {
   align-items: center;
   gap: 4px;
   padding: 6px 12px;
-  background-color: var(--br);
-  border: 1px solid var(--br);
+  background-color: color-mix(in srgb, var(--br) 50%, transparent);
   border-radius: 20px;
   color: var(--t1);
   font-size: 0.8rem;
@@ -1638,8 +1637,7 @@ h4 {
 }
 
 .tendencia-tag:hover {
-  background-color: var(--btn);
-  border-color: var(--btn);
+  background: color-mix(in srgb, var(--btn) 30%, transparent) !important;
   color: var(--t1);
 }
 

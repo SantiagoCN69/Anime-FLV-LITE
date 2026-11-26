@@ -268,9 +268,11 @@ body:not(.animaciones-off) header {
   justify-content: center;
   position: relative;
   background: var(--br);
+  cursor: not-allowed;
 }
 .btn-estado.cargado {
   opacity: 1;
+  cursor: auto;
   pointer-events: auto;
 }
 .btn-estado svg {

@@ -1633,7 +1633,8 @@ color: var(--p);
 */
 .custom-tooltip {
     position: fixed;
-    background: var(--br); /* Fondo secundario de tu tema */
+    background: color-mix(in srgb, var(--br) 80%, transparent);
+    backdrop-filter: blur(10px);
     color: var(--t1); /* Texto principal de tu tema */
     padding: 8px 14px;
     border-radius: 6px;
@@ -1642,7 +1643,6 @@ color: var(--p);
     pointer-events: none; /* Evita que el ratón interactúe con el tooltip */
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--br); /* Borde sutil */
 
     /* Animación inicial oculta */
     opacity: 0;
@@ -1664,7 +1664,7 @@ color: var(--p);
     transform: translateY(-50%);
     border-width: 6px 6px 6px 0;
     border-style: solid;
-    border-color: transparent var(--br) transparent transparent;
+    border-color: transparent color-mix(in srgb, var(--br) 80%, transparent) transparent transparent;
 }
 
 /* Clase que el JS añadirá para mostrar el tooltip */
