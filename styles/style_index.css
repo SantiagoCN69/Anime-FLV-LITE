@@ -1654,7 +1654,9 @@ color: var(--p);
     will-change: transform, opacity;
     transform: translate3d(102.333px, 323px, 0px);
 }
-
+.animaciones-off .custom-tooltip {
+    background: color-mix(in srgb, var(--br) 100%, transparent);
+}
 /* El triangulito (flecha) del tooltip */
 .custom-tooltip::before {
     content: '';
@@ -1666,7 +1668,9 @@ color: var(--p);
     border-style: solid;
     border-color: transparent color-mix(in srgb, var(--br) 80%, transparent) transparent transparent;
 }
-
+.animaciones-off .custom-tooltip::before {
+    border-color: transparent color-mix(in srgb, var(--br) 100%, transparent) transparent transparent;
+}
 /* Clase que el JS añadirá para mostrar el tooltip */
 .custom-tooltip.show {
     opacity: 1;
