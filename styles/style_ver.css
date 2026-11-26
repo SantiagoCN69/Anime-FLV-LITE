@@ -448,9 +448,11 @@ overflow: hidden;
 #controles {
   display: flex;
   align-items: center;
-  gap: 8px;
+  /* gap: 8px; */
   flex-wrap: nowrap;
-  margin-bottom: 8px;
+  /* margin-bottom: 8px; */
+  border-top-left-radius: 14px;
+border-top-right-radius: 14px;
   overflow-x: auto;
   scrollbar-width: none;      /* Firefox */
   -ms-overflow-style: none;   /* IE/Edge viejo */
@@ -472,11 +474,12 @@ overflow: hidden;
   height: 44px;
   padding: 0 14px;
   border: none;
-  border-radius: 14px;
+  border-right: 1px solid var(--b);
+  /* border-radius: 14px; */
   background: var(--br);
   color: var(--t1);
   font-family: 'Zen Kaku Gothic New', sans-serif;
-  font-weight: 600;
+  /* font-weight: 600; */
   font-size: .8rem;
   white-space: nowrap;
   cursor: pointer;
@@ -496,28 +499,29 @@ overflow: hidden;
 /* Etiquetas de calidad/anuncio dentro de cada botón de servidor */
 #controles .server-badge {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 2px;
+  right: 0px;
   flex-shrink: 0;
   font-size: .58rem;
   font-weight: 700;
   letter-spacing: .05em;
   line-height: 1;
-  padding: 3px 6px;
+  padding: 0px 6px;
+  padding-top: 2px;
   border-radius: 99px;
   border: 1px solid transparent;
 }
 #controles .server-badge.hd {
-  background: rgba(125, 211, 252, .16);
   color: #7dd3fc;
 }
 #controles .server-badge.fast {
-  background: rgba(167, 243, 208, .14);
   color: #a7f3d0;
 }
 #controles .server-badge.ad {
-  background: #f3c654;
-  color: #221a04;
+  color: #f3c654;
+}
+#controles .server-badge.ads {
+  color: #f9a8d4;
 }
 
 /* Misma animación de antes: el servidor activo arranca ocupando el 100%
@@ -530,7 +534,8 @@ overflow: hidden;
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
 }
-#controles button.servidor-activo .server-badge.ad {
+#controles button.servidor-activo .server-badge.ad,
+#controles button.servidor-activo .server-badge.ads {
   background: #fff3c4;
   color: #221a04;
 }
@@ -545,7 +550,8 @@ overflow: hidden;
   overflow: hidden;
   aspect-ratio: 16 / 9;
   max-height: 70vh;
-  border-radius: 14px;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 
 /* 1. Quitar el scrollbar-gutter del HTML */
