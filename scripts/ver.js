@@ -2007,8 +2007,13 @@ async function cargarVideoDesdeEpisodioInterno(index) {
     debugLog(tSalto(), "recuperarEpisodioFaltanteDesdeApi tardó", Math.round(performance.now() - tEp), "ms");
   }
   if (!ep) {
-    btnCap.textContent = "Episodio desconocido";
-    controles.innerHTML = "<span class='span-carga'><h2>404</h2><br>No se encontró el episodio.</span>";
+    // No reemplazar el reproductor ni los controles con una pantalla 404.
+    // La ausencia puede ser momentánea mientras se actualiza la API.
+    controles.innerHTML = "";
+    debugLog("[Reproducción] El episodio no está disponible en la lista actual.", {
+      animeId,
+      episodio: index
+    });
     return;
   }
 
@@ -2644,15 +2649,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       const baseUrl = esPelicula
         ? `https://embed.vidrift.net/embed/movie/${tmdbId}`
         : `https://embed.vidrift.net/embed/tv/${tmdbId}/${tmdbSeason}/${episodioVidrift}`;
-      debugLog("[Vidrift] Embed preparado", {
-        animeId,
-        tmdbId,
-        temporada: tmdbSeason,
-        episodio: episodioVidrift,
-        episodioLocal: episodioActualIndex,
-        offsetTemporada: offsetEpisodioTemporada,
-        baseUrl
-      });
+
       const params = new URLSearchParams({
         brand: "Anizen",
         brandColor: brandColor,
@@ -2676,7 +2673,6 @@ async function mostrarVideo(link, botonSeleccionado) {
       // real sobre #video; en iPhone el padre lo simula con CSS fijo.
       params.set("fs", "parent");
       const vidriftUrl = `${baseUrl}?${params.toString()}`;
-      debugLog("URL de Vidrift generada.", vidriftUrl);
 
       const iframe = document.createElement("iframe");
       iframe.src = vidriftUrl;
@@ -2986,7 +2982,7 @@ async function mostrarVideo(link, botonSeleccionado) {
       const tIframe = performance.now();
       iframe.addEventListener("load", () => {
         if (reproduccionId !== reproduccionActualId) return;
-        debugLog(tSalto(), "iframe Vidrift cargado en", Math.round(performance.now() - tIframe), "ms");
+
         cancelarFallbackDeCarga();
         enviarEstadoFullscreenVidrift();
         solicitarEstadoVidrift();
@@ -3036,6 +3032,20 @@ function intentarSiguienteServidor(reproduccionId = reproduccionActualId, motivo
   if (siguienteIndice === -1) {
     limpiarPreferenciaSubtitulos?.();
     limpiarPreferenciaSubtitulos = null;
+
+    // El propio iframe de Vidrift ya muestra su estado cuando todas sus
+    // fuentes internas fallan. Si no hay un servidor externo al cual saltar,
+    // conservarlo evita taparlo con el mensaje genérico de la página.
+    const esAgotamientoInternoDeVidrift = motivo === "Vidrift agotó todas sus fuentes para este título"
+      && embeds[servidorActualIndex]?.vidrift === true;
+    if (esAgotamientoInternoDeVidrift) {
+      debugLog("[Reproducción] Vidrift agotó sus fuentes y no hay respaldo externo; se conserva el iframe.", {
+        animeId,
+        episodio: episodioActualIndex
+      });
+      return;
+    }
+
     console.error("[Reproducción] No hay más servidores disponibles.", {
       animeId,
       episodio: episodioActualIndex,
