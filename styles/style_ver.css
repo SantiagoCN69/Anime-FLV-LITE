@@ -550,8 +550,8 @@ border-top-right-radius: 14px;
 #controles .server-badge.hd {
   width: 10px;
   height: 10px;
-  right: 5px;
-  top: 5px;
+  right: 6px;
+  top: 6px;
   padding: 0;
   border-radius: 0;
   color: #7dd3fc;
@@ -563,10 +563,10 @@ border-top-right-radius: 14px;
   color: #a7f3d0;
 }
 #controles .server-badge.ads {
-  color: #f3c654;
+  color: #fca5a5;
 }
 #controles .server-badge.ad {
-  color: #f9a8d4;
+  color: #facc15;
 }
 
 /* Misma animación de antes: el servidor activo arranca ocupando el 100%
