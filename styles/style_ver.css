@@ -546,6 +546,11 @@ border-top-right-radius: 14px;
   padding-top: 2px;
   border-radius: 99px;
   border: 1px solid transparent;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+#controles.cargado.cargado-otros .server-badge {
+  opacity: 1;
 }
 #controles .server-badge.hd {
   width: 10px;
