@@ -486,6 +486,11 @@ border-top-right-radius: 14px;
   transition: min-width .3s ease, background-color .3s, color .3s,
     filter .3s, transform .3s, opacity .3s;
 }
+
+#controles button:last-child {
+  border-right: none
+}
+
 #controles button .server-name {
   padding-top: 1.5px;
   max-width: 140px;
@@ -527,7 +532,7 @@ border-top-right-radius: 14px;
 /* Misma animación de antes: el servidor activo arranca ocupando el 100%
    del ancho y se encoge a su parte cuando llega .cargado-otros. */
 #controles button.servidor-activo {
-  min-width: calc(100% + 2px);
+  min-width: 100%;
   background: color-mix(in srgb, var(--btn) 80%, transparent);
   color: var(--t1);
 }
