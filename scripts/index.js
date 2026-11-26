@@ -1598,20 +1598,34 @@ function scrollFilaUnaTarjeta(container, dir) {
   const cards = Array.from(container.children);
   if (!cards.length) return;
 
-  const scrollLeft = container.scrollLeft;
   const limite = container.clientWidth;
+  const maxScroll = Math.max(0, container.scrollWidth - limite);
+  const posicionSiguiente = (desde) => {
+    const cortada = cards.find(c => c.offsetLeft + c.offsetWidth > desde + limite + 1);
+    return cortada ? Math.min(cortada.offsetLeft, maxScroll) : null;
+  };
 
   if (dir === 'next') {
-    const cortada = cards.find(c => c.offsetLeft + c.offsetWidth > scrollLeft + limite + 1);
-    if (cortada) {
-      container.scrollTo({ left: Math.min(cortada.offsetLeft, container.scrollWidth - limite), behavior: 'smooth' });
+    const destino = posicionSiguiente(container.scrollLeft);
+    if (destino !== null && destino > container.scrollLeft) {
+      container.scrollTo({ left: destino, behavior: 'smooth' });
     }
-  } else {
-    const cortada = [...cards].reverse().find(c => c.offsetLeft < scrollLeft - 1);
-    if (cortada) {
-      container.scrollTo({ left: Math.max(cortada.offsetLeft, 0), behavior: 'smooth' });
-    }
+    return;
   }
+
+  if (container.scrollLeft <= 0) return;
+
+  const posiciones = [0];
+  let actual = 0;
+  while (actual < maxScroll) {
+    const siguiente = posicionSiguiente(actual);
+    if (siguiente === null || siguiente <= actual) break;
+    posiciones.push(siguiente);
+    actual = siguiente;
+  }
+
+  const anterior = posiciones.reverse().find(p => p < container.scrollLeft - 1);
+  container.scrollTo({ left: anterior ?? 0, behavior: 'smooth' });
 }
 
 export async function cargarPopularesPreview() {
