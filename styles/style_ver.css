@@ -426,7 +426,7 @@ main > section:nth-child(2) {
   position: absolute;
   inset: -7%;
   background:
-    radial-gradient(ellipse 90% 130% at 15% -10%, color-mix(in srgb, var(--btn) 50%, transparent), transparent 60%),
+    radial-gradient(ellipse 90% 130% at 15% -10%, color-mix(in srgb, var(--btn) 40%, transparent), transparent 60%),
     radial-gradient(ellipse 80% 110% at 90% 110%, color-mix(in srgb, var(--btn2) 38%, transparent), transparent 55%),
     linear-gradient(135deg, color-mix(in srgb, var(--t2) 14%, transparent), transparent 55%);
   filter: blur(22px);
