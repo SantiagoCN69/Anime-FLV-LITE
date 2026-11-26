@@ -1545,6 +1545,7 @@ function reordenarServidores(servidores) {
   const priority = [];
   const other = [];
   const mediafire = [];
+  const mp4uploadList = [];
 
   servidores.forEach(srv => {
     if (!srv?.url) {
@@ -1558,10 +1559,9 @@ function reordenarServidores(servidores) {
     if (url.includes('zilla-networks.com')) {
       return; // Omitir este servidor
     }
-    // Solo jkanime con /umv?e= tiene prioridad máxima.
-    // Los /um?e= se tratan como servidores normales (sin preferencia).
+    // jkanime/jkplayer con ?e= (/umv?e=, /um?e=, etc.) tiene prioridad máxima.
     else if ((url.includes('jkanime.net') || url.includes('jkplayer')) &&
-             url.includes('/umv?e=')) {
+             url.includes('?e=')) {
       jkanimePriority.push({ ...srv, preferido: true });
     }
     else if (url.includes('yourupload.com/embed/')) {
@@ -1577,7 +1577,7 @@ function reordenarServidores(servidores) {
       priority.push({ ...srv, preferido: true });
     }
     else if (url.includes('mp4upload.com')) {
-      priority.push({ ...srv, preferido: true, mp4upload: true });
+      mp4uploadList.push({ ...srv, preferido: true, mp4upload: true });
     }
     else if (url.includes('mediafire.com')) {
       mediafire.push({ ...srv, name: "Descargar" });
@@ -1587,7 +1587,7 @@ function reordenarServidores(servidores) {
     }
   });
 
-  return [...jkanimePriority, ...priority, ...other, ...mediafire];
+  return [...jkanimePriority, ...priority, ...mp4uploadList, ...other, ...mediafire];
 }
 
 async function obtenerServidoresDesdeApi(episodio) {
