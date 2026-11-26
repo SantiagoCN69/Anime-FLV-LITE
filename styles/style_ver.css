@@ -625,8 +625,13 @@ iframe {
 .botones-reproductor {
   flex: unset
 }
-#botones-reproductor1{
+#botones-reproductor1, #controles-switch {
   flex-wrap: nowrap;
+}
+@media (max-width: 527px) {
+  #controles-switch {
+    flex-wrap: wrap;
+  }
 }
 
 /* Base común de los controles del reproductor: todos son pills iguales;
@@ -684,18 +689,12 @@ iframe {
   cursor: not-allowed !important;
 }
 
-
-.switch-btn {
-  justify-content: start;
-
-}
 @media (hover: hover) {
   .switch-btn:hover {
     filter: brightness(1.3);
   }
 }
 .switch-btn .switch {
-  margin-left: auto;
   width: 36px;
   height: 20px;
   border-radius: 99px;
