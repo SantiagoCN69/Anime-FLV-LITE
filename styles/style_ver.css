@@ -28,7 +28,7 @@ body::before {
   background-repeat: no-repeat;
   z-index: -1;
   opacity: 0;
-  filter: blur(30px) brightness(0.14);
+  filter: blur(30px) brightness(0.12);
 }
 
 body.fondo-animado::before {
@@ -453,7 +453,7 @@ overflow: hidden;
   background-color: var(--p);
   color: var(--t1);
   border-right: 1px solid var(--br);
-  
+  border-bottom: 2px solid transparent;
 }
 #controles button.prefer {
   opacity: 1;
@@ -474,6 +474,7 @@ overflow: hidden;
 #controles button.servidor-activo {
   min-width: 100%;
   transition: min-width 0.3s ease, max-width 0.3s ease;
+  border-bottom: 2px solid var(--btn);
 }
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
