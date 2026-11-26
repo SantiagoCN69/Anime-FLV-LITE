@@ -533,8 +533,18 @@ border-top-right-radius: 14px;
    del ancho y se encoge a su parte cuando llega .cargado-otros. */
 #controles button.servidor-activo {
   min-width: 100%;
-  background: color-mix(in srgb, var(--btn) 80%, transparent);
+  border-bottom: 2px solid var(--btn);
   color: var(--t1);
+}
+#controles button.servidor-activo {
+  min-width: 100%;
+  border-bottom: 2px solid var(--btn);
+  color: var(--t1);
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--btn) 32%, transparent) 0%,
+    var(--br) 80%
+  );
 }
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
