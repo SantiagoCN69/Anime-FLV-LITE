@@ -443,7 +443,7 @@ main > section:nth-child(2) {
     transform: translate3d(-1.2%, -1%, 0) scale(1);
   }
   100% {
-    opacity: .7;
+    opacity: .75;
     transform: translate3d(1.2%, 1%, 0) scale(1.04);
   }
 }
