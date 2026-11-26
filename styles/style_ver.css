@@ -418,20 +418,19 @@ main > section:nth-child(2) {
     color-mix(in srgb, var(--t1) 8%, transparent));
   z-index: -1;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .reproductor-container::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: 15px;
+  inset: -7%;
   background:
-    radial-gradient(ellipse 90% 130% at 15% -10%, color-mix(in srgb, var(--btn) 30%, transparent), transparent 60%),
-    radial-gradient(ellipse 80% 110% at 90% 110%, color-mix(in srgb, var(--btn2) 22%, transparent), transparent 55%),
-    linear-gradient(135deg, color-mix(in srgb, var(--t2) 8%, transparent), transparent 55%);
-  filter: blur(28px);
-  opacity: .45;
+    radial-gradient(ellipse 90% 130% at 15% -10%, color-mix(in srgb, var(--btn) 50%, transparent), transparent 60%),
+    radial-gradient(ellipse 80% 110% at 90% 110%, color-mix(in srgb, var(--btn2) 38%, transparent), transparent 55%),
+    linear-gradient(135deg, color-mix(in srgb, var(--t2) 14%, transparent), transparent 55%);
+  filter: blur(22px);
+  opacity: .5;
   z-index: -1;
   pointer-events: none;
   animation: brillo-reproductor 14s ease-in-out infinite alternate;
@@ -439,12 +438,12 @@ main > section:nth-child(2) {
 
 @keyframes brillo-reproductor {
   0% {
-    opacity: .3;
-    transform: translate3d(-5%, 0, 0) scale(1);
+    opacity: .38;
+    transform: translate3d(-7%, 0, 0) scale(1);
   }
   100% {
-    opacity: .45;
-    transform: translate3d(5%, 0, 0) scale(1.03);
+    opacity: .58;
+    transform: translate3d(7%, 0, 0) scale(1.05);
   }
 }
 #reproductor-container-carga {
