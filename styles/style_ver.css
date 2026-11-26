@@ -407,6 +407,46 @@ main > section:nth-child(2) {
   min-height: 0;
   max-height: 100%;
 }
+
+.reproductor-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--btn) 50%, transparent),
+    color-mix(in srgb, var(--t1) 8%, transparent));
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.reproductor-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  background:
+    radial-gradient(ellipse 90% 130% at 15% -10%, color-mix(in srgb, var(--btn) 45%, transparent), transparent 60%),
+    radial-gradient(ellipse 80% 110% at 90% 110%, color-mix(in srgb, var(--btn2) 35%, transparent), transparent 55%),
+    linear-gradient(135deg, color-mix(in srgb, var(--t2) 12%, transparent), transparent 55%);
+  filter: blur(20px);
+  opacity: .7;
+  z-index: -1;
+  pointer-events: none;
+  animation: brillo-reproductor 14s ease-in-out infinite alternate;
+}
+
+@keyframes brillo-reproductor {
+  0% {
+    opacity: .45;
+    transform: translate3d(-1.2%, -1%, 0) scale(1);
+  }
+  100% {
+    opacity: .7;
+    transform: translate3d(1.2%, 1%, 0) scale(1.04);
+  }
+}
 #reproductor-container-carga {
 position: absolute;
 inset: 0;
@@ -532,8 +572,7 @@ border-top-right-radius: 14px;
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
 }
-#controles button.servidor-activo .server-badge.ad,
-#controles button.servidor-activo .server-badge.ads {
+#controles button.servidor-activo .server-badge {
   background: #fff3c4;
   color: #221a04;
 }
@@ -626,6 +665,9 @@ iframe {
   white-space: nowrap;
   pointer-events: none;
   z-index: 5 ;
+  animation: none;
+  filter: none;
+  opacity: 1;
 }
 
 .botones-reproductor,
