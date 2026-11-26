@@ -1577,7 +1577,7 @@ function reordenarServidores(servidores) {
       priority.push({ ...srv, preferido: true });
     }
     else if (url.includes('mp4upload.com')) {
-      priority.push({ ...srv, preferido: true });
+      priority.push({ ...srv, preferido: true, mp4upload: true });
     }
     else if (url.includes('mediafire.com')) {
       mediafire.push({ ...srv, name: "Descargar" });
@@ -2209,10 +2209,13 @@ function renderizarServidores(todosLosServidores, opciones = {}) {
     badge.className = "server-badge";
     if (srv.vidrift) {
       badge.classList.add("hd");
-      badge.textContent = "HD";
+      badge.textContent = "TOP";
+    } else if (srv.mp4upload) {
+      badge.classList.add("ads");
+      badge.textContent = "ADS";
     } else if (srv.preferido) {
       badge.classList.add("fast");
-      badge.textContent = "FAST";
+      badge.textContent = "HD";
     } else {
       badge.classList.add("ad");
       badge.textContent = "AD";
