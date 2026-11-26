@@ -2713,7 +2713,7 @@ function crearIframeServidor(url, reproduccionId) {
   iframe.width = "100%";
   iframe.height = "100%";
   iframe.style.border = "none";
-  iframe.allowFullscreen = true;
+  iframe.allow = "fullscreen";
   iframe.scrolling = "no";
   if (bloquearAnuncios) iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation";
 
@@ -2834,7 +2834,6 @@ async function mostrarVideo(link, botonSeleccionado) {
       iframe.width = "100%";
       iframe.height = "100%";
       iframe.frameBorder = "0";
-      iframe.allowFullscreen = true;
       iframe.allow = "autoplay; fullscreen";
       iframe.style.border = "0";
       iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-presentation";
