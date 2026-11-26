@@ -215,11 +215,18 @@ main > section:nth-child(2) {
   transform: scale(.95);
 }
 .noticia-titulo {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
   font-size: 1rem;
   color: var(--t1);
   bottom: 10px;
   left: 10px;
+  right: 10px;
+  text-wrap-mode: wrap;
+  height: fit-content;
 }
 
 .noticia-fecha {
@@ -227,7 +234,6 @@ main > section:nth-child(2) {
   left: 10px;
   background: color-mix(in srgb, var(--btn) 30%, transparent);
   color: var(--t1);
-  opacity: .8;
   padding: 3px 8px;
   border-radius: 24px;
   backdrop-filter: blur(20px);
@@ -461,7 +467,7 @@ overflow: hidden;
   justify-content: center;
   gap: 6px;
   flex: 1;
-  min-width: 0;
+  min-width: 100px;
   height: 44px;
   padding: 0 14px;
   border: none;
@@ -473,7 +479,8 @@ overflow: hidden;
   font-size: .8rem;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color .3s, color .3s, filter .3s, transform .3s, opacity .3s;
+  transition: min-width .3s ease, background-color .3s, color .3s,
+    filter .3s, transform .3s, opacity .3s;
 }
 #controles button .server-name {
   padding-top: 1.5px;
@@ -509,9 +516,15 @@ overflow: hidden;
   color: #221a04;
 }
 
+/* Misma animación de antes: el servidor activo arranca ocupando el 100%
+   del ancho y se encoge a su parte cuando llega .cargado-otros. */
 #controles button.servidor-activo {
+  min-width: 100%;
   background: var(--btn);
   color: var(--t1);
+}
+#controles.cargado-otros button.servidor-activo {
+  min-width: 100px;
 }
 #controles button.servidor-activo .server-badge.ad {
   background: #fff3c4;
