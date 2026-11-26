@@ -3295,13 +3295,12 @@ window.addEventListener('message', async (event) => {
   // debugLog(tSalto(), "evento Vidrift recibido:", event.data?.type, event.data?.episode ?? "");
 
   // Vidrift emite este evento al comenzar créditos o el ending. En modo
-  // maratón saltamos tras una pausa de un segundo, sin esperar los cinco
-  // segundos de la tarjeta "Siguiente episodio".
+  // maratón saltamos de inmediato, sin esperar los cinco segundos de la
+  // tarjeta "Siguiente episodio".
   if (event.data?.type === "vidrift:nextup" && modoMaratonActivo) {
     if (saltoOutroVidriftEnCurso) return;
     saltoOutroVidriftEnCurso = true;
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
       const avanzo = await irAlSiguienteCapitulo();
       debugLog("[Vidrift] Outro omitido por modo maratón.", { avanzo });
     } finally {
