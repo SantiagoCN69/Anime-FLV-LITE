@@ -2058,7 +2058,7 @@ function actualizarLayout() {
   const colapsada = document.body.classList.contains('sidebar-collapsed');
 
   // Más susceptible cuando la sidebar está colapsada (1241px), menos cuando está visible (1391px)
-  const activar = (colapsada && ancho >= 1241) || (!colapsada && ancho >= 1391);
+  const activar = (colapsada && ancho >= 1196) || (!colapsada && ancho >= 1346);
   document.body.classList.toggle('layout-horizontal', activar);
 }
 

@@ -2190,7 +2190,7 @@ h4 {
 /* Estilos del sidebar colapsado */
 .sidebar-collapsed .sidebar {
   min-width: unset;
-  width: 80px;
+  width: 70px;
 }
 .sidebar span {
   transition: opacity 0.3s ease, position 0.3s ease, transform .3s;
@@ -2219,7 +2219,7 @@ h4 {
   height: 23px;
 }
 .sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-episodio) {
-  padding-inline:28.5px ;
+  padding-inline:23px ;
 }
 
 .sidebar-collapsed .sidebar li:not(:has(> a)):hover,  
@@ -2235,7 +2235,8 @@ h4 {
 }
 
 .sidebar-collapsed #Collapse-aside {
-  padding-inline:12px ;
+  padding-inline:15.5px ;
+  margin-inline: .5rem;
   width: 25px;
   svg {
     margin-inline-end: 0;
@@ -2254,7 +2255,7 @@ h4 {
   white-space: wrap;
 }
 .sidebar-collapsed #continuar-viendo-sidebar {
-  padding-inline: 12px;
+  padding-inline: 7.5px;
 }
 .sidebar-collapsed .sidebar h2 {
   opacity: 0;
@@ -2267,7 +2268,7 @@ h4 {
 }
 /* main */
 .sidebar-collapsed .content-section {
-  margin-left: calc(80px + 2rem);
+  margin-left: calc(70px + 2rem);
 }
 }
 
@@ -2288,7 +2289,7 @@ footer {
 
 @media (min-width: 601px) {
   .sidebar-collapsed footer {
-    margin-left: 80px;
+    margin-left: 70px;
   }
 }
 
