@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove, deleteDoc, query, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseconfig.js";
-import { observerAnimeCards, aplicarViewTransition, mostrarPildora as mostrarPildoraUtil, crearAnimeCard } from "./utils.js";
+import { observerAnimeCards, aplicarViewTransition, mostrarPildora as mostrarPildoraUtil, crearAnimeCard, scrollFilaUnaTarjeta, attachWheelScrollHorizontal } from "./utils.js";
 import { attachIaGridWheelScroll, loadIaRecommendationsIntoGrid, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 // Inicializar Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
@@ -334,12 +334,7 @@ function renderRelacionados(anime) {
       relacionadosContainer.appendChild(fragment);
 
 // CÓDIGO CORREGIDO
-      timelineContainer.addEventListener('wheel', (evento) => {
-        if (evento.deltaY !== 0) {
-          evento.preventDefault();
-          timelineContainer.scrollLeft += evento.deltaY;
-        }
-      });
+      attachWheelScrollHorizontal(timelineContainer);
 
       if (typeof observerAnimeCards === 'function') {
         observerAnimeCards(relacionadosContainer.querySelectorAll('.anime-card:not(.show)'));
@@ -375,6 +370,12 @@ async function cargarSugerenciasIA(anime) {
   const signal = sugerenciasController.signal;
 
   attachIaGridWheelScroll(grid);
+
+  // Mismo patrón que "Continuar Viendo": botones que desplazan la fila.
+  ['prev', 'next'].forEach(dir => {
+    const btn = section.querySelector(`.scroll-btn-${dir}`);
+    if (btn) btn.onclick = () => scrollFilaUnaTarjeta(grid, dir);
+  });
 
   const tituloActual = formatTitleFromSlug(slugActual);
   const prompt = buildFavoritesAnimePrompt([tituloActual], [tituloActual], '', 7);
@@ -1978,12 +1979,7 @@ document.addEventListener("click", (e) => {
 
 const scrollContainer = document.querySelector('#animes-relacionados');
 
-scrollContainer.addEventListener('wheel', (e) => {
-  if (e.deltaY !== 0) {
-    e.preventDefault(); 
-    scrollContainer.scrollLeft += e.deltaY;
-  }
-}, { passive: false });
+attachWheelScrollHorizontal(scrollContainer);
 
 //modal portada
 const modal = document.createElement('div');

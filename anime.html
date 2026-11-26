@@ -197,7 +197,7 @@
       <a href="" style="width: 60px;" class="genre-link genre-link-cargando" aria-hidden="true"></a>
       <a href="" style="width: 120px;" class="genre-link genre-link-cargando" aria-hidden="true"></a>
     </div>
-    
+
     <div id="botones-estado">
       <a class="btn-estado" id="contenedor-barra-progreso" href="#" aria-label="Ver ahora">
         <span class="cta__ring">
@@ -279,7 +279,19 @@
       <span id="init-loading-relacionados" class="span-carga">Cargando relacionados...</span>
     </section>
     <section id="sugerencias">
-      <h2 class="anime-title-relacionados">Sugerencias</h2>
+      <div class="sugerencias-header">
+        <h2 class="anime-title-relacionados">Sugerencias</h2>
+        <button type="button" class="scroll-btn-prev scroll-btn" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button type="button" class="scroll-btn-next scroll-btn" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
       <div id="anime-grid-sugerencias"></div>
     </section>
 

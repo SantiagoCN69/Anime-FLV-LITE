@@ -1078,7 +1078,7 @@ function actualizarEstadoBotonDoblado(servidores) {
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, runTransaction, arrayUnion } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
-import { mostrarPildora, crearAnimeCard, observerAnimeCards } from "./utils.js";
+import { mostrarPildora, crearAnimeCard, observerAnimeCards, scrollFilaUnaTarjeta, scrollContenedorUnaTarjeta, attachWheelScrollHorizontal } from "./utils.js";
 import { attachIaGridWheelScroll, loadIaRecommendationsIntoGrid, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 
 // Inicialización de Firebase optimizada
@@ -1451,12 +1451,15 @@ async function manejarNoticias() {
 
   initLoadingNoticias.style.display = 'none';
 
-  // Scroll horizontal en pantallas pequeñas
-  contenedorNoticias.addEventListener('wheel', (evento) => {
-    if (evento.deltaY !== 0 && window.innerWidth <= 1100) {
-      evento.preventDefault();
-      contenedorNoticias.scrollLeft += evento.deltaY;
-    }
+  // En pantallas pequeñas la lista es horizontal y la rueda la mueve;
+  // en escritorio es vertical y el scroll nativo ya funciona.
+  attachWheelScrollHorizontal(contenedorNoticias, () => window.innerWidth <= 1100);
+
+  // Botones de scroll: el eje lo decide el layout (fila <=1100px, columna arriba).
+  const noticiasHeader = document.querySelector('.noticias-header');
+  ['prev', 'next'].forEach(dir => {
+    const btn = noticiasHeader?.querySelector(`.scroll-btn-${dir}`);
+    if (btn) btn.onclick = () => scrollContenedorUnaTarjeta(contenedorNoticias, dir);
   });
 }
 
@@ -1827,6 +1830,12 @@ async function cargarSugerenciasIA() {
 
   attachIaGridWheelScroll(grid);
 
+  // Mismo patrón que "Continuar Viendo": botones que desplazan la fila.
+  ['prev', 'next'].forEach(dir => {
+    const btn = section.querySelector(`.scroll-btn-${dir}`);
+    if (btn) btn.onclick = () => scrollFilaUnaTarjeta(grid, dir);
+  });
+
   const tituloActual = tituloAnime || animeId.replaceAll('-', ' ');
   const prompt = buildFavoritesAnimePrompt([tituloActual], [tituloActual], '', 7);
 
@@ -2089,12 +2098,7 @@ async function cargarVideoDesdeEpisodioInterno(index) {
 
 let animacionInicialCompletada = false;
 
-document.getElementById("controles")?.addEventListener("wheel", (evento) => {
-  if (evento.deltaY !== 0) {
-    evento.preventDefault();
-    evento.currentTarget.scrollLeft += evento.deltaY;
-  }
-}, { passive: false });
+attachWheelScrollHorizontal(document.getElementById("controles"));
 
 function renderizarServidores(todosLosServidores, opciones = {}) {
   const servidorAnterior = embeds[servidorActualIndex];

@@ -1,6 +1,6 @@
 import { db, auth } from './firebase-login.js';
 import {collection, doc, getDocs, getDoc, updateDoc, setDoc, query, orderBy, limit, where, startAfter} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition, crearAnimeCard, scrollFilaUnaTarjeta } from './utils.js';
 import { buildFavoritesAnimePrompt, fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName } from './ai-recommendations.js';
 import { fetchMALRanking, MAL_RANKING_TYPES, MAL_RANKING_LABELS } from './mal-api.js';
 
@@ -1590,42 +1590,6 @@ function deduplicarAnimes(animes) {
     vistos.add(id);
     return true;
   });
-}
-
-// Desplaza una fila con scroll horizontal hasta dejar completamente visible
-// la primera tarjeta cortada en el borde (snap por tarjeta, no por px fijos).
-function scrollFilaUnaTarjeta(container, dir) {
-  const cards = Array.from(container.children);
-  if (!cards.length) return;
-
-  const limite = container.clientWidth;
-  const maxScroll = Math.max(0, container.scrollWidth - limite);
-  const posicionSiguiente = (desde) => {
-    const cortada = cards.find(c => c.offsetLeft + c.offsetWidth > desde + limite + 1);
-    return cortada ? Math.min(cortada.offsetLeft, maxScroll) : null;
-  };
-
-  if (dir === 'next') {
-    const destino = posicionSiguiente(container.scrollLeft);
-    if (destino !== null && destino > container.scrollLeft) {
-      container.scrollTo({ left: destino, behavior: 'smooth' });
-    }
-    return;
-  }
-
-  if (container.scrollLeft <= 0) return;
-
-  const posiciones = [0];
-  let actual = 0;
-  while (actual < maxScroll) {
-    const siguiente = posicionSiguiente(actual);
-    if (siguiente === null || siguiente <= actual) break;
-    posiciones.push(siguiente);
-    actual = siguiente;
-  }
-
-  const anterior = posiciones.reverse().find(p => p < container.scrollLeft - 1);
-  container.scrollTo({ left: anterior ?? 0, behavior: 'smooth' });
 }
 
 export async function cargarPopularesPreview() {

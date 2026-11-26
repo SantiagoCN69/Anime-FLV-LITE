@@ -1,4 +1,4 @@
-import { observerAnimeCards, aplicarViewTransition, crearAnimeCard } from './utils.js';
+import { observerAnimeCards, aplicarViewTransition, crearAnimeCard, attachWheelScrollHorizontal } from './utils.js';
 import { mostrarSeccionDesdesearch } from './index.js';
 
 // --- CONSTANTES GLOBALES ---
@@ -379,13 +379,7 @@ function bindFilterEvents() {
 
     // Scroll Horizontal
     ['#filtro-letras-av1', '#pagination-directorio-av1'].forEach(selector => {
-        const el = document.querySelector(selector);
-        el?.addEventListener('wheel', (e) => {
-            if (e.deltaY !== 0) {
-                e.preventDefault();
-                el.scrollLeft += e.deltaY;
-            }
-        }, { passive: false });
+        attachWheelScrollHorizontal(document.querySelector(selector));
     });
 }
 

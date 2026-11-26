@@ -89,7 +89,7 @@ main > section:nth-child(2) {
   width: 100%;
   display: none;
   flex-direction: column;
-  gap: 15px;
+  gap: 1rem;
   flex: 0 0 100%;
 }
 #noticias_container {
@@ -102,6 +102,26 @@ main > section:nth-child(2) {
   gap: 15px;
   position: relative;
   height: clamp(400px, calc(100dvh - 219px), 1000px);
+}
+/* La barra solo se oculta cuando la lista es horizontal (<=1100px);
+   en escritorio el scroll vertical muestra la barra nativa. */
+@media (max-width: 1100px) {
+  #noticias_container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  #noticias_container::-webkit-scrollbar {
+    display: none;
+  }
+}
+@media (min-width: 1101px) {
+  /* Vertical: sin botones ni espacio extra, solo el título. */
+  .noticias-header {
+    min-height: 0;
+  }
+  .noticias-header .scroll-btn {
+    display: none;
+  }
 }
 
 .tarjeta-noticia {
@@ -920,12 +940,11 @@ mask: url('/icons/check-svgrepo-com.svg') no-repeat center / contain;
 
   #noticias_container {
     padding-right: unset;
-    padding-bottom: 5px;
     width: 100%;
     flex-direction: row;
     overflow: hidden;
     overflow-x: auto;
-    height: 150px;
+    height: fit-content;
   }
   #controles {
     overflow: auto;

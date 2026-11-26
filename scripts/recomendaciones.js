@@ -3,7 +3,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
-import { observerAnimeCards, crearAnimeCard } from "./utils.js";
+import { observerAnimeCards, crearAnimeCard, attachWheelScrollHorizontal } from "./utils.js";
 import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName, buildCustomSearchAnimePrompt, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 
 // Inicialización de Firebase
@@ -529,13 +529,7 @@ if (btnRandom) {
     });
 }
 
-// Scroll horizontal
+// Scroll horizontal: solo se captura la rueda si la fila aún puede
+// desplazarse en esa dirección; en los bordes scrollea la página.
 const contenedores = document.querySelectorAll(".grid-animes.Recomendaciones");
-contenedores.forEach((contenedor) => {
-    contenedor.addEventListener('wheel', (evento) => {
-        if (evento.deltaY !== 0) {
-            evento.preventDefault();
-            contenedor.scrollLeft += evento.deltaY; 
-        }
-    });
-});
+contenedores.forEach((contenedor) => attachWheelScrollHorizontal(contenedor));

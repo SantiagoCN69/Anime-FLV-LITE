@@ -1,3 +1,5 @@
+import { attachWheelScrollHorizontal } from './utils.js';
+
 const IA_CHAT_URL = 'https://backend-ia-anime.onrender.com/api/chat';
 const SEARCH_URL = 'https://backend-animeflv-lite.onrender.com/api/search';
 
@@ -158,14 +160,7 @@ export async function fetchRecommendationsFromPrompt(prompt, signal, max = 5) {
 }
 
 export function attachIaGridWheelScroll(grid) {
-  if (!grid) return;
-
-  grid.onwheel = e => {
-    if (e.deltaY === 0) return;
-
-    e.preventDefault();
-    grid.scrollLeft += e.deltaY;
-  };
+  attachWheelScrollHorizontal(grid);
 }
 
 export async function loadIaRecommendationsIntoGrid({

@@ -1441,7 +1441,6 @@ svg.cta__play {
   width: 100%;
   color:var(--t1);
   font-weight: 600;
-  margin-bottom: 1rem;
   font-family: 'Oxanium', sans-serif;
 }
 #relacionados {
@@ -1452,6 +1451,7 @@ position: relative;
 margin-bottom: 0;
 }
 #sugerencias {
+gap: 1rem;
 display: none;
 grid-area: container5;
 flex-direction: column;

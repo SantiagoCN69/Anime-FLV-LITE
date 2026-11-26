@@ -1969,7 +1969,6 @@ h4 {
   overflow-y: hidden;
   display: flex;
   gap: 1rem;
-  padding-block: 5px;
   min-height: 200px;
   height: fit-content;
 }
@@ -1989,6 +1988,81 @@ h4 {
 
 #anime-grid-sugerencias {
   overflow-x: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#anime-grid-sugerencias::-webkit-scrollbar {
+  display: none;
+}
+
+.sugerencias-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+.sugerencias-header h2,
+.sugerencias-header h3 {
+  flex: 1;
+}
+
+/* Estilos para botones de scroll horizontal */
+.scroll-container-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.scroll-btn {
+  position: absolute;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 99px;
+  background: rgba(var(--bgt), .1);
+  color: var(--t1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  opacity: 1;
+  pointer-events: auto;
+  transition: all .3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+@media (hover: none) {
+  .scroll-btn, .hero-slider__prev, .hero-slider__next {
+    display: none;
+  }
+}
+.scroll-btn:hover {
+  filter: brightness(2);
+}
+
+.scroll-btn:active {
+  transform: scale(0.95);
+}
+
+.scroll-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform .3s;
+}
+
+.scroll-btn-prev {
+  right: calc(40px + 10px);
+}
+
+.scroll-btn-next {
+  right: 0;
+}
+
+@media (max-width: 370px) {
+  .scroll-btn {
+    display: none;
+  }
 }
 
 #sugerencias .anime-card {

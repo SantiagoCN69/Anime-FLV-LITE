@@ -1,4 +1,4 @@
-import { observerAnimeCards, crearAnimeCard } from './utils.js';
+import { observerAnimeCards, crearAnimeCard, attachWheelScrollHorizontal } from './utils.js';
 import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from './ai-recommendations.js';
 
 const TEXTOS_CARGA_SERVIDORES = [
@@ -337,14 +337,7 @@ function renderSinResultados(container, searchTerm, searchId) {
   `;
   if (loadingEl) container.prepend(loadingEl);
   const scrollHorizontal = container.querySelector('#anime-grid-sin-resultados');
-  if (scrollHorizontal) {
-    scrollHorizontal.onwheel = (e) => {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        scrollHorizontal.scrollLeft += e.deltaY;
-      }
-    };
-  }
+  attachWheelScrollHorizontal(scrollHorizontal);
 
   const iaSection = document.createElement('div');
   iaSection.innerHTML = IA_SECTION_HTML.trim();

@@ -190,6 +190,82 @@ export function crearAnimeCard(anime, opciones = {}) {
     return card;
 }
 
+// Desplaza un contenedor hasta dejar completamente visible la primera
+// tarjeta cortada en el borde (snap por tarjeta, no por px fijos).
+function scrollSnapPorTarjeta(container, dir, horizontal) {
+  const cards = Array.from(container.children);
+  if (!cards.length) return;
+
+  // Propiedades del eje activo: horizontal (x) o vertical (y).
+  const eje = horizontal
+    ? { pos: 'offsetLeft', tam: 'offsetWidth', vista: 'clientWidth', total: 'scrollWidth', scroll: 'scrollLeft' }
+    : { pos: 'offsetTop', tam: 'offsetHeight', vista: 'clientHeight', total: 'scrollHeight', scroll: 'scrollTop' };
+
+  const limite = container[eje.vista];
+  const maxScroll = Math.max(0, container[eje.total] - limite);
+  const scrollActual = container[eje.scroll];
+
+  const irA = (pos) => container.scrollTo(
+    horizontal ? { left: pos, behavior: 'smooth' } : { top: pos, behavior: 'smooth' }
+  );
+
+  // Primera tarjeta que sobresale por el borde visible desde `desde`.
+  const snapDesde = (desde) => {
+    const cortada = cards.find(c => c[eje.pos] + c[eje.tam] > desde + limite + 1);
+    return cortada ? Math.min(cortada[eje.pos], maxScroll) : null;
+  };
+
+  if (dir === 'next') {
+    const destino = snapDesde(scrollActual);
+    if (destino !== null && destino > scrollActual) irA(destino);
+    return;
+  }
+
+  if (scrollActual <= 0) return;
+
+  // Posiciones de snap alcanzables: 0 y el inicio de cada tarjeta cortada.
+  const posiciones = [0];
+  for (let actual = 0; actual < maxScroll;) {
+    const siguiente = snapDesde(actual);
+    if (siguiente === null || siguiente <= actual) break;
+    posiciones.push(siguiente);
+    actual = siguiente;
+  }
+
+  irA(posiciones.reverse().find(p => p < scrollActual - 1) ?? 0);
+}
+
+export function scrollFilaUnaTarjeta(container, dir) {
+  scrollSnapPorTarjeta(container, dir, true);
+}
+
+// Igual que scrollFilaUnaTarjeta pero elige el eje según el layout actual:
+// horizontal si el contenedor es una fila (flex-direction: row), vertical si no.
+export function scrollContenedorUnaTarjeta(container, dir) {
+  const horizontal = getComputedStyle(container).flexDirection === 'row';
+  scrollSnapPorTarjeta(container, dir, horizontal);
+}
+
+// Convierte la rueda vertical en scroll horizontal, pero solo si el
+// contenedor aún puede desplazarse en esa dirección; en los bordes el
+// scroll pasa a la página para no atrapar el cursor.
+// `condicion` (opcional) permite limitar cuándo aplica, p. ej. por viewport.
+export function attachWheelScrollHorizontal(element, condicion = () => true) {
+  if (!element) return;
+  element.addEventListener('wheel', (evento) => {
+    if (evento.deltaY === 0 || !condicion()) return;
+
+    const maxScroll = element.scrollWidth - element.clientWidth;
+    const puede = evento.deltaY > 0
+      ? element.scrollLeft < maxScroll - 1
+      : element.scrollLeft > 0;
+    if (!puede) return;
+
+    evento.preventDefault();
+    element.scrollLeft += evento.deltaY;
+  }, { passive: false });
+}
+
 //pildora visual check
 export function mostrarPildora(mensaje, tipo = "default", onClick = null, duracion = 3000) {
   document.querySelector('.pildora')?.remove();

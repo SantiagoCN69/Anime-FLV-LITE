@@ -1,4 +1,4 @@
-import { observerAnimeCards, crearAnimeCard } from "./utils.js";
+import { observerAnimeCards, crearAnimeCard, attachWheelScrollHorizontal } from "./utils.js";
 import { fetchMALRanking, MAL_RANKING_TYPES } from "./mal-api.js";
 
 let currentPage = 1;
@@ -170,10 +170,4 @@ document.addEventListener('visibilitychange', () => {
 
 
 const scrollContainer = document.querySelector('#pagination-populares');
-
-scrollContainer?.addEventListener('wheel', (e) => {
-  if (e.deltaY !== 0) {
-    e.preventDefault();
-    scrollContainer.scrollLeft += e.deltaY;
-  }
-}, { passive: false });
+attachWheelScrollHorizontal(scrollContainer);
