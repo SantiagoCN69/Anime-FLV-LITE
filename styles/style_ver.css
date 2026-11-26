@@ -581,10 +581,7 @@ border-top-right-radius: 14px;
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
 }
-#controles button.servidor-activo .server-badge:not(.hd) {
-  background: #fff3c4;
-  color: #221a04;
-}
+
 @media (hover: hover) {
   #controles button:hover {
     filter: brightness(1.25);
