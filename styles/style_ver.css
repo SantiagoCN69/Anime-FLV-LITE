@@ -446,6 +446,7 @@ overflow: hidden;
 /* Los servidores son pills individuales (como los switch-btn), ya no una
    barra segmentada: cada botón flota con su propio fondo redondeado. */
 #controles {
+  height: 44px;
   display: flex;
   align-items: center;
   /* gap: 8px; */
@@ -540,11 +541,7 @@ border-top-right-radius: 14px;
   min-width: 100%;
   border-bottom: 2px solid var(--btn);
   color: var(--t1);
-  background: linear-gradient(
-    to top,
-    color-mix(in srgb, var(--btn) 32%, transparent) 0%,
-    var(--br) 80%
-  );
+
 }
 #controles.cargado-otros button.servidor-activo {
   min-width: 100px;
