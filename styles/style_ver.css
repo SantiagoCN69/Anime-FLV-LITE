@@ -427,11 +427,11 @@ main > section:nth-child(2) {
   inset: 0;
   border-radius: 15px;
   background:
-    radial-gradient(ellipse 90% 130% at 15% -10%, color-mix(in srgb, var(--btn) 45%, transparent), transparent 60%),
-    radial-gradient(ellipse 80% 110% at 90% 110%, color-mix(in srgb, var(--btn2) 35%, transparent), transparent 55%),
-    linear-gradient(135deg, color-mix(in srgb, var(--t2) 12%, transparent), transparent 55%);
-  filter: blur(20px);
-  opacity: .7;
+    radial-gradient(ellipse 90% 130% at 15% -10%, color-mix(in srgb, var(--btn) 30%, transparent), transparent 60%),
+    radial-gradient(ellipse 80% 110% at 90% 110%, color-mix(in srgb, var(--btn2) 22%, transparent), transparent 55%),
+    linear-gradient(135deg, color-mix(in srgb, var(--t2) 8%, transparent), transparent 55%);
+  filter: blur(28px);
+  opacity: .45;
   z-index: -1;
   pointer-events: none;
   animation: brillo-reproductor 14s ease-in-out infinite alternate;
@@ -439,12 +439,12 @@ main > section:nth-child(2) {
 
 @keyframes brillo-reproductor {
   0% {
-    opacity: .45;
-    transform: translate3d(-7%, 0, 0) scale(1);
+    opacity: .3;
+    transform: translate3d(-5%, 0, 0) scale(1);
   }
   100% {
-    opacity: .7;
-    transform: translate3d(7%, 0, 0) scale(1.05);
+    opacity: .45;
+    transform: translate3d(5%, 0, 0) scale(1.03);
   }
 }
 #reproductor-container-carga {
