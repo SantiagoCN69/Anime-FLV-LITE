@@ -1113,7 +1113,7 @@ svg.cta__play {
   font-size: 0.9rem;
   position: absolute;
   background: var(--p);
-  bottom: 5px;
+  top: 5px;
   left: 5px;
   z-index: 2;
   color: rgb(var(--bgt),.6);
@@ -1280,7 +1280,7 @@ svg.cta__play {
 
 .icon-eye {
   width: 45px;
-  height: 40px;
+  height: 35px;
   position: absolute;
   top: 5px;
   right: 5px;
@@ -1304,8 +1304,8 @@ svg.cta__play {
 }
 .ep-visto .icon-eye::after, .ep-no-visto .icon-eye::after {
   content: "";
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   position: absolute;
   top: 50%;
   left: 50%;
