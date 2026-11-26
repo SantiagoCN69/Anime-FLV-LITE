@@ -2962,8 +2962,17 @@ async function mostrarVideo(link, botonSeleccionado) {
             iframe.contentWindow.postMessage({ type: "vidrift:set", server: siguienteServidor.value }, ORIGEN_VIDRIFT);
           } else if (!avisoSubEspanolAgotado && Array.isArray(event.data.servers) && event.data.servers.length > 0) {
             avisoSubEspanolAgotado = true;
+            const siguienteIndicePagina = embeds.findIndex((servidor, indice) =>
+              indice > servidorActualIndex && !servidor.url?.includes("mediafire.com")
+            );
+            const nombreSiguiente = siguienteIndicePagina === -1
+              ? null
+              : nombreVisibleServidor(embeds[siguienteIndicePagina], siguienteIndicePagina);
             mostrarPildora(
-              "Server sin subtítulos en español. Prueba el siguiente.", "default",
+              nombreSiguiente
+                ? `Server sin subtítulos en español. Cambia a ${nombreSiguiente}.`
+                : "Server sin subtítulos en español.",
+              "default",
               () => intentarSiguienteServidor(reproduccionId, "Vidrift sin subtítulos en español", false), 6000
             );
             if (servidorActual && servidorActual !== servidorVidriftOriginal) {
