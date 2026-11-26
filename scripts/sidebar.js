@@ -5,7 +5,8 @@ const SIDEBAR_CONFIG = {
   THRESHOLD: 1,
   MIN_WIDTH: 600,
   SWIPE_THRESHOLD: 50,
-  VERTICAL_THRESHOLD: 50
+  VERTICAL_THRESHOLD: 50,
+  HOVER_DELAY: 200
 };
 
 // ============================================================================
@@ -32,6 +33,14 @@ function inicializarSidebar(sidebarSelector = '.sidebar', toggleId = 'menu-toggl
   let touchEndX = 0;
   let touchEndY = 0;
   let touchStartedOnRestrictedArea = false;
+  let hoverTimer = null;
+
+  const clearHoverTimer = () => {
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+      hoverTimer = null;
+    }
+  };
 
   // Set para búsquedas en O(1) de los elementos excluidos del gesto swipe
   const idsRestringidos = new Set([
@@ -43,14 +52,24 @@ function inicializarSidebar(sidebarSelector = '.sidebar', toggleId = 'menu-toggl
 
   // Manejadores de eventos internos
   const handleMouseMove = (event) => {
-    if (sidebar.classList.contains('active') || window.innerWidth <= SIDEBAR_CONFIG.MIN_WIDTH) return;
+    if (window.innerWidth <= SIDEBAR_CONFIG.MIN_WIDTH || sidebar.classList.contains('active')) {
+      clearHoverTimer();
+      return;
+    }
 
     if (!rafPending) {
       rafPending = true;
       requestAnimationFrame(() => {
         if (event.clientX < SIDEBAR_CONFIG.THRESHOLD) {
-          sidebar.classList.add('active');
-          menuToggle.classList.add('active');
+          if (!hoverTimer) {
+            hoverTimer = setTimeout(() => {
+              sidebar.classList.add('active');
+              menuToggle.classList.add('active');
+              hoverTimer = null;
+            }, SIDEBAR_CONFIG.HOVER_DELAY);
+          }
+        } else {
+          clearHoverTimer();
         }
         rafPending = false;
       });
@@ -75,6 +94,7 @@ function inicializarSidebar(sidebarSelector = '.sidebar', toggleId = 'menu-toggl
 
   // Asignación de Listeners
   window.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseleave', clearHoverTimer);
   
   sidebar.addEventListener('mouseleave', () => {
     sidebar.classList.remove('active');
