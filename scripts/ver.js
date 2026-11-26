@@ -721,6 +721,7 @@ function persistirCacheTmdbVidrift() {
       mediaType: cacheTmdbVidrift.mediaType,
       temporadaEfectiva: cacheTmdbVidrift.temporadaEfectiva,
       offsetEpisodio: cacheTmdbVidrift.offsetEpisodio,
+      tipoVerificado: cacheTmdbVidrift.tipoVerificado === true,
       guardadoEn: Date.now()
     }));
   } catch {
@@ -744,6 +745,7 @@ function cargarCacheTmdbVidriftPersistida() {
       mediaType: datos.mediaType === "movie" ? "movie" : "tv",
       temporadaEfectiva: datos.temporadaEfectiva ?? null,
       offsetEpisodio: Number(datos.offsetEpisodio) || 0,
+      tipoVerificado: datos.tipoVerificado === true,
       confiable: true
     };
     episodioOffsetTemporadaVidrift = cacheTmdbVidrift.offsetEpisodio;
@@ -2276,7 +2278,14 @@ function cacheTmdbEsValida(temporadaEfectiva) {
     && cacheTmdbVidrift.temporadaEfectiva === temporadaEfectiva;
 }
 
-function guardarCacheTmdbVidrift(tmdbId, tmdbSeason, mediaType, temporadaEfectiva = null, offsetEpisodio = 0) {
+function guardarCacheTmdbVidrift(
+  tmdbId,
+  tmdbSeason,
+  mediaType,
+  temporadaEfectiva = null,
+  offsetEpisodio = 0,
+  tipoVerificado = true
+) {
   cacheTmdbVidrift = {
     animeId,
     tmdbId,
@@ -2284,6 +2293,7 @@ function guardarCacheTmdbVidrift(tmdbId, tmdbSeason, mediaType, temporadaEfectiv
     mediaType: mediaType === "movie" ? "movie" : "tv",
     temporadaEfectiva,
     offsetEpisodio,
+    tipoVerificado,
     confiable: true
   };
   persistirCacheTmdbVidrift();
@@ -2302,10 +2312,75 @@ function recordarDocumentoAnime(datos) {
   sembrarCacheTmdbDesdeDatos(datos);
 }
 
+// Algunos enlaces llegan con el ID numérico de TMDB directamente en `id`
+// (por ejemplo, /ver?id=671&episode=1). Buscar el texto "671" como título
+// nunca encuentra una coincidencia útil; Vidrift puede usar ese ID de forma
+// directa incluso si Firestore y la API del catálogo no están disponibles.
+function obtenerTmdbIdDirectoDesdeAnimeId() {
+  const id = String(animeId || "").trim();
+  return /^\d+$/.test(id) && Number(id) > 0 ? Number(id) : null;
+}
+
+// Un ID numérico puede apuntar a una serie o a una película. Se consultan
+// ambos recursos concretos, no el buscador de títulos. Si TMDB no responde,
+// se conserva TV como intento de última instancia para que Vidrift siga
+// mostrando su propio estado en vez de sustituir el iframe.
+async function resolverTipoDirectoParaVidrift(tmdbId) {
+  const existe = ruta => consultarTMDB(ruta, {}).then(() => true).catch(() => false);
+  const [esTv, esPelicula] = await Promise.all([
+    existe(`tv/${tmdbId}`),
+    existe(`movie/${tmdbId}`)
+  ]);
+
+  if (esTv) return { mediaType: "tv", verificado: true };
+  if (esPelicula) return { mediaType: "movie", verificado: true };
+  return { mediaType: "tv", verificado: false };
+}
+
+// Los espacios de IDs de película y serie en TMDB son independientes: el
+// mismo número puede existir en ambos (p. ej. 671 = una serie y Harry
+// Potter). Cuando el embed /tv/ agota sus fuentes se usa esto para saber
+// si existe un /movie/ alternativo antes de rendirse.
+async function existePeliculaTmdb(tmdbId) {
+  try {
+    await consultarTMDB(`movie/${tmdbId}`, {});
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function resolverDatosTmdbVidrift() {
   if (promesaTmdbVidrift) return promesaTmdbVidrift;
 
   promesaTmdbVidrift = (async () => {
+    const tmdbIdDirecto = obtenerTmdbIdDirectoDesdeAnimeId();
+    if (tmdbIdDirecto) {
+      // Las cachés previas no tenían `tipoVerificado`; se recalculan una vez
+      // para poder corregir el caso en que el ID numérico sea una película.
+      if (
+        cacheTmdbVidrift?.animeId === animeId
+        && Number(cacheTmdbVidrift.tmdbId) === tmdbIdDirecto
+        && cacheTmdbVidrift.tipoVerificado
+      ) {
+        episodioOffsetTemporadaVidrift = 0;
+        return cacheTmdbVidrift;
+      }
+
+      const { mediaType, verificado } = await resolverTipoDirectoParaVidrift(tmdbIdDirecto);
+      episodioOffsetTemporadaVidrift = 0;
+      guardarCacheTmdbVidrift(tmdbIdDirecto, 1, mediaType, 1, 0, verificado);
+      debugLog("[Vidrift] Usando el ID numérico de la URL directamente.", {
+        animeId,
+        tmdbId: tmdbIdDirecto,
+        mediaType,
+        verificado,
+        temporada: 1,
+        episodio: episodioActualIndex
+      });
+      return cacheTmdbVidrift;
+    }
+
     // Caché ya resuelta (memoria o localStorage): animeId y temporada
     // efectiva son fijos por página, así que no hace falta volver a
     // consultar Firestore/TMDB ni la cadena de relations de la API.
@@ -2659,9 +2734,7 @@ async function mostrarVideo(link, botonSeleccionado) {
         showTitle: "1",
         // hide: "episodes",
         // URLSearchParams codifica los espacios; no pasar el valor ya codificado.
-        font: "Bebas Neue",
-        // hide: "episodes",
-        // URLSearchParams codifica los espacios; no pasar el valor ya codificado.
+        font: "IBM%20Plex%20Sans",
         autoskip: modoMaratonActivo ? "1" : "0",
         autonext: modoMaratonActivo ? "1" : "0"
       });
@@ -2962,6 +3035,32 @@ async function mostrarVideo(link, botonSeleccionado) {
 
         clearInterval(sondeoEstadoFallosVidrift);
         window.removeEventListener("message", vigilarFallosVidrift);
+
+        // IDs compartidos entre serie y película en TMDB: si /tv/ no tiene
+        // fuentes pero /movie/ existe, se reintenta como película antes de
+        // saltar al siguiente servidor externo. La caché se corrige para
+        // que la próxima visita vaya directo a /movie/.
+        if (!esPelicula) {
+          existePeliculaTmdb(tmdbId).then(esPeliculaAlternativa => {
+            if (reproduccionId !== reproduccionActualId) return;
+            if (!esPeliculaAlternativa) {
+              intentarSiguienteServidor(reproduccionId, "Vidrift agotó todas sus fuentes para este título");
+              return;
+            }
+            guardarCacheTmdbVidrift(
+              tmdbId,
+              tmdbSeason,
+              "movie",
+              cacheTmdbVidrift?.temporadaEfectiva ?? null,
+              0,
+              true
+            );
+            debugLog("[Vidrift] /tv/ agotó sus fuentes; se reintenta como película.", { animeId, tmdbId });
+            cargarIframeConTMDB(tmdbId, 1, "movie");
+          });
+          return;
+        }
+
         intentarSiguienteServidor(reproduccionId, "Vidrift agotó todas sus fuentes para este título");
       };
       window.addEventListener("message", vigilarFallosVidrift);
