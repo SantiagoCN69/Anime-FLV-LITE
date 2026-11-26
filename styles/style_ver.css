@@ -733,7 +733,7 @@ iframe {
 }
 .switch-btn.activo .switch-thumb {
   transform: translateX(16px);
-  background: var(--b);
+  background: var(--br);
   opacity: 1;
 }
 /* Colores propios por control, como tenían antes del rediseño */
