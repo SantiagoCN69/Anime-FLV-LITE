@@ -1493,9 +1493,20 @@ color: var(--p);
   /* opacity: 1 !important;
   visibility: visible !important; */
 }
-
-.continue-card:hover .container-img > img:first-of-type, #Recomendaciones .anime-card:hover .cover {
-  transform: scale(1.25);
+@media (hover: hover) {
+  .continue-card:hover .container-img > img:first-of-type, #Recomendaciones .anime-card:hover .cover {
+    transform: scale(1.25);
+  }
+  .continue-card:hover .container-img::after {
+    bottom: -50% !important;
+    height: 60%;
+    border-radius: 0px;
+  }
+  
+  .anime-card:hover .card-thumbnail.container-img,
+#populares-preview .anime-card:hover .container-img {
+  transform: translate(0) !important;
+} 
 }
 
 /* Contenedor de la imagen y barra */
@@ -1504,10 +1515,7 @@ color: var(--p);
   aspect-ratio: 5/6;
   border-radius: 13px;
 }
-.anime-card:hover .card-thumbnail.container-img,
-#populares-preview .anime-card:hover .container-img {
-  transform: translate(0) !important;
-} 
+
 .card-thumbnail img {
   width: 100%;
   height: 100%;
@@ -1517,6 +1525,7 @@ color: var(--p);
 .continue-card .container-img::after {
   bottom: 0 !important;
 }
+
 /* Badge del Episodio */
 .ep-badge {
   bottom: 10px !important; /* Espacio para que no pise la barra */
