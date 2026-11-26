@@ -480,7 +480,7 @@ border-top-right-radius: 14px;
   color: var(--t1);
   font-family: 'Zen Kaku Gothic New', sans-serif;
   /* font-weight: 600; */
-  font-size: .8rem;
+  font-size: 12px;
   white-space: nowrap;
   cursor: pointer;
   transition: min-width .3s ease, background-color .3s, color .3s,
