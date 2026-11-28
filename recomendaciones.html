@@ -45,6 +45,22 @@
         <div id="lista-sugerencias" class="lista-sugerencias" style="display: none;">
         </div>
       </div>
+      <div class="header-section header-con-subtitulo">
+        <div>
+        <h3 class="Recomendaciones-section-title">Personalizadas</h3>
+        <span>Resultados generados por tu búsqueda</span>
+        </div>
+        <button type="button" class="scroll-btn-prev scroll-btn" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button type="button" class="scroll-btn-next scroll-btn" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
       <div class="grid-animes Recomendaciones" id="recomendaciones-personalizadas">
         <div class="anime-card show carga generando Recomendaciones-card">
           <div class="container-img"></div>
@@ -71,13 +87,20 @@
 
     <section class="favoritos">
       <div class="header-con-subtitulo header-section">
-        <svg class="svg-header" width="65" height="65" viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M31.939 16.483C33.8463 6.94615 48.5064 6.34721 54.8275 12.6683C60.9427 18.7833 60.5497 29.2014 54.8275 35.5567L31.939 58.4452L9.05048 35.5567C6.0156 32.5214 4.31067 28.4048 4.31067 24.1125C4.31067 19.8202 6.0156 15.7036 9.05048 12.6683C14.9633 6.75541 30.0316 6.94615 31.939 16.483Z" stroke="currentColor" class="svg-stroke-current" stroke-width="3.80521" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
         <div>
         <h3 class="Recomendaciones-section-title">Basadas en Favoritos</h3>
         <span>Análisis de anime guardados en tu cuenta</span>
         </div>
+        <button type="button" class="scroll-btn-prev scroll-btn" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button type="button" class="scroll-btn-next scroll-btn" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
       </div>
         <div class="grid-animes Recomendaciones" id="recomendaciones-favoritos">
           <div class="anime-card show carga Recomendaciones-card">
@@ -106,7 +129,7 @@
 
   <div class="acciones-fav">
         <button type="button" id="generar-nuevas" class="btn-generar">
-          <span id="textbtngenerarfav">Generar Nuevas Recomendaciones</span>
+          <span id="textbtngenerarfav">Generar</span>
         </button>
         <!-- Nuevo input libre para especificaciones extra -->
         <input type="text" id="filtro-extra" placeholder="Especificaciones extra (ej. terror, cortos, sin mechas...)">

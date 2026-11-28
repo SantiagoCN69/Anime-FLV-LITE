@@ -1,9 +1,9 @@
 // Importaciones de Firebase y otras dependencias
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebaseconfig.js";
-import { observerAnimeCards, crearAnimeCard, attachWheelScrollHorizontal } from "./utils.js";
+import { observerAnimeCards, crearAnimeCard, attachWheelScrollHorizontal, scrollFilaUnaTarjeta } from "./utils.js";
 import { fetchIAResponse, parseAnimeNamesFromResponse, resolveAnimeByName, buildCustomSearchAnimePrompt, buildFavoritesAnimePrompt } from "./ai-recommendations.js";
 
 // Inicialización de Firebase
@@ -73,11 +73,6 @@ function fusionarEpisodiosConGuardados(episodiosApi = [], episodiosGuardados = [
             }
         }
     });
-
-    const contenedorFavoritos = document.getElementById('recomendaciones-favoritos');
-    if (contenedorFavoritos) {
-      observerAnimeCards(contenedorFavoritos.querySelectorAll('.anime-card:not(.show)'));
-    }
 
     // Generar una búsqueda inicial. Si la URL trae ?q=, se prioriza esa búsqueda.
     setTimeout(() => {
@@ -185,22 +180,17 @@ async function obtenerAnimesVistos() {
     }
 }
 
-// Evento Generar Nuevas (Con el input extra añadido)
-const btnGenerarNuevas = document.getElementById("generar-nuevas");
-if (btnGenerarNuevas) {
-    btnGenerarNuevas.addEventListener("click", async () => {
-        const texto = document.getElementById("textbtngenerarfav");
-        const inputFiltro = document.getElementById("filtro-extra");
-        const filtroExtra = inputFiltro ? inputFiltro.value.trim() : "";
-    
-    texto.innerHTML = 'Generando... <span id="contador1">99s</span>';
+// Estado "Generando...": limpia el contenedor, pinta 5 tarjetas de carga
+// y arranca el contador. Devuelve el elemento del botón y un stop() para
+// el intervalo, que debe llamarse siempre al terminar (éxito o error).
+function iniciarEstadoGenerando({ contenedorId, textoBtnId, contadorId }) {
+    const texto = document.getElementById(textoBtnId);
+    texto.innerHTML = `Generando... <span id="${contadorId}">99s</span>`;
 
-    const contador = document.getElementById("contador1");
-
-    // Limpiar contenedor y agregar 5 tarjetas de carga con animación
-    const contenedorFavoritos = document.getElementById('recomendaciones-favoritos');
-    if (contenedorFavoritos) {
-        contenedorFavoritos.innerHTML = '';
+    const contador = document.getElementById(contadorId);
+    const contenedor = document.getElementById(contenedorId);
+    if (contenedor) {
+        contenedor.innerHTML = '';
         for (let i = 0; i < 5; i++) {
             const cardCarga = document.createElement('div');
             cardCarga.className = 'anime-card show carga generando Recomendaciones-card';
@@ -208,51 +198,67 @@ if (btnGenerarNuevas) {
                 <div class="container-img"></div>
                 <strong></strong>
             `;
-            contenedorFavoritos.appendChild(cardCarga);
+            contenedor.appendChild(cardCarga);
         }
     }
-    
+
     let count = 99;
     const interval = setInterval(() => {
       count--;
-      if(contador) contador.textContent = count + 's';
-    
+      if (contador) contador.textContent = count + 's';
+
       if (count <= 0) {
         clearInterval(interval);
         if (typeof initLoading !== "undefined") initLoading.remove();
       }
     }, 220);
-    
-    const [favoritos, vistos] = await Promise.all([
-        obtenerFavoritosUsuario(),
-        obtenerAnimesVistos()
-    ]);
-    const cacheActual = obtenerCacheAnimes();
 
-    if (favoritos.length === 0) {
-        texto.textContent = "No hay favoritos";
-        clearInterval(interval);
-        return;
-    }
+    return { texto, detener: () => clearInterval(interval) };
+}
 
-    const nombresFavoritos = favoritos.map(f => f.nombre || f.titulo || f.id);
-    const animesCache = cacheActual?.animes || [];
-    const nombresCache = animesCache.map(a => a.title || a.id);
-    const nombresVistos = vistos;
+// Evento Generar Nuevas (Con el input extra añadido)
+const btnGenerarNuevas = document.getElementById("generar-nuevas");
+if (btnGenerarNuevas) {
+    btnGenerarNuevas.addEventListener("click", async () => {
+        const inputFiltro = document.getElementById("filtro-extra");
+        const filtroExtra = inputFiltro ? inputFiltro.value.trim() : "";
 
-    const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])];
+        const { texto, detener } = iniciarEstadoGenerando({
+            contenedorId: 'recomendaciones-favoritos',
+            textoBtnId: 'textbtngenerarfav',
+            contadorId: 'contador1'
+        });
 
-    // Construir el prompt usando la función especializada
-    const prompt = buildFavoritesAnimePrompt(nombresFavoritos, titulosAExcluir, filtroExtra);
+        const [favoritos, vistos] = await Promise.all([
+            obtenerFavoritosUsuario(),
+            obtenerAnimesVistos()
+        ]);
+        const cacheActual = obtenerCacheAnimes();
 
-    // Esperamos a que la IA responda para luego limpiar
-    await enviarPrompt(prompt, "favoritos");
+        if (favoritos.length === 0) {
+            texto.textContent = "No hay favoritos";
+            detener();
+            return;
+        }
 
-    // Limpiar el contador y el input de especificaciones extra
-    clearInterval(interval);
-    if (inputFiltro) {
-        inputFiltro.value = "";
-    }
+        const nombresFavoritos = favoritos.map(f => f.titulo || f.id);
+        const animesCache = cacheActual?.animes || [];
+        const nombresCache = animesCache.map(a => a.title || a.id);
+        const nombresVistos = vistos;
+
+        const titulosAExcluir = [...new Set([...nombresCache, ...nombresVistos])];
+
+        // Construir el prompt usando la función especializada
+        const prompt = buildFavoritesAnimePrompt(nombresFavoritos, titulosAExcluir, filtroExtra);
+
+        // Esperamos a que la IA responda para luego limpiar
+        await enviarPrompt(prompt, "favoritos");
+
+        // Limpiar el contador y el input de especificaciones extra
+        detener();
+        if (inputFiltro) {
+            inputFiltro.value = "";
+        }
     });
 }
 
@@ -272,42 +278,18 @@ if(inputBusqueda) {
 const btnGenerarPersonalizadas = document.getElementById("generar-personalizadas");
 if (btnGenerarPersonalizadas) {
     btnGenerarPersonalizadas.addEventListener("click", async () => {
-        const texto = document.getElementById("textbtngenerarpersonalizada");
-        texto.innerHTML = 'Generando... <span id="contador2">99s</span>';
+        const { texto, detener } = iniciarEstadoGenerando({
+            contenedorId: 'recomendaciones-personalizadas',
+            textoBtnId: 'textbtngenerarpersonalizada',
+            contadorId: 'contador2'
+        });
 
-        const contador = document.getElementById("contador2");
-
-        // Limpiar contenedor y agregar 5 tarjetas de carga con animación
-        const contenedorPersonalizadas = document.getElementById('recomendaciones-personalizadas');
-        if (contenedorPersonalizadas) {
-            contenedorPersonalizadas.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-                const cardCarga = document.createElement('div');
-                cardCarga.className = 'anime-card show carga generando Recomendaciones-card';
-                cardCarga.innerHTML = `
-                    <div class="container-img"></div>
-                    <strong></strong>
-                `;
-                contenedorPersonalizadas.appendChild(cardCarga);
-            }
-        }
-
-        let count = 99;
-        const interval = setInterval(() => {
-          count--;
-          if(contador) contador.textContent = count + 's';
-        
-          if (count <= 0) {
-            clearInterval(interval);
-            if (typeof initLoading !== "undefined") initLoading.remove();
-          }
-        }, 220);
         const busquedaPersonalizada = document.getElementById("busqueda-personalizada")?.value?.trim() || "";
         const cacheActual = obtenerCacheAnimes();
 
         if (busquedaPersonalizada.length === 0) {
             texto.textContent = "No hay busqueda personalizada";
-            clearInterval(interval);
+            detener();
             return;
         }
 
@@ -316,7 +298,7 @@ if (btnGenerarPersonalizadas) {
 
         const prompt = buildCustomSearchAnimePrompt(busquedaPersonalizada, nombresCache2);
         await enviarPrompt(prompt, "personalizadas");
-        clearInterval(interval);
+        detener();
     });
 }
 
@@ -421,7 +403,7 @@ async function mostrarRelacionadosDesdeRespuesta(respuesta, seccion) {
     }
     
     if (guardarEnCache && animesEncontrados.length > 0) {
-        guardarCacheAnimes(animesEncontrados, 'favoritos');
+        guardarCacheAnimes(animesEncontrados);
     }
 
     contenedor.innerHTML = '';
@@ -533,3 +515,13 @@ if (btnRandom) {
 // desplazarse en esa dirección; en los bordes scrollea la página.
 const contenedores = document.querySelectorAll(".grid-animes.Recomendaciones");
 contenedores.forEach((contenedor) => attachWheelScrollHorizontal(contenedor));
+
+// Mismo patrón que index/anime: botones del header que desplazan la fila.
+document.querySelectorAll('section.personalizadas, section.favoritos').forEach(section => {
+    const grid = section.querySelector('.grid-animes.Recomendaciones');
+    if (!grid) return;
+    ['prev', 'next'].forEach(dir => {
+        const btn = section.querySelector(`.scroll-btn-${dir}`);
+        if (btn) btn.onclick = () => scrollFilaUnaTarjeta(grid, dir);
+    });
+});

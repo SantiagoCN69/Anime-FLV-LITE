@@ -5,7 +5,19 @@ const SEARCH_URL = 'https://backend-animeflv-lite.onrender.com/api/search';
 
 export const IA_SECTION_HTML = `
 <div id="recomendaciones-ia-busqueda" class="recomendaciones-ia-busqueda">
-  <h2>Recomendaciones de la IA</h2>
+  <div class="sugerencias-header">
+    <h2>Recomendaciones de la IA</h2>
+    <button type="button" class="scroll-btn-prev scroll-btn" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+    <button type="button" class="scroll-btn-next scroll-btn" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </button>
+  </div>
   <div id="anime-grid-ia-busqueda">
     <span class="span-carga">Generando recomendaciones...</span>
   </div>

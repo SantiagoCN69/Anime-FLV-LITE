@@ -1,4 +1,4 @@
-import { observerAnimeCards, crearAnimeCard, attachWheelScrollHorizontal } from './utils.js';
+import { observerAnimeCards, crearAnimeCard, attachWheelScrollHorizontal, scrollFilaUnaTarjeta } from './utils.js';
 import { IA_SECTION_HTML, attachIaGridWheelScroll, loadIaRecommendationsIntoGrid } from './ai-recommendations.js';
 
 const TEXTOS_CARGA_SERVIDORES = [
@@ -364,6 +364,13 @@ async function cargarRecomendacionesIA(searchTerm, searchId) {
   if (!grid) return;
 
   attachIaGridWheelScroll(grid);
+
+  // Mismo patrón que el resto de filas: botones que desplazan una tarjeta.
+  const seccion = grid.closest('.recomendaciones-ia-busqueda');
+  ['prev', 'next'].forEach(dir => {
+    const btn = seccion?.querySelector(`.scroll-btn-${dir}`);
+    if (btn) btn.onclick = () => scrollFilaUnaTarjeta(grid, dir);
+  });
 
   await loadIaRecommendationsIntoGrid({
     searchTerm,

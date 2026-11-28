@@ -48,6 +48,12 @@ z-index: -1;
 .favoritos {
   margin-top: 2rem;
 }
+/* El texto del header ocupa el espacio libre para no quedar bajo los
+   botones de scroll (position: absolute, bottom: 0). */
+.header-section.header-con-subtitulo > div {
+  flex: 1;
+  min-width: 0;
+}
 .favoritos h3{
   color: var(--t1);
   border-color: var(--t1);
@@ -65,6 +71,11 @@ z-index: -1;
  overflow: hidden;
  overflow-x: auto;
  padding-block: 12px;
+ scrollbar-width: none;
+ -ms-overflow-style: none;
+}
+.grid-animes.Recomendaciones::-webkit-scrollbar {
+  display: none;
 }
 
 .grid-animes.Recomendaciones .anime-card {
@@ -142,7 +153,8 @@ z-index: -1;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-block: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
   align-items: center;
 }
 
