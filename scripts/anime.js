@@ -488,23 +488,14 @@ function setAnimeDescripcion(descripcionEl, texto) {
       btn.textContent = 'Ver más';
       contenedor.appendChild(btn);
 
-      // Indicar visualmente que todo el bloque es interactivo
-      contenedor.classList.add('is-clickable');
-
-      // 3. Manejador de evento ÚNICO en el contenedor padre
-      contenedor.onclick = (e) => {
+      btn.onclick = (e) => {
         e.stopPropagation(); // Evita accionar tarjetas o enlaces externos
 
         const estaColapsado = contenedor.classList.toggle('collapsed');
         contenedor.classList.toggle('expanded');
 
-        // Actualizar el texto del botón independientemente de dónde se hizo clic
         btn.textContent = estaColapsado ? 'Ver más' : 'Ver menos';
       };
-    } else {
-      // Si no desborda, remover listeners o estilos interactivos
-      contenedor.onclick = null;
-      contenedor.classList.remove('is-clickable');
     }
   });
 }

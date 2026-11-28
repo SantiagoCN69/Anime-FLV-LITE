@@ -788,11 +788,6 @@ svg.cta__play {
   }
 }
 
-/* Cursor interactivo solo cuando hay botón activo */
-.anime-description-container.is-clickable {
-  cursor: pointer;
-}
-
 /* 3. Estado colapsado: controla el límite de 3 líneas */
 .anime-description-container.collapsed .anime-description {
   display: -webkit-box;
