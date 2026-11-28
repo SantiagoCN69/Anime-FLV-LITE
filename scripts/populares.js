@@ -151,10 +151,12 @@ const btnAlert = document.getElementById('btn-populares-alert');
 const modal = document.getElementById('modal-populares');
 if (btnAlert && modal) {
   btnAlert.addEventListener('click', () => {
-      modal.classList.add('active');
+      modal.classList.toggle('active');
   });
-  modal.addEventListener('click', () => {
-      modal.classList.remove('active');
+  document.addEventListener('click', (e) => {
+      if (modal.classList.contains('active') && !modal.contains(e.target) && !btnAlert.contains(e.target)) {
+          modal.classList.remove('active');
+      }
   });
 }
 const cerrarModalYFiltros = () => {
