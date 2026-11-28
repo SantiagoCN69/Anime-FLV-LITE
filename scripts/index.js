@@ -1329,6 +1329,8 @@ async function cargarhistorial() {
     if (sectionHistorial) sectionHistorial.classList.add('hidden');
 
   }
+
+  actualizarLayout();
 }
 
 function guardarCache2(key, data) {
@@ -2071,7 +2073,8 @@ function actualizarLayout() {
   const colapsada = document.body.classList.contains('sidebar-Colapsard');
 
   // Más susceptible cuando la sidebar está colapsada (1241px), menos cuando está visible (1391px)
-  const activar = (colapsada && ancho >= 1196) || (!colapsada && ancho >= 1346);
+  const activar = ((colapsada && ancho >= 1196) || (!colapsada && ancho >= 1346))
+    && document.querySelectorAll('#historial .anime-card').length >= 4;
   document.body.classList.toggle('layout-horizontal', activar);
 }
 
