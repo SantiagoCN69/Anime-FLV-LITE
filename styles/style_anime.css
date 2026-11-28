@@ -683,13 +683,9 @@ svg.cta__play {
 }
 #descripcion-cargando {
   width: 100%;
-  height: calc(60px + 18px + 8px);
+  height: 60px;
 }
-@media (min-width: 700px) {
-  #descripcion-cargando {
-    height: calc(60px + 18px + 8px);
-  }
-}
+
 .genre-link-cargando {
   width: unset;
   height: calc(1lh + 10px);
@@ -776,6 +772,7 @@ svg.cta__play {
 
 /* 2. Contenedor principal */
 .anime-description-container {
+  position: relative;
   max-width: 600px;
   /* min-height: 142px; */
   display: flex;
@@ -814,7 +811,8 @@ svg.cta__play {
 /* 5. Estilos del botón */
 .btn-toggle-desc {
   align-self: flex-end; /* Alineado a la derecha. Si lo quieres a la izquierda, usa flex-start */
-  margin-top: 8px;
+  position: absolute;
+  bottom: -23px;
   background: none;
   border: none;
   color: var(--t2);
