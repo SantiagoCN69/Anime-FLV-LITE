@@ -1500,6 +1500,11 @@ async function cargarAnime(idauxiliar) {
       console.warn('[Anime] Anime no encontrado; revisando su estado guardado:', id);
       localStorage.removeItem(getCacheKey(id));
 
+      if (firestoreData && firestoreData.manual === true) {
+        renderAnime(firestoreData);
+        return;
+      }
+
       // Esperar la carga que ya marca el estado y desmarcarlo por el mismo
       // camino que usa el clic manual en el botón activo.
       await cargaEstadoInicial;
@@ -1570,6 +1575,9 @@ async function cargarAnime(idauxiliar) {
    }
     catch (err) {
     console.error('Error carga anime:', err)
+    if (firestoreData && firestoreData.manual === true) {
+      renderAnime(firestoreData);
+    }
   }
 };
 
