@@ -1756,6 +1756,7 @@ h4 {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 126px;
 }
 
 .theme-dot {
