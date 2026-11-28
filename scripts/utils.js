@@ -165,8 +165,15 @@ export function crearAnimeCard(anime, opciones = {}) {
     card.className = `anime-card ${variant === 'schedule' ? 'anime-card-schedule' : ''} ${variant === 'jk' ? 'anime-card-jk' : ''}`.trim();
     if (anime.day) card.dataset.day = anime.day;
 
-    card.href = episodioUrl ? `/ver?id=${id}&episode=${episodioUrl}` : `/anime?id=${id}`;
-    card.setAttribute('aria-label', episodioUrl ? `Ver ${titleText} episodio ${episodioUrl}` : `Ver ${titleText}`);
+
+    // Los animes "Próximamente" aún no tienen página: la tarjeta no es un enlace.
+    if (anime.estado !== 'estrenar') {
+        card.href = episodioUrl ? `/ver?id=${id}&episode=${episodioUrl}` : `/anime?id=${id}`;
+        card.setAttribute('aria-label', episodioUrl ? `Ver ${titleText} episodio ${episodioUrl}` : `Ver ${titleText}`);
+    } else {
+        card.removeAttribute('href');
+        card.classList.add('sin-link');
+    }
 
     card.innerHTML = `
         <div class="container-img">
@@ -182,7 +189,11 @@ export function crearAnimeCard(anime, opciones = {}) {
         ${extraBottomHtml}
     `;
 
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+        if (anime.estado === 'estrenar') {
+            e.preventDefault();
+            return;
+        }
         if (typeof aplicarViewTransition === 'function') aplicarViewTransition(id, ratingHtml, card);
         if (onClick) onClick(anime);
     });

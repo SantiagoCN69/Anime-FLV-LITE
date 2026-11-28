@@ -1252,6 +1252,10 @@ a.btn-buscar-ia:hover {
   transform: scale(0.97);
 }
 
+.anime-card.sin-link {
+  cursor: default;
+
+}
 .container-img {
   filter: contrast(1.1); 
   width: 100%;
@@ -1342,7 +1346,7 @@ a.btn-buscar-ia:hover {
   .anime-card:hover .chapter, .anime-card:hover .estado {transform: translate(-25px, 25px) scale(1.8);}
   .anime-card:hover .rating {transform: translate(25px, -25px) scale(1.8);}
 
-  .anime-card:hover .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px}
+  .anime-card:hover:not(.sin-link) .play-icon {transform: translate(50%, 50%);bottom: 50%;right: 50%;width: 50px;height: 50px}
     .anime-card:hover .type {opacity: 0; transform: translate(-25px, -25px) scale(1.8);}
     .anime-card:hover .container-img::after {
       bottom: -50%;
