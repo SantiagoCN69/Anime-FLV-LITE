@@ -1020,7 +1020,7 @@ nav.filtros {
   margin-top: -2rem;
   width: calc(100% + 4rem);
   margin-bottom: 2.5rem;
-  border-bottom: 1px solid var(--br);
+  box-shadow: 0 1px 0 0 var(--br);
 }
 
 .hero-slider h2,
