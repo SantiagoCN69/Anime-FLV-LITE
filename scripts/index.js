@@ -342,8 +342,8 @@ function actualizarIndicadorActivo(targetItem = null) {
   // Solo aplicar el fallback si NO estamos en modo hover (targetItem es null)
   if (!itemToUse || !esDeListaPrincipal) {
     if (targetItem === null) {
-      // Solo en modo no-hover: aplicar fallback
-      indicator.style.left = '-4px';
+      // Solo en modo no-hover: ocultar el indicador
+      indicator.classList.remove('visible');
     }
     // En modo hover con elemento inválido: no hacer nada (dejar el indicador donde está)
     return;
@@ -353,9 +353,9 @@ function actualizarIndicadorActivo(targetItem = null) {
   const ulRect = sidebarUl.getBoundingClientRect();
   const itemRect = itemToUse.getBoundingClientRect();
 
-  indicator.style.top = (itemRect.top - ulRect.top + 8) + 'px';
-  indicator.style.height = (itemRect.height - 16) + 'px';
-  indicator.style.left = '0px';
+  indicator.style.top = (itemRect.top - ulRect.top + 4) + 'px';
+  indicator.style.height = (itemRect.height - 8) + 'px';
+  indicator.style.left = '10px';
   indicator.classList.add('visible');
 }
 

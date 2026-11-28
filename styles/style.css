@@ -547,7 +547,7 @@ body:has(header.search-active) .logout-modal {
 }
 
 .sidebar ul {
-  width: calc(100% - 4px);
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -568,6 +568,7 @@ body:has(header.search-active) .logout-modal {
   }
 .sidebar li:not(:has(> a)), .sidebar a:not(.btn-siguiente-episodio) {
   padding: 20px 22px;
+  max-height: 60px;
   flex: 1;
   display: flex;
   gap: 12px;
@@ -579,58 +580,33 @@ body:has(header.search-active) .logout-modal {
   position: relative;
 }
 
-
-/* .sidebar li:not(:has(> a))::after, .sidebar a:not(.btn-siguiente-episodio)::after {
-  content: "";
-  position: absolute;
-  border-radius: 14px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  width: calc(100% - 16px);
-  height: calc(100% - 8px);
-
-  background: linear-gradient(to right,
-  color-mix(in srgb, var(--b) 50%, var(--btn) 25%),
-  var(--p) 90%);
-  background: #ffffff22;
-  opacity: 0;
-  transition: opacity .3s ease;
-  z-index: -1;
+.sidebar span {
+  font-weight: 500; 
+  font-family: 'Oxanium', sans-serif;
 }
-.sidebar li:not(:has(> a)):hover::after, .sidebar a:not(.btn-siguiente-episodio):hover::after,
-.sidebar li:not(:has(> a)).active-menu-item::after {
-  opacity: 1;
-}
-.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-episodio) {
-  padding-inline: 25.5px !important;
-} */
-
 
 .sidebar li:not(:has(> a)):hover, .sidebar li a:hover {
 
-  color: var(--btn);
   opacity: 1;
 }
 
 
 .sidebar li:not(:has(> a)).active-menu-item {
-
-  color: var(--btn);
   opacity: 1
 }
 
 .sidebar .active-indicator {
-  padding:0 !important;
+  padding: 0 !important;
   position: absolute;
-  left: 0;
-  /* height: 100%; */
-  width: 4px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--btn) 78%, #ffffff), var(--btn));
-  border-radius: 0 2px 2px 0;
+  top: 0;
+  left: 8px;
+  width: calc(100% - 20px);
+  border-radius: 14px;
+  background: linear-gradient(to right,
+    color-mix(in srgb, var(--b) 40%, var(--btn) 20%),
+    var(--p) 90%);
   opacity: 0;
-  transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform .3s, opacity 0.2s ease, width 0.3s ease;
+  transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
   pointer-events: none;
 }
 
@@ -642,11 +618,11 @@ body:has(header.search-active) .logout-modal {
   color: var(--t1);
 }
 .sidebar svg {
-  margin-bottom: -4px;
   min-width: 20px;
   width: 20px;
   max-width: 20px;
   height: 20px;
+  align-self: center;
 }
 /* El icono de Lista (bookmark) se ve deformado a 20px: 2px menos que el resto */
 #btn-lista svg {
@@ -2189,14 +2165,14 @@ h4 {
 } */
 @media (min-width: 601px) {
 /* Estilos del sidebar colapsado */
-.sidebar-collapsed .sidebar {
+.sidebar-Colapsard .sidebar {
   min-width: unset;
   width: 70px;
 }
 .sidebar span {
   transition: opacity 0.3s ease, position 0.3s ease, transform .3s;
 }
-.sidebar-collapsed .sidebar span, .sidebar-collapsed #Collapse-aside span {
+.sidebar-Colapsard .sidebar span, .sidebar-Colapsard #Colapsar-aside span {
   opacity: 0; 
   pointer-events: none;
   user-select: none;
@@ -2219,8 +2195,8 @@ h4 {
   max-width: 23px;
   height: 23px;
 }
-.sidebar-collapsed .sidebar li:not(:has(> a)), .sidebar-collapsed .sidebar a:not(.btn-siguiente-episodio) {
-  padding-inline:23px ;
+.sidebar-Colapsard .sidebar li:not(:has(> a)), .sidebar-Colapsard .sidebar a:not(.btn-siguiente-episodio) {
+  padding-inline: 22.5px;
 }
 
 .sidebar-Colapsard .sidebar li:not(:has(> a)):hover,  
@@ -2230,9 +2206,6 @@ h4 {
 .sidebar-Colapsard .sidebar li:not(:has(> a)).active-menu-item,
 .sidebar-Colapsard .sidebar li a.active-menu-item {
   transform: unset;
-}
-.sidebar-collapsed .active-indicator {
-  width: 3px;
 }
 
 
