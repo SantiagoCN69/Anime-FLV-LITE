@@ -2055,16 +2055,16 @@ function inicializarContinuarViendo() {
 
 function actualizarLayout() {
   const ancho = window.innerWidth;
-  const colapsada = document.body.classList.contains('sidebar-collapsed');
+  const colapsada = document.body.classList.contains('sidebar-Colapsard');
 
   // Más susceptible cuando la sidebar está colapsada (1241px), menos cuando está visible (1391px)
   const activar = (colapsada && ancho >= 1196) || (!colapsada && ancho >= 1346);
   document.body.classList.toggle('layout-horizontal', activar);
 }
 
-document.getElementById('Collapse-aside')?.addEventListener('click', () => {
-  document.body.classList.toggle('sidebar-collapsed');
-  localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+document.getElementById('Colapsar-aside')?.addEventListener('click', () => {
+  document.body.classList.toggle('sidebar-Colapsard');
+  localStorage.setItem('sidebarColapsard', document.body.classList.contains('sidebar-Colapsard'));
   actualizarLayout();
 });
 
@@ -2077,7 +2077,7 @@ actualizarLayout(); // Se ejecuta al iniciar para aplicar el estado guardado en 
 (() => {
   let tooltip, active, rafId, timer, obs;
   let isLarge = window.matchMedia('(min-width: 601px)').matches;
-  let isCollapsed = document.body.classList.contains('sidebar-collapsed');
+  let isColapsard = document.body.classList.contains('sidebar-Colapsard');
 
   // Selector unificado para elementos con tooltip en el sidebar
   const SELECTOR = '.menu-item, #ultimos-caps-viendo a';
@@ -2096,7 +2096,7 @@ actualizarLayout(); // Se ejecuta al iniciar para aplicar el estado guardado en 
   };
 
   const show = (el) => {
-    if (!isLarge || !isCollapsed || !el.closest('.sidebar')) return;
+    if (!isLarge || !isColapsard || !el.closest('.sidebar')) return;
 
     const text = getTooltipText(el);
     if (!text) return;
@@ -2150,8 +2150,8 @@ actualizarLayout(); // Se ejecuta al iniciar para aplicar el estado guardado en 
   obs = new MutationObserver(() => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      isCollapsed = document.body.classList.contains('sidebar-collapsed');
-      if (!isCollapsed) hide();
+      isColapsard = document.body.classList.contains('sidebar-Colapsard');
+      if (!isColapsard) hide();
     }, 50);
   });
   obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });

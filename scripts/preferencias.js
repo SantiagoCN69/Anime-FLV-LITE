@@ -22,8 +22,8 @@ const aplicarTema = (tema) => {
 const actualizarBtnSidebar = () => {
   const btn = document.getElementById('btn-sidebar-toggle');
   if (!btn) return;
-  const collapsed = document.body.classList.contains('sidebar-collapsed');
-  btn.textContent = collapsed ? 'Mostrar' : 'Ocultar';
+  const Colapsard = document.body.classList.contains('sidebar-Colapsard');
+  btn.textContent = Colapsard ? 'Mostrar' : 'Ocultar';
 };
 
 const loginConGoogle = async () => {
@@ -225,9 +225,9 @@ function initPreferencias() {
     actualizarBtnSidebar();
     btnSidebarToggle.addEventListener('click', (e) => {
       e.preventDefault();
-      document.body.classList.toggle('sidebar-collapsed');
-      const newState = document.body.classList.contains('sidebar-collapsed');
-      localStorage.setItem('sidebarCollapsed', newState);
+      document.body.classList.toggle('sidebar-Colapsard');
+      const newState = document.body.classList.contains('sidebar-Colapsard');
+      localStorage.setItem('sidebarColapsard', newState);
       actualizarBtnSidebar();
     });
   } else {

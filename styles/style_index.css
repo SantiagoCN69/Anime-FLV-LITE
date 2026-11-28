@@ -1586,12 +1586,12 @@ color: var(--p);
   padding: 0 !important;
   height: unset !important;
 }
-#collapse-btn-container {
+#Colapsar-btn-container {
   border-top: 1px solid var(--br);
   margin-top:auto;
   display: flex;
 }
-#Collapse-aside {
+#Colapsar-aside {
   display: flex;
   gap: 12px;
   padding: 1rem 3rem;
@@ -1616,11 +1616,11 @@ color: var(--p);
   border: none;
   background-color: transparent;
 }
-#Collapse-aside:hover {
+#Colapsar-aside:hover {
   background-color: rgba(var(--bgt), .1);
 }
 @media (max-width: 600px) {
-  #collapse-btn-container {
+  #Colapsar-btn-container {
    display: none;
   }
 }

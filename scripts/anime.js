@@ -474,7 +474,7 @@ function setAnimeDescripcion(descripcionEl, texto) {
   const btnPrevio = contenedor.querySelector('.btn-toggle-desc');
   if (btnPrevio) btnPrevio.remove();
 
-  contenedor.classList.add('collapsed');
+  contenedor.classList.add('Colapsard');
   contenedor.classList.remove('expanded');
 
   // 2. Medir desbordamiento tras el renderizado del DOM
@@ -491,7 +491,7 @@ function setAnimeDescripcion(descripcionEl, texto) {
       btn.onclick = (e) => {
         e.stopPropagation(); // Evita accionar tarjetas o enlaces externos
 
-        const estaColapsado = contenedor.classList.toggle('collapsed');
+        const estaColapsado = contenedor.classList.toggle('Colapsard');
         contenedor.classList.toggle('expanded');
 
         btn.textContent = estaColapsado ? 'Ver más' : 'Ver menos';
