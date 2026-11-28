@@ -920,9 +920,7 @@ main {
     }
   }
 }
-#Busqueda-Resultados svg {
-  z-index: 1;
-}
+
 .svg-header {
   align-self: start;
 }

@@ -104,6 +104,9 @@ function limpiarVistaIndexPage(loadingSpan, contadorSpan, seccionResultados, res
   }
   limpiarSeccionIA();
   handlesearchChange();
+  // Restaura el icono dinámico a la sección que quedó visible tras limpiar.
+  const seccionActiva = decodeURIComponent(window.location.search.split(/[?&]/)[1] || 'Ultimos-Episodios');
+  window.dispatchEvent(new CustomEvent('iconoseccion', { detail: seccionActiva }));
 }
 
 // === VARIABLES ===
@@ -478,6 +481,7 @@ function mostrarResultados(data, searchTerm, searchId) {
     if (resultados.length > 0) {
       resultadosContainer.classList.remove('sin-resultados');
       seccionResultados?.classList.remove('hidden');
+      window.dispatchEvent(new CustomEvent('iconoseccion', { detail: 'Busqueda-Resultados' }));
       const headerBusqueda = document.getElementById('header-section-busqueda');
       if (headerBusqueda) headerBusqueda.style.display = '';
       const cards = [];
@@ -498,6 +502,7 @@ function mostrarResultados(data, searchTerm, searchId) {
       }
     } else {
       seccionResultados?.classList.remove('hidden');
+      window.dispatchEvent(new CustomEvent('iconoseccion', { detail: 'Busqueda-Resultados' }));
       const headerBusqueda = document.getElementById('header-section-busqueda');
       if (headerBusqueda) headerBusqueda.style.display = 'none';
       renderSinResultados(resultadosContainer, searchTerm, searchId);
@@ -678,6 +683,7 @@ if (busquedaInput) {
         if (sec.id !== 'Busqueda-Resultados' && !sec.classList.contains('hidden')) sec.classList.add('hidden');
       });
       seccionResultados?.classList.remove('hidden');
+      window.dispatchEvent(new CustomEvent('iconoseccion', { detail: 'Busqueda-Resultados' }));
       if (resultadosContainer) {
         // Limpiar todo excepto el loadingSpan
         const children = Array.from(resultadosContainer.children);
@@ -744,6 +750,7 @@ initialDelayTimer = setTimeout(() => {
                 if (isIndexPage) {
                   if (loadingSpan) loadingSpan.style.display = 'none';
                   seccionResultados?.classList.remove('hidden');
+                  window.dispatchEvent(new CustomEvent('iconoseccion', { detail: 'Busqueda-Resultados' }));
                   mostrarMensajeError(resultadosContainer, 'El servidor tarda demasiado en responder.');
                 } else if (busquedasContainer && busquedasContainer.querySelector('.contador-busqueda-busquedas')) {
                   mostrarMensajeError(busquedasContainer, 'El servidor tarda demasiado en responder.');
@@ -784,6 +791,7 @@ initialDelayTimer = setTimeout(() => {
           if (isIndexPage) {
             if (loadingSpan) loadingSpan.style.display = 'none';
             seccionResultados?.classList.remove('hidden');
+            window.dispatchEvent(new CustomEvent('iconoseccion', { detail: 'Busqueda-Resultados' }));
             mostrarMensajeError(resultadosContainer, 'Error de conexión.');
           } else if (busquedasContainer) {
             mostrarMensajeError(busquedasContainer, 'Error de conexión.');
